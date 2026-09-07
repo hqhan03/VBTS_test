@@ -24518,5 +24518,7 @@
       "stream/pose.csv",
       "stream/zero_checks.csv"
     ]
-  }
+  },
+  "run_dir_was": "9DTact_soft_1mm_r2__3",
+  "run_dir_renamed": "2026-09-07: attempt number stripped once this became the only run kept for this pass/sensor"
 }
