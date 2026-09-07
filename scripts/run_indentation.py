@@ -1938,21 +1938,63 @@ def phase_collect(a) -> int:
         # gel's loading history does (no pauses), which the operator accepted.
         continuous = a.ramp_mode == "continuous"
 
+        # HOW FAST THE GLIDE HAS TO BE, and why it is not a fixed percentage.
+        # A frame is kept only if its force differs from one already kept in
+        # its bin by --min-sep (0.02 N). Frames arrive every 1/4.86 s, so the
+        # force has to move at least 0.02 N in 0.206 s -- about 0.1 N/s -- or
+        # most frames are duplicates and get dropped. The first continuous
+        # attempt used a fixed 0.5 %, which on 9DTact_hard_1mm_r1 gave 8.5 s
+        # per 0.10 mm segment: 0.035 N/s, 0.007 N per frame, and the same 31 %
+        # acceptance the stepped ramp had. Removing the pauses is not enough;
+        # the glide has to be paced.
+        #
+        # The pace that matters is dF/dt, and the same speed gives a different
+        # dF/dt on every gel, so the velocity is computed per segment from the
+        # stiffness just measured: aim each segment at RAMP_DF newtons and at
+        # RAMP_DF/RAMP_DFDT seconds. The robot's millimetres per second at
+        # 100 % is not assumed -- it is measured from each glide's own elapsed
+        # time and carried forward, so the loop calibrates itself on the first
+        # couple of segments whatever the arm is set to.
+        RAMP_DF = 0.25            # newtons a segment should add
+        RAMP_DFDT = 0.15          # newtons per second while gliding
+        MOVEL_OVERHEAD = 0.40     # s of plan + round trip, measured 2026-09-07
+        pace = {"mm_per_s_100": 2.5}
+
+        def _pace(k_local, step_mm):
+            """Velocity percentage for a segment of `step_mm` at stiffness `k_local`."""
+            want_s = max(RAMP_DF / max(RAMP_DFDT, 1e-3), 0.6)
+            motion_s = max(want_s - MOVEL_OVERHEAD, 0.25)
+            v_mm_s = step_mm / motion_s
+            return float(np.clip(v_mm_s / max(pace["mm_per_s_100"], 0.05) * 100.0,
+                                 0.2, 20.0))
+
+        def _step_for(k_local):
+            return float(np.clip(RAMP_DF / max(k_local, 1e-3), 0.05, 0.40))
+
         def _glide(vec, mm, vel):
-            """One MoveL of `mm` along unit `vec` at `vel` %, frames saved throughout."""
+            """One MoveL of `mm` along unit `vec` at `vel` %, frames saved throughout.
+
+            Returns (rc, seconds). The elapsed time updates the speed model.
+            """
             pose_ = q("GetActualTCPPose", 0)[1:]
             p_ = np.array(pose_[:3]) + float(mm) * np.asarray(vec, dtype=float)
             tgt_ = [float(v) for v in p_] + [float(v) for v in pose_[3:]]
             pl_ = mv.plan(ip, tgt_, a.approach_joint_step)
             if not pl_.get("ok"):
                 print(f"  refusing the glide: {pl_.get('why')}")
-                return 2
+                return 2, 0.0
             tool_ = pl_["active_tool"][1] if isinstance(pl_["active_tool"], list) else 1
+            t_ = time.time()
             if mv.send_movel(ip, pl_["target_joints"], pl_["target_pose"], tool_,
                              float(vel), a.ovl) != 0:
                 print("  MoveL failed during the glide")
-                return 1
-            return 0
+                return 1, 0.0
+            dt_ = time.time() - t_
+            moving = dt_ - MOVEL_OVERHEAD
+            if moving > 0.15 and abs(mm) > 1e-3:
+                seen = abs(mm) / moving / max(vel, 1e-6) * 100.0
+                pace["mm_per_s_100"] = 0.7 * pace["mm_per_s_100"] + 0.3 * seen
+            return 0, dt_
 
         # ---------------- normal block ----------------
         print(f"\n--- descending to the gel surface ---")
@@ -1968,32 +2010,34 @@ def phase_collect(a) -> int:
         dead = 0
         saved_before = 0
         if continuous:
-            print(f"  continuous ramp: {a.ramp_vel:.3g} % per move, "
-                  f"{a.ramp_segment_mm:.2f} mm segments, force read between segments")
+            print(f"  continuous ramp: paced to {RAMP_DF:.2f} N and "
+                  f"{RAMP_DF/RAMP_DFDT:.1f} s per segment ({RAMP_DFDT:.2f} N/s), "
+                  f"velocity from the measured stiffness each segment")
         while continuous and normal_cycles < a.max_cycles:
             normal_cycles += 1
             binner.new_pass()
             rec.arm(segment="normal_load", cycle=normal_cycles, axis="",
                     target_N=float(force_cap))
             d_goal = min((force_cap / a_h) ** (2.0 / 3.0), depth_cap - a.travel_margin)
-            seg = a.ramp_segment_mm
             used, peak_f, peak_d, why, nseg = 0.0, 0.0, 0.0, "", 0
             f = measure_n()
+            k_local = max(1.5 * a_h * max(d_goal, 0.05) ** 0.5, 0.2)   # Hertz slope, refined below
             while True:
                 room = depth_cap - a.travel_margin - used
-                step = min(seg, room)
-                if used >= d_goal - 1e-4 and f < force_cap - a.force_tol:
-                    # the model under-predicted; keep going within the backstop
-                    step = min(seg, room)
+                step = min(_step_for(k_local), room)
                 if step <= 1e-4:
                     why = f"depth cap {depth_cap:.2f} mm"
                     break
-                rv = _glide(-n, step, a.ramp_vel)
+                f_before, d_before = f, used
+                rv, _dt = _glide(-n, step, _pace(k_local, step))
                 if rv:
                     return rv
                 nseg += 1
                 used = surf - height()             # measured, not summed
                 f = measure_n()
+                moved = used - d_before
+                if moved > 1e-3:
+                    k_local = 0.5 * k_local + 0.5 * max((f - f_before) / moved, 0.05)
                 peak_f, peak_d = max(peak_f, f), max(peak_d, used)
                 if f < a.contact_floor and used > a.no_contact_mm:
                     print(f"\n  ABORT: {used:.3f} mm in and the force is still "
@@ -2035,14 +2079,26 @@ def phase_collect(a) -> int:
             # unload: one continuous glide back to the surface, recorded
             binner.new_pass()
             rec.retag(segment="normal_unload", target_N=0.0)
-            back = surf - height()
-            if back > 1e-4:
-                rv = _glide(+n, back, a.ramp_vel)
+            # Unload in segments too, at the same pace: a single slow glide
+            # spends a minute producing frames a few thousandths of a newton
+            # apart, which the separation rule then throws away.
+            nback = 0
+            while nback < 200:
+                back = surf - height()
+                if back <= 1e-3:
+                    break
+                f_before, h_before = measure_n(), height()
+                step = min(_step_for(k_local), back)
+                rv, _dt = _glide(+n, step, _pace(k_local, step))
                 if rv:
                     return rv
+                nback += 1
+                moved = height() - h_before
+                if moved > 1e-3:
+                    k_local = 0.5 * k_local + 0.5 * max((f_before - measure_n()) / moved, 0.05)
             rec.retag(segment="dwell", target_N=0.0)
             time.sleep(a.cycle_dwell)
-            print(f"  {normal_cycles:>3} {'unload':>6} {1:>5} {'':>7} {'':>7} {rec.saved:>6}")
+            print(f"  {normal_cycles:>3} {'unload':>6} {nback:>5} {'':>7} {'':>7} {rec.saved:>6}")
             if rec.capped:
                 break
             if rec.error:
@@ -2252,15 +2308,19 @@ def phase_collect(a) -> int:
 
                 used, peak, why, fs, nseg = 0.0, 0.0, "", 0.0, 0
                 limit = a.max_travel_shear - a.travel_margin
+                ks = max(a.shear_k, 0.05)
                 while used < limit:
-                    step = min(a.ramp_segment_mm, limit - used)
-                    rv = _glide(axes[axis], step, a.ramp_vel)
+                    step = min(_step_for(ks), limit - used)
+                    fs_before, u_before = fs, used
+                    rv, _dt = _glide(axes[axis], step, _pace(ks, step))
                     if rv:
                         return rv
                     nseg += 1
                     p_now = np.array(q("GetActualTCPPose", 0)[1:][:3])
                     used = abs(float((p_now - axis_origin) @ axes[axis]))
                     fs = measure_s(); fz_here = measure_n()
+                    if used - u_before > 1e-3:
+                        ks = 0.5 * ks + 0.5 * max((fs - fs_before) / (used - u_before), 0.05)
                     peak = max(peak, fs)
                     if fs >= shear_cap - a.force_tol:
                         why = "reached"
@@ -2274,7 +2334,7 @@ def phase_collect(a) -> int:
                         d_want = (max(hold, 0.0) / a_h) ** (2.0 / 3.0)
                         dz = float(np.clip(d_want - d_now, -0.04, 0.04))
                         if 0.0 <= d_now + dz <= depth_cap and abs(dz) > 1e-4:
-                            rv = _glide(-n, dz, a.ramp_vel)
+                            rv, _dt = _glide(-n, dz, _pace(max(k_local, 0.2), abs(dz)))
                             if rv:
                                 return rv
                     if nseg > 400:
@@ -2294,10 +2354,16 @@ def phase_collect(a) -> int:
                 p_now = np.array(q("GetActualTCPPose", 0)[1:][:3])
                 vec = axis_origin - p_now
                 dist = float(np.linalg.norm(vec))
-                if dist > 1e-3:
-                    rv = _glide(vec / dist, dist, a.ramp_vel)
+                nb = 0
+                while dist > 1e-3 and nb < 200:
+                    step = min(_step_for(ks), dist)
+                    rv, _dt = _glide(vec / dist, step, _pace(ks, step))
                     if rv:
                         return rv
+                    nb += 1
+                    p_now = np.array(q("GetActualTCPPose", 0)[1:][:3])
+                    vec = axis_origin - p_now
+                    dist = float(np.linalg.norm(vec))
                 if rec.done:
                     break
             if rec.error:
