@@ -95,8 +95,16 @@ capture_policy:
   frames_per_sensor: 1000
   normal_fraction: 0.5
   ramp_step_N: 0.1
-  ramp_settle_s: 0.05
-  anchor_every_N: 0.5
+  ramp_settle_s: 0.15
+  anchor_every_N: 0.1
+  timing_reverted_2026-09-07: 'the 0.05 s / 0.5 N trial on 9DTact_medium_3mm_r1 did not shorten
+    collect: 726 s against 678-723 s on the two units before it. Load steps did get faster
+    (1.03 -> 0.41 s) but the run needed 10+12 cycles instead of 7-8 + 9-10, because the
+    frames that fill the force bins are the ones captured while the probe pauses at a rung;
+    shorten the pause and each pass contributes fewer distinct-force frames, so more passes
+    are needed. Time per saved frame stayed at 0.7 s. Reverted so all 17 units share one
+    pacing; only medium_3mm_r1 was collected at 0.05 s / 0.5 N (its labels and bins are
+    unaffected, its per-cycle yield is lower)'
   timing_basis_2026-09-07: 'measured on the first ten Pass B units (13-17 min each,
     collect 82 %): the LOAD steps ran 1.03 s against 0.42 s for the same move on UNLOAD,
     and the difference was the anchor sample taken at every 0.1 N rung -- wait for
