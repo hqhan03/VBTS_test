@@ -931,7 +931,7 @@ sensors:
   stopped_on: force cap
   ladder_rungs_reached: 29
   characterised_at: '2026-09-07T21:12:07.650371'
-  run: data/9DTact/20260907_passB_ball8/9DTact_soft_3mm_r1__2
+  run: data/9DTact/20260907_passB_ball8/9DTact_soft_3mm_r1
   run_timestamp: '20260902_124057'
   ladder_run: data/20260903_ladder_protocol/9DTact_soft_3mm_r1
   history:
