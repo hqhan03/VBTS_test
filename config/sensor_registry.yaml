@@ -95,8 +95,18 @@ capture_policy:
   frames_per_sensor: 1000
   normal_fraction: 0.5
   ramp_step_N: 0.1
-  ramp_settle_s: 0.15
-  anchor_every_N: 0.1
+  ramp_settle_s: 0.05
+  anchor_every_N: 0.5
+  timing_basis_2026-09-07: 'measured on the first ten Pass B units (13-17 min each, collect 82 %):
+    the LOAD steps ran 1.03 s against 0.42 s for the same move on UNLOAD, and the difference
+    was the anchor sample taken at every 0.1 N rung -- wait for a fresh frame, write a PNG,
+    write state -- 316-350 per run, about 80 s. Anchors are auxiliary settled samples for
+    the Hertz fit and the rung tables, not part of the frame budget; 0.5 N spacing still
+    gives about 28 per run. The ramp settle was cut 0.15 -> 0.05 s for the same reason:
+    each frame is labelled with the F/T mean over its own exposure window, so the settle
+    only pads the pause between steps. Neither change touches the 1000 saved frames,
+    the bins, the separation rule or the range. Applied from 9DTact_medium_3mm_r1 on;
+    the ten units before it were collected at 0.15 s / 0.1 N'
   rationale: the sensors are compared on how well a force estimator trains on each,
     so every run saves exactly the same number of frames. Loading/unloading cycles
     to the sensor's own ceiling repeat until the budget is spent, so a stiff 3 mm

@@ -500,6 +500,11 @@ def main() -> int:
                          "it -- but since the fast drop was added that costs "
                          "one move rather than one force-reading step per "
                          "millimetre")
+    ap.add_argument("--no-exit-park", action="store_true",
+                    help="on a SUCCESSFUL partial run (--to given), leave the "
+                         "probe where the last step put it instead of parking; "
+                         "the caller must park if it does not continue. Failures "
+                         "park regardless")
     ap.add_argument("--skip", default="",
                     help="comma-separated steps to leave out of the range. "
                          "touchcheck is the usual one: it weighs the contact "
@@ -1002,6 +1007,12 @@ def park_whatever_happens(rc: int) -> int:
         return rc
     if rc == 0 and "--to" not in argv:
         return rc                      # the run's own park step already ran
+    if rc == 0 and "--no-exit-park" in argv:
+        # A successful partial run whose caller starts the next stage at
+        # once (pass_b_sensor.sh). Parking here cost ~45 s per unit: lift,
+        # then descend 50 mm again for collect. The caller's own EXIT trap
+        # parks if the next stage never runs. Failures still park.
+        return rc
     try:
         ip = yaml.safe_load(open(ROOT / "config" / "robot_config.yaml"))["robot"]["ip"]
         if "--ip" in argv:

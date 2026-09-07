@@ -36,17 +36,30 @@ DS="20260907_passB_${P}"
 # and resolution tests, and the image scale belongs to the sensor's optics and
 # was measured once, in the ball4 pass.
 COMMON=(--sensor "$S" --probe "$P" --dataset "$DS" --confirm RUN)
+
+# Stage 1 no longer parks on success -- stage 2 follows within a second and
+# starts by lifting 3 mm and re-centring, so the 45 s round trip to 78 mm and
+# back was pure waste. The operator's rule still holds on every path: if this
+# script exits before stage 2 has finished, for any reason, the trap parks.
+STAGE2_DONE=0
+park_if_needed() {
+  if [ "$STAGE2_DONE" != "1" ]; then
+    "$PY" "$ROOT/scripts/run_one_sensor.py" --sensor "$S" --probe "$P" --dataset "$DS" \
+          --from park --to park --confirm RUN 2>&1 | grep -E "parked|!!" || true
+  fi
+}
+trap park_if_needed EXIT INT TERM
 CHEAP=(--skip shape,scale,search,touchcheck)     # trust the surface on record
 WITH_SEARCH=(--skip shape,scale,touchcheck)      # measure it instead
 
 echo "=== $S / $P: stage 1, up to contactmap (surface from the registry) ==="
-if ! "$PY" "$ROOT/scripts/run_one_sensor.py" "${COMMON[@]}" "${CHEAP[@]}" --to contactmap; then
+if ! "$PY" "$ROOT/scripts/run_one_sensor.py" "${COMMON[@]}" "${CHEAP[@]}" --to contactmap --no-exit-park; then
   echo
   echo "  === stage 1 failed; retrying it WITH the surface search ==="
   # Same steps, but let the search measure the surface instead of trusting the
   # record. touchcheck stays skipped -- it was never the problem.
   if ! "$PY" "$ROOT/scripts/run_one_sensor.py" "${COMMON[@]}" "${WITH_SEARCH[@]}" \
-        --to contactmap; then
+        --to contactmap --no-exit-park; then
     echo "=== $S / $P finished rc=1 (stage 1) ==="
     exit 1
   fi
@@ -55,5 +68,6 @@ fi
 echo "=== $S / $P: stage 2, collect ==="
 "$PY" "$ROOT/scripts/run_one_sensor.py" "${COMMON[@]}" "${CHEAP[@]}" --from collect --to park
 rc=$?
+STAGE2_DONE=1
 echo "=== $S / $P finished rc=$rc ==="
 exit $rc
