@@ -151,7 +151,7 @@ def _shrink(g):
     if DOWNSCALE == 1:
         return g
     h, w = g.shape
-    return cv2.resize(g, (max(1, w // DOWNSCALE), max(1, h // DOWNSCALE)),
+    return cv2.resize(g, (max(1, int(round(w / DOWNSCALE))), max(1, int(round(h / DOWNSCALE)))),
                       interpolation=cv2.INTER_AREA)
 
 
