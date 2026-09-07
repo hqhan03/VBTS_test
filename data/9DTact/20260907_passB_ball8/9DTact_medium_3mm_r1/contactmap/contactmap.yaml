@@ -1,0 +1,101 @@
+at_depth:
+  target_depth_mm: 0.5
+  target_used_mm: 0.5
+  limited_by_depth_cap: false
+  at: '2026-09-07T22:49:35.124658'
+  image: at_depth.png
+  image_time: 1788788974.6523995
+  depth_mm: 0.48682802002086234
+  height_above_plane_mm: 27.26417197997914
+  normal_force_N: 0.47183562605350177
+  wrench:
+  - 0.004688294954523542
+  - 0.016013471049069493
+  - -0.47183562605350177
+  - -0.0001925298441181861
+  - -0.0001246735849046665
+  - -1.3988977955436966e-05
+  region:
+    level: 7
+    blur_px: 5
+    mean_abs_diff_centre: 3.1018877029418945
+    max_diff: 15.99609375
+    changed_fraction: 0.015867573302469136
+    area_px: 31335
+    radius_px: 99.8711183654668
+    centroid_px:
+    - 912.4503590234561
+    - 589.1654699218127
+    bbox_px:
+    - 804
+    - 475
+    - 209
+    - 226
+    enclosing_radius_px: 117.5381088256836
+    mean_abs_diff_in_region: 10.287327766418457
+    n_blobs: 2
+    min_area_px: 200
+    border_frac: 0.05
+    dark_area_px: 31335
+    dark_radius_px: 99.8711183654668
+    dark_centroid_px:
+    - 912.4503590234561
+    - 589.1654699218127
+    dark_mean_diff: -10.287327766418457
+    bright_area_px: 0
+    bright_radius_px: 0.0
+    bright_centroid_px: null
+    bright_mean_diff: 0.0
+at_force:
+  target_force_N: 0.5
+  target_used_N: 0.5
+  limited_by_force_cap: false
+  force_reached: true
+  stop_reason: reached
+  at: '2026-09-07T22:49:41.518860'
+  image: at_force.png
+  image_time: 1788788981.0487125
+  depth_mm: 0.4633212469207173
+  height_above_plane_mm: 27.287678753079284
+  normal_force_N: 0.4379025979241106
+  wrench:
+  - 0.0035660229847195523
+  - 0.01532192190642867
+  - -0.4379025979241106
+  - -0.00013145450979391572
+  - -0.00010113915320727751
+  - -1.4839970943469893e-05
+  region:
+    level: 7
+    blur_px: 5
+    mean_abs_diff_centre: 3.017374038696289
+    max_diff: 15.5078125
+    changed_fraction: 0.013686342592592592
+    area_px: 27891
+    radius_px: 94.22303877264895
+    centroid_px:
+    - 912.3204259438529
+    - 590.2295005557348
+    bbox_px:
+    - 812
+    - 475
+    - 204
+    - 221
+    enclosing_radius_px: 111.63690948486328
+    mean_abs_diff_in_region: 9.870992660522461
+    n_blobs: 1
+    min_area_px: 200
+    border_frac: 0.05
+    dark_area_px: 27891
+    dark_radius_px: 94.22303877264895
+    dark_centroid_px:
+    - 912.3204259438529
+    - 590.2295005557348
+    dark_mean_diff: -9.870992660522461
+    bright_area_px: 0
+    bright_radius_px: 0.0
+    bright_centroid_px: null
+    bright_mean_diff: 0.0
+mm_per_px: null
+diff_level: 7
+diff_level_rule: max(3, 0.04 x reference centre mean)

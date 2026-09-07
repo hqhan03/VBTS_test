@@ -97,16 +97,17 @@ capture_policy:
   ramp_step_N: 0.1
   ramp_settle_s: 0.05
   anchor_every_N: 0.5
-  timing_basis_2026-09-07: 'measured on the first ten Pass B units (13-17 min each, collect 82 %):
-    the LOAD steps ran 1.03 s against 0.42 s for the same move on UNLOAD, and the difference
-    was the anchor sample taken at every 0.1 N rung -- wait for a fresh frame, write a PNG,
-    write state -- 316-350 per run, about 80 s. Anchors are auxiliary settled samples for
-    the Hertz fit and the rung tables, not part of the frame budget; 0.5 N spacing still
-    gives about 28 per run. The ramp settle was cut 0.15 -> 0.05 s for the same reason:
-    each frame is labelled with the F/T mean over its own exposure window, so the settle
-    only pads the pause between steps. Neither change touches the 1000 saved frames,
-    the bins, the separation rule or the range. Applied from 9DTact_medium_3mm_r1 on;
-    the ten units before it were collected at 0.15 s / 0.1 N'
+  timing_basis_2026-09-07: 'measured on the first ten Pass B units (13-17 min each,
+    collect 82 %): the LOAD steps ran 1.03 s against 0.42 s for the same move on UNLOAD,
+    and the difference was the anchor sample taken at every 0.1 N rung -- wait for
+    a fresh frame, write a PNG, write state -- 316-350 per run, about 80 s. Anchors
+    are auxiliary settled samples for the Hertz fit and the rung tables, not part
+    of the frame budget; 0.5 N spacing still gives about 28 per run. The ramp settle
+    was cut 0.15 -> 0.05 s for the same reason: each frame is labelled with the F/T
+    mean over its own exposure window, so the settle only pads the pause between steps.
+    Neither change touches the 1000 saved frames, the bins, the separation rule or
+    the range. Applied from 9DTact_medium_3mm_r1 on; the ten units before it were
+    collected at 0.15 s / 0.1 N'
   rationale: the sensors are compared on how well a force estimator trains on each,
     so every run saves exactly the same number of frames. Loading/unloading cycles
     to the sensor's own ceiling repeat until the budget is spent, so a stiff 3 mm
@@ -1623,18 +1624,105 @@ sensors:
   depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
   status: characterised
   gel_model:
-    hertz_a: 0.6412868133008386
-    free_exponent: 1.4394669630617576
-    surface_mm: 27.819
-  safe_force_N: 2.159336967214287
-  safe_depth_mm: 2.200565140841448
-  commanded_depth_mm: 2.2526812705228214
-  command_vs_measured_mm: 0.05211612968137347
-  stopped_on: depth backstop
-  ladder_rungs_reached: 21
-  characterised_at: '2026-09-03T15:44:46.269461'
-  run: null
+    hertz_a: 1.3257000226829725
+    free_exponent: 2.446217033306419
+    surface_mm: 27.751
+  safe_force_N: 3.169476701313428
+  safe_depth_mm: 2.1997842678118182
+  commanded_depth_mm: 2.3000000000000007
+  command_vs_measured_mm: 0.10021573218818247
+  stopped_on: force cap
+  ladder_rungs_reached: 31
+  characterised_at: '2026-09-07T22:49:19.182438'
+  run: data/9DTact/20260907_passB_ball8/9DTact_medium_3mm_r1
   ladder_run: data/20260903_ladder_protocol/9DTact_medium_3mm_r1
+  history:
+  - characterised_at: '2026-09-03T15:44:46.269461'
+    gel_model:
+      hertz_a: 0.6412868133008386
+      free_exponent: 1.4394669630617576
+      surface_mm: 27.819
+    safe_depth_mm: 2.200565140841448
+    safe_force_N: 2.159336967214287
+    stopped_on: depth backstop
+    ladder_rungs_reached: 21
+    depth_cap_used_mm: null
+    image_response: null
+    run: null
+  image_response:
+    max_measurable_force_N: null
+    reached: false
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    note: 'not reached within the limits: stopped on force cap at 3.17 N with the
+      image still changing at 5.91 lvl/N (112% of peak)'
+    peak_slope_levels_per_N: 5.268612123023198
+    image_change_at_stop: 16.144012451171875
+  contact_map:
+    at_depth:
+      target_depth_mm: 0.5
+      target_used_mm: 0.5
+      limited_by_depth_cap: false
+      at: '2026-09-07T22:49:35.124658'
+      image: at_depth.png
+      depth_mm: 0.48682802002086234
+      height_above_plane_mm: 27.26417197997914
+      normal_force_N: 0.47183562605350177
+      region:
+        mean_abs_diff_centre: 3.1018877029418945
+        max_diff: 15.99609375
+        changed_fraction: 0.015867573302469136
+        area_px: 31335
+        radius_px: 99.8711183654668
+        centroid_px:
+        - 912.4503590234561
+        - 589.1654699218127
+        enclosing_radius_px: 117.5381088256836
+        mean_abs_diff_in_region: 10.287327766418457
+        dark_area_px: 31335
+        dark_radius_px: 99.8711183654668
+        dark_centroid_px:
+        - 912.4503590234561
+        - 589.1654699218127
+        dark_mean_diff: -10.287327766418457
+        bright_area_px: 0
+        bright_radius_px: 0.0
+        bright_centroid_px: null
+        bright_mean_diff: 0.0
+    at_force:
+      target_force_N: 0.5
+      target_used_N: 0.5
+      limited_by_force_cap: false
+      force_reached: true
+      stop_reason: reached
+      at: '2026-09-07T22:49:41.518860'
+      image: at_force.png
+      depth_mm: 0.4633212469207173
+      height_above_plane_mm: 27.287678753079284
+      normal_force_N: 0.4379025979241106
+      region:
+        mean_abs_diff_centre: 3.017374038696289
+        max_diff: 15.5078125
+        changed_fraction: 0.013686342592592592
+        area_px: 27891
+        radius_px: 94.22303877264895
+        centroid_px:
+        - 912.3204259438529
+        - 590.2295005557348
+        enclosing_radius_px: 111.63690948486328
+        mean_abs_diff_in_region: 9.870992660522461
+        dark_area_px: 27891
+        dark_radius_px: 94.22303877264895
+        dark_centroid_px:
+        - 912.3204259438529
+        - 590.2295005557348
+        dark_mean_diff: -9.870992660522461
+        bright_area_px: 0
+        bright_radius_px: 0.0
+        bright_centroid_px: null
+        bright_mean_diff: 0.0
 - id: 9DTact_medium_3mm_r2
   principle: 9DTact
   hardness: medium
