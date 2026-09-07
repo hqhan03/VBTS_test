@@ -1923,6 +1923,37 @@ def phase_collect(a) -> int:
             print(f"  zero drift |F| {np.linalg.norm(w[:3]):.4f} N   "
                   f"|T| {np.linalg.norm(w[3:]):.6f} N*m   ({where})")
 
+        # ---------------- continuous ramp (2026-09-07) ----------------
+        # The stepped ramp paused 0.15 s at every 0.1 N rung, and the frames
+        # that fill the force bins were the ones captured while it paused --
+        # so 30 % of grabbed frames were kept and the rest were duplicates of
+        # a force already on record (measured on the first eleven units:
+        # "too close" 29-39 %, "bin full" 25-33 %, 0.7 s per saved frame).
+        # A slow, continuous glide never repeats a force: every camera frame
+        # is at a new one. The glide is cut into short segments so the force
+        # is read between them and the same guards apply -- force cap, depth
+        # backstop, no-contact abort, load collapse on shear. Labels are still
+        # the F/T mean over each frame's own exposure window. Nothing about
+        # the budget, the bins, the separation rule or the range changes; the
+        # gel's loading history does (no pauses), which the operator accepted.
+        continuous = a.ramp_mode == "continuous"
+
+        def _glide(vec, mm, vel):
+            """One MoveL of `mm` along unit `vec` at `vel` %, frames saved throughout."""
+            pose_ = q("GetActualTCPPose", 0)[1:]
+            p_ = np.array(pose_[:3]) + float(mm) * np.asarray(vec, dtype=float)
+            tgt_ = [float(v) for v in p_] + [float(v) for v in pose_[3:]]
+            pl_ = mv.plan(ip, tgt_, a.approach_joint_step)
+            if not pl_.get("ok"):
+                print(f"  refusing the glide: {pl_.get('why')}")
+                return 2
+            tool_ = pl_["active_tool"][1] if isinstance(pl_["active_tool"], list) else 1
+            if mv.send_movel(ip, pl_["target_joints"], pl_["target_pose"], tool_,
+                             float(vel), a.ovl) != 0:
+                print("  MoveL failed during the glide")
+                return 1
+            return 0
+
         # ---------------- normal block ----------------
         print(f"\n--- descending to the gel surface ---")
         if descend_to(surf):
@@ -1936,7 +1967,100 @@ def phase_collect(a) -> int:
               f"{'frames':>6}  note")
         dead = 0
         saved_before = 0
-        while normal_cycles < a.max_cycles:
+        if continuous:
+            print(f"  continuous ramp: {a.ramp_vel:.3g} % per move, "
+                  f"{a.ramp_segment_mm:.2f} mm segments, force read between segments")
+        while continuous and normal_cycles < a.max_cycles:
+            normal_cycles += 1
+            binner.new_pass()
+            rec.arm(segment="normal_load", cycle=normal_cycles, axis="",
+                    target_N=float(force_cap))
+            d_goal = min((force_cap / a_h) ** (2.0 / 3.0), depth_cap - a.travel_margin)
+            seg = a.ramp_segment_mm
+            used, peak_f, peak_d, why, nseg = 0.0, 0.0, 0.0, "", 0
+            f = measure_n()
+            while True:
+                room = depth_cap - a.travel_margin - used
+                step = min(seg, room)
+                if used >= d_goal - 1e-4 and f < force_cap - a.force_tol:
+                    # the model under-predicted; keep going within the backstop
+                    step = min(seg, room)
+                if step <= 1e-4:
+                    why = f"depth cap {depth_cap:.2f} mm"
+                    break
+                rv = _glide(-n, step, a.ramp_vel)
+                if rv:
+                    return rv
+                nseg += 1
+                used = surf - height()             # measured, not summed
+                f = measure_n()
+                peak_f, peak_d = max(peak_f, f), max(peak_d, used)
+                if f < a.contact_floor and used > a.no_contact_mm:
+                    print(f"\n  ABORT: {used:.3f} mm in and the force is still "
+                          f"{f:.3f} N. The probe is not on the gel.")
+                    return 1
+                if f >= force_cap - a.force_tol:
+                    why = "force cap"
+                    break
+                if used >= d_goal - 1e-4 and f >= force_cap - 3 * a.force_tol:
+                    why = "reached"
+                    break
+                if nseg > 400:
+                    why = "segment count"
+                    break
+            anchor("force_series", f"N{f:.2f}", force_target_N=float(force_cap),
+                   force_reached=bool(f >= force_cap - a.force_tol),
+                   stop_reason=why, travel_used_mm=used, cycle=normal_cycles)
+            print(f"  {normal_cycles:>3} {'load':>6} {nseg:>5} {peak_f:>7.3f} "
+                  f"{peak_d:>7.3f} {rec.saved:>6}  {'' if why.startswith(('reached', 'force')) else why}")
+            if peak_f < a.cycle_min_frac * force_cap:
+                dead += 1
+                print(f"      cycle {normal_cycles} carried only {peak_f:.3f} N "
+                      f"({dead}/{a.max_dead_cycles}); re-finding the surface")
+                if dead >= a.max_dead_cycles:
+                    print("\n  ABORT: the ramp cannot load the gel. The surface "
+                          "height or the F/T zero is wrong.")
+                    return 1
+                rec.disarm()
+                for _ in range(40):
+                    if measure_n() >= a.contact_floor:
+                        break
+                    if _move_along_normal(ip, -0.05, a, a.max_joint_step):
+                        return 2
+                    time.sleep(pol["ramp_settle"])
+                surf = height()
+                print(f"      contact re-established at {surf:.3f} mm, {measure_n():.3f} N")
+                continue
+            dead = 0
+            # unload: one continuous glide back to the surface, recorded
+            binner.new_pass()
+            rec.retag(segment="normal_unload", target_N=0.0)
+            back = surf - height()
+            if back > 1e-4:
+                rv = _glide(+n, back, a.ramp_vel)
+                if rv:
+                    return rv
+            rec.retag(segment="dwell", target_N=0.0)
+            time.sleep(a.cycle_dwell)
+            print(f"  {normal_cycles:>3} {'unload':>6} {1:>5} {'':>7} {'':>7} {rec.saved:>6}")
+            if rec.capped:
+                break
+            if rec.error:
+                print(f"  recorder: {rec.error}")
+                return 1
+            r_now = radial()
+            if r_now > a.max_radial_drift:
+                print(f"\n  ABORT: the contact is {r_now:.3f} mm off the sensor axis, "
+                      f"past the {a.max_radial_drift} mm limit.")
+                return 1
+            gained = rec.saved - saved_before
+            if gained < a.cycle_min_gain:
+                binner.relax(f"normal cycle {normal_cycles} added {gained} frames")
+                print(f"      only {gained} new frames; quota -> "
+                      f"{binner.quota['normal']}/bin, separation -> "
+                      f"{binner.min_sep:.3f} N")
+            saved_before = rec.saved
+        while (not continuous) and normal_cycles < a.max_cycles:
             normal_cycles += 1
             # -- load
             binner.new_pass()
@@ -2097,7 +2221,102 @@ def phase_collect(a) -> int:
         print(f"  {'cyc':>3} {'axis':>4} {'hold N':>7} {'cap N':>6} {'rungs':>5} "
               f"{'peak N':>7} {'travel':>7} {'frames':>6}  note")
         saved_before = rec.saved
-        while not rec.done and shear_cycles < a.max_cycles:
+        while continuous and not rec.done and shear_cycles < a.max_cycles:
+            shear_cycles += 1
+            reached, fz, _u, whyn = _seek_force(
+                ip, a, reader, -n, hold, measure_n, model_n, 0.0,
+                depth_cap, force_cap + a.force_tol, "normal",
+                travel_origin=shear_origin)
+            if whyn.startswith(("refused", "MoveL")):
+                return 1
+            if measure_n() < max(a.contact_floor, 0.4 * hold):
+                print(f"\n  ABORT: carrying {measure_n():.3f} N against a {hold} N "
+                      "hold. Shearing from here would drag through air.")
+                return 1
+            for axis in a.order.split(","):
+                axis = axis.strip()
+                u = uvec[axis]
+                fz_now = measure_n()
+                shear_cap = min(a.max_shear_force, a.mu_floor * fz_now)
+                centre = q("GetActualTCPPose", 0)[1:]
+                axis_origin = np.array(centre[:3])
+                binner.new_pass()
+                rec.arm(segment=f"shear_{axis}_out", cycle=shear_cycles,
+                        axis=axis, target_N=float(shear_cap))
+
+                def measure_s():
+                    w, err = reader.read_fresh()
+                    if err:
+                        raise RuntimeError(err)
+                    return float(np.array(w[:2]) @ u)
+
+                used, peak, why, fs, nseg = 0.0, 0.0, "", 0.0, 0
+                limit = a.max_travel_shear - a.travel_margin
+                while used < limit:
+                    step = min(a.ramp_segment_mm, limit - used)
+                    rv = _glide(axes[axis], step, a.ramp_vel)
+                    if rv:
+                        return rv
+                    nseg += 1
+                    p_now = np.array(q("GetActualTCPPose", 0)[1:][:3])
+                    used = abs(float((p_now - axis_origin) @ axes[axis]))
+                    fs = measure_s(); fz_here = measure_n()
+                    peak = max(peak, fs)
+                    if fs >= shear_cap - a.force_tol:
+                        why = "reached"
+                        break
+                    if fz_here < a.slip_off_frac * fz_now:
+                        why = "load collapsed"
+                        break
+                    # hold the normal load: one model step if it has sagged
+                    if abs(hold - fz_here) > a.force_tol:
+                        d_now = max(surf - height(), 0.0)
+                        d_want = (max(hold, 0.0) / a_h) ** (2.0 / 3.0)
+                        dz = float(np.clip(d_want - d_now, -0.04, 0.04))
+                        if 0.0 <= d_now + dz <= depth_cap and abs(dz) > 1e-4:
+                            rv = _glide(-n, dz, a.ramp_vel)
+                            if rv:
+                                return rv
+                    if nseg > 400:
+                        why = "segment count"
+                        break
+                if not why:
+                    why = f"travel limit {a.max_travel_shear} mm"
+                anchor("force_shear", f"{axis}S{fs:.2f}", shear_axis=axis,
+                       shear_target_N=float(shear_cap), force_reached=bool(why == "reached"),
+                       stop_reason=why, travel_used_mm=used,
+                       normal_hold_N=float(hold), cycle=shear_cycles)
+                print(f"  {shear_cycles:>3} {axis:>4} {fz_now:>7.3f} {shear_cap:>6.3f} {nseg:>5} "
+                      f"{peak:>7.3f} {used:>7.3f} {rec.saved:>6}  {'' if why == 'reached' else why}")
+                # back to the centre in one continuous glide, recording the release
+                binner.new_pass()
+                rec.retag(segment=f"shear_{axis}_back", target_N=0.0)
+                p_now = np.array(q("GetActualTCPPose", 0)[1:][:3])
+                vec = axis_origin - p_now
+                dist = float(np.linalg.norm(vec))
+                if dist > 1e-3:
+                    rv = _glide(vec / dist, dist, a.ramp_vel)
+                    if rv:
+                        return rv
+                if rec.done:
+                    break
+            if rec.error:
+                print(f"  recorder: {rec.error}")
+                return 1
+            r_now = float(np.linalg.norm(
+                (np.array(centre[:3]) - t_sensor)
+                - ((np.array(centre[:3]) - t_sensor) @ n) * n))
+            if r_now > a.max_radial_drift:
+                print(f"\n  ABORT: the shear centre is {r_now:.3f} mm off the sensor axis.")
+                return 1
+            gained = rec.saved - saved_before
+            if gained < a.cycle_min_gain and not rec.done:
+                binner.relax(f"shear cycle {shear_cycles} added {gained} frames")
+                print(f"      only {gained} new frames; quota -> "
+                      f"{binner.quota['shear']}/bin, separation -> "
+                      f"{binner.min_sep:.3f} N")
+            saved_before = rec.saved
+        while (not continuous) and not rec.done and shear_cycles < a.max_cycles:
             shear_cycles += 1
             # Re-seat the normal load once per cycle, not once per axis.
             # Per-axis was tighter -- without any re-seat the load fell 12-13 %
@@ -4743,6 +4962,17 @@ def main() -> int:
     ap.add_argument("--anchor-every", type=float, default=None,
                     help="collect: force spacing of the settled anchor samples "
                          "that keep the per-rung table and the Hertz fit alive")
+    ap.add_argument("--ramp-mode", choices=["continuous", "stepped"], default="continuous",
+                    help="collect: 'continuous' glides slowly through the range "
+                         "with the force read between short segments (default "
+                         "since 2026-09-07, 12th unit on); 'stepped' is the "
+                         "0.1 N / 0.15 s rung ramp the first eleven units used")
+    ap.add_argument("--ramp-vel", type=float, default=0.5,
+                    help="collect: MoveL speed percentage for the continuous "
+                         "glide. Set from a timed free-air move, see "
+                         "capture_policy.ramp_vel_basis")
+    ap.add_argument("--ramp-segment-mm", type=float, default=0.10,
+                    help="collect: glide length between force readings")
     ap.add_argument("--max-cycles", type=int, default=400,
                     help="collect: hard cap on loading cycles per block")
     ap.add_argument("--force-depth-cap", type=float, default=None,

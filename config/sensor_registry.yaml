@@ -97,14 +97,15 @@ capture_policy:
   ramp_step_N: 0.1
   ramp_settle_s: 0.15
   anchor_every_N: 0.1
-  timing_reverted_2026-09-07: 'the 0.05 s / 0.5 N trial on 9DTact_medium_3mm_r1 did not shorten
-    collect: 726 s against 678-723 s on the two units before it. Load steps did get faster
-    (1.03 -> 0.41 s) but the run needed 10+12 cycles instead of 7-8 + 9-10, because the
-    frames that fill the force bins are the ones captured while the probe pauses at a rung;
-    shorten the pause and each pass contributes fewer distinct-force frames, so more passes
-    are needed. Time per saved frame stayed at 0.7 s. Reverted so all 17 units share one
-    pacing; only medium_3mm_r1 was collected at 0.05 s / 0.5 N (its labels and bins are
-    unaffected, its per-cycle yield is lower)'
+  timing_reverted_2026-09-07: 'the 0.05 s / 0.5 N trial on 9DTact_medium_3mm_r1 did
+    not shorten collect: 726 s against 678-723 s on the two units before it. Load
+    steps did get faster (1.03 -> 0.41 s) but the run needed 10+12 cycles instead
+    of 7-8 + 9-10, because the frames that fill the force bins are the ones captured
+    while the probe pauses at a rung; shorten the pause and each pass contributes
+    fewer distinct-force frames, so more passes are needed. Time per saved frame stayed
+    at 0.7 s. Reverted so all 17 units share one pacing; only medium_3mm_r1 was collected
+    at 0.05 s / 0.5 N (its labels and bins are unaffected, its per-cycle yield is
+    lower)'
   timing_basis_2026-09-07: 'measured on the first ten Pass B units (13-17 min each,
     collect 82 %): the LOAD steps ran 1.03 s against 0.42 s for the same move on UNLOAD,
     and the difference was the anchor sample taken at every 0.1 N rung -- wait for
@@ -1740,18 +1741,105 @@ sensors:
   depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
   status: characterised
   gel_model:
-    hertz_a: 0.6363842293776788
-    free_exponent: 1.5053329740879895
-    surface_mm: 27.78
-  safe_force_N: 2.017328796999408
-  safe_depth_mm: 2.2026689794808654
-  commanded_depth_mm: 2.2790637378988916
-  command_vs_measured_mm: 0.07639475841802623
-  stopped_on: depth backstop
-  ladder_rungs_reached: 20
-  characterised_at: '2026-09-03T23:13:26.216455'
-  run: null
+    hertz_a: 1.3631814010903514
+    free_exponent: 2.3933846637141505
+    surface_mm: 27.549999999999997
+  safe_force_N: 2.894960056941778
+  safe_depth_mm: 2.0768680337141916
+  commanded_depth_mm: 2.1000000000000005
+  command_vs_measured_mm: 0.023131966285808936
+  stopped_on: force cap
+  ladder_rungs_reached: 28
+  characterised_at: '2026-09-07T23:05:35.719606'
+  run: data/9DTact/20260907_passB_ball8/9DTact_medium_3mm_r2
   ladder_run: data/20260903_ladder_protocol/9DTact_medium_3mm_r2
+  history:
+  - characterised_at: '2026-09-03T23:13:26.216455'
+    gel_model:
+      hertz_a: 0.6363842293776788
+      free_exponent: 1.5053329740879895
+      surface_mm: 27.78
+    safe_depth_mm: 2.2026689794808654
+    safe_force_N: 2.017328796999408
+    stopped_on: depth backstop
+    ladder_rungs_reached: 20
+    depth_cap_used_mm: null
+    image_response: null
+    run: null
+  image_response:
+    max_measurable_force_N: null
+    reached: false
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    note: 'not reached within the limits: stopped on force cap at 2.89 N with the
+      image still changing at 4.02 lvl/N (89% of peak)'
+    peak_slope_levels_per_N: 4.530494296537063
+    image_change_at_stop: 15.603805541992188
+  contact_map:
+    at_depth:
+      target_depth_mm: 0.5
+      target_used_mm: 0.5
+      limited_by_depth_cap: false
+      at: '2026-09-07T23:05:51.659044'
+      image: at_depth.png
+      depth_mm: 0.4554254778371032
+      height_above_plane_mm: 27.094574522162894
+      normal_force_N: 0.47989659467886836
+      region:
+        mean_abs_diff_centre: 3.7462594509124756
+        max_diff: 21.55859375
+        changed_fraction: 0.02914351851851852
+        area_px: 58525
+        radius_px: 136.48841009003786
+        centroid_px:
+        - 904.0753865869286
+        - 605.7341648868005
+        enclosing_radius_px: 152.04771423339844
+        mean_abs_diff_in_region: 11.480731964111328
+        dark_area_px: 58513
+        dark_radius_px: 136.47441654124097
+        dark_centroid_px:
+        - 904.0564489942406
+        - 605.716216909063
+        dark_mean_diff: -11.481606483459473
+        bright_area_px: 0
+        bright_radius_px: 0.0
+        bright_centroid_px: null
+        bright_mean_diff: 0.0
+    at_force:
+      target_force_N: 0.5
+      target_used_N: 0.5
+      limited_by_force_cap: false
+      force_reached: true
+      stop_reason: reached
+      at: '2026-09-07T23:05:58.460490'
+      image: at_force.png
+      depth_mm: 0.47102099728975944
+      height_above_plane_mm: 27.078979002710238
+      normal_force_N: 0.47975099838593566
+      region:
+        mean_abs_diff_centre: 3.8763105869293213
+        max_diff: 22.18359375
+        changed_fraction: 0.030458622685185184
+        area_px: 60990
+        radius_px: 139.3331258471918
+        centroid_px:
+        - 904.5008198065257
+        - 606.8041974094114
+        enclosing_radius_px: 160.75613403320312
+        mean_abs_diff_in_region: 11.794085502624512
+        dark_area_px: 60990
+        dark_radius_px: 139.3331258471918
+        dark_centroid_px:
+        - 904.5008198065257
+        - 606.8041974094114
+        dark_mean_diff: -11.794024467468262
+        bright_area_px: 0
+        bright_radius_px: 0.0
+        bright_centroid_px: null
+        bright_mean_diff: 0.0
 - id: 9DTact_hard_1mm_r1
   principle: 9DTact
   hardness: hard
