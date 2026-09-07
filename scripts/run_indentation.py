@@ -3581,7 +3581,19 @@ def phase_zero(a) -> int:
             # allowed. Counting from real contact makes the limit mean what it
             # says however wrong the starting guess is.
             contact_travel = None
-            while travelled < a.zero_max_travel:
+            # Once contact has been noticed the budget is contact-relative:
+            # first contact plus --zero-stop-depth, even if that lies past
+            # the fixed budget. On 9DTact_soft_3mm_r1 (2026-09-07, ball8,
+            # search skipped) the height on record was 0.4 mm too high, the
+            # 0.37 mm coarse steps met the gel 1.48 mm below the start, and
+            # the absolute cap (margin + stop = 1.3 mm) ended the approach on
+            # the very step that found contact -- three times, four points
+            # each, no fit. The retry with the search then found the same gel
+            # without difficulty. The fixed budget still bounds a probe that
+            # never meets anything.
+            while travelled < (a.zero_max_travel if contact_travel is None
+                               else max(a.zero_max_travel,
+                                        contact_travel + a.zero_stop_depth + 0.05)):
                 this = step if fine else a.zero_coarse_step
                 if _move_along_normal(ip, -this, a, a.max_joint_step):
                     return 2
@@ -3663,7 +3675,8 @@ def phase_zero(a) -> int:
                 # standoff or the approach stops before it ever touches.
                 if ((contact_travel is not None
                      and travelled - contact_travel >= a.zero_stop_depth)
-                        or depth >= a.zero_margin + a.zero_stop_depth
+                        or (contact_travel is None
+                            and depth >= a.zero_margin + a.zero_stop_depth + 1.0)
                         or f >= a.zero_stop_force):
                     break
             else:
