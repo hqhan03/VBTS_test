@@ -78,6 +78,13 @@ BALL_R = 2.0                    # ball4
 CYL_R = 2.0                     # cyl4
 CUBE_EDGE = 4.0                 # cube4
 OUT = (900, 900)
+# Input downscale factor. 1 = the camera's own 1920x1080. Set by
+# analyse_shape_resolution.py to ask how much resolution the method actually
+# needs: every frame (reference included) is shrunk by this factor with area
+# averaging before anything else runs, and the Jacobian shrinks with it, so the
+# rest of the pipeline sees a camera with fewer, larger pixels and nothing else
+# changes.
+DOWNSCALE = 1
 DATASETS = {"ball4": "20260905_passA_ball4", "cube4": "20260905_passA_cube4",
             "cyl4": "20260905_passA_cyl4"}
 
@@ -95,7 +102,7 @@ def contact_circle(diff, gray_thresh=3):
     if not cnts:
         return None
     c = max(cnts, key=cv2.contourArea)
-    if cv2.contourArea(c) < 300:
+    if cv2.contourArea(c) < 300 / (DOWNSCALE ** 2):
         return None
     (x, y), r = cv2.minEnclosingCircle(c)
     return float(x), float(y), float(r)
@@ -140,16 +147,24 @@ def reconstruct(ref_w, img_w, lut):
 
 
 # ------------------------------------------------------------------- loading --
+def _shrink(g):
+    if DOWNSCALE == 1:
+        return g
+    h, w = g.shape
+    return cv2.resize(g, (max(1, w // DOWNSCALE), max(1, h // DOWNSCALE)),
+                      interpolation=cv2.INTER_AREA)
+
+
 def load_run(probe, sensor):
     run = ROOT / "data" / "9DTact" / DATASETS[probe] / sensor
     st = json.loads((run / "state.json").read_text())
     lad = pd.read_csv(run / f"shape_{probe}" / "ladder.csv")
     ref = cv2.cvtColor(cv2.imread(str(run / "reference.png")), cv2.COLOR_BGR2GRAY)
-    return run, st, lad, ref
+    return run, st, lad, _shrink(ref)
 
 
 def gray(run, probe, f):
-    return cv2.cvtColor(cv2.imread(str(run / f"shape_{probe}" / f)), cv2.COLOR_BGR2GRAY)
+    return _shrink(cv2.cvtColor(cv2.imread(str(run / f"shape_{probe}" / f)), cv2.COLOR_BGR2GRAY))
 
 
 def zero_surface(st):
@@ -216,7 +231,9 @@ def analyse(sensor, verbose=False):
                            "median" if "median" in src[-1] else "borrowed")
     if J is None:
         out["error"] = "no scale"; return out, []
+    J = J / DOWNSCALE                      # fewer pixels per millimetre
     ppm = float(np.sqrt(abs(np.linalg.det(J)))); mm_per_px = 1.0 / ppm
+    out["downscale"] = DOWNSCALE
     out["px_per_mm"] = ppm
 
     # the sphere's zero bias for THIS unit, from its own flat-punch zero

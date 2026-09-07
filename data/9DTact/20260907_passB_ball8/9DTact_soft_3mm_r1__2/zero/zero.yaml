@@ -1,0 +1,31 @@
+probe: ball8
+contact_law: hertz
+searched_surface_mm: 27.309
+surface_mm: 27.763393613987017
+sigma_mm: .nan
+sem_mm: .nan
+first_surface_mm: 27.763393613987017
+drift_first_to_last_mm: 0.0
+drift_per_approach_mm: 0.0
+monotone: false
+n_approaches: 1
+image_onset_surface_mm: 27.27178098511174
+step_mm: 0.02
+fit_max_force_N: 1.0
+stop_force_N: 1.2
+fits:
+- ok: true
+  d0_mm: 0.6149039465796546
+  a: 0.6740994560145771
+  sigma_d0_mm: 0.02603757079703588
+  r2: 0.991826812917072
+  exponent: 1.5
+  law: hertz
+  n: 15
+  fit_max_force_N: 1.0
+  zero_drift_N: 0.009570830538524434
+  zero_drift_N_per_min: 0.0655279717298188
+  approach: 1
+  base_height_mm: 28.378297560566672
+  image_onset_depth_mm: 1.1065165754549326
+at: '2026-09-07T21:11:18.339558'
