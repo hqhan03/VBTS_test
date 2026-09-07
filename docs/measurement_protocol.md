@@ -27,6 +27,7 @@ because it damages gels.
 | Depth backstop | **(thickness + 1.0 mm) × 0.9** | binds in every phase. `thickness_mm` names the TRANSLUCENT gel; a 9DTact has a black gel cast over it, so the compliant stack is about a millimetre thicker than the label. Without the offset a 1 mm unit was held to 0.90 mm and about 1 N. |
 | characterize ceiling | **range / 0.9 + 0.65 = 2.87 N** | stop once the unit has demonstrably cleared the range it will be collected over. Finding where a gel actually gives out is test 4's job. |
 | Frame budget | **1000 per unit** | equal for every unit, so units are compared on the sensor and not on dataset size. |
+| Substrate-stiffening alarm | **records, does not stop** (since 2026-09-07 20:44) | The local force–depth exponent crossing 2.0 marks the backing taking load. It was a stop condition while there was no depth limit; with the backstop as the safety it only truncated the range. On `9DTact_soft_1mm_r2` with ball8 it fired at 1.32 mm / 1.76 N — a real 2.45, soft top over a stiff floor — on a unit that had carried 9.09 N at 4.12 mm with no permanent set, and the image was still answering at 1.71 lvl/N. A 4 mm sphere's contact is 3 mm wide at that depth, so it feels a 2 mm stack's floor early. The crossing depth is written to the registry as `exponent_first_over_mm`; `--exp-alarm-stops` restores the old behaviour. |
 
 The range does **not** set the collection time. Total ramp steps are
 `budget × bin_width / (frames_per_cell × ramp_step)`, in which the range

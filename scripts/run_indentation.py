@@ -2700,6 +2700,7 @@ def phase_characterize(a) -> int:
         depth = 0.0
         commanded = 0.0
         exp_hits = 0
+        exp_first_over_mm = None
         sat_hits = 0
         peak_slope = 0.0
         slopes_seen: list = []
@@ -2796,7 +2797,23 @@ def phase_characterize(a) -> int:
             elif armed and np.isfinite(exp) and exp > a.exp_alarm:
                 exp_hits += 1
                 if exp_hits >= a.exp_hits:
-                    stop, note = "substrate stiffening", f"exponent {exp:.2f}"
+                    # Record where the backing starts to carry load, but do
+                    # not stop for it unless asked. The alarm was the safe
+                    # envelope while there was no depth limit; the (thickness
+                    # + 1) x 0.9 backstop is the safety now, and stopping here
+                    # only truncated the range. On 9DTact_soft_1mm_r2
+                    # (2026-09-07, ball8) it fired at 1.32 mm / 1.76 N -- the
+                    # exponent really was 2.45, a soft top layer over a stiff
+                    # floor -- while the same unit had carried 9.09 N at
+                    # 4.12 mm with no permanent set, and the image was still
+                    # answering at 1.71 lvl/N. A 4 mm sphere feels the floor
+                    # at 1.3 mm because its contact is already 3 mm wide.
+                    if exp_first_over_mm is None:
+                        exp_first_over_mm = float(depth)
+                    if a.exp_alarm_stops:
+                        stop, note = "substrate stiffening", f"exponent {exp:.2f}"
+                    else:
+                        note = f"exponent {exp:.2f} (backing loaded; noted, not stopping)"
                 else:
                     note = f"exponent {exp:.2f} ({exp_hits}/{a.exp_hits})"
             else:
@@ -2810,7 +2827,8 @@ def phase_characterize(a) -> int:
                   + f"  {note}")
             if note and not note.startswith(("exponent", "image change low")):
                 break
-            if note.startswith("exponent") and exp_hits >= a.exp_hits:
+            if (note.startswith("exponent") and exp_hits >= a.exp_hits
+                    and a.exp_alarm_stops):
                 break
 
         d = np.array(d_hist)
@@ -2893,7 +2911,8 @@ def phase_characterize(a) -> int:
         (char_dir / "result.yaml").write_text(yaml.safe_dump(json.loads(json.dumps({
             "sensor": ent["id"], "at": datetime.now().isoformat(),
             "depth_cap_used_mm": depth_cap, "force_cap_used_N": a.max_force,
-            "exp_alarm": a.exp_alarm, "stopped_on": stop,
+            "exp_alarm": a.exp_alarm, "exp_alarm_stops": bool(a.exp_alarm_stops),
+            "exponent_first_over_mm": exp_first_over_mm, "stopped_on": stop,
             "reached_depth_mm": safe_depth, "reached_force_N": safe_force,
             "hertz_a": a_h, "free_exponent": exp_all, "image_response": sat,
             "registry_written": False}, default=str)), sort_keys=False))
@@ -4556,6 +4575,12 @@ def main() -> int:
                          "disarmed")
     ap.add_argument("--exp-hits", type=int, default=2,
                     help="consecutive windows over the threshold before stopping")
+    ap.add_argument("--exp-alarm-stops", action="store_true",
+                    help="characterize: END the ramp when the local exponent "
+                         "stays above --exp-alarm. Off since 2026-09-07: the "
+                         "depth backstop is the safety limit, and the alarm "
+                         "was cutting 1 mm units short of the 2 N range. The "
+                         "crossing depth is recorded either way")
     ap.add_argument("--exp-alarm", type=float, default=2.0,
                     help="local exponent above which the rigid backing is judged "
                          "to be carrying load; Hertz alone gives 1.5")
