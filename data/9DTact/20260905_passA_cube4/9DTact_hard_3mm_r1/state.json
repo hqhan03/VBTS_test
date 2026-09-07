@@ -162,7 +162,10 @@
       "px_per_mm_image_x": 0.005178713716870716,
       "px_per_mm_image_y": 0.0017253447985604107,
       "theta_disagreement_deg": 24.664183084226607,
-      "scale_trusted": false
+      "scale_trusted": false,
+      "rms_px_worst": 0.002738841792570845,
+      "refit_from_frames_at": "2026-09-08T03:37:44+09:00",
+      "refit_note": "re-fitted from the frames on disk with the collapsed-correlation repair of 2026-09-08"
     }
   },
   "run_dir_was": "9DTact_hard_3mm_r1__3",

@@ -162,7 +162,10 @@
       "px_per_mm_image_x": 0.002448061940743763,
       "px_per_mm_image_y": 0.003664514794111569,
       "theta_disagreement_deg": 98.03715108571187,
-      "scale_trusted": false
+      "scale_trusted": false,
+      "rms_px_worst": 0.0020581716171824216,
+      "refit_from_frames_at": "2026-09-08T03:37:44+09:00",
+      "refit_note": "re-fitted from the frames on disk with the collapsed-correlation repair of 2026-09-08"
     }
   }
 }

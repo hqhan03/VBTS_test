@@ -44,6 +44,7 @@ would have two 1 mm cylinders overlapping -- so the separation being tested is
 1.0 + gap, i.e. 2.00, 1.75, 1.50 and 1.25 mm.
 """
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -98,13 +99,43 @@ def _state_files():
                                   / "state.json")))
 
 
+# A re-run lands in `<sensor>__2`, `__3`, ... and the list used to be
+# spelled out as far as `__4`. On 2026-09-08 the fifth attempt at
+# 9DTact_medium_1mm_r2 became the run that finally passed, `__5` matched
+# nothing, and the unit silently fell back to the median scale of the
+# others. Strip any run of digits instead.
+_RERUN = re.compile(r"__\d+$")
+
+SCALE_MAX_RMS_PX = 5.0
+
+
 def _J_from(sc):
+    """The scale Jacobian from a run, if the run's own checks allow it.
+
+    TWO checks, not one. `scale_trusted` compares the rotation angle implied
+    by each row of J and passes when they agree, which tests the model but not
+    the fit. A run can satisfy it with residuals of 30 px: measured 2026-09-08
+    across every scale run on file, the entries flagged trusted spanned 0.8 to
+    30.1 px of residual and implied a field of view between 19.2 and 31.0 mm
+    for one sensor design -- a 61 % spread, which no assembly tolerance
+    explains. The residual is what separates them: every run under 5 px of
+    residual implies 19-26 mm, every run over 17 px is scattered.
+
+    So a scale is used only if the rows agree AND the fit is good. Adding this
+    dropped 9DTact_medium_1mm_r2 (17.4 px), 9DTact_medium_3mm_r2 (30.2 px) and
+    the 2026-09-08 re-measurement of 9DTact_hard_3mm_r1 (28.9 px) to the
+    median fallback, and it is the honest place for them.
+    """
     for v in (sc or {}).values():
         if not isinstance(v, dict):
             continue
         if all(k in v for k in ("px_per_mm_xx", "px_per_mm_xy",
                                 "px_per_mm_yx", "px_per_mm_yy")):
             if not v.get("scale_trusted", True):
+                continue
+            rms = max(float(v.get("rms_px_xx", 0.0) or 0.0),
+                      float(v.get("rms_px_yy", 0.0) or 0.0))
+            if rms > SCALE_MAX_RMS_PX:
                 continue
             return np.array([[v["px_per_mm_xx"], v["px_per_mm_yx"]],
                              [v["px_per_mm_xy"], v["px_per_mm_yy"]]], float)
@@ -135,8 +166,8 @@ def jacobian(state, sensor=None):
         raw = Path(p).parent.name
         if any(r in raw for r in WRONG_UNIT):
             continue
-        name = raw
-        for suf in ("__2", "__3", "__4") + SET_ASIDE:
+        name = _RERUN.sub("", raw)
+        for suf in SET_ASIDE:
             name = name.replace(suf, "")
         if name != sensor:
             continue
@@ -317,9 +348,7 @@ def main():
         for c in droot.glob(f"{sensor}*"):
             if not c.is_dir() or any(r in c.name for r in REJECT):
                 continue
-            base = c.name
-            for suf in ("__2", "__3", "__4"):
-                base = base.replace(suf, "")
+            base = _RERUN.sub("", c.name)
             if base == sensor and (c / f"shape_{probe}" / "ladder.csv").exists():
                 cands.append(c)
         if not cands:

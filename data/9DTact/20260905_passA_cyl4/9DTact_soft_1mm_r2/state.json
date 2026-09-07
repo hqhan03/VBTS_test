@@ -151,6 +151,29 @@
       "cop_slope_y_y": 0.8759809246948577,
       "cop_intercept_y_y": 0.5071976128328847,
       "plane_only": true
+    },
+    "rot0": {
+      "px_per_mm_xx": 101.43504290859815,
+      "rms_px_xx": 6.5873537795588435,
+      "n_fit_xx": 3,
+      "px_per_mm_xy": 54.44992275674025,
+      "rms_px_xy": 4.340405913080967,
+      "n_fit_xy": 3,
+      "px_per_mm_yx": -54.93772044120526,
+      "rms_px_yx": 0.7443292367854984,
+      "n_fit_yx": 3,
+      "px_per_mm_yy": 86.00945581035099,
+      "rms_px_yy": 4.356368368187308,
+      "n_fit_yy": 3,
+      "theta_from_row1_deg": 28.44019420531573,
+      "theta_from_row2_deg": 32.33663402311868,
+      "px_per_mm_image_x": 115.35692895160294,
+      "px_per_mm_image_y": 101.79597524955345,
+      "theta_disagreement_deg": 3.8964398178029462,
+      "rms_px_worst": 6.5873537795588435,
+      "scale_trusted": false,
+      "refit_from_frames_at": "2026-09-08T03:37:52+09:00",
+      "refit_note": "re-fitted from the frames on disk with the collapsed-correlation repair of 2026-09-08"
     }
   }
 }

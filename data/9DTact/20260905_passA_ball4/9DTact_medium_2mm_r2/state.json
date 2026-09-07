@@ -172,7 +172,11 @@
       "px_per_mm_xx": 75.95217037188962,
       "rms_px_xx": 1.7477814115650927,
       "px_per_mm_xy": 42.28676792274761,
-      "rms_px_xy": 0.5270876254685644
+      "rms_px_xy": 0.5270876254685644,
+      "n_fit_xx": 5,
+      "n_fit_xy": 5,
+      "refit_from_frames_at": "2026-09-08T03:36:58+09:00",
+      "refit_note": "re-fitted from the frames on disk with the collapsed-correlation repair of 2026-09-08"
     }
   }
 }

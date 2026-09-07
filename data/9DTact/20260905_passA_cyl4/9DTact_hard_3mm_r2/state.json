@@ -199,6 +199,10 @@
       "cop_slope_y_y": 0.9651340578477947,
       "cop_intercept_y_y": 0.03361184036226613,
       "plane_only": true
+    },
+    "rot0": {
+      "refit_from_frames_at": "2026-09-08T03:37:52+09:00",
+      "refit_note": "re-fitted from the frames on disk with the collapsed-correlation repair of 2026-09-08"
     }
   }
 }

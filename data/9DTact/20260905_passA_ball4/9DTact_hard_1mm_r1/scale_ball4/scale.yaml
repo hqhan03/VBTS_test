@@ -33,3 +33,11 @@ px_per_mm_image_x: 97.07236951647629
 px_per_mm_image_y: 90.78196587909693
 theta_disagreement_deg: 2.6800547770070047
 scale_trusted: true
+n_fit_xx: 5
+n_fit_xy: 5
+n_fit_yx: 5
+n_fit_yy: 5
+rms_px_worst: 4.400685761468048
+refit_from_frames_at: '2026-09-08T03:36:58+09:00'
+refit_note: re-fitted from the frames on disk with the collapsed-correlation repair
+  of 2026-09-08

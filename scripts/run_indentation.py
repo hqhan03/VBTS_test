@@ -40,6 +40,8 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
+import subprocess
 import sys
 import time
 from datetime import datetime
@@ -4378,6 +4380,32 @@ def rot_about(axis, deg: float):
     return np.eye(3) + np.sin(t) * K + (1 - np.cos(t)) * (K @ K)
 
 
+def _window_for(shape, cx, cy, half: int, srch: int, min_half: int = 60):
+    """Template and search half-sizes for a contact at (cx, cy).
+
+    The contact is not in the middle of the picture. It sits where the sensor's
+    optics put it, and on 9DTact_medium_1mm_r2 the imprint sits at y = 370 in a
+    1080-tall frame, where a 460 px margin does not fit on both sides.
+
+    Only the TEMPLATE has to lie inside the frame -- it is the picture of the
+    imprint, and cutting it discards the very thing being tracked. The SEARCH
+    region does not: `_ncc_shift` pads it with zeros, which is what a
+    difference image is outside the sensor anyway, so the search margin costs
+    nothing at the edges and is never traded away.
+
+    That order was backwards until 2026-09-08. On 9DTact_soft_1mm_r1 the
+    contact sits at y = 674, the template was cut from 260 to 204 to protect a
+    search margin that did not need protecting, and the x row's residual went
+    from 4.46 px to 8.84 px. Returns (0, 0) if even `min_half` of template will
+    not fit, and the caller reports that rather than a NaN.
+    """
+    h, w = shape[:2]
+    room = min(cx, w - cx, cy, h - cy) - 2
+    if room < min_half:
+        return 0, 0
+    return int(min(half, room)), int(srch)
+
+
 def _ncc_shift(img, tmpl, cx, cy, half: int, srch: int):
     """Where `img` sits relative to `tmpl`, in pixels, to a fraction of one.
 
@@ -4389,12 +4417,25 @@ def _ncc_shift(img, tmpl, cx, cy, half: int, srch: int):
     of 250 px.
     """
     T = tmpl[cy - half:cy + half, cx - half:cx + half]
+    # The search region may hang off the frame; pad it with zeros rather than
+    # letting a negative slice index silently wrap and put the origin in the
+    # wrong place. A difference image is zero outside the sensor, so the padding
+    # is the honest continuation and only ever meets the template at shifts far
+    # larger than the sweep being measured.
     y0, x0 = cy - half - srch, cx - half - srch
-    S = img[y0:y0 + 2 * (half + srch), x0:x0 + 2 * (half + srch)]
+    side = 2 * (half + srch)
+    h, w = img.shape[:2]
+    top, left = max(0, -y0), max(0, -x0)
+    bot, right = max(0, y0 + side - h), max(0, x0 + side - w)
+    if top or left or bot or right:
+        img = cv2.copyMakeBorder(img, top, bot, left, right,
+                                 cv2.BORDER_CONSTANT, value=0)
+        y0, x0 = y0 + top, x0 + left
+    S = img[y0:y0 + side, x0:x0 + side]
     if T.size == 0 or S.shape[0] <= T.shape[0] or S.shape[1] <= T.shape[1]:
-        return float("nan"), float("nan")
+        return float("nan"), float("nan"), 0.0
     r = cv2.matchTemplate(S, T, cv2.TM_CCOEFF_NORMED)
-    _, _, _, ml = cv2.minMaxLoc(r)
+    _, peak, _, ml = cv2.minMaxLoc(r)
     px, py = ml
 
     def sub(v0, vm, vp):
@@ -4403,7 +4444,143 @@ def _ncc_shift(img, tmpl, cx, cy, half: int, srch: int):
 
     ddx = sub(r[py, px], r[py, px - 1], r[py, px + 1]) if 0 < px < r.shape[1] - 1 else 0.0
     ddy = sub(r[py, px], r[py - 1, px], r[py + 1, px]) if 0 < py < r.shape[0] - 1 else 0.0
-    return float(px + ddx - srch), float(py + ddy - srch)
+    return float(px + ddx - srch), float(py + ddy - srch), float(peak)
+
+
+def _scale_jacobian(result, theta_tol: float, max_rms: float):
+    """J = scale x rotation from the four fitted rows, with both self-checks.
+
+    Split out of `phase_scale` on 2026-09-08 so that a run's frames can be
+    re-fitted offline by `scripts/refit_scale.py` through exactly this code
+    rather than a second copy of it.
+    """
+    jx = np.array([result.get("px_per_mm_xx", np.nan),
+                   result.get("px_per_mm_xy", np.nan)])
+    jy = np.array([result.get("px_per_mm_yx", np.nan),
+                   result.get("px_per_mm_yy", np.nan)])
+    if np.all(np.isfinite(np.r_[jx, jy])):
+        J = np.array([[jx[0], jy[0]], [jx[1], jy[1]]])
+        # J = S @ Rot(theta): anisotropic pixel scale times a rotation
+        th1 = np.degrees(np.arctan2(-J[0, 1], J[0, 0]))
+        th2 = np.degrees(np.arctan2(J[1, 0], J[1, 1]))
+        kx = float(np.hypot(J[0, 0], J[0, 1]))
+        ky = float(np.hypot(J[1, 0], J[1, 1]))
+        result.update({"theta_from_row1_deg": float(th1),
+                       "theta_from_row2_deg": float(th2),
+                       "px_per_mm_image_x": kx, "px_per_mm_image_y": ky})
+        print(f"\n  fitting J = scale x rotation:")
+        print(f"    rotation from row 1 {th1:7.2f} deg, from row 2 {th2:7.2f} deg"
+              f"   (agreement is the test of the model)")
+        print(f"    image x {kx:8.2f} px/mm = {1000/kx:6.3f} um/px"
+              f"  -> FOV width  {1920/kx:6.2f} mm")
+        print(f"    image y {ky:8.2f} px/mm = {1000/ky:6.3f} um/px"
+              f"  -> FOV height {1080/ky:6.2f} mm")
+        print(f"    anisotropy kx/ky = {kx/ky:.3f}  "
+              f"(1.000 = square pixels, design implies 1.199)")
+        # The two rows give theta independently. If the model J = scale x
+        # rotation holds they must agree, so their disagreement is a
+        # self-check that costs nothing and needs no reference. Measured
+        # 2026-09-05: 0.8 deg on a run whose four residuals were 0.6-1.6 px,
+        # 8.4 deg on one whose y row was 3.6 px. The anisotropy rests
+        # entirely on the second row, so a bad row makes kx/ky meaningless
+        # while leaving kx itself (which came out 10.41 and 10.46 um/px on
+        # two different sensors) perfectly good.
+        dth = abs(th1 - th2)
+        result["theta_disagreement_deg"] = float(dth)
+        # The row agreement tests the MODEL; the residuals test the FIT,
+        # and a run can pass the first with 30 px of the second. Measured
+        # 2026-09-08 over every scale run on file: entries that passed the
+        # angle gate alone spanned 0.8-30.1 px of residual and implied a
+        # 19.2-31.0 mm field of view for one sensor design. Both gates now.
+        rms_worst = max(result.get("rms_px_xx", 0.0), result.get("rms_px_yy", 0.0))
+        result["rms_px_worst"] = float(rms_worst)
+        result["scale_trusted"] = bool(dth <= theta_tol
+                                       and rms_worst <= max_rms)
+        if dth <= theta_tol and rms_worst > max_rms:
+            print(f"\n  ** the rows agree ({dth:.1f} deg) but the fit does not: "
+                  f"worst residual {rms_worst:.1f} px, over the "
+                  f"{max_rms:.1f} px gate. NOT trusted.")
+        if dth > theta_tol:
+            print(f"\n  ** the two rows disagree by {dth:.1f} deg, over the "
+                  f"{theta_tol:.1f} deg gate. The rotation and the "
+                  f"anisotropy from this run are NOT trustworthy; image x "
+                  f"({1000/kx:.3f} um/px) rests on the better row and "
+                  f"still is. Worst residual "
+                  f"{max(result.get(f'rms_px_{t}', 0) for t in ('xx','xy','yx','yy')):.2f} px.")
+    return result
+
+
+SCALE_COLLAPSE_PX = 0.5
+
+
+def _track_series(imgs, cx, cy, half: int, srch: int, log=None):
+    """Where each frame of a sweep sits, in pixels, relative to the middle one.
+
+    Every frame is correlated against the middle frame, as before. What is new
+    is that a correlation is allowed to FAIL, and is repaired instead of being
+    fitted.
+
+    The failure is specific and was diagnosed on 9DTact_medium_1mm_r2 on
+    2026-09-08 by measuring all ten pairs of a five-frame sweep instead of only
+    the five that share the middle frame. Seventeen of the twenty pair
+    displacements agreed with a straight line to 1-3 px. The other three came
+    back as EXACTLY zero -- (+0.03, +0.01) for a pair whose frames are 28 px
+    apart. They are not noisy measurements; the correlation peak of the imprint
+    has been swallowed by the zero-shift peak of the stationary background
+    (fixed pattern noise, dust, the illumination texture), which is what
+    matchTemplate finds when the imprint's own contrast is weak. All three
+    failures were at the smallest separation in the sweep, 0.5 mm, where the
+    true peak sits closest to the origin. That is why a different row collapsed
+    on every re-run of this unit, and why pressing harder, re-aligning, and
+    changing the sweep width all failed to help: none of them touches the
+    background, and the unit was never far from the edge.
+
+    A commanded move of half a millimetre cannot produce half a pixel when its
+    neighbours produce forty, so a shift under `SCALE_COLLAPSE_PX` is treated as
+    no measurement at all. The point is then re-measured against a frame that
+    did track -- the pair with the strongest correlation -- and its position is
+    that frame's position plus the pair displacement. Chaining is exact here:
+    these are rigid translations of the same imprint, so positions add.
+
+    Measured over every scale run on file: eleven runs that already passed both
+    gates are unchanged to the last digit, because nothing collapses in them.
+    Of the runs that failed, medium_1mm_r2 went from 13.85 px residual and
+    6.7 deg of row disagreement to 2.44 px and 2.2 deg, and medium_3mm_r1 from
+    18.66 px to 3.26 px, from the frames already on disk.
+    """
+    n = len(imgs)
+    mid = n // 2
+    s = [_ncc_shift(imgs[i], imgs[mid], cx, cy, half, srch) for i in range(n)]
+    p = np.array([[z[0], z[1]] for z in s], dtype=float)
+
+    def dead(v):
+        return (not np.isfinite(v[0])) or (abs(v[0]) < SCALE_COLLAPSE_PX
+                                           and abs(v[1]) < SCALE_COLLAPSE_PX)
+
+    bad = [i for i in range(n) if i != mid and dead(p[i])]
+    for i in bad:
+        best = None
+        for k in range(n):
+            if k == i or k in bad:
+                continue
+            dx, dy, q = _ncc_shift(imgs[i], imgs[k], cx, cy, half, srch)
+            if dead((dx, dy)):
+                continue
+            if best is None or q > best[2]:
+                best = (dx, dy, q, k)
+        if best is None:
+            p[i] = np.nan
+            if log is not None:
+                log(f"    frame {i}: correlation collapsed to zero shift and no "
+                    f"other frame tracks it either -- dropped from the fit")
+        else:
+            dx, dy, q, k = best
+            p[i] = p[k] + np.array([dx, dy])
+            if log is not None:
+                log(f"    frame {i}: correlation against the middle frame "
+                    f"collapsed to zero shift; relayed through frame {k} "
+                    f"(peak {q:.3f}) -> ({p[i, 0]:+.1f}, {p[i, 1]:+.1f}) px")
+    return p
 
 
 def _diff_f32(frame_bgr, ref_bgr):
@@ -4484,20 +4661,70 @@ def phase_scale(a) -> int:
     # reaches 0.60-0.77 N at the 0.6 mm cap, and spent seven minutes finding
     # that out. The contact only has to be identical at every OFFSET on one
     # sensor; it need not be the same between sensors.
-    _cap0 = min(a.scale_max_depth, depth_backstop(reg, ent))
+    # WHAT THE IMPRINT HAS TO LOOK LIKE, and why neither a force nor a depth
+    # sets it. The tracking needs an imprint with texture: too faint and the
+    # correlation has nothing to lock onto, too deep and the contact saturates
+    # into a featureless dark disc. Both failures were measured on 2026-09-08,
+    # same rig, same hour:
+    #
+    #   9DTact_hard_3mm_r1  0.99 N -> 0.66 mm = 0.22 x thickness   15.9-31.3 px
+    #   9DTact_hard_3mm_r1  2.00 N -> 1.05 mm = 0.35 x thickness    0.59-2.61 px
+    #   9DTact_hard_2mm_r1  0.99 N -> 0.78 mm = 0.39 x thickness    1.07 px
+    #   9DTact_hard_1mm_r2  0.99 N -> 0.87 mm = 0.87 x thickness    3.80 px
+    #   9DTact_medium_1mm_r2 2.00 N -> 1.39 mm = 1.39 x thickness   all NaN
+    #
+    #   9DTact_medium_1mm_r2 0.40 mm = 0.40 x thickness   0.00 px/mm, nothing
+    #
+    # ABSOLUTE depth predicts all six; thickness fraction does not. The four
+    # that worked sit at 0.78-1.05 mm whatever the gel, and the three that
+    # failed are at 0.40, 0.66 and 1.39 mm across fractions of 0.22 to 1.39.
+    # That is the right variable physically: what the correlation tracks is the
+    # imprint's SIZE, and for a 2 mm ball the contact radius is sqrt(2Rd),
+    # set by depth alone. Too small and there is no patch to lock onto; too
+    # deep and the contact saturates into a featureless disc.
+    #
+    # (A thickness-fraction rule was tried first, on 2026-09-08, and asking
+    # 9DTact_medium_1mm_r2 for 0.40 x 1 mm found nothing at all. The fraction
+    # only looked right because the three units it was fitted to happened to
+    # be 2 and 3 mm.)
+    #
+    # The mechanics were never at fault in any of the failures: all ten offsets
+    # reached their force to 2 %, and the centre of pressure tracked the
+    # commanded position with slope 0.86-0.99 every time.
+    _cap0 = min(a.scale_max_depth, depth_backstop(reg, ent), a.scale_depth_mm)
     _stiff = [f["a"] for f in zero.get("fits", []) if f.get("ok")]
     force_target = float(a.scale_force)
     # The contact law's EXPONENT matters: a sphere gives a*d^1.5, not a*d.
     # Ignoring it asked 9DTact_soft_3mm_r1 for 0.14 N when the gel could give
     # 0.11 N at the cap, and six of the ten offsets never reached it.
     _exp = 1.5 if probe["contact_law"] == "hertz" else 1.0
-    if _stiff:
-        _k = float(np.mean(_stiff))
+    # WHICH STIFFNESS. The zero phase fits over the first 0.3 mm, which is a
+    # different part of the curve from the 0.9 mm this phase presses to, and on
+    # some gels it is badly out: 9DTact_medium_3mm_r1's zero fits gave 0.56-0.61
+    # N/mm^1.5 where characterize, fitted over 2.2 mm, gives 1.326. Taking the
+    # zero's value asked for 0.36 N when 0.90 mm is worth 1.13 N, so the imprint
+    # went in a third of the intended depth, came out at 14-17 grey levels
+    # against the 24-27 of units that track cleanly, and the y row failed three
+    # times running. The registry's gel model is fitted over the range this
+    # phase works in, so it is the one to believe; the zero fits stay as the
+    # fallback for a unit that has not been characterised.
+    _gm = (ent.get("gel_model") or {})
+    _k_reg = float(_gm.get("hertz_a") or 0.0)
+    _k = _k_reg if _k_reg > 0 else (float(np.mean(_stiff)) if _stiff else 0.0)
+    _src = "registry gel model" if _k_reg > 0 else "zero fits"
+    if _stiff and _k_reg > 0:
+        _k_zero = float(np.mean(_stiff))
+        if abs(_k_zero - _k_reg) > 0.3 * max(_k_reg, 1e-6):
+            print(f"\n  note: the zero fits give {_k_zero:.2f} N/mm^{_exp:g} and "
+                  f"the registry {_k_reg:.2f}; using the registry, which is "
+                  f"fitted over the depth this phase presses to")
+    if _k > 0:
         _reach = a.scale_force_frac * _k * _cap0 ** _exp
         if _reach < force_target:
             force_target = float(_reach)
-            print(f"\n  {a.scale_force} N is out of reach on this gel "
-                  f"({_k:.2f} N/mm x {_cap0:.2f} mm cap); seeking "
+            print(f"\n  {a.scale_force} N is not what this gel needs for a "
+                  f"trackable imprint ({_k:.2f} N/mm^{_exp:g} from the {_src} "
+                  f"at the {_cap0:.2f} mm depth cap); seeking "
                   f"{force_target:.2f} N instead")
     pose0 = q("GetActualTCPPose", 0)[1:]
     rpy_now = [float(v) for v in pose0[3:]]
@@ -4523,13 +4750,20 @@ def phase_scale(a) -> int:
     print(f"  surface {surf:.4f} mm, seeking {force_target:.2f} N at each offset")
     print(f"  offsets {offsets} mm along the sensor x and y")
 
-    # Get clear of the gel BEFORE the DAQ task exists. Between ft.connect() and
-    # the reader thread starting, nothing drains the buffer, and this move can
-    # be 50 mm when the phase is re-run on its own from the park height. That
-    # overran it on 9DTact_soft_3mm_r1 (-200279, "not able to keep up with the
-    # hardware acquisition"). In the normal flow the probe is already at the
-    # ladder, the move is short, and the fault never appears.
-    if surf + a.retract - height() > 0:
+    # Reach the working height BEFORE the DAQ task exists, from wherever the
+    # probe is. Between ft.connect() and the reader thread starting nothing
+    # drains the buffer, and it holds one second at 2 kHz, so any move longer
+    # than that overruns it (-200279, "not able to keep up with the hardware
+    # acquisition").
+    #
+    # This guard used to fire only when the probe was BELOW the working height
+    # -- written for coming up off the gel after the ladder. On 2026-09-08 the
+    # opposite case appeared: pass_a_sensor.sh's `--to shape` now parks at
+    # 78 mm before the scale phase runs, so the phase began with a 50 mm
+    # DESCENT after connecting, and it overran twice in a row on
+    # 9DTact_hard_1mm_r2. The move is needed in both directions; the condition
+    # was the bug.
+    if abs(surf + a.retract - height()) > 0.05:
         if _move_to_point(ip, p_surf + a.retract * n, rpy_now, a,
                           a.approach_joint_step, vel=a.vel_free):
             return 2
@@ -4769,64 +5003,38 @@ def phase_scale(a) -> int:
                 continue
             kk = 1 + int(np.argmax(stt[1:, cv2.CC_STAT_AREA]))
             cx, cy = int(cen[kk][0]), int(cen[kk][1])
-            o, dx, dy = [], [], []
-            for i, x in enumerate(r):
-                sx, sy = _ncc_shift(imgs[i], imgs[mid], cx, cy,
-                                    a.scale_template, a.scale_search)
-                o.append(x[f"achieved_{axis_name}_mm"]
-                         - r[mid][f"achieved_{axis_name}_mm"])
-                dx.append(sx)
-                dy.append(sy)
-            o = np.array(o)
-            for comp, v in (("x", np.array(dx)), ("y", np.array(dy))):
-                sl, ic = np.polyfit(o, v, 1)
-                resid = v - (sl * o + ic)
+            half_i, srch_i = _window_for(imgs[mid].shape, cx, cy,
+                                         a.scale_template, a.scale_search)
+            if half_i == 0:
+                print(f"  {axis_name}: the contact sits at ({cx}, {cy}) in a "
+                      f"{imgs[mid].shape[1]}x{imgs[mid].shape[0]} frame; no "
+                      f"correlation window fits. Not tracked.")
+                continue
+            if (half_i, srch_i) != (a.scale_template, a.scale_search):
+                print(f"  {axis_name}: contact at ({cx}, {cy}) — window "
+                      f"trimmed to template {half_i}, search {srch_i} px "
+                      f"(asked {a.scale_template}/{a.scale_search})")
+            p = _track_series(imgs, cx, cy, half_i, srch_i, log=print)
+            o = np.array([x[f"achieved_{axis_name}_mm"]
+                          - r[mid][f"achieved_{axis_name}_mm"] for x in r])
+            for ci, comp in ((0, "x"), (1, "y")):
+                v = p[:, ci]
+                g = np.isfinite(v)
+                if int(g.sum()) < 3:
+                    print(f"  sensor {axis_name} -> image {comp}: only "
+                          f"{int(g.sum())} frames tracked, not fitted")
+                    continue
+                sl, ic = np.polyfit(o[g], v[g], 1)
+                resid = v[g] - (sl * o[g] + ic)
                 rms = float(np.sqrt((resid ** 2).mean()))
                 result[f"px_per_mm_{axis_name}{comp}"] = float(sl)
                 result[f"rms_px_{axis_name}{comp}"] = rms
+                result[f"n_fit_{axis_name}{comp}"] = int(g.sum())
                 print(f"  sensor {axis_name} -> image {comp}: {sl:+9.2f} px/mm "
-                      f"  rms {rms:5.2f} px")
-        jx = np.array([result.get("px_per_mm_xx", np.nan),
-                       result.get("px_per_mm_xy", np.nan)])
-        jy = np.array([result.get("px_per_mm_yx", np.nan),
-                       result.get("px_per_mm_yy", np.nan)])
-        if np.all(np.isfinite(np.r_[jx, jy])):
-            J = np.array([[jx[0], jy[0]], [jx[1], jy[1]]])
-            # J = S @ Rot(theta): anisotropic pixel scale times a rotation
-            th1 = np.degrees(np.arctan2(-J[0, 1], J[0, 0]))
-            th2 = np.degrees(np.arctan2(J[1, 0], J[1, 1]))
-            kx = float(np.hypot(J[0, 0], J[0, 1]))
-            ky = float(np.hypot(J[1, 0], J[1, 1]))
-            result.update({"theta_from_row1_deg": float(th1),
-                           "theta_from_row2_deg": float(th2),
-                           "px_per_mm_image_x": kx, "px_per_mm_image_y": ky})
-            print(f"\n  fitting J = scale x rotation:")
-            print(f"    rotation from row 1 {th1:7.2f} deg, from row 2 {th2:7.2f} deg"
-                  f"   (agreement is the test of the model)")
-            print(f"    image x {kx:8.2f} px/mm = {1000/kx:6.3f} um/px"
-                  f"  -> FOV width  {1920/kx:6.2f} mm")
-            print(f"    image y {ky:8.2f} px/mm = {1000/ky:6.3f} um/px"
-                  f"  -> FOV height {1080/ky:6.2f} mm")
-            print(f"    anisotropy kx/ky = {kx/ky:.3f}  "
-                  f"(1.000 = square pixels, design implies 1.199)")
-            # The two rows give theta independently. If the model J = scale x
-            # rotation holds they must agree, so their disagreement is a
-            # self-check that costs nothing and needs no reference. Measured
-            # 2026-09-05: 0.8 deg on a run whose four residuals were 0.6-1.6 px,
-            # 8.4 deg on one whose y row was 3.6 px. The anisotropy rests
-            # entirely on the second row, so a bad row makes kx/ky meaningless
-            # while leaving kx itself (which came out 10.41 and 10.46 um/px on
-            # two different sensors) perfectly good.
-            dth = abs(th1 - th2)
-            result["theta_disagreement_deg"] = float(dth)
-            result["scale_trusted"] = bool(dth <= a.scale_theta_tol)
-            if dth > a.scale_theta_tol:
-                print(f"\n  ** the two rows disagree by {dth:.1f} deg, over the "
-                      f"{a.scale_theta_tol:.1f} deg gate. The rotation and the "
-                      f"anisotropy from this run are NOT trustworthy; image x "
-                      f"({1000/kx:.3f} um/px) rests on the better row and "
-                      f"still is. Worst residual "
-                      f"{max(result.get(f'rms_px_{t}', 0) for t in ('xx','xy','yx','yy')):.2f} px.")
+                      f"  rms {rms:5.2f} px" +
+                      ("" if int(g.sum()) == len(o) else
+                       f"  ({int(g.sum())}/{len(o)} frames)"))
+        _scale_jacobian(result, a.scale_theta_tol, a.scale_max_rms_px)
         st_run.setdefault("scale", {})[f"rot{int(a.scale_rotate)}"] = result
         save_state(run, st_run)
         with open(out / "scale.yaml", "w") as fh:
@@ -4923,6 +5131,11 @@ def main() -> int:
                          "that spans less than the common range is not "
                          "comparable with the others, so it is refused rather "
                          "than collected and noted")
+    ap.add_argument("--scale-max-rms-px", type=float, default=5.0,
+                    help="scale: worst per-row fit residual a trusted scale may "
+                         "have. Set 2026-09-08 from the separation in the data: "
+                         "every run under 5 px implies a 19-26 mm field of view, "
+                         "every run over 17 px is scattered")
     ap.add_argument("--ceiling-frac", type=float, default=0.9,
                     help="fraction of the saturation force the normal ramp uses")
     ap.add_argument("--shear-frac", type=float, default=0.2,
@@ -5297,8 +5510,21 @@ def main() -> int:
                          "millimetre-per-pixel scale is measured over. The "
                          "robot is the ruler: nothing in the frame has a known "
                          "length")
-    ap.add_argument("--scale-force", type=float, default=1.0,
-                    help="force sought at every offset. Force, not depth: a "
+    ap.add_argument("--scale-force", type=float, default=2.0,
+                    help="force sought at every offset, capped per gel by "
+                         "--scale-force-frac of what it reaches at "
+                         "--scale-max-depth. Raised 1.0 -> 2.0 N (and the depth "
+                         "cap 1.0 -> 2.0 mm) on 2026-09-08: at 0.99 N the "
+                         "imprint on 9DTact_hard_3mm_r1 was too faint to track "
+                         "and the four rows fitted with 15.9-31.3 px of "
+                         "residual; at 2.00 N, same mounting, same minute, "
+                         "0.59-2.61 px. The mechanics were never the problem -- "
+                         "all ten offsets reached their force to 2 %% and the "
+                         "centre of pressure tracked the commanded position "
+                         "with slope +0.992 -- only the image did. The per-gel "
+                         "rule keeps soft gels near 1 N; it is the stiff ones "
+                         "that were being asked for too little. "
+                         "Force, not depth: a "
                          "fixed depth gave 0.813 N at one end of the y sweep "
                          "and 1.134 N at the other, because the gel plane is "
                          "not square to the assumed normal, and then the "
@@ -5311,7 +5537,14 @@ def main() -> int:
                     help="fraction of what the gel can reach at the depth cap, "
                          "used when --scale-force is out of reach. The stiffness "
                          "comes from the zero fits of this very run")
-    ap.add_argument("--scale-max-depth", type=float, default=1.0,
+    ap.add_argument("--scale-depth-mm", type=float, default=0.90,
+                    help="depth the scale imprint aims for. This is what "
+                         "governs whether the imprint can be tracked -- see the "
+                         "table in phase_scale: 0.78-1.05 mm worked on four "
+                         "units across all three thicknesses, 0.40 and 0.66 mm "
+                         "were too faint and 1.39 mm saturated. 0.90 is the "
+                         "middle of the band that worked")
+    ap.add_argument("--scale-max-depth", type=float, default=2.0,
                     help="deepest the force seek may go; the registry depth "
                          "backstop still overrides it. Raised from the 0.6 mm "
                          "ladder depth on 2026-09-05. That limit was borrowed "
@@ -5410,5 +5643,60 @@ def main() -> int:
             "summary": phase_summary}[a.phase](a)
 
 
+# Phases that put the probe on or near the gel. Run through a pass script,
+# the shell trap parks afterwards; run on their own -- which is how a phase is
+# repeated with a different setting -- nothing did, and on 2026-09-08 two
+# consecutive `--phase scale` runs each left the tip 2 mm above the gel until
+# the operator noticed. The standing rule is that the probe ends up clear
+# whatever happens, so it is enforced here as well as in the callers.
+GEL_PHASES = {"search", "touchcheck", "zero", "shape", "scale", "characterize",
+              "contactmap", "collect", "series", "shear", "force-series",
+              "force-shear", "sample"}
+
+
+def park_after_phase(rc: int) -> int:
+    """Lift clear of the gel after a standalone gel-touching phase."""
+    argv = sys.argv[1:]
+    if "--phase" not in argv:
+        return rc
+    try:
+        phase = argv[argv.index("--phase") + 1]
+    except IndexError:
+        return rc
+    if phase not in GEL_PHASES or os.environ.get("VBTS_NO_EXIT_PARK") == "1":
+        return rc
+    try:
+        rc_cfg = yaml.safe_load(open(ROOT / "config" / "robot_config.yaml"))
+        ip = rc_cfg["robot"]["ip"]
+        if "--ip" in argv:
+            ip = argv[argv.index("--ip") + 1]
+        q = chk.ReadOnlyProxy(ip)
+        t0, n = mv.sensor_axis()
+        h = float((np.array(q("GetActualTCPPose", 0)[1:][:3]) - t0) @ n)
+        want = 78.0
+        if h >= want - 1.0:
+            return rc
+        print(f"\n  {phase} finished with the tip {h:.1f} mm above the gel — "
+              f"lifting to {want:.0f} mm")
+        r = subprocess.run([sys.executable, str(ROOT / "scripts" / "move_probe.py"),
+                            "--test-up", f"{want - h:.3f}", "--vel", "100",
+                            "--confirm", "MOVE"], capture_output=True, text=True,
+                           timeout=180)
+        h2 = float((np.array(q("GetActualTCPPose", 0)[1:][:3]) - t0) @ n)
+        if r.returncode != 0 or h2 < want - 1.0:
+            print(f"  !! THE LIFT FAILED — still {h2:.1f} mm above the gel. Check it.")
+        else:
+            print(f"  parked {h2:.0f} mm above the sensor plane")
+    except Exception as exc:  # noqa: BLE001
+        print(f"  !! could not park after {phase} ({type(exc).__name__}: {exc}). "
+              "The probe may still be on the gel.")
+    return rc
+
+
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        _rc = main()
+    except BaseException:
+        park_after_phase(1)
+        raise
+    raise SystemExit(park_after_phase(_rc))

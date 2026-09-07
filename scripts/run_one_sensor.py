@@ -90,7 +90,7 @@ def _probe_offsets(probe: str, reg_all: dict, skip: str | None = None):
               + glob.glob(str(ROOT / "data" / "*" / "*" / "*" / "state.json"))):
         run = Path(p).parent
         base = run.name
-        for suf in ("__2", "__3", "__4"):
+        for suf in ("__2", "__3", "__4", "__5", "__6", "__7"):
             base = base.replace(suf, "")
         if any(x in run.name for x in ("WRONG", "__over", "__noisy", "__read06",
                                        "__badzero", "__settle015", "__failed")):

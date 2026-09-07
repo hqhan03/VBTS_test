@@ -1,0 +1,43 @@
+probe: ball4
+force_N: 0.7989073994719185
+offsets_mm:
+- -1.5
+- -0.75
+- 0.0
+- 0.75
+- 1.5
+rotate_deg: 0.0
+surface_mm: 26.23749309856975
+at: '2026-09-08T01:48:06.290129'
+plane_slope_x: -0.05044996048866605
+plane_slope_y: 0.05988785459813135
+cop_slope_x_x: 1.0038954109953835
+cop_intercept_x_x: -0.726654377154419
+cop_slope_x_y: -0.13360572200831775
+cop_intercept_x_y: -3.6768788394989036
+cop_slope_y_x: 0.07223264151720152
+cop_intercept_y_x: -0.7082356050720147
+cop_slope_y_y: 0.7635298162179551
+cop_intercept_y_y: -4.590974241324596
+px_per_mm_xx: 33.257300164143814
+rms_px_xx: 147.4137979107081
+px_per_mm_xy: 56.1908602112319
+rms_px_xy: 19.286618581637743
+px_per_mm_yx: -29.782502829935886
+rms_px_yx: 10.535995060666059
+px_per_mm_yy: 72.85505547638874
+rms_px_yy: 12.516418431483556
+theta_from_row1_deg: 41.845009867838606
+theta_from_row2_deg: 37.64189553568529
+px_per_mm_image_x: 44.643538043294676
+px_per_mm_image_y: 92.00691213026272
+theta_disagreement_deg: 4.203114332153312
+rms_px_worst: 147.4137979107081
+scale_trusted: false
+n_fit_xx: 5
+n_fit_xy: 5
+n_fit_yx: 3
+n_fit_yy: 3
+refit_from_frames_at: '2026-09-08T03:36:58+09:00'
+refit_note: re-fitted from the frames on disk with the collapsed-correlation repair
+  of 2026-09-08

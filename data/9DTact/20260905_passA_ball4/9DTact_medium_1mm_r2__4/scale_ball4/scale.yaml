@@ -1,0 +1,39 @@
+probe: ball4
+force_N: 0.6438073465233644
+offsets_mm:
+- -1.5
+- -0.75
+- 0.0
+- 0.75
+- 1.5
+rotate_deg: 0.0
+surface_mm: 26.308600967606214
+at: '2026-09-08T02:07:43.548975'
+plane_slope_x: -0.03187783556920831
+plane_slope_y: 0.053615145244641574
+cop_slope_x_x: 1.0653267500641261
+cop_intercept_x_x: 0.06084123205875496
+cop_slope_x_y: -0.049381311666283484
+cop_intercept_x_y: -1.9838360896257903
+cop_slope_y_x: 0.1551298800932005
+cop_intercept_y_x: 0.4368583457954272
+cop_slope_y_y: 0.9210234581223543
+cop_intercept_y_y: -2.198801044610201
+px_per_mm_xx: 0.009476698314193456
+rms_px_xx: 0.003870951009028756
+px_per_mm_xy: -0.006273662454031623
+rms_px_xy: 0.004787450532346516
+px_per_mm_yx: -0.005768853364905606
+rms_px_yx: 0.003843937902686544
+px_per_mm_yy: 0.00027146354047228075
+rms_px_yy: 0.00234089702134931
+theta_from_row1_deg: 31.330582280149724
+theta_from_row2_deg: -87.52233739488922
+px_per_mm_image_x: 0.011094479712182083
+px_per_mm_image_y: 0.006279532868050922
+theta_disagreement_deg: 118.85291967503895
+rms_px_worst: 0.003870951009028756
+scale_trusted: false
+refit_from_frames_at: '2026-09-08T03:36:58+09:00'
+refit_note: re-fitted from the frames on disk with the collapsed-correlation repair
+  of 2026-09-08

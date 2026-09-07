@@ -1,0 +1,22 @@
+px_per_mm_xx: 86.24809477299085
+rms_px_xx: 2.8073653824342086
+n_fit_xx: 3
+px_per_mm_xy: 34.716028304515646
+rms_px_xy: 0.8160391195225598
+n_fit_xy: 3
+px_per_mm_yx: -46.679432706695884
+rms_px_yx: 1.9132876105875778
+n_fit_yx: 3
+px_per_mm_yy: 57.27306998034455
+rms_px_yy: 4.281750129752665
+n_fit_yy: 3
+theta_from_row1_deg: 28.42326099295498
+theta_from_row2_deg: 31.222117076944777
+px_per_mm_image_x: 98.06988982246162
+px_per_mm_image_y: 66.97318244053642
+theta_disagreement_deg: 2.798856083989797
+rms_px_worst: 4.281750129752665
+scale_trusted: true
+refit_from_frames_at: '2026-09-08T03:37:44+09:00'
+refit_note: re-fitted from the frames on disk with the collapsed-correlation repair
+  of 2026-09-08

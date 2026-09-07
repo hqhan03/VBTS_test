@@ -1,0 +1,9 @@
+px_per_mm_yx: -26.940339030741843
+rms_px_yx: 30.225078388733245
+n_fit_yx: 3
+px_per_mm_yy: 62.343500123230946
+rms_px_yy: 0.24803036967365855
+n_fit_yy: 3
+refit_from_frames_at: '2026-09-08T03:37:52+09:00'
+refit_note: re-fitted from the frames on disk with the collapsed-correlation repair
+  of 2026-09-08
