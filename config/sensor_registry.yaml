@@ -484,17 +484,17 @@ sensors:
     marks the backing taking load. The 0.5 mm start had no data behind it
   status: characterised
   gel_model:
-    hertz_a: 1.8797552422423651
-    free_exponent: 2.608943810138667
-    surface_mm: 25.558
-  safe_force_N: 1.7633132248660786
-  safe_depth_mm: 1.3157477900067498
-  commanded_depth_mm: 1.4000000000000001
-  command_vs_measured_mm: 0.08425220999325034
-  stopped_on: substrate stiffening
-  ladder_rungs_reached: 17
-  characterised_at: '2026-09-07T20:29:41.871390'
-  run: data/9DTact/20260907_passB_ball8/9DTact_soft_1mm_r2__2
+    hertz_a: 2.0146668565152983
+    free_exponent: 2.8946555995790773
+    surface_mm: 25.525
+  safe_force_N: 2.9239663953578914
+  safe_depth_mm: 1.7066090652784283
+  commanded_depth_mm: 1.7000000000000004
+  command_vs_measured_mm: -0.006609065278427861
+  stopped_on: force cap
+  ladder_rungs_reached: 29
+  characterised_at: '2026-09-07T20:45:42.987586'
+  run: data/9DTact/20260907_passB_ball8/9DTact_soft_1mm_r2__3
   ladder_run: data/20260903_ladder_protocol/9DTact_soft_1mm_r2
   history:
   - characterised_at: '2026-09-03T23:38:41.779164'
@@ -597,6 +597,28 @@ sensors:
       peak_slope_levels_per_N: 1.730649901185581
       image_change_at_stop: 5.257141590118408
     run: data/9DTact/20260907_passB_ball8/9DTact_soft_1mm_r2
+  - characterised_at: '2026-09-07T20:29:41.871390'
+    gel_model:
+      hertz_a: 1.8797552422423651
+      free_exponent: 2.608943810138667
+      surface_mm: 25.558
+    safe_depth_mm: 1.3157477900067498
+    safe_force_N: 1.7633132248660786
+    stopped_on: substrate stiffening
+    ladder_rungs_reached: 17
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: null
+      reached: false
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      note: 'not reached within the limits: stopped on substrate stiffening at 1.76
+        N with the image still changing at 1.71 lvl/N (100% of peak)'
+      peak_slope_levels_per_N: 1.70760008081925
+      image_change_at_stop: 5.768233299255371
+    run: data/9DTact/20260907_passB_ball8/9DTact_soft_1mm_r2__2
   image_response:
     max_measurable_force_N: null
     reached: false
@@ -604,77 +626,73 @@ sensors:
     threshold_frac_of_peak_slope: 0.15
     min_force_N: 0.3
     consecutive: 2
-    note: 'not reached within the limits: stopped on substrate stiffening at 1.76
-      N with the image still changing at 1.71 lvl/N (100% of peak)'
-    peak_slope_levels_per_N: 1.70760008081925
-    image_change_at_stop: 5.768233299255371
+    note: 'not reached within the limits: stopped on force cap at 2.92 N with the
+      image still changing at 2.04 lvl/N (99% of peak)'
+    peak_slope_levels_per_N: 2.0614549727583933
+    image_change_at_stop: 8.005867004394531
   contact_map:
     at_depth:
       target_depth_mm: 0.5
       target_used_mm: 0.5
       limited_by_depth_cap: false
-      at: '2026-09-04T01:54:14.210924'
+      at: '2026-09-07T20:45:58.850798'
       image: at_depth.png
-      depth_mm: 0.47572939551006144
-      height_above_plane_mm: 25.03127060448994
-      normal_force_N: 0.3945406747328093
+      depth_mm: 0.4811499944394093
+      height_above_plane_mm: 25.04385000556059
+      normal_force_N: 0.6953452193997691
       region:
-        mean_abs_diff_centre: 2.377763509750366
-        max_diff: 19.02734375
-        changed_fraction: 0.029618537808641977
-        area_px: 56426
-        radius_px: 134.0184824485286
+        mean_abs_diff_centre: 3.2619516849517822
+        max_diff: 18.29296875
+        changed_fraction: 0.05562934027777778
+        area_px: 113139
+        radius_px: 189.77160539171263
         centroid_px:
-        - 928.0611065820721
-        - 687.3797362917804
-        enclosing_radius_px: 147.9951171875
-        mean_abs_diff_in_region: 8.360076904296875
-        dark_area_px: 56248
-        dark_radius_px: 133.80692985815742
+        - 914.0135231882905
+        - 575.2381318555052
+        enclosing_radius_px: 208.45143127441406
+        mean_abs_diff_in_region: 9.490429878234863
+        dark_area_px: 112858
+        dark_radius_px: 189.53579380932314
         dark_centroid_px:
-        - 928.2380884653677
-        - 687.3337718674442
-        dark_mean_diff: -8.37463092803955
-        bright_area_px: 211
-        bright_radius_px: 8.19532708223289
-        bright_centroid_px:
-        - 948.0
-        - 913.4691943127962
-        bright_mean_diff: 4.043153762817383
+        - 913.6978769781496
+        - 575.1904162753194
+        dark_mean_diff: -9.503655433654785
+        bright_area_px: 0
+        bright_radius_px: 0.0
+        bright_centroid_px: null
+        bright_mean_diff: 0.0
     at_force:
       target_force_N: 0.5
       target_used_N: 0.5
       limited_by_force_cap: false
       force_reached: true
       stop_reason: reached
-      at: '2026-09-04T01:54:23.293018'
+      at: '2026-09-07T20:46:05.393465'
       image: at_force.png
-      depth_mm: 0.5364414563826827
-      height_above_plane_mm: 24.97055854361732
-      normal_force_N: 0.48919261945447656
+      depth_mm: 0.3481146259584733
+      height_above_plane_mm: 25.176885374041525
+      normal_force_N: 0.4534098541081505
       region:
-        mean_abs_diff_centre: 2.5074331760406494
-        max_diff: 20.8828125
-        changed_fraction: 0.03424479166666667
-        area_px: 63086
-        radius_px: 141.70708337902738
+        mean_abs_diff_centre: 2.646120309829712
+        max_diff: 15.9921875
+        changed_fraction: 0.04532648533950617
+        area_px: 91460
+        radius_px: 170.62421337655888
         centroid_px:
-        - 928.9474368322607
-        - 687.1060457153727
-        enclosing_radius_px: 156.7926483154297
-        mean_abs_diff_in_region: 8.747572898864746
-        dark_area_px: 62778
-        dark_radius_px: 141.36073724640096
+        - 912.5573912092718
+        - 572.9446971353598
+        enclosing_radius_px: 192.31427001953125
+        mean_abs_diff_in_region: 7.794819355010986
+        dark_area_px: 91139
+        dark_radius_px: 170.32452764327425
         dark_centroid_px:
-        - 928.8894676479022
-        - 686.8336200579821
-        dark_mean_diff: -8.77109146118164
-        bright_area_px: 882
-        bright_radius_px: 16.755575776860173
-        bright_centroid_px:
-        - 950.3503401360545
-        - 913.2448979591836
-        bright_mean_diff: 4.238635540008545
+        - 912.1793633899867
+        - 573.0817761880205
+        dark_mean_diff: -7.80796480178833
+        bright_area_px: 0
+        bright_radius_px: 0.0
+        bright_centroid_px: null
+        bright_mean_diff: 0.0
 - id: 9DTact_soft_2mm_r1
   principle: 9DTact
   hardness: soft
