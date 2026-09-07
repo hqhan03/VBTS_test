@@ -78,7 +78,8 @@
 | hard_1mm_r1 | own | 94 | -0.014 | +0.063 | -0.087 | -0.222 | **48×27** | 80×45 | 없음 | 18 → 15 → 11 |
 
 "깊이 유지" = 그 크기까지 모든 크기에서 |편향| ≤ 0.10 mm (약 2 회색조 단계); "지름 유지" = |지름
-오차| ≤ 0.5 mm. 1080p 에서 이미 |편향| > 0.10 인 유닛(medium_3mm_r1, 옛 축척)은 "—".
+오차| ≤ 0.5 mm. 1080p 에서 이미 기준을 넘는 유닛은 "—" — 깊이는 soft_1mm_r2, hard_3mm_r2, medium_3mm_r1 (전해상도 편향이
+−0.11 ~ −0.15 mm), 지름은 soft_1mm_r2, medium_2mm_r2, soft_2mm_r2, medium_3mm_r2, soft_3mm_r2, hard_3mm_r1 (대부분 빌린·중앙값 축척, `shape_reconstruction.md` §3.4).
 
 ![saturation](figures/shape_vs_resolution_saturation.png)
 
