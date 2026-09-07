@@ -1260,18 +1260,105 @@ sensors:
     marks the backing taking load. The 0.5 mm start had no data behind it
   status: characterised
   gel_model:
-    hertz_a: 1.2910822114633804
-    free_exponent: 1.9326404527312113
-    surface_mm: 26.326
-  safe_force_N: 0.5560709950262321
-  safe_depth_mm: 0.7002491797003216
-  commanded_depth_mm: 0.715848552772735
-  command_vs_measured_mm: 0.015599373072413325
-  stopped_on: depth backstop
-  ladder_rungs_reached: 5
-  characterised_at: '2026-09-03T17:07:43.584567'
-  run: null
+    hertz_a: 2.2567957267867667
+    free_exponent: 2.6228216846972634
+    surface_mm: 26.419
+  safe_force_N: 3.3106883390153796
+  safe_depth_mm: 1.6597672728633697
+  commanded_depth_mm: 1.7000000000000004
+  command_vs_measured_mm: 0.04023272713663073
+  stopped_on: force cap
+  ladder_rungs_reached: 33
+  characterised_at: '2026-09-07T22:09:59.668962'
+  run: data/9DTact/20260907_passB_ball8/9DTact_medium_1mm_r2
   ladder_run: data/20260903_ladder_protocol/9DTact_medium_1mm_r2
+  history:
+  - characterised_at: '2026-09-03T17:07:43.584567'
+    gel_model:
+      hertz_a: 1.2910822114633804
+      free_exponent: 1.9326404527312113
+      surface_mm: 26.326
+    safe_depth_mm: 0.7002491797003216
+    safe_force_N: 0.5560709950262321
+    stopped_on: depth backstop
+    ladder_rungs_reached: 5
+    depth_cap_used_mm: null
+    image_response: null
+    run: null
+  image_response:
+    max_measurable_force_N: null
+    reached: false
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    note: 'not reached within the limits: stopped on force cap at 3.31 N with the
+      image still changing at 1.23 lvl/N (88% of peak)'
+    peak_slope_levels_per_N: 1.4051558979396168
+    image_change_at_stop: 6.855529308319092
+  contact_map:
+    at_depth:
+      target_depth_mm: 0.5
+      target_used_mm: 0.5
+      limited_by_depth_cap: false
+      at: '2026-09-07T22:10:15.438212'
+      image: at_depth.png
+      depth_mm: 0.46942806343746213
+      height_above_plane_mm: 25.94957193656254
+      normal_force_N: 0.8250217872764211
+      region:
+        mean_abs_diff_centre: 2.8999383449554443
+        max_diff: 18.21875
+        changed_fraction: 0.065546875
+        area_px: 84409
+        radius_px: 163.91528050455696
+        centroid_px:
+        - 918.2107358220095
+        - 583.341646033006
+        enclosing_radius_px: 183.85707092285156
+        mean_abs_diff_in_region: 8.186928749084473
+        dark_area_px: 83907
+        dark_radius_px: 163.42713244753247
+        dark_centroid_px:
+        - 917.594479602417
+        - 583.5523377072235
+        dark_mean_diff: -8.210785865783691
+        bright_area_px: 0
+        bright_radius_px: 0.0
+        bright_centroid_px: null
+        bright_mean_diff: 0.0
+    at_force:
+      target_force_N: 0.5
+      target_used_N: 0.5
+      limited_by_force_cap: false
+      force_reached: true
+      stop_reason: reached
+      at: '2026-09-07T22:10:22.054215'
+      image: at_force.png
+      depth_mm: 0.3216149786378253
+      height_above_plane_mm: 26.097385021362175
+      normal_force_N: 0.45544828720982194
+      region:
+        mean_abs_diff_centre: 2.3513247966766357
+        max_diff: 13.7890625
+        changed_fraction: 0.05322289737654321
+        area_px: 59562
+        radius_px: 137.69231438565822
+        centroid_px:
+        - 908.7247573956549
+        - 585.7834357476244
+        enclosing_radius_px: 155.7413787841797
+        mean_abs_diff_in_region: 6.38052225112915
+        dark_area_px: 58895
+        dark_radius_px: 136.91917596448772
+        dark_centroid_px:
+        - 908.0563205705068
+        - 585.7802190338739
+        dark_mean_diff: -6.405244827270508
+        bright_area_px: 0
+        bright_radius_px: 0.0
+        bright_centroid_px: null
+        bright_mean_diff: 0.0
 - id: 9DTact_medium_2mm_r1
   principle: 9DTact
   hardness: medium

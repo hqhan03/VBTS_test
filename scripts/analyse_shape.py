@@ -85,6 +85,19 @@ OUT = (900, 900)
 # rest of the pipeline sees a camera with fewer, larger pixels and nothing else
 # changes.
 DOWNSCALE = 1
+# Separate factors for x and y, so a target size can hold 16:9 exactly where
+# a single factor would round it away (e.g. 48x27 needs 40.0 in x and 40.0
+# in y; 8x5 needs 240 and 216). DOWNSCALE stays as their geometric mean for
+# the scale-aware thresholds.
+DOWNSCALE_XY = (1.0, 1.0)
+
+
+def set_downscale(width, height, w0=1920, h0=1080):
+    """Ask for an exact output size; everything scale-aware follows."""
+    global DOWNSCALE, DOWNSCALE_XY
+    fx, fy = w0 / width, h0 / height
+    DOWNSCALE_XY = (fx, fy)
+    DOWNSCALE = float(np.sqrt(fx * fy))
 DATASETS = {"ball4": "20260905_passA_ball4", "cube4": "20260905_passA_cube4",
             "cyl4": "20260905_passA_cyl4"}
 
@@ -151,7 +164,8 @@ def _shrink(g):
     if DOWNSCALE == 1:
         return g
     h, w = g.shape
-    return cv2.resize(g, (max(1, int(round(w / DOWNSCALE))), max(1, int(round(h / DOWNSCALE)))),
+    fx, fy = DOWNSCALE_XY
+    return cv2.resize(g, (max(1, int(round(w / fx))), max(1, int(round(h / fy)))),
                       interpolation=cv2.INTER_AREA)
 
 
@@ -189,7 +203,7 @@ def deepest_centre(run, probe, lad, ref):
     full_ref = cv2.cvtColor(cv2.imread(str(run / "reference.png")), cv2.COLOR_BGR2GRAY)
     full_img = cv2.cvtColor(cv2.imread(str(run / f"shape_{probe}" / deep["file"])), cv2.COLOR_BGR2GRAY)
     d = np.clip(full_ref.astype(np.int32) - full_img.astype(np.int32), 0, 255)
-    saved = globals()["DOWNSCALE"]
+    saved, saved_xy = globals()["DOWNSCALE"], globals()["DOWNSCALE_XY"]
     globals()["DOWNSCALE"] = 1             # contact_circle's area floor is scale-aware
     try:
         c = contact_circle(d.astype(np.uint8))
@@ -197,7 +211,8 @@ def deepest_centre(run, probe, lad, ref):
         globals()["DOWNSCALE"] = saved
     if c is None:
         return None
-    return (c[0] / saved, c[1] / saved, c[2] / saved)
+    fx, fy = saved_xy
+    return (c[0] / fx, c[1] / fy, c[2] / saved)
 
 
 # ------------------------------------------------------------ evaluation --
@@ -284,7 +299,9 @@ def analyse(sensor, verbose=False):
                            "median" if "median" in src[-1] else "borrowed")
     if J is None:
         out["error"] = "no scale"; return out, []
-    J = J / DOWNSCALE                      # fewer pixels per millimetre
+    # fewer pixels per millimetre, by the x and y factors separately: J's
+    # rows are image x and image y
+    J = np.diag([1.0 / DOWNSCALE_XY[0], 1.0 / DOWNSCALE_XY[1]]) @ J
     ppm = float(np.sqrt(abs(np.linalg.det(J)))); mm_per_px = 1.0 / ppm
     out["downscale"] = DOWNSCALE
     out["px_per_mm"] = ppm

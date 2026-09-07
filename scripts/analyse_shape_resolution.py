@@ -21,21 +21,25 @@ shape = importlib.util.module_from_spec(spec); sys.modules["shape"] = shape; spe
 # 240p (16:9, so 1920x1080 ... 427x240) -- then halving on down to 8x4, where
 # the imprint is a single pixel. The factor is 1080 / target height.
 W0, H0 = 1920, 1080
-HEIGHTS = (1080, 720, 480, 360, 240, 180, 90, 45, 22, 11, 4)
-FACTORS = tuple(H0 / h for h in HEIGHTS)
+# The sizes people use, then halving in exact 16:9 (integer sides at 48x27,
+# 32x18, 16x9), ending at 8x5 -- the width-8 size closest to 16:9. 480p and
+# 240p are their conventional 854x480 and 426x240 (16:9 to 0.1 %).
+SIZES = ((1920, 1080), (1280, 720), (854, 480), (640, 360), (426, 240),
+         (320, 180), (160, 90), (80, 45), (48, 27), (32, 18), (16, 9), (8, 5))
 reg = yaml.safe_load(open(ROOT / "config" / "sensor_registry.yaml"))
 units = sys.argv[1:] or [e["id"] for e in reg["sensors"] if e["id"].startswith("9DTact")
                           and e.get("gel_model") and e["id"] != "9DTact_medium_2mm_r1"]
 rows = []
 for s in sorted(units):
-    for f in FACTORS:
-        shape.DOWNSCALE = f
+    for (wpx, hpx) in SIZES:
+        shape.set_downscale(wpx, hpx, W0, H0)
+        f = shape.DOWNSCALE
         try:
             o, _ = shape.analyse(s)
         except Exception as exc:  # noqa: BLE001
             o = {"sensor": s.replace("9DTact_", ""), "downscale": f, "error": f"{type(exc).__name__}: {exc}"}
         o["downscale"] = f
-        o["width_px"], o["height_px"] = int(round(W0 / f)), int(round(H0 / f))
+        o["width_px"], o["height_px"] = wpx, hpx
         rows.append(o)
         print(f"  {o['sensor']:16s} x{f:<6.2f} {o['width_px']:4d}x{o['height_px']:<4d} {o.get('px_per_mm', float('nan')):6.2f} px/mm  "
               f"rms {o.get('cyl4_corrected_rms_after_linear', float('nan')):.4f}  "
