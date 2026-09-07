@@ -2354,10 +2354,19 @@ def phase_collect(a) -> int:
                 p_now = np.array(q("GetActualTCPPose", 0)[1:][:3])
                 vec = axis_origin - p_now
                 dist = float(np.linalg.norm(vec))
+                # The return is a RELEASE, not a ramp: the forces it passes
+                # through are ones the outward glide already covered, so it
+                # needs no force resolution and gets a brisk fixed pace.
+                # Pacing it like the ramp cost 426 s of the 788 s collect on
+                # 9DTact_hard_1mm_r1 (2026-09-07) -- 21 s per axis, four axes,
+                # five cycles -- against 51 s for the stepped ramp's three
+                # fixed steps, and wiped out everything the faster ramp won.
+                back_v = float(np.clip(a.release_mm_s / max(pace["mm_per_s_100"], 0.05)
+                                       * 100.0, 0.5, 40.0))
                 nb = 0
-                while dist > 1e-3 and nb < 200:
-                    step = min(_step_for(ks), dist)
-                    rv, _dt = _glide(vec / dist, step, _pace(ks, step))
+                while dist > 1e-3 and nb < 12:
+                    step = min(max(dist / 3.0, 0.05), dist)
+                    rv, _dt = _glide(vec / dist, step, back_v)
                     if rv:
                         return rv
                     nb += 1
@@ -5037,6 +5046,11 @@ def main() -> int:
                     help="collect: MoveL speed percentage for the continuous "
                          "glide. Set from a timed free-air move, see "
                          "capture_policy.ramp_vel_basis")
+    ap.add_argument("--release-mm-s", type=float, default=0.60,
+                    help="collect: speed of the shear return to centre, mm/s. "
+                         "The release retraces forces the outward glide already "
+                         "covered, so it is paced for time, not for force "
+                         "resolution")
     ap.add_argument("--ramp-segment-mm", type=float, default=0.10,
                     help="collect: glide length between force readings")
     ap.add_argument("--max-cycles", type=int, default=400,
