@@ -1,0 +1,22 @@
+sensor: 9DTact_soft_1mm_r2
+at: '2026-09-04T01:29:33.015923'
+depth_cap_used_mm: 6.0
+force_cap_used_N: 8.0
+exp_alarm: 99.0
+stopped_on: force cap
+reached_depth_mm: 3.988358221106509
+reached_force_N: 8.120641913438106
+hertz_a: 1.0859768855557164
+free_exponent: 1.6038916869358153
+image_response:
+  max_measurable_force_N: null
+  reached: false
+  metric: mean |frame - reference| over the central half, grey levels
+  threshold_frac_of_peak_slope: 0.15
+  min_force_N: 0.3
+  consecutive: 2
+  note: 'not reached within the limits: stopped on force cap at 8.12 N with the image
+    still changing at 1.22 lvl/N (30% of peak)'
+  peak_slope_levels_per_N: 4.030499688537118
+  image_change_at_stop: 18.53899574279785
+registry_written: false

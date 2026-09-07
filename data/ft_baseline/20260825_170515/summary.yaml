@@ -1,0 +1,212 @@
+frame: ATI_sensor_frame
+requested_duration_s: 10.0
+actual_duration_s: 9.999445751000167
+n_samples: 20000
+nominal_sample_rate_hz: 2000.0
+effective_sample_rate_hz: 2000.1108559441464
+t_start_monotonic: 12396.890042011
+t_start_wall: 1787645116.1620562
+gauge_map:
+  SG0: Dev1/ai16
+  SG1: Dev1/ai18
+  SG2: Dev1/ai17
+  SG3: Dev1/ai19
+  SG4: Dev1/ai20
+  SG5: Dev1/ai21
+terminal_configuration: differential
+voltage_range_v: 10.0
+channel_mapping_confirmed: false
+raw_volts:
+  SG0:
+    mean: 1.0492712993398612
+    std: 0.000784052123166046
+    min: 1.0462812011358515
+    max: 1.0535135864469327
+    peak_to_peak: 0.007232385311081169
+  SG1:
+    mean: 1.2664270084640763
+    std: 0.0006283475387024064
+    min: 1.263910269407862
+    max: 1.2688414421286927
+    peak_to_peak: 0.004931172720830546
+  SG2:
+    mean: 1.1726812110084872
+    std: 0.0007757699769906741
+    min: 1.1689030125372257
+    max: 1.1758066537733296
+    peak_to_peak: 0.006903641236103875
+  SG3:
+    mean: 0.8255767317657321
+    std: 0.0007219780013565336
+    min: 0.8220772769980363
+    max: 0.8286521715887913
+    peak_to_peak: 0.006574894590754998
+  SG4:
+    mean: 1.0314751935583122
+    std: 0.0006077180401246639
+    min: 1.0288577276072313
+    max: 1.0337888993355464
+    peak_to_peak: 0.004931171728315142
+  SG5:
+    mean: 1.0622731064113258
+    std: 0.0006349678101896095
+    min: 1.0594309926424552
+    max: 1.0656771436578676
+    peak_to_peak: 0.006246151015412371
+wrench:
+  Fx:
+    mean: 6.174760149771995
+    std: 0.02067579805559086
+    min: 6.071554744181622
+    max: 6.286444305631559
+    peak_to_peak: 0.21488956144993665
+  Fy:
+    mean: 7.335363073221603
+    std: 0.02190946244571055
+    min: 7.252067626086598
+    max: 7.4154616390711965
+    peak_to_peak: 0.16339401298459855
+  Fz:
+    mean: 115.06443589523339
+    std: 0.04917686670480133
+    min: 114.84976291971017
+    max: 115.27524603784958
+    peak_to_peak: 0.425483118139411
+  Tx:
+    mean: -0.029525248753175123
+    std: 0.00043261891070717033
+    min: -0.03131875901843552
+    max: -0.027383535606558623
+    peak_to_peak: 0.003935223411876895
+  Ty:
+    mean: -0.054819112090757335
+    std: 0.0005702400639292994
+    min: -0.057467903068969955
+    max: -0.05202728855988814
+    peak_to_peak: 0.005440614509081815
+  Tz:
+    mean: -1.0050189415527218
+    std: 0.0004449049870429911
+    min: -1.0065631685501228
+    max: -1.0032240254185028
+    peak_to_peak: 0.0033391431316200926
+wrench_units:
+  force: N
+  torque: N_m
+tared: false
+acquired_at_wall: '2026-08-25T17:05:16.162054'
+channel_health:
+  SG0: ok
+  SG1: ok
+  SG2: ok
+  SG3: ok
+  SG4: ok
+  SG5: ok
+all_channels_healthy: true
+timestamp_strategy: Block-level host monotonic + wall clock; per-sample times are
+  t_i = i/fs from the NI hardware sample clock, never host polling time.
+settle_samples_discarded: 200
+operator_confirmation: skipped (--yes)
+daq:
+  manufacturer: NI
+  model: PCIe-6343
+  device: Dev1
+  channels_in_gauge_order:
+  - Dev1/ai16
+  - Dev1/ai18
+  - Dev1/ai17
+  - Dev1/ai19
+  - Dev1/ai20
+  - Dev1/ai21
+  terminal_configuration: differential
+  voltage_range_v: 10.0
+  sample_rate_hz: 2000.0
+  samples_per_read: 200
+  buffer_size: 2000
+  timing: hardware-timed continuous (cfg_samp_clk_timing)
+ft_sensor:
+  manufacturer: ATI
+  model: Mini45
+  interface: 9105-IFPS-1
+  terminal_block: SCB-68A
+calibration:
+  calibration_file: /home/nrel/Desktop/KDC-tactile-testing-platform/FT29831.cal
+  serial: FT29831
+  body_style: Mini45
+  family: DAQ
+  part_number: SI-145-5
+  cal_date: 1/8/2020
+  num_gauges: 6
+  gauge_order:
+  - SG0
+  - SG1
+  - SG2
+  - SG3
+  - SG4
+  - SG5
+  native_force_unit: N
+  native_torque_unit: N-m
+  dist_units: m
+  output_mode: Ground Referenced Differential
+  output_range: '20'
+  hw_temp_comp: 'True'
+  gain_multiplier: '1'
+  output_bipolar: 'True'
+  basic_transform:
+    Dx: 0.0
+    Dy: 0.0
+    Dz: 0.006858
+    Rx: 0.0
+    Ry: 0.0
+    Rz: 0.0
+  basic_transform_already_in_user_matrix: true
+  max_loads_native:
+    Fx: 145.0
+    Fy: 145.0
+    Fz: 290.0
+    Tx: 5.0
+    Ty: 5.0
+    Tz: 5.0
+  force_to_N: 1.0
+  torque_to_Nm: 1.0
+  matrix_source: UserAxis
+  user_matrix:
+  - - -0.04294
+    - -0.01144
+    - 2.35717
+    - -24.09445
+    - -1.78834
+    - 23.72887
+  - - -3.39996
+    - 27.49186
+    - 1.16302
+    - -13.83562
+    - 0.6987
+    - -13.7213
+  - - 34.41401
+    - 1.73873
+    - 33.7305
+    - 1.53595
+    - 33.62034
+    - 1.17777
+  - - -0.02692
+    - 0.19615
+    - -0.53699
+    - -0.12114
+    - 0.54984
+    - -0.082
+  - - 0.6343
+    - 0.03008
+    - -0.33744
+    - 0.15932
+    - -0.29418
+    - -0.17966
+  - - 0.05077
+    - -0.35302
+    - 0.02456
+    - -0.35341
+    - 0.01811
+    - -0.34542
+  internally_consistent: true
+  frame: ATI_sensor_frame
+robot: "NOT USED \u2014 FAIRINO not accessed in this measurement"

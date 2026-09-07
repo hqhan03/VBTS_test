@@ -1,0 +1,245 @@
+# Indenter probes.
+#
+# One entry per printed tip. The campaign swaps these by hand, so every entry
+# has to say enough to (a) pick the right contact law for the depth-zero fit,
+# (b) recognise a wrong or unmeasured TCP before a run starts, and (c) tie a
+# dataset folder back to the geometry that made it.
+#
+# TCP: there is ONE tool 1 z offset, 36.794 mm, and it is not re-measured per
+# probe. The operator designed every tip to share the same endpoint -- the pole
+# of a ball, the centre of a cube's end face, the centre of a cylinder's end
+# face all sit at the same flange distance -- so the height at which force
+# first appears is the same whichever probe is fitted, and a surface measured
+# with one probe stays valid for the others. NEVER write tool 0.
+#
+# What this DOES change is the meaning of the offset. 36.794 mm was calibrated
+# as the CENTRE of the 4 mm ball, which is 2 mm above that common endpoint.
+# So the TCP is now best read as "2 mm above the common tip endpoint", a
+# constant for all nine probes. Every depth in this project is a displacement
+# from a searched surface, so a constant offset cancels; only an analysis that
+# needs a sphere's centre (Hertz contact radius, say) has to add it back, and
+# for the 8 mm ball the centre is 4 mm above the endpoint, not 2.
+#
+# `contact_law` decides how the true gel surface is extrapolated from the fine
+# approach (phase `zero`):
+#   hertz  F = a (d - d0)^1.5   sphere on a half space
+#   punch  F = a (d - d0)^1.0   flat-ended tip, contact area fixed at touchdown
+# Measured 2026-09-05 on 9DTact_soft_1mm_r2 (7 repeats): a hertz fit locates
+# d0 to +-0.014 mm within one approach but its ABSOLUTE value moves 0.16 mm
+# depending on the force window fitted, because the gel's free exponent is
+# 1.25-1.6, not 1.5. So the window is pinned here rather than left to taste,
+# and the number that matters -- run-to-run repeatability -- is 0.029 mm.
+
+created: '2026-09-05'
+
+image_scale:
+  source: design FOV supplied by the operator 2026-09-05
+  fov_mm: {width: 25.51, height: 11.97}
+  frame_px: {width: 1920, height: 1080}
+  um_per_px: {horizontal: 13.286, vertical: 11.083}
+  UNRESOLVED: >-
+    The FOV aspect ratio is 2.131 but the frame is 1920x1080 = 1.778, a 20 %
+    mismatch. Either the two FOV figures are not both the imaged rectangle, or
+    the scale really is anisotropic. Square pixels with the horizontal figure
+    would make the visible height 14.35 mm, not 11.97; with the vertical figure
+    the width would be 21.28 mm, not 25.51. This is settled in one frame by
+    the cyl4 imprint, which is a known 4.00 mm circle: it images round if the
+    pixels are square and elliptical with a 1.199 axis ratio if the design
+    figures are right. Nothing that converts pixels to millimetres -- shape
+    reconstruction included -- should be trusted until that frame exists,
+    because a 20 % anisotropy distorts every reconstructed shape.
+
+zero_policy:
+  step_mm: 0.02
+  repeats: 1          # was 3, then 2; see revision_basis
+  repeats_revised: '2026-09-05'
+  repeats_revised_basis: >-
+    One approach, at the operator's request, to cut the time per sensor. What
+    is given up is the run's own estimate of its scatter; what remains is the
+    fit's own sigma on d0, which is +-0.003 mm on a stiff gel with a flat tip
+    and +-0.02 mm on a soft one, and which is reported per approach anyway.
+    Across the sixteen sensors measured with two to four approaches the
+    approach-to-approach scatter tracked the fit sigma closely, so the fit
+    sigma is a fair stand-in.
+  stop_depth_mm: 0.30
+  fit_max_force_N: 1.0          # safety guard; stop_depth_mm binds first
+  revised: '2026-09-05'
+  approaches_basis: >-
+    Two, not three. The scatter between approaches is 0.0062 mm (1 sigma) and
+    came out identical on two independent runs of 9DTact_hard_1mm_r1 -- once
+    with the probe at 0 deg and once after it had been taken out and turned
+    180 deg -- so it is a known constant of the method, not something each run
+    has to re-establish. Three approaches put the mean at +-0.0036 mm and two
+    at +-0.0044 mm: 0.8 % of a ladder step, for 55 s per probe or 8 hours over
+    the campaign.
+  revision_basis: >-
+    The first real run (9DTact_medium_2mm_r1, cyl4) showed the approach itself
+    was the problem. Stopping at 1.2 N put this flat tip 0.73 mm into the gel,
+    deeper than the 0.6 mm ladder the zero exists to support, and three of them
+    walked the fitted zero one way each time: 0.1366, 0.1772, 0.2147 mm, i.e.
+    +0.039 mm per approach against a +-0.003 mm fit error, with the fitted
+    stiffness rising 1.641 -> 1.654 -> 1.666 N/mm alongside. That is the gel
+    still moving, not measurement scatter, so averaging three approaches
+    averages a drift rather than sharpening the zero. The approach now stops at
+    a DEPTH, which bounds the disturbance the same way for a stiff flat punch
+    and a soft sphere; the force is a safety cap only. Whether 0.30 mm is
+    shallow enough is an open question until the same test runs on an undamaged
+    gel -- this one is the unit with 0.27 mm of permanent set.
+  also_measured: >-
+    A flat tip pins the zero about four times better than a sphere: +-0.0034 mm
+    (cyl4, punch law) against +-0.014 mm (ball4, Hertz). F = a*d extrapolates to
+    zero with a finite slope; F = a*d^1.5 flattens there, so the sphere's zero
+    is intrinsically the blunter measurement. And the searched contact height is
+    NOT comparable between probes -- cyl4 tripped the 0.11 N threshold 0.222 mm
+    higher than ball4 on the same gel, purely because a flat face reaches that
+    force at 0.060 mm depth where a 2 mm sphere needs 0.252 mm. Only fitted
+    zeros may be compared across probes.
+  basis: >-
+    0.05 mm approach steps quantised the image-onset zero and gave 0.026 mm
+    (1 sigma) run-to-run; the force fit gave 0.029 mm over the same 7 repeats.
+    Both are physical repeatability, not detection noise, so the fix is finer
+    sampling plus averaging: 0.02 mm steps and 3 approaches put the mean at
+    about 0.017 mm, 17 % of one 0.1 mm ladder step. fit_max_force_N is 1.0
+    because that window had the lowest scatter of the six tried (0.2-3.0 N).
+
+loop_order:
+  chosen: probe outer, sensor inner
+  decided: '2026-09-05'
+  why: >-
+    The operator finds a sensor swap easier than a probe swap, and the science
+    agrees. The campaign's primary comparison is BETWEEN THE 54 SENSORS, and
+    probe-outer mounts each tip once for all of them, so every sensor sees an
+    identical probe geometry. Sensor-outer would re-seat the probe 432 times
+    and redraw, at each one, the 0.093 mm of contact asymmetry and 0.074 mm of
+    height that a re-mount was measured to move -- noise landing squarely on
+    the comparison that matters.
+  costs: >-
+    The gel plane must be re-measured at every mounting (432 rather than 54
+    times, which is what --plane-only exists for), each probe meets a slightly
+    different spot on the gel, and the per-sensor setup of 56 s is paid 432
+    times instead of 54: about 41 h of robot time against 30.
+  datasets: one per probe, data/20260905_passA_<probe_id>/<sensor_id>/
+
+mounting:
+  rule: >-
+    Mark every probe and its holder with one line across the joint, and align
+    those marks on every remount. The probe's angular orientation is not
+    cosmetic: turning cyl4 180 degrees in its holder on 2026-09-05 changed the
+    contact asymmetry by 0.093 mm of centroid walk -- 18 % of the total, the
+    other 82 % being the gel plane. Left unconstrained, that 0.09 mm becomes a
+    random variable redrawn at each of the 432 probe swaps, and it sits right
+    on top of the effect tests 2 and 3 are trying to measure. Aligned, it is a
+    constant that cancels.
+  height: >-
+    Re-seat to the same insertion depth as well. The fitted surface moved
+    0.074 mm between two mountings of the same probe, which is why every probe
+    gets its own `zero` rather than inheriting one.
+
+probes:
+
+  - id: ball8
+    tip: sphere
+    diameter_mm: 8.0
+    radius_mm: 4.0
+    contact_law: hertz
+    tests: [force_estimation, max_force]
+    tcp_z_mm: 36.794
+    tcp_status: common endpoint by design
+    centre_above_tcp_mm: 2.0
+    note: >-
+      Pass B probe. Chosen over the 4 mm ball because at 5 N the 4 mm ball
+      buries past its equator on all nine designs (2.18x radius worst case),
+      which invalidates Hertz and was a likely contributor to the permanent
+      set on 9DTact_medium_2mm_r1. At R = 4 mm the worst case is 0.87x radius
+      and peak pressure is 37 % lower. The operator reports the TIP ENDPOINT
+      is at the same flange distance as the 4 mm ball; if so the recorded
+      surface heights stay valid and only the sphere centre moves 2 mm, but
+      this is asserted by design rather than measured, so the first search
+      with it is checked against the surface height ball4 recorded on the same
+      sensor: agreement inside 0.1 mm confirms the common endpoint, and a
+      systematic offset larger than that means every depth is biased by it.
+
+  - id: ball4
+    tip: sphere
+    diameter_mm: 4.0
+    radius_mm: 2.0
+    contact_law: hertz
+    tests: [shape]
+    tcp_z_mm: 36.794
+    tcp_status: calibrated (the offset every other probe inherits)
+    centre_above_tcp_mm: 0.0
+    role: shape-reconstruction CALIBRATION probe
+    note: >-
+      A known radius pressed to known depths is what a depth-from-intensity
+      lookup is built from, so this probe calibrates the reconstruction and
+      must NOT also be used to score it. The cube, cylinder and star are the
+      held-out shapes.
+
+  - id: cube4
+    tip: cube
+    edge_mm: 4.0
+    contact_law: punch
+    tests: [shape]
+    tcp_z_mm: 36.794
+    tcp_status: common endpoint by design
+    role: shape-reconstruction EVALUATION probe
+
+  - id: cyl4
+    tip: cylinder_flat
+    diameter_mm: 4.0
+    contact_law: punch
+    tests: [shape, scale]
+    tcp_z_mm: 36.794
+    tcp_status: common endpoint by design
+    role: shape-reconstruction EVALUATION probe
+    note: >-
+      Doubles as the mm-per-pixel scale. Its flat imprint is a circle of known
+      4.00 mm diameter, so the scale comes out of the same frames as the shape
+      data and needs no separate target. No mm/px calibration existed before
+      this; every contact size recorded so far is in pixels only.
+
+  - id: star10
+    tip: star
+    across_mm: 10.0
+    contact_law: punch
+    tests: [shape]
+    tcp_z_mm: 36.794
+    tcp_status: common endpoint by design
+    role: shape-reconstruction EVALUATION probe
+    note: sharp internal corners; the hardest shape to reconstruct and the point of it
+
+  - id: pair100
+    tip: cylinder_pair
+    element_diameter_mm: 1.0
+    gap_mm: 1.00
+    contact_law: punch
+    tests: [resolution]
+    tcp_z_mm: 36.794
+    tcp_status: common endpoint by design
+
+  - id: pair075
+    tip: cylinder_pair
+    element_diameter_mm: 1.0
+    gap_mm: 0.75
+    contact_law: punch
+    tests: [resolution]
+    tcp_z_mm: 36.794
+    tcp_status: common endpoint by design
+
+  - id: pair050
+    tip: cylinder_pair
+    element_diameter_mm: 1.0
+    gap_mm: 0.50
+    contact_law: punch
+    tests: [resolution]
+    tcp_z_mm: 36.794
+    tcp_status: common endpoint by design
+
+  - id: pair025
+    tip: cylinder_pair
+    element_diameter_mm: 1.0
+    gap_mm: 0.25
+    contact_law: punch
+    tests: [resolution]
+    tcp_z_mm: 36.794
+    tcp_status: common endpoint by design

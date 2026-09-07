@@ -1,0 +1,230 @@
+timestamp: '2026-08-31T13:34:48.215075'
+robot_ip: 192.168.58.2
+purpose: backup taken BEFORE any tool register write
+nothing_written_yet: true
+robot_state:
+  robot_state: 1
+  robot_mode: 1
+  main_code: 0
+  sub_code: 0
+  emergency_stop: 0
+  collision_state: 0
+  safety_stop0: 0
+  safety_stop1: 0
+program_state:
+- 0
+- 1
+motion_done:
+- 0
+- 1
+active_tool_id:
+- 0
+- 0
+tool_registers_before:
+  '0':
+  - 0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  '1':
+  - 0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  '2':
+  - 0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  '3':
+  - 0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  '4':
+  - 0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  '5':
+  - 0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  '6':
+  - 0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  '7':
+  - 0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  '8':
+  - 0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  '9':
+  - 0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  '10':
+  - 0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  '11':
+  - 0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  '12':
+  - 0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  '13':
+  - 0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  '14':
+  - 0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  '15':
+  - 0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+tool_0_before:
+- 0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+tool_1_before:
+- 0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+flange_pose_at_backup:
+- 0
+- 253.4221801757812
+- 302.831329345703
+- 35.90159606933593
+- 156.1875
+- -18.79601287841797
+- -157.6613616943359
+intended_write:
+  tool_id: 1
+  tcp_mm_deg:
+  - 0.003
+  - 0.322
+  - 36.794
+  - 0.0
+  - 0.0
+  - 0.0
+  position_source: pivot_calibration_mean_Run2_Run3
+  orientation_source: defined_flange_aligned
+  orientation_is_calibrated: false
+provenance:
+  run2:
+    path: data/tcp_calibration/20260831_125056/
+    tcp_mm:
+    - -0.049
+    - 0.37
+    - 36.831
+    rms_mm: 0.143
+    condition_number: 8.0
+    loo_max_mm: 0.115
+  run3:
+    path: data/tcp_calibration/20260831_130959/
+    tcp_mm:
+    - 0.055
+    - 0.274
+    - 36.757
+    rms_mm: 0.147
+    condition_number: 7.3
+    loo_max_mm: 0.098
+  run2_vs_run3:
+    delta_mm:
+    - 0.104
+    - -0.096
+    - -0.074
+    distance_3d_mm: 0.16
+  run1_excluded: different indenter (glued steel ball); not averaged
+  cad_mm:
+  - 0.0
+  - 0.0
+  - 35.97
+  cad_discrepancy_mm:
+  - 0.003
+  - 0.322
+  - 0.824
+  cad_discrepancy_status: unresolved systematic; NOT corrected for
+config_hashes:
+  config/robot_config.yaml: 7d181e79e51183cd6dfb20960104df630297158e8bf9407cf96b9778542d22fc
+  config/ft_config.yaml: c2fdfd5e052310f91289271d5e2e5e64ce9bad9866ce93c9634407b1c47ae516
+  FT29831.cal: 7dfc7cc100417a9955676316e4446eda3f37d435469de6ae48978611e1c65e16
+  src/vbts_platform/robot_interface.py: 867670a56ec284f56babc497192c3b8b027dd2215aefcf36d7dec7a36c1a8186
+  src/vbts_platform/fr5_io.py: 9ee739ea346170c133baee4c72b3f928ff125015966a93fc48fd0e7f0649eb85
+  data/tcp_calibration/20260831_125056/tcp_result.yaml: 450e97a5c67a4e4b9f0ae616aa689a53fe96289d27593b14431a4da6af214e42
+  data/tcp_calibration/20260831_130959/tcp_result.yaml: f00c5926c19c7eb0ccea32c2267d328e968d7882c37eff3883f9c1aa4ccd8a34

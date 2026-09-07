@@ -1,0 +1,110 @@
+timestamp: '2026-09-07T16:43:22.744534'
+robot_ip: 192.168.58.2
+preflight:
+  ok: true
+  route:
+    ok: true
+    raw: "192.168.58.2 via 192.168.57.2 dev enp131s0 src 192.168.57.10 uid 1000 \n\
+      \    cache"
+    device: enp131s0
+    via: 192.168.57.2
+  default_route_device: wlp132s0
+  interface_state:
+    exists: true
+    operstate: up
+    carrier: '1'
+    tx_packets: '2426563'
+    rx_packets: '2241897'
+  reached_via_default_route: false
+  is_ethernet: true
+connected: true
+robot_moved: false
+servos_enabled: false
+mode_changed: false
+io_touched: false
+parameters_written: false
+realtime_stream:
+  connected: true
+  fresh: true
+  safety_block_parsed: true
+robot_state:
+  robot_state: 1
+  robot_mode: 0
+  main_code: 0
+  sub_code: 0
+  motion_done: 1
+  emergency_stop: 0
+  collision_state: 0
+  safety_stop0: 0
+  safety_stop1: 0
+  is_safe_to_move: true
+tcp_pose:
+  x: 37.89599609375
+  y: 362.8785705566406
+  z: 90.3127670288086
+  rx: -179.2126007080078
+  ry: 0.43049556016921997
+  rz: 5.135830879211426
+  units: mm, deg
+  frame: robot_base
+  convention: fixed-axis (extrinsic) RPY
+joint_positions_deg:
+- 100.13069915771484
+- -117.33464050292969
+- -112.32073974609375
+- -219.52272033691406
+- -90.36026763916016
+- -174.9995880126953
+queries:
+  GetActualTCPNum:
+  - 0
+  - 1
+  GetActualWObjNum:
+  - 0
+  - 0
+  GetActualTCPPose:
+  - 0
+  - 37.89612579345703
+  - 362.8778076171875
+  - 90.31181335449217
+  - -179.2130279541015
+  - 0.430460661649704
+  - 5.135610103607177
+  GetActualToolFlangePose:
+  - 0
+  - 38.18486404418945
+  - 362.7197265625
+  - 127.107078552246
+  - -179.2128143310547
+  - 0.43047961592674255
+  - 5.13561201095581
+  GetRobotEmergencyStopState: 'ERROR Fault: <Fault -506: "Method ''GetRobotEmergencyStopState''
+    not defined">'
+  GetSafetyStopState: 'ERROR Fault: <Fault -506: "Method ''GetSafetyStopState'' not
+    defined">'
+  GetRobotMotionDone:
+  - 0
+  - 1
+  GetProgramState:
+  - 0
+  - 1
+  GetSDKComState: 'ERROR Fault: <Fault -506: "Method ''GetSDKComState'' not defined">'
+  GetToolCoordWithID:
+  - 0
+  - 0.003
+  - 0.322
+  - 36.794
+  - 0.0
+  - 0.0
+  - 0.0
+xmlrpc_methods_called:
+- GetActualTCPNum
+- GetActualTCPPose
+- GetActualToolFlangePose
+- GetActualWObjNum
+- GetProgramState
+- GetRobotEmergencyStopState
+- GetRobotMotionDone
+- GetSDKComState
+- GetSafetyStopState
+- GetToolCoordWithID

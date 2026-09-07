@@ -1,0 +1,20 @@
+probe: cube4
+force_N: 0.934077547849903
+offsets_mm:
+- -1.5
+- 0.0
+- 1.5
+rotate_deg: 0.0
+surface_mm: 26.87248536385585
+at: '2026-09-06T16:54:06.205633'
+plane_slope_x: 0.009889377225374932
+plane_slope_y: 0.0375326059474939
+cop_slope_x_x: 0.9754809270747127
+cop_intercept_x_x: -0.3124865535183614
+cop_slope_x_y: -0.054887372697698826
+cop_intercept_x_y: -0.7436226818464411
+cop_slope_y_x: -0.028624186577993635
+cop_intercept_y_x: -0.08920892400965316
+cop_slope_y_y: 0.9082490046674685
+cop_intercept_y_y: -0.9505040305093971
+plane_only: true

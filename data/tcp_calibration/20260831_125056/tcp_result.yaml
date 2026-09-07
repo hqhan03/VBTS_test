@@ -1,0 +1,277 @@
+timestamp: '2026-08-31T13:04:54.026997'
+method: 'least-squares sphere-in-cone: R_i t + p_i = c solved for [t; c] over all
+  poses'
+poses:
+- x: 237.5660552978515
+  y: 311.7758483886718
+  z: 40.94218826293945
+  rx: 179.2088165283203
+  ry: 0.8793737888336182
+  rz: -151.4651794433593
+  recorded_at: '2026-08-31T12:55:55.184192'
+  static_check_mm: 0.0024821693118355294
+- x: 237.3224639892578
+  y: 295.6439208984375
+  z: 36.7571220397949
+  rx: 155.936813354492
+  ry: 12.77535915374756
+  rz: -155.603561401367
+  recorded_at: '2026-08-31T12:56:57.842627'
+  static_check_mm: 0.0006065728518179647
+- x: 237.4839935302734
+  y: 326.2415771484375
+  z: 38.49932861328125
+  rx: -161.243438720703
+  ry: -11.40575408935547
+  rz: -149.3229675292968
+  recorded_at: '2026-08-31T12:58:10.840318'
+  static_check_mm: 0.0024472672920259177
+- x: 223.833526611328
+  y: 311.853271484375
+  z: 38.32680130004883
+  rx: -167.371383666992
+  ry: 18.54932594299316
+  rz: -142.9544677734375
+  recorded_at: '2026-08-31T12:59:05.685927'
+  static_check_mm: 0.0030044149781021366
+- x: 249.28271484375
+  y: 313.2959594726562
+  z: 39.05480194091797
+  rx: 174.2264862060547
+  ry: -17.62378120422363
+  rz: -157.3807220458984
+  recorded_at: '2026-08-31T13:00:03.174703'
+  static_check_mm: 0.002322875008112017
+- x: 248.1824798583984
+  y: 321.5830993652343
+  z: 38.29673767089843
+  rx: -173.0872344970703
+  ry: -21.06337165832519
+  rz: -157.3160095214843
+  recorded_at: '2026-08-31T13:00:57.321012'
+  static_check_mm: 0.0015943472345395485
+- x: 229.3518829345703
+  y: 300.8096923828125
+  z: 38.09529495239258
+  rx: 170.399673461914
+  ry: 20.75217247009277
+  rz: -152.1434783935547
+  recorded_at: '2026-08-31T13:02:54.067026'
+  static_check_mm: 0.0
+- x: 227.438247680664
+  y: 327.4366760253906
+  z: 36.28909683227539
+  rx: -150.268600463867
+  ry: -2.924603462219238
+  rz: -140.241744995117
+  recorded_at: '2026-08-31T13:04:26.893990'
+  static_check_mm: 0.001526050557973117
+result:
+  tcp_mm:
+  - -0.049467860408200365
+  - 0.3696032934728919
+  - 36.83118149414085
+  tcp_orientation: not determined; a sphere carries no orientation
+  cone_vertex_base_mm:
+  - 237.6406165487503
+  - 312.7299833591577
+  - 4.157851130167057
+cad_estimate_mm:
+- 0.0
+- 0.0
+- 35.97
+difference_from_cad_mm:
+- -0.049467860408200365
+- 0.3696032934728919
+- 0.8611814941408511
+difference_norm_mm: 0.9384493750917215
+residual_mm:
+  per_pose:
+  - 0.12453128140856047
+  - 0.13426090592428286
+  - 0.23808263168491828
+  - 0.09178444870692963
+  - 0.13808061967786506
+  - 0.06255143796331174
+  - 0.16787811503082536
+  - 0.11797712736853669
+  rms: 0.14305696393991751
+  max: 0.23808263168491828
+  mean: 0.13439332097065376
+condition_number: 8.0086419016982
+orientation_spread_deg:
+  max_pairwise_deg: 53.81557843212649
+  mean_pairwise_deg: 31.132339858848038
+warnings: []
+cumulative_convergence:
+- n: 3
+  tcp_mm:
+  - -2.297466663626996
+  - -0.9340933276551482
+  - 37.282745255590505
+  rms_mm: 0.14333554248256686
+  condition_number: 159.45805941990912
+- n: 4
+  tcp_mm:
+  - -0.06951283424247379
+  - 0.417063717798726
+  - 36.94360506563659
+  rms_mm: 0.14852427281667965
+  condition_number: 11.630248725060218
+- n: 5
+  tcp_mm:
+  - -0.06901846674220798
+  - 0.4458094518599296
+  - 36.86714332411374
+  rms_mm: 0.14356210322588348
+  condition_number: 8.435638372106064
+- n: 6
+  tcp_mm:
+  - -0.03329771447911875
+  - 0.4392799144027322
+  - 36.875305247395126
+  rms_mm: 0.13264190718581687
+  condition_number: 8.766650292201502
+- n: 7
+  tcp_mm:
+  - 0.004748175250032458
+  - 0.440791312315298
+  - 36.90300185530041
+  rms_mm: 0.1420081589257076
+  condition_number: 9.457063530648693
+- n: 8
+  tcp_mm:
+  - -0.049467860408200365
+  - 0.3696032934728919
+  - 36.83118149414085
+  rms_mm: 0.14305696393991751
+  condition_number: 8.0086419016982
+leave_one_out:
+- dropped_pose: 1
+  tcp_mm:
+  - -0.05399339823445511
+  - 0.37611408998174056
+  - 36.83898840387265
+  shift_mm: 0.01112738978183738
+  rms_mm: 0.14437031231820013
+  condition_number: 7.499772505830474
+- dropped_pose: 2
+  tcp_mm:
+  - -0.04386744127609224
+  - 0.32508362942530766
+  - 36.804945173936765
+  shift_mm: 0.05197797301950413
+  rms_mm: 0.14236723446950666
+  condition_number: 8.216188190603788
+- dropped_pose: 3
+  tcp_mm:
+  - -0.03470769063694238
+  - 0.36229700913219176
+  - 36.789426995613404
+  shift_mm: 0.04488521526986378
+  rms_mm: 0.11787858158559722
+  condition_number: 7.489194689453911
+- dropped_pose: 4
+  tcp_mm:
+  - -0.05867342864098551
+  - 0.356936083189737
+  - 36.83148318848771
+  shift_mm: 0.015661791798036853
+  rms_mm: 0.148323435065372
+  condition_number: 8.958886218806194
+- dropped_pose: 5
+  tcp_mm:
+  - -0.041770103649210806
+  - 0.3595719921393652
+  - 36.87773701470981
+  shift_mm: 0.04824208703001231
+  rms_mm: 0.14121393572773605
+  condition_number: 9.201911196938141
+- dropped_pose: 6
+  tcp_mm:
+  - -0.0670732145972403
+  - 0.376850911055044
+  - 36.81743916808242
+  shift_mm: 0.023480374405762568
+  rms_mm: 0.15060572225339863
+  condition_number: 8.716268679099281
+- dropped_pose: 7
+  tcp_mm:
+  - -0.0928113877400969
+  - 0.3738019820370937
+  - 36.79437055792889
+  shift_mm: 0.05702048203962132
+  rms_mm: 0.13567039715078746
+  condition_number: 7.921189923188357
+- dropped_pose: 8
+  tcp_mm:
+  - 0.004748175250032458
+  - 0.440791312315298
+  - 36.90300185530041
+  shift_mm: 0.11474004020520102
+  rms_mm: 0.1420081589257076
+  condition_number: 9.457063530648693
+leave_one_out_max_shift_mm: 0.11474004020520102
+comparison:
+  previous_run: data/tcp_calibration/20260826_234919/tcp_result.yaml
+  previous_tcp_mm:
+  - 0.12749858863559316
+  - 0.4265799705357267
+  - 36.8469676474728
+  delta_mm:
+  - -0.17696644904379352
+  - -0.056976677062834824
+  - -0.01578615333195188
+  delta_xy_magnitude_mm: 0.18591252194591987
+  delta_3d_mm: 0.1865815329911083
+  previous_vs_cad_mm:
+  - 0.12749858863559316
+  - 0.4265799705357267
+  - 0.876967647472803
+  previous_rms_mm: 0.45386822261423027
+  previous_condition_number: 6.864719039500608
+indenter:
+  type: monolithic_Form4_printed_indenter
+  spherical_tip: integrated 3D printed geometry
+  manufacturing: Formlabs Form 4
+  steel_ball: false
+  adhesive: false
+  tcp_definition: centre of the printed spherical tip
+  cad_flange_face_to_tip_centre_mm:
+  - 0.0
+  - 0.0
+  - 35.97
+  mounting: bolted directly to the FR5 flange
+historical_indenter_superseded:
+  type: printed_indenter_with_glued_steel_ball
+  steel_ball_diameter_mm: 4.0
+  adhesive: instant adhesive
+  cad_flange_face_to_ball_centre_mm:
+  - 0.0
+  - 0.0
+  - 34.4
+  status: OBSOLETE — the ball detached 2026-08-26 and the part was redesigned
+fixture:
+  cone:
+    bottom_diameter_mm: 6.0
+    depth_mm: 3.0
+    included_angle_deg: 90.0
+    mounting: fixed to the optical table, independent of the F/T sensor
+physical_error_sources:
+- Form 4 dimensional accuracy
+- print shrinkage and warping
+- spherical tip form error
+- spherical surface roughness
+- flange mating / assembly error
+- calibration cone fixture geometry
+- cone seating repeatability
+- manual teaching repeatability
+- robot flange pose repeatability
+tcp_orientation:
+  status: not calibrated
+  assumption: flange-aligned
+  reason: a sphere seated in a cone constrains position only; no orientation information
+    exists in the constraint
+pose_source: GetActualToolFlangePose
+applied_to_robot: false
+robot_moved: false

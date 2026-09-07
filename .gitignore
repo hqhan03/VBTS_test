@@ -1,0 +1,21 @@
+# Images are the bulk of the data: 18,000+ frames, 43 GB. They stay on this
+# machine (and its own backup); everything that describes them -- state.json,
+# meta.yaml, the per-frame label CSVs, ladders, summaries -- is tracked, so a
+# run can be re-analysed from git for everything except the pixels.
+*.png
+*.jpg
+*.jpeg
+*.mp4
+
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+*.egg-info/
+
+# session scratch, editor state
+.claude/
+.vscode/
+.idea/
+*.swp
+nohup.out

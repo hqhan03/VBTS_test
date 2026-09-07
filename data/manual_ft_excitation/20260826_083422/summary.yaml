@@ -1,0 +1,250 @@
+mode: continuous
+timestamp: '2026-08-26T08:35:52.241618'
+configuration_sha256: 452949b4b3d4bbff5edd328c6874c45ba44198e9a1107daa8bc844b0809107de
+configuration_file: /home/nrel/Desktop/KDC-tactile-testing-platform/config/ft_config.yaml
+calibration_file_name: FT29831.cal
+calibration_serial: FT29831
+daq_channel_list:
+- Dev1/ai0
+- Dev1/ai2
+- Dev1/ai1
+- Dev1/ai3
+- Dev1/ai4
+- Dev1/ai5
+gauge_map:
+  SG0: Dev1/ai0
+  SG1: Dev1/ai2
+  SG2: Dev1/ai1
+  SG3: Dev1/ai3
+  SG4: Dev1/ai4
+  SG5: Dev1/ai5
+connector: 0
+sample_rate_hz: 2000.0
+terminal_configuration: differential
+channel_mapping_confirmed: true
+all_channels_healthy: false
+known_hardware_faults:
+- channel: Dev1/ai5
+  gauge: SG5
+  terminals: 60 (+) / 26 (-)
+  fault: 'open circuit. Mux-ghosting test 2026-08-25: ai5 follows whatever channel
+    precedes it to within 0.3-1.9 mV, while ai4 under the same test holds its own
+    value to within 0.1 mV. Under load ai5 read -113.2 mV, duplicating ai4, where
+    a correctly wired SG5 should read about -5.8 mV.'
+  consequence: 'Fz is barely affected (SG5''s Fz coefficient is only +1.18 N/V) but
+    Fx is badly affected (+23.73 N/V): the ghosted value injects a spurious -2.55
+    N, which is the entire residual lateral force seen in validation. Substituting
+    the theoretical SG5 value collapses the lateral from 2.916 N to 0.100 N.'
+  same_class_as: the SG0 fault, which was a reference wired to terminal 35 instead
+    of 34. Check terminal 60 and 26 the same way.
+frame: ATI_sensor_frame
+duration_s: 89.0
+n_samples: 178000
+baseline_seconds: 5.0
+baseline:
+  Fx: 6.890202216763537
+  Fy: 4.9201593504569
+  Fz: 126.9463241622166
+  Tx: 0.005326299069733044
+  Ty: -0.07550105999882468
+  Tz: -1.1244350546716304
+baseline_std:
+  Fx: 0.029249654950357376
+  Fy: 0.018606474956764034
+  Fz: 0.05633670965791069
+  Tx: 0.0004687087658123361
+  Ty: 0.0010623836966182159
+  Tz: 0.00042447495452009457
+episodes:
+- index: 1
+  t_start_s: 18.7875
+  t_end_s: 25.0155
+  duration_s: 6.228
+  delta:
+    Fx: -7.3009869361691715
+    Fy: 4.19034545970612
+    Fz: 3.359853424420322
+    Tx: -0.2784439831463488
+    Ty: -0.5260146965816989
+    Tz: -0.279279173389938
+  std:
+    Fx: 2.0767077701608065
+    Fy: 0.5207845360383736
+    Fz: 0.2472838491933973
+    Tx: 0.03202718905850051
+    Ty: 0.07574817040128815
+    Tz: 0.06795329972922513
+  dominant_force_axis: Fx
+  dominant_torque_axis: Ty
+  cross_axis_ratio:
+    Fx: 1.0
+    Fy: -0.5739423308576408
+    Fz: -0.460191677343726
+    Tx: 0.03813785527637834
+    Ty: 0.07204706722262659
+    Tz: 0.03825224943307128
+- index: 2
+  t_start_s: 29.44
+  t_end_s: 34.8765
+  duration_s: 5.4365
+  delta:
+    Fx: 12.330079387843607
+    Fy: -11.684628359639166
+    Fz: -4.1536599706440285
+    Tx: 0.2587544599958548
+    Ty: 0.4275153293316539
+    Tz: 0.4317477142898787
+  std:
+    Fx: 0.8391281794577959
+    Fy: 1.6577987320049468
+    Fz: 0.5021693126377909
+    Tx: 0.02388835566274784
+    Ty: 0.03207176306840482
+    Tz: 0.02441374925446112
+  dominant_force_axis: Fx
+  dominant_torque_axis: Tz
+  cross_axis_ratio:
+    Fx: 1.0
+    Fy: -0.9476523217814153
+    Fz: -0.3368721189856391
+    Tx: 0.020985628060997265
+    Ty: 0.03467255285907949
+    Tz: 0.03501580976968766
+- index: 3
+  t_start_s: 38.172
+  t_end_s: 43.3955
+  duration_s: 5.2235
+  delta:
+    Fx: -6.544200397808663
+    Fy: -73.53620551702586
+    Fz: 0.7112464962621772
+    Tx: 0.527568348745821
+    Ty: -0.6197562012171767
+    Tz: -0.4616754372679368
+  std:
+    Fx: 0.9770209006194388
+    Fy: 2.9068551500096693
+    Fz: 0.620098898587802
+    Tx: 0.03933774052246573
+    Ty: 0.02438287448796435
+    Tz: 0.03140697305051753
+  dominant_force_axis: Fy
+  dominant_torque_axis: Ty
+  cross_axis_ratio:
+    Fx: 0.08899290290812574
+    Fy: 1.0
+    Fz: -0.009672058698996946
+    Tx: -0.007174266676347244
+    Ty: 0.008427905639946085
+    Tz: 0.006278205871814326
+- index: 4
+  t_start_s: 45.946
+  t_end_s: 51.316
+  duration_s: 5.37
+  delta:
+    Fx: 17.194506142574514
+    Fy: 94.37738018304861
+    Fz: -2.170157562323695
+    Tx: -0.697336793362287
+    Ty: 0.5941915950566343
+    Tz: 0.7437270735006529
+  std:
+    Fx: 1.1261910488831497
+    Fy: 3.3447805814618445
+    Fz: 0.4768192329099646
+    Tx: 0.03232683286142668
+    Ty: 0.024094156586973423
+    Tz: 0.025677864327976696
+  dominant_force_axis: Fy
+  dominant_torque_axis: Tz
+  cross_axis_ratio:
+    Fx: 0.1821888476796569
+    Fy: 1.0
+    Fz: -0.022994467086441577
+    Tx: -0.007388812785540085
+    Ty: 0.00629591109547835
+    Tz: 0.007880353025885706
+- index: 5
+  t_start_s: 53.9295
+  t_end_s: 59.572
+  duration_s: 5.6425
+  delta:
+    Fx: -19.93447129242177
+    Fy: 6.857469021846229
+    Fz: -97.22988472867553
+    Tx: 0.23658179818225547
+    Ty: -0.015562750075093987
+    Tz: 0.14327942039257147
+  std:
+    Fx: 0.5128990357047991
+    Fy: 0.8564200762692892
+    Fz: 2.98408505024521
+    Tx: 0.029272409464983194
+    Ty: 0.03430110856776536
+    Tz: 0.020024560666752452
+  dominant_force_axis: Fz
+  dominant_torque_axis: Tx
+  cross_axis_ratio:
+    Fx: 0.20502411730765524
+    Fy: -0.07052840843103242
+    Fz: 1.0
+    Tx: -0.002433221008565914
+    Ty: 0.00016006138563799143
+    Tz: -0.0014736150391661915
+- index: 6
+  t_start_s: 62.9805
+  t_end_s: 68.211
+  duration_s: 5.2305
+  delta:
+    Fx: -87.4024009835901
+    Fy: 54.06090528504012
+    Fz: 4.539140118467998
+    Tx: 0.1616472277241194
+    Ty: 0.6383769312133349
+    Tz: -2.454576543255554
+  std:
+    Fx: 2.917347310076441
+    Fy: 3.213189366360159
+    Fz: 1.1099980015136148
+    Tx: 0.021413679098638446
+    Ty: 0.07646089173273198
+    Tz: 0.04630376545129356
+  dominant_force_axis: Fx
+  dominant_torque_axis: Tz
+  cross_axis_ratio:
+    Fx: 1.0
+    Fy: -0.6185288353255892
+    Fz: -0.05193381494542955
+    Tx: -0.0018494598077971435
+    Ty: -0.007303883234662981
+    Tz: 0.028083628317217554
+- index: 7
+  t_start_s: 70.454
+  t_end_s: 75.724
+  duration_s: 5.27
+  delta:
+    Fx: 77.03395260785575
+    Fy: -42.691510027400525
+    Fz: 1.718959882068134
+    Tx: -0.47311185882282736
+    Ty: -0.6554104748961139
+    Tz: 2.3132368047767082
+  std:
+    Fx: 7.088609351815203
+    Fy: 5.825948645635956
+    Fz: 0.9355406288356559
+    Tx: 0.09449347224251306
+    Ty: 0.04586245298012266
+    Tz: 0.15267099595164083
+  dominant_force_axis: Fx
+  dominant_torque_axis: Tz
+  cross_axis_ratio:
+    Fx: 1.0
+    Fy: -0.5541908286171329
+    Fz: 0.022314314972497442
+    Tx: -0.006141601758788377
+    Ty: -0.00850807277451419
+    Tz: 0.030028795439750153
+note: Direction and cross-talk observation only. No calibration change, no channel
+  remap, no substituted value, no gain or software compensation.
+robot: NOT USED — FAIRINO not accessed

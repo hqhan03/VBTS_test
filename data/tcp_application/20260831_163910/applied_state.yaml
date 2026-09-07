@@ -1,0 +1,73 @@
+timestamp: '2026-08-31T16:39:10.525318'
+robot_ip: 192.168.58.2
+applied: true
+applied_via: FAIRINO web UI (192.168.58.2), manual numeric entry
+applied_via_reason: XML-RPC SetToolList returned 0 but wrote nothing on this firmware;
+  verified against a 1.111/2.222/3.333 test value entered from the web UI
+tool_id: 1
+tool_1:
+- 0.003
+- 0.322
+- 36.794
+- 0.0
+- 0.0
+- 0.0
+expected:
+- 0.003
+- 0.322
+- 36.794
+- 0.0
+- 0.0
+- 0.0
+max_abs_error: 0.0
+position_source: pivot_calibration_mean_Run2_Run3
+orientation_source: defined_flange_aligned
+orientation_is_calibrated: false
+active_tool_id:
+- 0
+- 1
+active_tool_note: web UI activates on save; operator chose to keep tool 1 active
+tool_0:
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+tool_0_unchanged: true
+other_nonzero_registers: []
+robot_state:
+  robot_state: 1
+  robot_mode: 1
+  main_code: 0
+  sub_code: 0
+  emergency_stop: 0
+  collision_state: 0
+  safety_stop0: 0
+  safety_stop1: 0
+robot_moved_by_this_project: false
+frame_convention_check:
+  relation: p_TCP = p_flange + R_flange * t_tool
+  flange:
+  - 252.5305786132812
+  - 301.623291015625
+  - 218.3999938964843
+  tool_offset:
+  - 0.003
+  - 0.322
+  - 36.794
+  predicted:
+  - 241.0885570296827
+  - 318.34996312833914
+  - 187.68842097821425
+  actual:
+  - 241.0883026123047
+  - 318.3487243652343
+  - 187.6856994628906
+  residual_mm: 0.0030009844866319855
+  verdict: controller agrees with the extrinsic-RPY convention used in calibration
+cad_discrepancy_mm:
+- 0.003
+- 0.322
+- 0.824
+cad_discrepancy_status: unresolved systematic; NOT corrected for

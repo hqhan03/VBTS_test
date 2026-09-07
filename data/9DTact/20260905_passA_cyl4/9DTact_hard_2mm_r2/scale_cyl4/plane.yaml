@@ -1,0 +1,20 @@
+probe: cyl4
+force_N: 1.0
+offsets_mm:
+- -1.5
+- 0.0
+- 1.5
+rotate_deg: 0.0
+surface_mm: 26.613647587827714
+at: '2026-09-05T21:15:26.778177'
+plane_slope_x: -0.008060501196652664
+plane_slope_y: 0.04299636028077134
+cop_slope_x_x: 0.9776373755304515
+cop_intercept_x_x: -0.3260177673279638
+cop_slope_x_y: 0.08386573464346266
+cop_intercept_x_y: -0.11842345124633742
+cop_slope_y_x: 0.033968198013116485
+cop_intercept_y_x: -0.38169797292122193
+cop_slope_y_y: 0.9319270251148885
+cop_intercept_y_y: -0.07762026505891556
+plane_only: true

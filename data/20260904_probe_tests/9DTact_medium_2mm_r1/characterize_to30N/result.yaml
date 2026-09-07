@@ -1,0 +1,22 @@
+sensor: 9DTact_medium_2mm_r1
+at: '2026-09-04T18:39:26.881538'
+depth_cap_used_mm: 20.0
+force_cap_used_N: 30.0
+exp_alarm: 2.0
+stopped_on: substrate stiffening
+reached_depth_mm: 5.4884060411614435
+reached_force_N: 12.56929889419985
+hertz_a: 1.0593472224012324
+free_exponent: 1.7391205130633525
+image_response:
+  max_measurable_force_N: null
+  reached: false
+  metric: mean |frame - reference| over the central half, grey levels
+  threshold_frac_of_peak_slope: 0.15
+  min_force_N: 0.3
+  consecutive: 2
+  note: 'not reached within the limits: stopped on substrate stiffening at 12.57 N
+    with the image still changing at 1.58 lvl/N (31% of peak)'
+  peak_slope_levels_per_N: 5.1222530536312
+  image_change_at_stop: 44.18410873413086
+registry_written: false

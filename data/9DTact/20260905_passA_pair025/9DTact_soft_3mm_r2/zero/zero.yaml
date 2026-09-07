@@ -1,0 +1,45 @@
+probe: pair025
+contact_law: punch
+searched_surface_mm: 27.695
+surface_mm: 28.771090846317172
+sigma_mm: 0.13754364325133697
+sem_mm: 0.09725804285212368
+first_surface_mm: 28.868348889169294
+drift_first_to_last_mm: -0.1945160857042474
+drift_per_approach_mm: -0.1945160857042474
+monotone: false
+n_approaches: 2
+image_onset_surface_mm: 28.88540992279627
+step_mm: 0.02
+fit_max_force_N: 1.0
+stop_force_N: 1.2
+fits:
+- ok: true
+  d0_mm: 0.8135426805072236
+  a: 0.23830430362037333
+  sigma_d0_mm: 0.046960840829755775
+  r2: 0.9253178836450177
+  exponent: 1.0
+  law: punch
+  n: 28
+  fit_max_force_N: 1.0
+  zero_drift_N: 0.00783857237266699
+  zero_drift_N_per_min: 0.029097091408206863
+  approach: 1
+  base_height_mm: 29.681891569676516
+  image_onset_depth_mm: 1.2094244146878417
+- ok: true
+  d0_mm: 0.9952173469161856
+  a: 0.2858338679537611
+  sigma_d0_mm: 0.03384594128199658
+  r2: 0.9058243579720662
+  exponent: 1.0
+  law: punch
+  n: 28
+  fit_max_force_N: 1.0
+  zero_drift_N: -0.02546359685632508
+  zero_drift_N_per_min: -0.09497698511075295
+  approach: 2
+  base_height_mm: 29.66905015038123
+  image_onset_depth_mm: 0.370697459777368
+at: '2026-09-07T15:50:03.739009'

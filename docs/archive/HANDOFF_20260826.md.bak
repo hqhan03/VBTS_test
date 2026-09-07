@@ -1,0 +1,351 @@
+# VBTS testing platform — handoff
+
+Last updated 2026-08-26.
+
+Everything lives under `~/Desktop/KDC-tactile-testing-platform/`. Nothing this
+project creates goes anywhere else.
+
+---
+
+## 0. Read this first — three things that will bite you
+
+**1. Use `/usr/bin/python3`, not `python3`.**
+`python3` on PATH is Anaconda, which does **not** have `nidaqmx`. Every script
+here must run as:
+
+```bash
+/usr/bin/python3 scripts/<name>.py
+```
+
+**2. `Dev1/ai5` and `Dev1/ai6` are broken. Never assign a gauge to them.**
+`ai5` is an open circuit; `ai6` couples 2.1 % of whatever channel precedes it.
+Both are recorded in `ft_config.yaml` under `known_hardware_faults`, and a unit
+test fails if either is ever put back into the channel list.
+
+**3. The robot cannot move by accident, and that is deliberate.**
+`RobotInterface` has three independent gates. Read §6 before trying to move
+anything; don't "fix" the gates to get past them.
+
+---
+
+## 1. What this is
+
+Automation for vision-based tactile sensor (VBTS) experiments. A robot presses a
+Ø4 mm steel-ball indenter into a VBTS while a force/torque sensor underneath
+measures the contact wrench.
+
+```
+                     FR5 robot
+                         │
+                  custom indenter
+                  (Ø4 mm steel ball)
+                         │
+                      ↓ presses
+                       VBTS
+                         │
+                 3D printed holder
+                         │
+                  ATI Mini45 F/T
+                         │
+                       mount
+                         │
+                  optical table
+```
+
+**Note the arrangement**: the F/T sensor is *table-mounted*, not on the robot
+flange. That matters for frame transforms — see `ft_robot_frame_integration.md`.
+
+---
+
+## 2. Status at a glance
+
+| Subsystem | State |
+|---|---|
+| **F/T acquisition** | **Done and validated.** Ready for experiments. |
+| Robot read-only connection | **Working.** Verified 2026-08-26. |
+| Robot motion | Never attempted. Gates closed. |
+| Indenter TCP calibration | **Blocked** — the steel ball fell off the indenter. |
+| Sensor ↔ robot frame transform | Not started. Blocked on TCP calibration. |
+| Camera / synchronised logger | Not started. |
+
+### The immediate blocker
+
+During the very first TCP calibration pose, **the steel ball detached from the
+indenter**. Recording was stopped with zero poses saved; nothing was written to
+the robot.
+
+It came off during gentle positioning. Actual indentation applies far more force
+(the 1 kg validation weight alone is 9.8 N), so the attachment is worth
+reconsidering before continuing — instant adhesive is weak in exactly the
+loading direction this experiment uses. If it lets go mid-experiment you get
+silently corrupted F/T data, a possibly scratched gel surface, and an invalidated
+TCP calibration all at once.
+
+Whatever you re-attach it with, **measure the ball centre height with calipers
+before mounting**. That gives an independent check on the calibration, and it is
+far more useful than the CAD number.
+
+---
+
+## 3. Confirmed hardware configuration
+
+### F/T chain
+
+| | |
+|---|---|
+| Sensor | ATI Mini45, s/n **FT29831**, SI-145-5 (145 N / 5 N·m) |
+| Calibration | `FT29831.cal` in the project root — used exactly as supplied |
+| Interface | ATI 9105-IFPS-1 → SCB-68A terminal block |
+| DAQ | NI PCIe-6343 `Dev1`, **connector 0 (upper)**, serial 0x222BE10 |
+| Mode | differential, ±10 V, 2000 Hz, 200 samples/read, 200 settle samples |
+| Output | N and N·m, frame `ATI_sensor_frame` |
+
+**Channel mapping** (confirmed by measurement, not assumption):
+
+| Gauge | Channel | SCB-68A terminals |
+|---|---|---|
+| SG0 | `Dev1/ai0` | 68 − **34** |
+| SG1 | `Dev1/ai2` | 65 − 66 |
+| SG2 | `Dev1/ai1` | 33 − 31 |
+| SG3 | `Dev1/ai3` | 30 − 63 |
+| SG4 | `Dev1/ai4` | 28 − 61 |
+| SG5 | **`Dev1/ai7`** | AI7+ / AI15− (relocated) |
+
+Note SG1/SG2 cross over, and SG0's reference is terminal **34**, not 35.
+
+### Robot
+
+| | |
+|---|---|
+| Controller | FAIRINO FR5 at **192.168.58.2** |
+| Protocol | XML-RPC port 20003, binary state stream port 20004. No SDK needed. |
+| PC interface | `enp131s0`, NM profile `Fairino` (192.168.58.80/24 + 192.168.57.10/24 + `192.168.58.2/32 via 192.168.57.2`) |
+| Cable | control cabinet **user network port** (confirmed: traffic routes via 192.168.57.2) |
+| Tool / user register | 0 / 0, **tool 0 offset is zero** — TCP currently equals flange |
+| Pose convention | `[x, y, z, rx, ry, rz]`, mm and deg, **fixed-axis (extrinsic) RPY**, `R = Rz·Ry·Rx` |
+
+---
+
+## 4. Validated F/T performance
+
+From `data/final_ft_validation/20260826_091442/`:
+
+| | |
+|---|---|
+| 1.004 kg check | Fz −9.694 N vs −9.846 N expected → **−1.54 %** |
+| Cross-axis | 0.140 N, 1.4 % of Fz |
+| Noise σ_Fz | **0.057 N** |
+| Noise σ_Fx / σ_Fy | 0.015 / 0.017 N |
+| Noise σ_Tx/Ty/Tz | ~0.0005 N·m |
+
+Use **σ (std)**, not peak-to-peak, for contact thresholds — a single-sample ADC
+glitch inflates p2p by 10× without moving σ.
+
+### Sensor frame sign convention
+
+From `data/manual_ft_excitation_final/20260826_091843/`:
+
+| | |
+|---|---|
+| +Fx | operator's **left** |
+| +Fy | operator's **back** |
+| +Fz | **up** — compression reads **negative** |
+| +Tz | **counter-clockwise** from above |
+
+Right-handedness verified independently: a lateral force at height *h* gave
+`Ty = h·Fx` and `Tx = −h·Fy` with *h* = 9.6–14.3 mm consistently across eight
+pushes and two different axis pairs.
+
+**Caveat**: "left" and "back" are relative to where the operator stood. Before
+building a robot transform these must be re-expressed against the table or the
+robot base.
+
+---
+
+## 5. How to run things
+
+All commands from the project root, all with `/usr/bin/python3`.
+
+### Everyday F/T use
+
+```bash
+# 1. Confirm all six gauge channels are actually driven.
+#    Run this after ANY wiring change. It catches open channels that the
+#    ordinary health check passes.
+/usr/bin/python3 scripts/check_channel_integrity.py
+
+# 2. See the live configuration and take a short passive acquisition.
+/usr/bin/python3 scripts/test_ft_readonly.py --seconds 3
+
+# 3. Measure the noise floor. Sensor must be untouched.
+/usr/bin/python3 scripts/measure_ft_baseline.py --seconds 10
+#    -> data/ft_baseline/<timestamp>/{raw.csv, wrench.csv, summary.yaml}
+
+# 4. Validate against a known mass. Prompts you to remove, then place it.
+/usr/bin/python3 scripts/test_weight_validation.py
+#    -> data/weight_validation/<timestamp>/
+```
+
+### 6-axis direction / cross-talk check
+
+```bash
+# Free-form: records continuously, finds the push episodes automatically.
+/usr/bin/python3 scripts/manual_ft_excitation_test.py --continuous \
+    --stop-file /tmp/ft_stop --baseline-seconds 5 \
+    --output-root data/manual_ft_excitation_final
+# ... do the motions, then:  touch /tmp/ft_stop
+
+# Or scripted, one ENTER per condition:
+/usr/bin/python3 scripts/manual_ft_excitation_test.py --auto
+```
+
+### Robot, read-only
+
+```bash
+# Route check only — opens nothing.
+/usr/bin/python3 scripts/robot_readonly_check.py
+
+# Actually connect and read state, pose, tool registers.
+/usr/bin/python3 scripts/robot_readonly_check.py --connect
+#    -> data/robot_readonly_check/<timestamp>/readonly_check.yaml
+```
+
+### TCP calibration (blocked until the ball is back on)
+
+```bash
+# Verify the maths with synthetic poses. No hardware needed.
+/usr/bin/python3 scripts/prepare_tcp_calibration.py --self-test
+
+# Read state and back it up.
+/usr/bin/python3 scripts/prepare_tcp_calibration.py --phase connect
+
+# Record operator-taught poses. YOU move the robot; the script only reads.
+/usr/bin/python3 scripts/prepare_tcp_calibration.py --phase record
+
+# Solve and report. Does NOT write to the robot.
+/usr/bin/python3 scripts/prepare_tcp_calibration.py --phase compute
+```
+
+### Tests
+
+```bash
+/usr/bin/python3 -m unittest discover -s tests      # 127 tests, all passing
+```
+
+---
+
+## 6. Safety architecture
+
+### Robot motion — three gates
+
+| Gate | Default | Effect |
+|---|---|---|
+| 1. `dry_run` | `True` | no socket opens, no RPC is sent |
+| 2. `allow_real_motion` | `False` | `dry_run=False` alone raises `RuntimeError` |
+| 3. real RPC dispatch | not wired | raises `NotImplementedError` |
+
+Gate 3 exists because two protocol facts are still unverified: which `Mode()`
+value protocol MoveL needs, and the Cartesian MoveL path (which needs
+`GetInverseKin` first — the XML-RPC `MoveL` requires both joint and Cartesian
+targets in one message). It disappears once those are confirmed on hardware.
+Gates 1 and 2 are permanent.
+
+### Read-only robot access
+
+Diagnostic scripts use a whitelisted XML-RPC proxy: only `Get*` queries pass,
+everything else raises `PermissionError` before reaching the wire. Verified
+blocked: `SetToolCoord`, `SetTcp4RefPoint`, `ComputeTcp4`, `SetToolList`,
+`RobotEnable`, `Mode`, `MoveJ`, `MoveL`, `ServoJ`, `StartJOG`, `SetDO`, `SetAO`,
+`SetSpeed`.
+
+They also preflight the network: if the route to 192.168.58.2 leaves via the
+default route, they refuse to connect — otherwise XML-RPC would go to the office
+router.
+
+### F/T
+
+Analog **input** only. No output task, no device reset, no NI MAX write.
+
+---
+
+## 7. Things that already cost days — don't rediscover them
+
+**The SG5 saga (tasks 5–16).** Forces looked plausible but Fx was wrong by up to
+38 N. Root cause: SG5's reference was wired to terminal 35 (AI GND) instead of
+34 (AI0−), leaving the differential negative floating. An open DAQ input does
+not read zero — it returns whatever the multiplexer sampled before it, which
+looks like a stable, in-range, load-correlated signal. Because SG5's Fz
+coefficient is small (+1.18 N/V) and its Fx coefficient is large (+23.73 N/V),
+Fz stayed nearly correct while Fx was garbage.
+
+Lessons baked into the code:
+- `check_channel_integrity.py` exists because the ordinary health check passes
+  ghosting channels.
+- `channel_mapping_confirmed` and `all_channels_healthy` are **separate flags**.
+  Knowing which channel a gauge is on says nothing about whether that channel
+  carries a signal.
+
+**Interface renaming.** A reboot renumbered PCI buses: `enp129s0 → enp131s0`,
+`wlp130s0 → wlp132s0`. Both `Fairino` profiles were bound to the old name and
+could not activate, so 192.168.58.2 resolved through WiFi. `Fairino` is now
+rebound to `enp131s0`.
+
+**This can happen again on any reboot.** If the robot becomes unreachable, check
+`ip route get 192.168.58.2` first. A durable fix is to bind by MAC instead:
+
+```bash
+nmcli con mod Fairino 802-3-ethernet.mac-address 10:ff:e0:8d:9c:ce
+```
+
+Not applied yet. There is only one ethernet port on this PC, so it is safe.
+
+**`~/Desktop/fr5_net.sh` is stale** — it hard-codes `IFACE=enp129s0`. Left
+untouched as an existing file, but its `test` subcommand reads a nonexistent
+interface.
+
+**The calibration file's `<BasicTransform>`** (Dz = 6.858 mm) is already folded
+into `<UserAxis>`. Do not apply it again. Any mechanically measured translation
+must account for that offset.
+
+**Do not modify** `FT29831.cal`, `ati_calibration.py`, the wrench conversion, or
+`fr5_tcp_jog_gui.py` (kept as the manual jog reference tool).
+
+---
+
+## 8. What to do next, in order
+
+1. **Re-attach the steel ball.** Consider something stronger than instant
+   adhesive. Measure the ball centre height with calipers before mounting.
+2. **Verify the read-only connection** — `robot_readonly_check.py --connect`.
+   Confirms reachability, tool register state, and no faults.
+3. **TCP calibration.** `prepare_tcp_calibration.py --phase record`, 6–8 poses
+   with the ball in the cone vertex, then `--phase compute`.
+   - Expected accuracy ≈ 0.17 mm with 6 well-spread poses.
+   - **Watch the condition number, not just the residual.** Poses with similar
+     orientations give a small residual and a meaningless answer; the self-test
+     demonstrates this (27 mm error at condition number 688).
+   - CAD estimate is `[0, 0, 34.4]` mm, and is *not* to be trusted as the answer.
+4. **Resolve `operation_mode`.** Currently `null` in `robot_config.yaml`. The
+   RT stream confirmed the encoding (`1 = manual`, observed live), but which
+   mode protocol MoveL needs is still open. Evidence favours `Mode(0)` — the
+   C++ teleop node used it for 521 successful MoveJ runs on this robot.
+5. **Sensor ↔ robot base transform.** See `ft_robot_frame_integration.md` §5:
+   fit `R` from three axis-aligned pushes, then verify on a fourth direction
+   that was not used in the fit.
+6. Then camera interface and synchronised logging.
+
+---
+
+## 9. Document map
+
+| File | Contents |
+|---|---|
+| `docs/HANDOFF.md` | this file |
+| `docs/ft_robot_frame_integration.md` | what a sensor↔robot transform requires, and the procedure |
+| `docs/robot_ft_integration_status.md` | robot-side API inventory, network details |
+| `config/ft_config.yaml` | F/T configuration — heavily commented with the *why* |
+| `config/robot_config.yaml` | robot configuration and the motion gates |
+| `~/Desktop/FR5_network_connection_notes.md` | FR5 network troubleshooting (outside project, read-only) |
+
+The configs carry the reasoning inline. When something looks arbitrary there,
+the comment explains what measurement produced it.

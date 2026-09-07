@@ -1,0 +1,171 @@
+{
+  "tare": {
+    "at": "2026-09-06T11:17:52.295046",
+    "tare_wrench": [
+      13.946447647561683,
+      3.9258943959060453,
+      89.6010915357224,
+      -0.10306122891887061,
+      -0.1410174243405279,
+      -1.111668834090675
+    ],
+    "tare_volts": [
+      0.7698367818895884,
+      1.2507599824754225,
+      0.9842549514706798,
+      0.7918398302987761,
+      0.7413770233401918,
+      1.351877956020659
+    ]
+  },
+  "reference": {
+    "at": "2026-09-06T11:18:03.627553",
+    "file": "reference.png",
+    "wrench": [
+      -0.0005922122176222899,
+      0.0034147025892465876,
+      0.026259044038212664,
+      -6.802638141878425e-05,
+      -4.263616283123328e-05,
+      -0.0002591781901266632
+    ],
+    "quality": {
+      "full_mean": 142.90038821373457,
+      "centre_mean": 194.72307098765432,
+      "centre_min": 160,
+      "centre_max": 211,
+      "centre_saturated_pct": 0.0,
+      "centre_black_pct": 0.0
+    },
+    "stability": {
+      "n_frames": 8,
+      "fps": 2.6666666666666665,
+      "mean": 150.14380553948047,
+      "frame_to_frame_std": 0.016149981138583,
+      "drift": 0.0
+    },
+    "camera_controls": {
+      "auto_exposure": 1.0,
+      "exposure": 2047.0,
+      "auto_wb": 0.0,
+      "wb_temperature": 4600.0,
+      "brightness": 64.0,
+      "contrast": 4.0,
+      "gamma": 100.0,
+      "fourcc": "YUYV",
+      "width": 1920,
+      "height": 1080
+    },
+    "image_time": 1788661080.2163758
+  },
+  "samples": [],
+  "zero_checks": [],
+  "searched_surface_mm": 27.41061239790265,
+  "zero": {
+    "probe": "ball4",
+    "contact_law": "hertz",
+    "searched_surface_mm": 27.411,
+    "surface_mm": 27.733191659658104,
+    "sigma_mm": NaN,
+    "sem_mm": NaN,
+    "first_surface_mm": 27.733191659658104,
+    "drift_first_to_last_mm": 0.0,
+    "drift_per_approach_mm": 0.0,
+    "monotone": false,
+    "n_approaches": 1,
+    "image_onset_surface_mm": 27.26576125922484,
+    "step_mm": 0.02,
+    "fit_max_force_N": 1.0,
+    "stop_force_N": 1.2,
+    "fits": [
+      {
+        "ok": true,
+        "d0_mm": 0.247054182590714,
+        "a": 0.6608849156078827,
+        "sigma_d0_mm": 0.024849994707892377,
+        "r2": 0.9831343249589874,
+        "exponent": 1.5,
+        "law": "hertz",
+        "n": 16,
+        "fit_max_force_N": 1.0,
+        "zero_drift_N": 0.0017489045492755971,
+        "zero_drift_N_per_min": 0.00494654849558523,
+        "approach": 1,
+        "base_height_mm": 27.980245842248817,
+        "image_onset_depth_mm": 0.7144845830239781
+      }
+    ],
+    "at": "2026-09-06T11:20:20.451962"
+  },
+  "shape": {
+    "ball4": {
+      "n_frames": 6,
+      "depths_mm": [
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5,
+        0.6
+      ],
+      "repeats": 1,
+      "surface_mm": 27.733191659658104,
+      "dir": "shape_ball4",
+      "at": "2026-09-06T11:21:04.714954"
+    }
+  },
+  "step_timings_s": {
+    "enable": 5.91,
+    "liftoff": 0.01,
+    "align": 5.24,
+    "newrun": 0.21,
+    "tare": 2.47,
+    "reference": 11.33,
+    "qc": 0.0,
+    "search": 61.79,
+    "touchcheck": 35.22,
+    "zero": 40.3,
+    "shape": 44.72
+  },
+  "total_s": 207.2,
+  "scale": {
+    "rot0": {
+      "probe": "ball4",
+      "force_N": 0.4626194409255178,
+      "offsets_mm": [
+        -1.5,
+        -0.75,
+        0.0,
+        0.75,
+        1.5
+      ],
+      "rotate_deg": 0.0,
+      "surface_mm": 27.733191659658104,
+      "at": "2026-09-06T11:23:27.128178",
+      "plane_slope_x": -0.01631474439986456,
+      "plane_slope_y": 0.02275251238532954,
+      "cop_slope_x_x": 0.07828921140762371,
+      "cop_intercept_x_x": -0.15924338547745215,
+      "cop_slope_x_y": -0.7277078067155953,
+      "cop_intercept_x_y": -0.8129144174092273,
+      "cop_slope_y_x": -0.10539128542291724,
+      "cop_intercept_y_x": -2.9425799559675765,
+      "cop_slope_y_y": 0.816080155934727,
+      "cop_intercept_y_y": -2.389758013311956,
+      "px_per_mm_xx": 72.24469995709602,
+      "rms_px_xx": 1.2651208844644097,
+      "px_per_mm_xy": 42.9836170845748,
+      "rms_px_xy": 1.5500974955595894,
+      "px_per_mm_yx": -42.27965031989064,
+      "rms_px_yx": 1.600341335404667,
+      "px_per_mm_yy": 75.0035704374471,
+      "rms_px_yy": 2.31782085142546,
+      "theta_from_row1_deg": 30.33738298885083,
+      "theta_from_row2_deg": 29.816487708701843,
+      "px_per_mm_image_x": 83.70702182650544,
+      "px_per_mm_image_y": 86.44724932603951,
+      "theta_disagreement_deg": 0.5208952801489879,
+      "scale_trusted": true
+    }
+  }
+}

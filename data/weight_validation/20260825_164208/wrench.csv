@@ -1,0 +1,4 @@
+mapping,channels,Fx_N,Fy_N,Fz_N,Tx_Nm,Ty_Nm,Tz_Nm,abs_Fz_N,Fz_error_pct,lateral_ratio
+"configured (SG0=ai0, per SCB-68A labels)",Dev1/ai0 Dev1/ai2 Dev1/ai1 Dev1/ai3 Dev1/ai4 Dev1/ai5,-2.595243,1.460073,-7.679876,0.000200,0.089462,0.041980,7.679876,-21.999,0.38774
+"evidence-based (SG0=ai5, SG5=ai0)",Dev1/ai5 Dev1/ai2 Dev1/ai1 Dev1/ai3 Dev1/ai4 Dev1/ai0,0.234508,0.231440,-11.636255,-0.006357,-0.007431,-0.005182,11.636255,18.184,0.02832
+"evidence-based (SG0=ai5, SG5=ai6)",Dev1/ai5 Dev1/ai2 Dev1/ai1 Dev1/ai3 Dev1/ai4 Dev1/ai6,0.239603,0.228494,-11.636002,-0.006374,-0.007469,-0.005256,11.636002,18.181,0.02845

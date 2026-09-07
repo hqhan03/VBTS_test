@@ -1,0 +1,236 @@
+<title>형상 복원 파일럿</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --ground:#f2f3f5; --panel:#ffffff; --sunk:#e9ebee;
+  --ink:#16191d; --ink2:#41474f; --muted:#6b7480;
+  --line:#d8dce1; --line2:#eaedf0;
+  --accent:#a8481a;      /* 젤 조명 */
+  --measured:#1f6260;    /* 실측값 */
+  --warn:#8a6a12;
+  --stop:#8e2f2f;
+  --ok:#2c6b3f;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#111418; --panel:#181c21; --sunk:#101317;
+    --ink:#e7eaee; --ink2:#b6bec7; --muted:#828d99;
+    --line:#2a3038; --line2:#22272d;
+    --accent:#e08850; --measured:#5fb0aa; --warn:#d3ac48;
+    --stop:#e07a7a; --ok:#6fbb88;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#111418; --panel:#181c21; --sunk:#101317;
+  --ink:#e7eaee; --ink2:#b6bec7; --muted:#828d99;
+  --line:#2a3038; --line2:#22272d;
+  --accent:#e08850; --measured:#5fb0aa; --warn:#d3ac48;
+  --stop:#e07a7a; --ok:#6fbb88;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans KR",system-ui,-apple-system,sans-serif;
+  font-size:15px; line-height:1.78; word-break:keep-all;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1020px; margin:0 auto; padding:0 24px 96px}
+
+header{border-bottom:1px solid var(--line); margin-bottom:40px; padding:44px 0 26px}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:500;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--accent); margin:0 0 12px
+}
+h1{
+  font-weight:700; font-size:clamp(28px,4.2vw,42px);
+  line-height:1.25; letter-spacing:-.015em; margin:0 0 14px; text-wrap:balance
+}
+.lede{font-size:16.5px; color:var(--ink2); max-width:56ch; margin:0}
+
+.strip{display:flex; flex-wrap:wrap; gap:1px; background:var(--line); border:1px solid var(--line); margin-top:28px}
+.strip div{flex:1 1 150px; background:var(--panel); padding:13px 16px}
+.strip .k{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--muted); display:block; margin-bottom:5px}
+.strip .v{font-weight:600; font-size:21px; font-variant-numeric:tabular-nums; line-height:1.3}
+.strip .v small{font-size:12px; font-weight:500; color:var(--muted); margin-left:4px}
+
+section{margin:0 0 52px}
+h2{font-weight:600; font-size:23px; letter-spacing:-.01em; margin:0 0 6px; padding-top:8px; line-height:1.4}
+h2 .num{font-family:"IBM Plex Mono",monospace; font-size:13px; font-weight:500;
+  color:var(--accent); margin-right:12px; vertical-align:2px}
+h3{font-weight:600; font-size:16.5px; margin:30px 0 8px}
+.sub{color:var(--muted); font-size:14px; margin:0 0 22px; max-width:60ch}
+p{max-width:60ch; margin:0 0 14px}
+.rule{height:1px; background:var(--line); border:0; margin:0 0 22px}
+
+code,.mono{font-family:"IBM Plex Mono",monospace; font-size:.9em; word-break:break-all}
+code{background:var(--sunk); padding:1.5px 5px; border-radius:3px; color:var(--ink2)}
+.n{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; font-weight:500}
+.m{color:var(--measured); font-weight:600}
+
+.tw{overflow-x:auto; border:1px solid var(--line); background:var(--panel); margin:0 0 18px}
+table{border-collapse:collapse; width:100%; font-size:13.5px; min-width:480px}
+th{
+  font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-weight:500; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--muted); text-align:left; padding:10px 14px;
+  border-bottom:1px solid var(--line); white-space:nowrap; background:var(--panel)
+}
+td{padding:9px 14px; border-bottom:1px solid var(--line2); vertical-align:top; line-height:1.65}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right; font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; white-space:nowrap}
+td.name{font-family:"IBM Plex Mono",monospace; font-size:12.5px; white-space:nowrap}
+.tag{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.05em; text-transform:uppercase;
+  padding:2px 7px; border:1px solid currentColor; border-radius:2px; white-space:nowrap; font-weight:500}
+.t-ok{color:var(--ok)} .t-stop{color:var(--stop)} .t-cal{color:var(--accent)}
+
+.note{border-left:3px solid var(--line); padding:2px 0 2px 16px; margin:0 0 18px; max-width:62ch}
+.note.open{border-left-color:var(--warn)}
+.note.stop{border-left-color:var(--stop)}
+.note.key{border-left-color:var(--measured)}
+.note h4{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.09em;
+  text-transform:uppercase; margin:0 0 5px; color:var(--muted); font-weight:500}
+.note p:last-child{margin-bottom:0}
+
+.passes{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1px;
+  background:var(--line); border:1px solid var(--line); margin:0 0 22px}
+.pass{background:var(--panel); padding:18px 20px}
+.pass .lbl{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--accent); margin:0 0 7px}
+.pass h4{font-size:17px; font-weight:600; margin:0 0 8px}
+.pass p{font-size:13.5px; color:var(--ink2); margin:0 0 10px}
+.pass ol{margin:0; padding-left:19px; font-size:13.5px; color:var(--ink2)}
+.pass li{margin-bottom:4px}
+
+.steps{list-style:none; margin:0 0 18px; padding:0; counter-reset:s}
+.steps li{
+  counter-increment:s; position:relative; padding:9px 0 9px 44px;
+  border-bottom:1px solid var(--line2); font-size:14px; max-width:66ch
+}
+.steps li:last-child{border-bottom:0}
+.steps li::before{
+  content:counter(s,decimal-leading-zero); position:absolute; left:0; top:11px;
+  font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--accent); font-weight:500
+}
+.steps .cmd{display:block; font-family:"IBM Plex Mono",monospace; font-size:12px;
+  color:var(--muted); margin-top:3px; word-break:break-all}
+
+figure{margin:0 0 18px; border:1px solid var(--line); background:var(--panel); padding:20px}
+figcaption{font-size:12.5px; color:var(--muted); margin-top:16px; max-width:58ch; line-height:1.7}
+.bars{display:flex; flex-direction:column; gap:10px}
+.bar{display:grid; grid-template-columns:70px 1fr 74px; align-items:center; gap:12px}
+.bar .bl{font-family:"IBM Plex Mono",monospace; font-size:12px; text-align:right; color:var(--ink2)}
+.bar .track{height:20px; background:var(--sunk); position:relative}
+.bar .fill{height:100%; background:var(--measured)}
+.bar .bv{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink2);
+  font-variant-numeric:tabular-nums}
+.limitline{position:relative; height:22px}
+.limitline .lm{position:absolute; top:0; bottom:0; border-left:2px dashed var(--accent)}
+.limitline span{position:absolute; font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+  color:var(--accent); top:3px; padding-left:7px; white-space:nowrap}
+
+footer{border-top:1px solid var(--line); margin-top:56px; padding-top:20px;
+  font-size:12.5px; color:var(--muted); font-family:"IBM Plex Mono",monospace; line-height:1.9}
+a{color:var(--accent)}
+</style>
+<style>
+.cmd-block{font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.7;
+  background:var(--sunk);border:1px solid var(--line);padding:14px 16px;margin:0 0 18px;
+  overflow-x:auto;white-space:pre;color:var(--ink2)}
+ul,ol{max-width:60ch;padding-left:22px;margin:0 0 16px}
+li{margin-bottom:7px}
+h3{border-top:1px solid var(--line2);padding-top:18px}
+</style>
+
+
+<div class="wrap">
+<header>
+  <p class="eyebrow">KDC tactile testing platform · 2026-09-05 · 9DTact_soft_2mm_r1</p>
+  <h1>형상 복원 파일럿</h1>
+  <p class="lede">9DTact의 공개된 형상 복원 방법을 우리 데이터에 적용하고, 정답을 아는 도형으로 채점했다. 캠페인 전체에 41시간을 쓰기 전에 이 방법이 우리 센서에서 성립하는지 확인하는 것이 목적이다.</p>
+  <div class="strip">
+    <div><span class="k">깊이 반복도</span><span class="v">0.005<small>mm</small></span></div>
+    <div><span class="k">보정 후 잔차 RMS</span><span class="v">0.021<small>mm</small></span></div>
+    <div><span class="k">원판 반지름</span><span class="v">2.000<small>mm (정답 2.00)</small></span></div>
+    <div><span class="k">계통 편향</span><span class="v">&minus;0.128<small>mm</small></span></div>
+  </div>
+</header>
+
+<section><h2><span class="num">§1</span>무엇을 했는가</h2><hr class="rule">
+<p><strong>보정</strong>은 알려진 반지름의 공을 알려진 깊이로 누른 이미지에서 만든다. 접촉 원 안의 각 픽셀은 구 기하로 자기 높이가 정해지므로, 그 높이를 픽셀의 어두워진 정도와 짝지으면 <strong>그레이레벨 → 깊이 룩업</strong>이 된다. 복원은 그 룩업을 새 이미지에 적용하는 것뿐이다 &mdash; 회귀도 학습도 없다.</p>
+<p><strong>채점</strong>은 <code>cyl4</code>로 한다. 반지름 <strong>2.00 mm의 평평한 원판</strong>을 여섯 깊이로 누른 것이라 정답에 자유 파라미터가 없다.</p>
+<p>보정과 채점이 <strong>같은 센서 장착</strong>에서 나왔다. 프로브만 바꿨으므로 젤의 상태와 광학이 동일하다.</p>
+<div class="note key"><h4>원본과 다르게 한 두 가지</h4>
+<p><strong>접촉 반지름을 검출하지 않고 계산한다.</strong> 9DTact는 손으로 누르므로 깊이를 몰라 이미지에서 원을 검출해야 한다. 우리는 로봇이 깊이를 재므로 <code>√(2Rδ &minus; δ²)</code>로 직접 얻는다. 이게 중요한 이유는 §4에 있다.</p>
+<p><strong>룩업을 사다리 전체에서 만든다.</strong> 원본은 한 번 누른 이미지 한 장을 쓴다. 우리는 6깊이 × 3반복 = 18장을 합쳐 <strong>50만 픽셀</strong>로 만들었다. 얕은 압입은 밝은 레벨만, 깊은 압입은 어두운 레벨까지 덮으므로 정의역이 넓어진다.</p></div>
+</section>
+
+<section><h2><span class="num">§2</span>복원된 형상</h2>
+<p class="sub">여섯 깊이에서 접촉 중심으로부터의 반경 프로파일. 주황 점선은 가장 깊은 단(0.587 mm)의 정답 &mdash; 반지름 2.00 mm까지 평평하고 그 밖은 0인 원판.</p>
+<figure><svg viewBox="0 0 760 300" width="100%" role="img" aria-label="reconstructed depth profiles"><line x1="54" y1="243.1" x2="746" y2="243.1" stroke="var(--line2)"/><text x="46" y="246.1" text-anchor="end" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">0.0</text><line x1="54" y1="197.3" x2="746" y2="197.3" stroke="var(--line2)"/><text x="46" y="200.3" text-anchor="end" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">0.1</text><line x1="54" y1="151.5" x2="746" y2="151.5" stroke="var(--line2)"/><text x="46" y="154.5" text-anchor="end" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">0.2</text><line x1="54" y1="105.6" x2="746" y2="105.6" stroke="var(--line2)"/><text x="46" y="108.6" text-anchor="end" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">0.3</text><line x1="54" y1="59.8" x2="746" y2="59.8" stroke="var(--line2)"/><text x="46" y="62.8" text-anchor="end" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">0.4</text><line x1="54" y1="14.0" x2="746" y2="14.0" stroke="var(--line2)"/><text x="46" y="17.0" text-anchor="end" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">0.5</text><line x1="54.0" y1="14" x2="54.0" y2="266" stroke="var(--line2)"/><text x="54.0" y="281" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">0</text><line x1="227.0" y1="14" x2="227.0" y2="266" stroke="var(--line2)"/><text x="227.0" y="281" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">1</text><line x1="400.0" y1="14" x2="400.0" y2="266" stroke="var(--line2)"/><text x="400.0" y="281" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">2</text><line x1="573.0" y1="14" x2="573.0" y2="266" stroke="var(--line2)"/><text x="573.0" y="281" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">3</text><line x1="746.0" y1="14" x2="746.0" y2="266" stroke="var(--line2)"/><text x="746.0" y="281" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">4</text><polyline points="54.0,-25.9 400.0,-25.9 400.0,243.1 746.0,243.1" fill="none" stroke="#a8481a" stroke-width="2" stroke-dasharray="5 4"/><polyline points="54.0,240.0 62.6,239.9 71.3,239.6 80.0,239.8 88.6,239.2 97.2,238.1 105.9,238.5 114.6,239.2 123.2,239.9 131.9,240.3 140.5,239.9 149.2,240.0 157.8,239.9 166.4,239.6 175.1,239.6 183.8,239.1 192.4,238.4 201.1,238.6 209.7,239.2 218.4,239.3 227.0,239.1 235.7,239.7 244.3,240.3 253.0,240.4 261.6,240.4 270.2,240.5 278.9,239.9 287.6,239.8 296.2,240.0 304.9,240.3 313.5,240.6 322.2,240.9 330.8,240.9 339.5,240.9 348.1,241.2 356.8,241.8 365.4,242.6 374.1,243.4 382.7,244.0 391.4,244.4 400.0,245.2 408.7,245.6 417.3,245.9 425.9,246.2 434.6,246.7 443.2,246.8 451.9,246.8 460.6,247.0 469.2,247.6 477.9,247.9 486.5,248.1 495.2,248.1 503.8,248.3 512.5,248.6 521.1,248.8 529.8,248.9 538.4,249.2 547.0,249.5 555.7,249.5 564.4,249.4 573.0,249.5 581.7,249.6 590.3,249.7 599.0,249.6 607.6,249.6 616.2,249.8 624.9,249.9 633.6,249.9 642.2,250.0 650.9,249.9 659.5,249.9 668.2,250.0 676.8,250.1 685.5,250.1 694.1,250.1 702.8,250.1 711.4,250.1 720.1,250.1 728.7,250.2 737.4,250.3" fill="none" stroke="#8ab4d8" stroke-width="2"/><text x="64" y="236" font-size="10" fill="#8ab4d8" font-family="IBM Plex Mono,monospace">0.09</text><polyline points="54.0,215.8 62.6,216.9 71.3,218.2 80.0,219.4 88.6,217.0 97.2,214.8 105.9,215.8 114.6,216.8 123.2,218.3 131.9,219.0 140.5,217.9 149.2,219.1 157.8,219.6 166.4,218.9 175.1,219.6 183.8,220.1 192.4,218.4 201.1,217.5 209.7,219.1 218.4,218.8 227.0,217.8 235.7,217.9 244.3,219.1 253.0,221.6 261.6,222.5 270.2,222.2 278.9,222.2 287.6,223.0 296.2,224.1 304.9,224.6 313.5,225.5 322.2,226.6 330.8,227.5 339.5,228.3 348.1,229.2 356.8,231.0 365.4,233.4 374.1,235.4 382.7,236.4 391.4,237.1 400.0,238.4 408.7,239.6 417.3,240.5 425.9,241.2 434.6,242.3 443.2,243.0 451.9,243.5 460.6,244.2 469.2,244.9 477.9,245.6 486.5,246.3 495.2,246.7 503.8,247.0 512.5,247.7 521.1,248.1 529.8,248.3 538.4,248.8 547.0,249.2 555.7,249.2 564.4,249.3 573.0,249.4 581.7,249.5 590.3,249.7 599.0,249.7 607.6,249.8 616.2,249.9 624.9,249.9 633.6,250.0 642.2,250.1 650.9,250.1 659.5,250.2 668.2,250.2 676.8,250.3 685.5,250.3 694.1,250.3 702.8,250.3 711.4,250.3 720.1,250.3 728.7,250.4 737.4,250.4" fill="none" stroke="#6fa3cf" stroke-width="2"/><text x="64" y="212" font-size="10" fill="#6fa3cf" font-family="IBM Plex Mono,monospace">0.19</text><polyline points="54.0,169.5 62.6,163.4 71.3,166.3 80.0,165.8 88.6,167.2 97.2,168.6 105.9,171.4 114.6,173.6 123.2,175.2 131.9,175.6 140.5,176.6 149.2,176.7 157.8,177.2 166.4,176.5 175.1,175.7 183.8,176.2 192.4,174.2 201.1,172.2 209.7,172.9 218.4,174.7 227.0,176.7 235.7,179.6 244.3,182.9 253.0,184.8 261.6,183.9 270.2,184.6 278.9,185.9 287.6,187.2 296.2,190.1 304.9,192.6 313.5,195.8 322.2,199.3 330.8,202.4 339.5,205.0 348.1,208.1 356.8,211.8 365.4,215.6 374.1,220.2 382.7,223.8 391.4,225.7 400.0,228.3 408.7,230.3 417.3,232.0 425.9,233.7 434.6,235.6 443.2,237.0 451.9,238.6 460.6,240.0 469.2,241.3 477.9,242.4 486.5,243.8 495.2,245.0 503.8,245.6 512.5,246.4 521.1,247.1 529.8,247.5 538.4,248.1 547.0,248.7 555.7,249.1 564.4,249.3 573.0,249.4 581.7,249.5 590.3,249.8 599.0,249.9 607.6,249.9 616.2,250.1 624.9,250.2 633.6,250.3 642.2,250.3 650.9,250.3 659.5,250.4 668.2,250.4 676.8,250.4 685.5,250.5 694.1,250.5 702.8,250.6 711.4,250.6 720.1,250.5 728.7,250.6 737.4,250.6" fill="none" stroke="#4f8fc4" stroke-width="2"/><text x="64" y="165" font-size="10" fill="#4f8fc4" font-family="IBM Plex Mono,monospace">0.29</text><polyline points="54.0,127.3 62.6,128.6 71.3,129.7 80.0,127.8 88.6,124.9 97.2,122.5 105.9,126.3 114.6,127.1 123.2,124.7 131.9,125.2 140.5,124.7 149.2,124.5 157.8,123.8 166.4,121.3 175.1,120.2 183.8,120.1 192.4,119.3 201.1,117.8 209.7,116.5 218.4,116.6 227.0,119.8 235.7,124.4 244.3,127.9 253.0,130.7 261.6,132.5 270.2,134.0 278.9,135.4 287.6,139.0 296.2,143.9 304.9,147.6 313.5,151.9 322.2,156.3 330.8,159.2 339.5,163.8 348.1,168.8 356.8,175.1 365.4,182.9 374.1,190.7 382.7,197.0 391.4,202.2 400.0,207.8 408.7,212.0 417.3,216.5 425.9,220.8 434.6,224.9 443.2,228.5 451.9,231.5 460.6,234.6 469.2,237.4 477.9,239.3 486.5,241.0 495.2,242.7 503.8,243.9 512.5,244.9 521.1,245.9 529.8,246.8 538.4,247.6 547.0,248.2 555.7,248.6 564.4,248.9 573.0,249.3 581.7,249.6 590.3,249.9 599.0,249.9 607.6,250.0 616.2,250.2 624.9,250.3 633.6,250.4 642.2,250.5 650.9,250.5 659.5,250.5 668.2,250.5 676.8,250.6 685.5,250.6 694.1,250.6 702.8,250.7 711.4,250.7 720.1,250.7 728.7,250.7 737.4,250.7" fill="none" stroke="#2f79b4" stroke-width="2"/><text x="64" y="123" font-size="10" fill="#2f79b4" font-family="IBM Plex Mono,monospace">0.39</text><polyline points="54.0,69.5 62.6,68.9 71.3,73.0 80.0,75.8 88.6,72.5 97.2,70.3 105.9,75.0 114.6,77.8 123.2,77.9 131.9,79.3 140.5,77.6 149.2,77.3 157.8,77.9 166.4,77.6 175.1,76.8 183.8,76.0 192.4,75.1 201.1,75.1 209.7,75.5 218.4,75.9 227.0,77.2 235.7,80.4 244.3,84.0 253.0,86.5 261.6,89.5 270.2,91.9 278.9,92.0 287.6,93.5 296.2,97.7 304.9,101.4 313.5,105.0 322.2,110.4 330.8,115.1 339.5,118.3 348.1,123.7 356.8,131.7 365.4,141.3 374.1,151.3 382.7,160.2 391.4,169.7 400.0,179.2 408.7,187.3 417.3,195.0 425.9,202.1 434.6,209.6 443.2,216.7 451.9,222.6 460.6,227.6 469.2,232.1 477.9,235.2 486.5,237.8 495.2,240.1 503.8,241.8 512.5,243.3 521.1,244.8 529.8,245.7 538.4,246.7 547.0,247.9 555.7,248.6 564.4,248.9 573.0,249.4 581.7,249.7 590.3,249.9 599.0,250.1 607.6,250.2 616.2,250.3 624.9,250.4 633.6,250.5 642.2,250.6 650.9,250.6 659.5,250.6 668.2,250.7 676.8,250.7 685.5,250.7 694.1,250.7 702.8,250.7 711.4,250.7 720.1,250.7 728.7,250.8 737.4,250.8" fill="none" stroke="#1c5f96" stroke-width="2"/><text x="64" y="66" font-size="10" fill="#1c5f96" font-family="IBM Plex Mono,monospace">0.49</text><polyline points="54.0,32.3 62.6,32.4 71.3,31.5 80.0,30.8 88.6,31.3 97.2,30.2 105.9,32.0 114.6,33.7 123.2,33.4 131.9,33.6 140.5,33.3 149.2,35.1 157.8,36.3 166.4,35.6 175.1,34.9 183.8,35.2 192.4,35.5 201.1,35.5 209.7,35.8 218.4,36.4 227.0,38.1 235.7,40.6 244.3,42.6 253.0,45.5 261.6,47.2 270.2,49.2 278.9,50.2 287.6,52.3 296.2,55.2 304.9,58.9 313.5,63.5 322.2,68.3 330.8,72.4 339.5,76.2 348.1,81.8 356.8,90.8 365.4,100.7 374.1,112.4 382.7,121.9 391.4,131.8 400.0,142.6 408.7,153.4 417.3,164.2 425.9,174.5 434.6,185.6 443.2,195.9 451.9,206.2 460.6,216.4 469.2,223.9 477.9,229.5 486.5,234.0 495.2,237.1 503.8,239.9 512.5,241.9 521.1,243.6 529.8,245.1 538.4,246.4 547.0,247.5 555.7,248.3 564.4,248.8 573.0,249.3 581.7,249.7 590.3,250.0 599.0,250.2 607.6,250.3 616.2,250.5 624.9,250.6 633.6,250.6 642.2,250.7 650.9,250.7 659.5,250.7 668.2,250.8 676.8,250.8 685.5,250.8 694.1,250.8 702.8,250.8 711.4,250.8 720.1,250.8 728.7,250.8 737.4,250.8" fill="none" stroke="#0d456f" stroke-width="2"/><text x="64" y="28" font-size="10" fill="#0d456f" font-family="IBM Plex Mono,monospace">0.59</text><text x="54" y="294" font-size="11" fill="var(--muted)" font-family="IBM Plex Mono,monospace">radius from the contact centre, mm</text><text x="12" y="18" font-size="11" fill="var(--muted)" font-family="IBM Plex Mono,monospace" transform="rotate(-90 12 18)">depth, mm</text></svg>
+<figcaption>복원은 원판의 <strong>모양</strong>을 옳게 잡는다 &mdash; 안쪽이 평평하고, 2 mm에서 떨어지고, 바깥에서 0으로 간다. 다만 <strong>깊이가 계통적으로 얕게</strong> 나오고(0.587 → 0.461), 가장자리가 정답의 수직 낙하보다 완만하다. 완만한 가장자리는 오차가 아니라 실제 젤 변형이다: 강체 팁 밖에서도 젤은 끌려 내려간다.</figcaption>
+</figure>
+</section>
+
+<section><h2><span class="num">§3</span>정확도</h2><hr class="rule">
+<div class="tw"><table>
+<thead><tr><th>항목</th><th class="num">값</th><th>의미</th></tr></thead>
+<tbody>
+<tr><td>깊이 계통 편향 (원본 그대로)</td><td class="num">&minus;0.128 mm</td><td>모든 깊이에서 일정하게 얕게 읽음</td></tr>
+<tr><td>선형 보정 후 잔차 RMS</td><td class="num"><strong>0.021 mm</strong></td><td>R² 0.983, 최대 잔차 0.034 mm</td></tr>
+<tr><td>패스 간 반복도</td><td class="num"><strong>0.005 mm</strong></td><td>같은 깊이 3회, 여섯 단 평균</td></tr>
+<tr><td>원판 반지름 (가장 깊은 단)</td><td class="num"><strong>2.000 mm</strong></td><td>정답 2.00 mm, 3회 모두 동일</td></tr>
+<tr><td>원판 안쪽 평탄도</td><td class="num">0.023 mm</td><td>평평해야 할 면의 표준편차</td></tr>
+</tbody></table></div>
+<p><strong>절대 정확도와 상대 정확도를 구분해야 한다.</strong> 원본 방법을 그대로 적용하면 깊이가 0.128 mm 얕게 나온다 &mdash; 평균 깊이의 38 %라 크게 들린다. 그러나 그 편향은 <em>일정하다</em>. 1차 보정 하나를 적용하면 잔차가 <strong>0.021 mm</strong>로 떨어지고 R²가 0.983이 된다. 즉 이 방법은 깊이를 <strong>정확히 재지는 못하지만 정밀하게 잰다</strong>.</p>
+<p>반복도 0.005 mm는 그보다 네 배 좋다. 측정의 한계는 잡음이 아니라 <strong>보정의 계통 오차</strong>라는 뜻이다.</p>
+</section>
+
+<section><h2><span class="num">§4</span>무엇이 한계를 정하는가</h2><hr class="rule">
+<div class="note stop"><h4>그레이레벨 28개</h4>
+<p>보정 이미지에서 최대 어두워짐이 <strong>27 레벨</strong>이었다. 룩업의 정의역 전체가 28개 레벨이고, 그 위에 0.548 mm의 깊이 범위가 실린다 &mdash; 레벨당 <strong>0.020 mm</strong>다.</p>
+<p>보정 후 잔차 RMS가 <strong>0.021 mm</strong>로 나온 것이 우연이 아니다. <strong>복원의 깊이 분해능은 이미지의 그레이 동적 범위가 정한다.</strong> 알고리즘을 바꿔서 넘을 수 있는 벽이 아니다.</p></div>
+<p>이것이 캠페인이 재려는 바로 그 양이다. 젤이 같은 압입에 더 크게 어두워지는 설계일수록 레벨이 많고 분해능이 좋다. <strong>0.020 mm/레벨은 이 한 설계(9DTact soft 2 mm)의 값</strong>이고, 54개를 비교하면 이 수치의 분포가 나온다.</p>
+
+<h3>검출된 접촉 원은 믿을 수 없다</h3>
+<p>보정 중에 검출된 원과 기하학적으로 계산한 접촉 반지름을 함께 기록했다:</p>
+<div class="tw"><table>
+<thead><tr><th class="num">깊이 mm</th><th class="num">검출 반지름</th><th class="num">√(2Rδ&minus;δ²)</th><th class="num">비</th></tr></thead>
+<tbody>
+<tr><td class="num">0.082</td><td class="num">0.510</td><td class="num">0.567</td><td class="num">0.90</td></tr>
+<tr><td class="num">0.188</td><td class="num">1.025</td><td class="num">0.847</td><td class="num">1.21</td></tr>
+<tr><td class="num">0.283</td><td class="num">1.279</td><td class="num">1.026</td><td class="num">1.25</td></tr>
+<tr><td class="num">0.384</td><td class="num">1.483</td><td class="num">1.178</td><td class="num">1.26</td></tr>
+<tr><td class="num">0.484</td><td class="num">1.631</td><td class="num">1.305</td><td class="num">1.25</td></tr>
+<tr><td class="num">0.585</td><td class="num">1.837</td><td class="num">1.413</td><td class="num">1.30</td></tr>
+</tbody></table></div>
+<p>0.18 mm보다 깊으면 검출된 원이 실제 접촉보다 <strong>일정하게 1.25배</strong> 크다. 문턱을 넘는 영역이 강체 접촉 밖으로 퍼지기 때문이다. <strong>9DTact를 그대로 따랐다면 보정의 높이맵이 25 % 틀린 반지름 위에 세워졌을 것이다.</strong> 깊이를 아는 이 리그에서는 계산으로 우회할 수 있었다.</p>
+</section>
+
+<section><h2><span class="num">§5</span>축척이 독립적으로 확인됐다</h2><hr class="rule">
+<p>가장 깊은 단에서 복원된 원판 반지름이 <strong>2.000 mm</strong>로 나왔다 &mdash; 세 번 모두. 정답은 2.00 mm다.</p>
+<p>이건 우연이 아니라 <strong>서로 무관한 두 경로가 만난 것</strong>이다. mm/px는 로봇을 알려진 거리만큼 움직여 자국을 추적해 얻었고(11.60 µm/px), 복원된 반지름은 이미지의 그레이값과 구 기하에서 나왔다. 어느 쪽도 상대를 참조하지 않는다.</p>
+<div class="note key"><h4>그리고 픽셀은 정사각이다</h4>
+<p>이 센서의 야코비안은 <code>[[75.02, &minus;42.55], [43.88, 73.82]]</code>이고, 두 행에서 구한 회전각이 29.56°와 30.73°로 <strong>1.17° 안에서 일치</strong>한다(모델의 자체 검증). 여기서 나오는 비등방은 <strong>kx/ky = 1.004</strong>, 즉 정사각이다. FOV는 22.26 × 12.58 mm로 종횡비 1.769 &mdash; 프레임의 1.778과 같다.</p>
+<p>앞서 다른 센서에서 얻은 &ldquo;비등방 1.26&rdquo;은 y행 추적이 나빴던 측정에서 나온 것이었다(그 행의 잔차가 3.6~15.8 px). 다만 <code>hard_1mm</code>의 한 측정은 잔차가 좋고 회전각도 0.84° 일치하면서 1.261을 냈다. <strong>잘 조건화된 두 측정이 서로 다른 답을 낸다</strong> &mdash; 비등방이 개체별이거나 둘 중 하나가 아직 편향돼 있다. 센서가 쌓이면 갈린다.</p></div>
+<p>부수적으로 <strong>축척은 구 프로브로 재는 것이 낫다</strong>는 것도 드러났다. 평면 팁은 넓고 특징 없는 원판을 남겨 교차상관이 미끄러지고, 구는 조밀한 덩어리를 남겨 잘 물린다. 힘이 약한 것(0.22 N 대 0.55 N)은 문제가 되지 않았다.</p>
+</section>
+
+<section><h2><span class="num">§6</span>미해결</h2><hr class="rule">
+<div class="note open"><h4>두 프로브가 표면을 0.25 mm 다르게 본다</h4>
+<p>같은 센서 장착에서 <code>cyl4</code>는 26.7485 &plusmn; 0.0043 mm, <code>ball4</code>는 26.4976 &plusmn; 0.0197 mm를 냈다. 차이 <strong>0.251 mm, 12σ</strong>다. 팁 끝점이 실제로 다르거나, 구의 Hertz 적합이 이 조합에서 편향된 것이다.</p>
+<p>구의 적합이 실제로 불안정하다 &mdash; 강성이 0.447~0.603으로 <strong>±15 %</strong> 흔들리고(평면은 ±5 %), R²가 0.951~0.975(평면은 0.99+), 접근 간 산포가 0.039 mm(평면은 0.009). <code>F ∝ δ^1.5</code>가 영점에서 기울기 0으로 평평해져 외삽이 무디고, 반지름 2 mm 구가 2 mm 젤에서 얇은 층 구속을 강하게 받는다.</p>
+<p><strong>복원 결과는 이 문제에 영향받지 않는다</strong> &mdash; 보정과 채점이 각자의 영점을 쓰기 때문이다. 다만 프로브 간 깊이를 직접 비교하려면 해결해야 한다.</p></div>
+<div class="note open"><h4>깊이 편향 &minus;0.128 mm의 출처</h4>
+<p>보정의 높이맵은 <strong>접촉 가장자리</strong>를 기준으로 한다. 실제로는 그 가장자리도 원래 표면보다 아래로 내려가 있으므로, 룩업이 처음부터 얕게 잡힌다. 여기에 룩업이 0.548 mm에서 포화하는 것이 더해진다. 둘 다 보정 가능하지만, 지금은 <strong>보정 없이 얼마나 틀리는지를 기록</strong>해두는 것이 맞다.</p></div>
+</section>
+
+<section><h2><span class="num">§7</span>결론</h2><hr class="rule">
+<p><strong>방법은 우리 센서에서 성립한다.</strong> 형상이 옳게 나오고(평평한 안쪽, 2.00 mm 가장자리, 바깥의 0), 깊이가 선형이며(R² 0.983), 반복도가 0.005 mm다. <strong>캠페인을 진행해도 좋다.</strong></p>
+<p><strong>비교의 단위는 0.02 mm 수준이다.</strong> 이 설계에서 그레이 동적 범위가 28레벨이고 그것이 분해능을 정한다. 54개 설계가 이 값에서 어떻게 갈리는지가 시험 2의 실질적 결과가 될 것이다.</p>
+<p><strong>절대 깊이는 보정이 필요하다.</strong> 원본 방법을 그대로 쓰면 0.128 mm 얕게 읽는다. 설계 간 <em>비교</em>에는 지장이 없지만(모든 설계에 같은 편향이 걸린다면), 절대값을 주장하려면 편향의 출처를 정리해야 한다.</p>
+</section>
+
+<footer>data/20260905_passA_ball4 · data/20260905_passA_cyl4 · 9DTact_soft_2mm_r1<br>
+보정 ball4(반지름 2 mm, 18장, 50만 픽셀) → 채점 cyl4(반지름 2.00 mm 평면 원판, 18장)</footer>
+</div>

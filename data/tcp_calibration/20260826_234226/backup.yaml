@@ -1,0 +1,69 @@
+timestamp: '2026-08-26T23:42:24.210937'
+robot_ip: 192.168.58.2
+robot_state:
+  robot_state: 1
+  robot_mode: 1
+  main_code: 0
+  sub_code: 0
+  emergency_stop: 0
+  collision_state: 0
+  safety_stop0: 0
+  safety_stop1: 0
+queries:
+  GetActualTCPNum:
+  - 0
+  - 0
+  GetActualWObjNum:
+  - 0
+  - 0
+  GetActualTCPPose:
+  - 0
+  - 46.58250045776367
+  - 322.0748901367187
+  - 551.1591186523438
+  - 127.7455825805664
+  - 40.87038040161133
+  - -138.1626739501953
+  GetActualToolFlangePose:
+  - 0
+  - 46.58250045776367
+  - 322.0748901367187
+  - 551.1591186523438
+  - 127.7455825805664
+  - 40.87038040161133
+  - -138.1626739501953
+  GetToolCoordWithID:
+  - 0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+xmlrpc_methods_called:
+- GetActualTCPNum
+- GetActualTCPPose
+- GetActualToolFlangePose
+- GetActualWObjNum
+- GetToolCoordWithID
+robot_config_snapshot:
+  robot:
+    ip: 192.168.58.2
+    default_tool_id: 0
+    default_user_frame_id: 0
+    units:
+      position: mm
+      orientation: deg
+      joint: deg
+    operation_mode: null
+  safety:
+    allow_real_motion: false
+  dry_run:
+    enabled: true
+coordinate_convention:
+  position: mm
+  orientation: deg
+  rpy: fixed-axis (extrinsic) XYZ; R = Rz @ Ry @ Rx
+  pose_order: '[x, y, z, rx, ry, rz]'
+  tool_frame_reference: tool coordinates are relative to the flange, not the base
+nothing_written: true

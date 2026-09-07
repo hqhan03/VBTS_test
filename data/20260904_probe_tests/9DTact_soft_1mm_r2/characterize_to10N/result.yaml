@@ -1,0 +1,20 @@
+sensor: 9DTact_soft_1mm_r2
+at: '2026-09-04T01:36:08.207583'
+depth_cap_used_mm: 7.0
+force_cap_used_N: 10.0
+exp_alarm: 99.0
+stopped_on: image saturation
+reached_depth_mm: 4.118620611904227
+reached_force_N: 9.091883014738523
+hertz_a: 1.1093693502233624
+free_exponent: 1.5035468131279093
+image_response:
+  max_measurable_force_N: 9.00004738745594
+  reached: true
+  metric: mean |frame - reference| over the central half, grey levels
+  threshold_frac_of_peak_slope: 0.15
+  min_force_N: 0.3
+  consecutive: 2
+  peak_slope_levels_per_N: 4.653769330844757
+  image_change_at_stop: 19.561891555786133
+registry_written: false

@@ -1,0 +1,259 @@
+<title>54-Sensor Campaign Protocol</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --ground:#f2f3f5; --panel:#ffffff; --sunk:#e9ebee;
+  --ink:#16191d; --ink2:#41474f; --muted:#6b7480;
+  --line:#d8dce1; --line2:#eaedf0;
+  --accent:#a8481a;      /* 젤 조명 */
+  --measured:#1f6260;    /* 실측값 */
+  --warn:#8a6a12;
+  --stop:#8e2f2f;
+  --ok:#2c6b3f;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#111418; --panel:#181c21; --sunk:#101317;
+    --ink:#e7eaee; --ink2:#b6bec7; --muted:#828d99;
+    --line:#2a3038; --line2:#22272d;
+    --accent:#e08850; --measured:#5fb0aa; --warn:#d3ac48;
+    --stop:#e07a7a; --ok:#6fbb88;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#111418; --panel:#181c21; --sunk:#101317;
+  --ink:#e7eaee; --ink2:#b6bec7; --muted:#828d99;
+  --line:#2a3038; --line2:#22272d;
+  --accent:#e08850; --measured:#5fb0aa; --warn:#d3ac48;
+  --stop:#e07a7a; --ok:#6fbb88;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans KR",system-ui,-apple-system,sans-serif;
+  font-size:15px; line-height:1.78; word-break:keep-all;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1020px; margin:0 auto; padding:0 24px 96px}
+
+header{border-bottom:1px solid var(--line); margin-bottom:40px; padding:44px 0 26px}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:500;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--accent); margin:0 0 12px
+}
+h1{
+  font-weight:700; font-size:clamp(28px,4.2vw,42px);
+  line-height:1.25; letter-spacing:-.015em; margin:0 0 14px; text-wrap:balance
+}
+.lede{font-size:16.5px; color:var(--ink2); max-width:56ch; margin:0}
+
+.strip{display:flex; flex-wrap:wrap; gap:1px; background:var(--line); border:1px solid var(--line); margin-top:28px}
+.strip div{flex:1 1 150px; background:var(--panel); padding:13px 16px}
+.strip .k{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--muted); display:block; margin-bottom:5px}
+.strip .v{font-weight:600; font-size:21px; font-variant-numeric:tabular-nums; line-height:1.3}
+.strip .v small{font-size:12px; font-weight:500; color:var(--muted); margin-left:4px}
+
+section{margin:0 0 52px}
+h2{font-weight:600; font-size:23px; letter-spacing:-.01em; margin:0 0 6px; padding-top:8px; line-height:1.4}
+h2 .num{font-family:"IBM Plex Mono",monospace; font-size:13px; font-weight:500;
+  color:var(--accent); margin-right:12px; vertical-align:2px}
+h3{font-weight:600; font-size:16.5px; margin:30px 0 8px}
+.sub{color:var(--muted); font-size:14px; margin:0 0 22px; max-width:60ch}
+p{max-width:60ch; margin:0 0 14px}
+.rule{height:1px; background:var(--line); border:0; margin:0 0 22px}
+
+code,.mono{font-family:"IBM Plex Mono",monospace; font-size:.9em; word-break:break-all}
+code{background:var(--sunk); padding:1.5px 5px; border-radius:3px; color:var(--ink2)}
+.n{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; font-weight:500}
+.m{color:var(--measured); font-weight:600}
+
+.tw{overflow-x:auto; border:1px solid var(--line); background:var(--panel); margin:0 0 18px}
+table{border-collapse:collapse; width:100%; font-size:13.5px; min-width:480px}
+th{
+  font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-weight:500; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--muted); text-align:left; padding:10px 14px;
+  border-bottom:1px solid var(--line); white-space:nowrap; background:var(--panel)
+}
+td{padding:9px 14px; border-bottom:1px solid var(--line2); vertical-align:top; line-height:1.65}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right; font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; white-space:nowrap}
+td.name{font-family:"IBM Plex Mono",monospace; font-size:12.5px; white-space:nowrap}
+.tag{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.05em; text-transform:uppercase;
+  padding:2px 7px; border:1px solid currentColor; border-radius:2px; white-space:nowrap; font-weight:500}
+.t-ok{color:var(--ok)} .t-stop{color:var(--stop)} .t-cal{color:var(--accent)}
+
+.note{border-left:3px solid var(--line); padding:2px 0 2px 16px; margin:0 0 18px; max-width:62ch}
+.note.open{border-left-color:var(--warn)}
+.note.stop{border-left-color:var(--stop)}
+.note.key{border-left-color:var(--measured)}
+.note h4{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.09em;
+  text-transform:uppercase; margin:0 0 5px; color:var(--muted); font-weight:500}
+.note p:last-child{margin-bottom:0}
+
+.passes{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1px;
+  background:var(--line); border:1px solid var(--line); margin:0 0 22px}
+.pass{background:var(--panel); padding:18px 20px}
+.pass .lbl{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--accent); margin:0 0 7px}
+.pass h4{font-size:17px; font-weight:600; margin:0 0 8px}
+.pass p{font-size:13.5px; color:var(--ink2); margin:0 0 10px}
+.pass ol{margin:0; padding-left:19px; font-size:13.5px; color:var(--ink2)}
+.pass li{margin-bottom:4px}
+
+.steps{list-style:none; margin:0 0 18px; padding:0; counter-reset:s}
+.steps li{
+  counter-increment:s; position:relative; padding:9px 0 9px 44px;
+  border-bottom:1px solid var(--line2); font-size:14px; max-width:66ch
+}
+.steps li:last-child{border-bottom:0}
+.steps li::before{
+  content:counter(s,decimal-leading-zero); position:absolute; left:0; top:11px;
+  font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--accent); font-weight:500
+}
+.steps .cmd{display:block; font-family:"IBM Plex Mono",monospace; font-size:12px;
+  color:var(--muted); margin-top:3px; word-break:break-all}
+
+figure{margin:0 0 18px; border:1px solid var(--line); background:var(--panel); padding:20px}
+figcaption{font-size:12.5px; color:var(--muted); margin-top:16px; max-width:58ch; line-height:1.7}
+.bars{display:flex; flex-direction:column; gap:10px}
+.bar{display:grid; grid-template-columns:70px 1fr 74px; align-items:center; gap:12px}
+.bar .bl{font-family:"IBM Plex Mono",monospace; font-size:12px; text-align:right; color:var(--ink2)}
+.bar .track{height:20px; background:var(--sunk); position:relative}
+.bar .fill{height:100%; background:var(--measured)}
+.bar .bv{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink2);
+  font-variant-numeric:tabular-nums}
+.limitline{position:relative; height:22px}
+.limitline .lm{position:absolute; top:0; bottom:0; border-left:2px dashed var(--accent)}
+.limitline span{position:absolute; font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+  color:var(--accent); top:3px; padding-left:7px; white-space:nowrap}
+
+footer{border-top:1px solid var(--line); margin-top:56px; padding-top:20px;
+  font-size:12.5px; color:var(--muted); font-family:"IBM Plex Mono",monospace; line-height:1.9}
+a{color:var(--accent)}
+</style>
+<style>
+.cmd-block{font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.7;
+  background:var(--sunk);border:1px solid var(--line);padding:14px 16px;margin:0 0 18px;
+  overflow-x:auto;white-space:pre;color:var(--ink2)}
+ul,ol{max-width:60ch;padding-left:22px;margin:0 0 16px}
+li{margin-bottom:7px}
+h3{border-top:1px solid var(--line2);padding-top:18px}
+</style>
+
+
+<div class="wrap"><header><p class="eyebrow">KDC tactile testing platform · 2026-09-05</p><h1>센서 54개 실험 프로토콜</h1>
+<p class="lede">2026-09-05 개정. FAIRINO FR5 + 젤 아래 ATI Mini45. 3×3×3×2 완전요인 배치의 비전 기반 촉각센서 54개에 대해 네 가지 시험을 수행한다. <strong>(실측)</strong> = 이 장비에서 잰 값. 나머지는 설정값 또는 설계 수치.</p></header>
+<section><h2><span class="num">§0</span>네 가지 시험과 순서</h2><hr class="rule">
+<div class="tw"><table><thead><tr><th class="">#</th><th class="">시험</th><th class="">프로브</th><th class="">무엇을 바꾸는가</th><th class="">Pass</th></tr></thead><tbody><tr><td class="">2</td><td class="">shape reconstruction</td><td class="">ball4, cube4, cyl4, star10</td><td class="">깊이 0.1–0.6 mm</td><td class=""><strong>A</strong></td></tr><tr><td class="">3</td><td class="">spatial resolution</td><td class="">pair100 / 075 / 050 / 025</td><td class="">같은 깊이 사다리</td><td class=""><strong>A</strong></td></tr><tr><td class="">1</td><td class="">force estimation</td><td class="">ball8</td><td class="">힘 0–4 N 수직, 0–1 N 전단</td><td class=""><strong>B</strong></td></tr><tr><td class="">4</td><td class="">maximum force</td><td class="">ball8</td><td class="">이미지가 포화할 때까지</td><td class=""><strong>B</strong></td></tr></tbody></table></div>
+<p><strong>순서는 선택이 아니라 강제다.</strong></p>
+<ul><li>시험 4가 젤을 손상시킨다(실측: <code>9DTact_medium_2mm_r1</code>이 0.27 mm 영구 변형). 그래서 <strong>마지막</strong>이고, 같은 센서 장착 안에서 시험 1 <strong>뒤에</strong> 온다.</li><li>시험 2와 3은 0.6 mm보다 깊게 누르지 않아 위험이 없고, <strong>같은 깊이 사다리를 공유</strong>한다. 분해능은 깊이의 함수이므로(0.5 mm에서 뭉개지는 쌍이 0.1 mm에서는 갈라질 수 있다) 사다리 하나가 두 시험을 동시에 답한다.</li><li>그래서 작은 프로브 8종을 먼저(Pass A), 8 mm 볼을 나중에(Pass B).</li></ul>
+<p><strong>루프 순서: 센서가 바깥, 프로브가 안쪽.</strong> 아홉 프로브가 TCP 하나(36.794 mm)를 공유하므로 — 운용자가 팁 끝점을 공통으로 설계했다 — 프로브 교체에 캘리브레이션 비용이 없다. 센서를 <strong>한 번</strong> 장착하고 프로브를 갈아끼운다. 센서 장착 54회, 프로브 교체 432회. 실험적으로도 이쪽이 옳다: 여덟 프로브가 같은 젤 지점을, 같은 광학으로, 하나의 reference 이미지에 대해 찍는다.</p>
+</section>
+<section><h2><span class="num">§1</span>고정된 장비 조건</h2><hr class="rule">
+<p>센서마다 조정하지 않는다. VBTS는 젤 변형을 픽셀 밝기로 인코딩하므로, 카메라가 스스로 설정을 바꾸면 접촉과 카메라의 변덕을 구분할 수 없다.</p>
+<div class="tw"><table><thead><tr><th class="">항목</th><th class="">설정</th><th class="">근거</th></tr></thead><tbody><tr><td class="">공구 TCP</td><td class="">tool 1, z = 36.794 mm</td><td class="">원래 4 mm 볼의 <em>구 중심</em> 값. 이제는 <strong>공통 팁 끝점보다 2 mm 위</strong>로 읽는다. 프로브마다 다시 쓰지 않는다. 구 중심이 필요한 해석만 되더한다(ball4 +2 mm, ball8 +4 mm).</td></tr><tr><td class="">속도</td><td class="">접촉 15 % / 공중 30 %</td><td class="">30 %에서 0.05 mm 스텝이 정지 전 0.111 mm로 읽혔고 15 %에서는 0.050 mm <strong>(실측)</strong></td></tr><tr><td class="">카메라</td><td class="">YUYV 1920×1080, 4.9 fps</td><td class="">MJPG는 15 fps지만 고주파 이미지 에너지의 61 %를 잃는다 <strong>(실측)</strong></td></tr><tr><td class="">노출</td><td class="">2047 → 204.7 ms, 고정</td><td class="">자동 노출에서 프레임 밝기가 20.4 레벨 흔들렸고 고정하면 0.091 <strong>(실측)</strong></td></tr><tr><td class="">F/T</td><td class="">ATI Mini45 SI-145-5</td><td class="">측면 ±145 N, 수직 ±290 N. 노이즈 바닥 0.1 s 평균 0.02 N <strong>(실측)</strong></td></tr><tr><td class="">F/T 영점 표류</td><td class="">접근당 약 +0.007 N, 2분에 0.08 N <strong>(실측)</strong></td><td class="">그래서 <strong>접근마다 재영점</strong>을 잡는다(§3)</td></tr><tr><td class="">깊이 백스톱</td><td class="">젤 두께 × 0.9</td><td class="">2 mm 젤이 두께의 3배에서 손상된 뒤 모든 phase에 적용</td></tr><tr><td class="">힘 백스톱</td><td class="">30 N</td><td class="">실제로 걸릴 일 없음. 항상 시험별 상한이 먼저</td></tr></tbody></table></div>
+<p><strong>이미지 축척은 고정값이 아니다 — 센서마다 잰다.</strong> §4 참조.</p>
+</section>
+<section><h2><span class="num">§2</span>준비 (캠페인 시작 전 1회)</h2><hr class="rule">
+<ol><li>프로브 9종이 모두 인쇄되어 있는지 확인. Pass A는 8종, Pass B는 <code>ball8</code> 하나. <strong><code>ball8</code>은 아직 출력 확인 안 됨</strong> — Pass B 시작 전까지만 있으면 된다.</li><li><code>/usr/bin/python3</code>로 실행할 것. anaconda 파이썬에는 <code>nidaqmx</code>가 없다. <code>run_one_sensor.py</code>가 시작 시 확인하고 <strong>로봇이 움직이기 전에</strong> 거부한다.</li><li><code>config/probes.yaml</code>의 <code>tcp_status</code>가 전부 <code>common endpoint by design</code>인지 확인.</li></ol>
+</section>
+<section><h2><span class="num">§3</span>Pass A — 센서 1개당 절차</h2><hr class="rule">
+<p><strong>센서를 장착한 뒤 Pass A가 끝날 때까지 센서를 건드리지 않는다.</strong> 여덟 프로브의 비교가 하나의 장착 안에서 이루어져야 한다.</p>
+<h3>A-0. 센서 장착, <code>cyl4</code> 장착</h3>
+<p>대 ±0.014 mm), 지름 4.00 mm가 알려져 있어 축척 측정의 기준이 된다.</p>
+<h3>A-1. 설정 + 첫 프로브 (약 8분)</h3>
+<pre class="cmd-block">/usr/bin/python3 scripts/run_one_sensor.py \
+    --sensor &lt;sensor_id&gt; --probe cyl4 --to scale --confirm RUN</pre>
+<p>단계별로 무엇이 일어나는지:</p>
+<div class="tw"><table><thead><tr><th class="">단계</th><th class="num">초</th><th class="">하는 일</th></tr></thead><tbody><tr><td class=""><code>enable</code></td><td class="num">6</td><td class="">manual → auto, 서보 on</td></tr><tr><td class=""><code>liftoff</code></td><td class="num">0</td><td class="">기록된 표면 대비 여유 확인, 부족하면 상승</td></tr><tr><td class=""><code>align</code></td><td class="num">7</td><td class="">프로브를 센서 축에 정렬</td></tr><tr><td class=""><code>newrun</code></td><td class="num">0</td><td class=""><code>data/20260905_passA/&lt;sensor_id&gt;/</code> 생성</td></tr><tr><td class=""><code>tare</code></td><td class="num">2</td><td class="">젤에서 떨어진 상태로 F/T 영점</td></tr><tr><td class=""><code>reference</code></td><td class="num">12</td><td class="">무부하 reference 이미지</td></tr><tr><td class=""><code>qc</code></td><td class="num">0</td><td class="">밝기·안정도 확인</td></tr><tr><td class=""><code>search</code></td><td class="num">22</td><td class="">3단계 하강(1 / 0.2 / 0.05 mm)으로 첫 접촉</td></tr><tr><td class=""><code>touchcheck</code></td><td class="num">8</td><td class="">접촉 하중 확인, 모자라면 미세 압입</td></tr><tr><td class=""><code>zero</code></td><td class="num">100</td><td class=""><strong>적합 영점</strong> — §3.1</td></tr><tr><td class=""><code>shape</code></td><td class="num">133</td><td class=""><strong>깊이 사다리</strong> — §3.2</td></tr><tr><td class=""><code>scale</code></td><td class="num">80</td><td class=""><strong>mm/px + 젤 평면</strong> — §4</td></tr></tbody></table></div>
+<h3>A-2. 나머지 프로브 7종 (프로브당 약 4분)</h3>
+<p>순서: <code>ball4</code> → <code>cube4</code> → <code>star10</code> → <code>pair100</code> → <code>pair075</code> → <code>pair050</code> → <code>pair025</code></p>
+<p>프로브를 손으로 교체한 뒤:</p>
+<pre class="cmd-block">/usr/bin/python3 scripts/run_one_sensor.py \
+    --sensor &lt;sensor_id&gt; --probe &lt;probe_id&gt; --from zero --to shape --confirm RUN</pre>
+<p>재사용된다 — 프로브마다 젤로 다시 내려갈 필요가 없고, 이미 측정을 마친 젤을 더 누를 기회도 그만큼 줄어든다.</p>
+<h3>A-3. 종료</h3>
+<pre class="cmd-block">/usr/bin/python3 scripts/run_one_sensor.py \
+    --sensor &lt;sensor_id&gt; --from park --to park --confirm RUN</pre>
+<p>프로브를 50 mm 올린다(센서 교체용).</p>
+<p><strong>산출물: 센서당 144장</strong> (8 프로브 × 6 깊이 × 3 반복), 캠페인 전체 7,776장. 전부 <strong>명령된 깊이가 아니라 측정된 깊이</strong>에 묶인다.</p>
+<h3>3.1 <code>zero</code> — 적합 영점 (프로브마다)</h3>
+<p><strong>탐색된 표면은 젤 표면이 아니다.</strong> <code>--search</code>는 0.11 N을 처음 넘는 지점에서 멈추는데 그건 스텝 중의 과도 현상이고, 같은 높이를 다시 접근하면 0.01–0.08 N이 읽힌다 <strong>(실측)</strong>. 그리고 그 오차는 팁 모양에 따라 다르다 — <code>cyl4</code>가 같은 젤에서</p>
+<p>2 mm 구는 0.252 mm가 필요하기 때문이다. <strong>탐색 접촉 높이는 프로브 간 비교에 쓸 수 없다. 적합된 영점만 쓸 수 있다.</strong></p>
+<p>절차 — 접근 <strong>2회</strong>, 각각:</p>
+<ol><li>탐색 표면 + <strong>0.5 mm</strong>로 후퇴, 3초 회복.</li><li>   0.15 mm는 공중이 아니었다 — 탐색 접촉 자체가 표면보다 아래이기 때문 <strong>(실측)</strong>.</li><li><strong>재영점.</strong> 그 높이에서 읽고, 0.30 mm 더 올려 다시 읽는다. 두 값이 0.05 N 안에서 같으면 <strong>표류</strong>이므로 평균을 이 접근의 영점으로 뺀다. 다르면 <strong>접촉</strong>이므로 여유가 부족한 것이니 멈춘다. <em>표류는 높이에 무관하고 접촉은 아니다 — 이것이 둘을 가르는 유일한 방법이다.</em></li><li>힘이 0.04 N 보일 때까지 <strong>0.2 mm</strong> 스텝, 그 뒤 <strong>0.02 mm</strong> 스텝.</li><li><strong>깊이 0.30 mm</strong>에서 정지(힘 1.2 N은 안전 상한일 뿐).</li><li>팁의 접촉 법칙을 F &lt; 1 N 구간에 적합해 영점을 외삽한다. 구 = Hertz 지수 1.5, 평면(cube/cylinder/star/pair) = punch 지수 1.0.</li></ol>
+<div class="tw"><table><thead><tr><th class="">실측 (<code>9DTact_hard_1mm_r1</code>, cyl4)</th><th class="num"></th></tr></thead><tbody><tr><td class="">접근 간 산포</td><td class="num"><strong>0.0062 mm (1σ)</strong> — 사다리 스텝의 6 %</td></tr><tr><td class="">2회 평균의 오차</td><td class="num">±0.0044 mm</td></tr><tr><td class="">한 접근 안의 적합 정밀도</td><td class="num">±0.0034 mm (평면 팁), ±0.014 mm (구)</td></tr><tr><td class="">탐색 접촉 vs 적합 영점 (접촉 법칙 적용 후)</td><td class="num"><strong>0.003 mm 일치</strong></td></tr></tbody></table></div>
+<p>산포 0.0062 mm는 <strong>프로브를 빼서 180° 돌려 다시 끼운 뒤에도 동일하게</strong> 나왔다. 방법의 상수이지 매 런이 다시 확립할 값이 아니므로 접근을 3회에서 2회로 줄였다.</p>
+<p><strong>하지 않는 것 두 가지.</strong> *이미지 기준 영점*은 폐기했다. 힘 기준보다 늦는데 그 지연이 센서마다 −0.049 mm에서 −0.149 mm로 세 배 다르다 <strong>(실측)</strong> — 접촉 검출이 아니라 검출 문턱 통과라서, 쓰면 없애려던 센서별 편향을 도로 넣는다. 교차검증 기록으로만 남긴다. *영점을 위해 깊게 누르는 것*도 하지 않는다. 1.2 N까지 내려가면 평면 팁이 0.73 mm 들어가 사다리보다 깊고, 그러면 적합 영점이 접근당 0.039 mm씩 한 방향으로 걸어간다 <strong>(실측)</strong>. 0.30 mm로 묶으니 표류가 11배 줄어 사라졌다. <strong>보정이 그것이 뒷받침하는 측정보다 깊게 눌러서는 안 된다.</strong></p>
+<h3>3.2 <code>shape</code> — 깊이 사다리 (시험 2와 3 공용)</h3>
+<p>적합된 표면 기준 <strong>0.1 / 0.2 / 0.3 / 0.4 / 0.5 / 0.6 mm</strong>, <strong>3회 반복</strong> = 18장.</p>
+<p><strong>매 단마다 공중(표면 + 0.5 mm)으로 복귀 후 재접근한다.</strong> 사다리를 걸어 내려가면 k번째 단이 앞선 단들의 크리프를 물려받는다.</p>
+<p>단마다 기록: 이미지 1장, 렌치 6성분, TCP 자세, <strong>측정된</strong> 깊이, 변화 영역의 면적·반지름·중심, 밝기 통계.</p>
+<p><strong>시험 2 (형상 복원).</strong> <code>ball4</code>는 <strong>보정용</strong>, 나머지 셋은 <strong>평가용</strong>이다. depth-from-intensity 룩업은 <em>알려진 반지름을 알려진 깊이로 누른</em> 데이터로 만든다. 같은 프로브로 보정하고 평가하면 아무것도 검증하지 못한다.</p>
+<p><strong>시험 3 (공간 분해능).</strong> 판정은 눈이 아니라 수치로: 쌍의 축을 가로지르는 프로파일에서 두 봉우리 사이 골의 깊이를 봉우리 높이에 대한 비율로 본다 (Rayleigh식). <strong>문턱값은 데이터를 보기 전에 고정한다.</strong></p>
+<p>간격을 픽셀로 환산하면(10.4 µm/px) 1.00 mm → 96 px, 0.75 → 72, 0.50 → 48, 0.25 mm → <strong>24 px</strong>. 가장 좁은 간격도 광학 한계의 10배 이상이다. 즉 <strong>이 시험은 카메라 분해능을 재지 않는다</strong> — 분리되지 않는다면 엘라스토머가 뭉갠 것이다.</p>
+<p><strong>예상.</strong> <code>9DTact_hard_1mm_r1</code>에서 4 mm 평면 팁의 자국 가장자리 폭(10→90 %)이 약 <strong>1.0 mm</strong>였다. 그렇다면 0.25 / 0.50 mm는 분해 불가, 1.00 mm가 경계선이다.</p>
+<p>주지 않을 가능성이 높다.** 이것 자체가 결과다.</p>
+</section>
+<section><h2><span class="num">§4</span><code>scale</code> — mm/px와 젤 평면 (센서마다 1회)</h2><hr class="rule">
+<p><strong>프레임 안에 길이를 아는 것이 없다.</strong> 팁은 가장자리를 안 남기고, 젤 경계도 안 보이고, 변화 영역 윤곽은 깊이 따라 커지는 문턱 등고선이다(팁 반지름의 0.94배 → 1.17배). 그래서 <strong>로봇을 자로 쓴다</strong>: 센서 x·y 축을 따라 −1.5 ~ +1.5 mm의 알려진 오프셋에서 <strong>일정한 힘 1.0 N까지 서보</strong>하고, 자국을 <strong>교차상관</strong>으로 추적한다.</p>
+<p><strong>센서마다 재야 한다.</strong> 젤 두께가 1/2/3 mm로 다르면 반사면과 카메라 거리가 달라져 배율이 달라진다. 한 센서의 값을 다른 센서에 쓸 수 없다.</p>
+<p>동시에 나오는 것:</p>
+<p><strong>젤 평면.</strong> 목표 힘에 도달한 <strong>높이</strong>를 위치에 대해 적합하면 곧 그 젤의 표면이다.</p>
+<p><strong>4 mm 팁 폭에 0.21 mm</strong> — 사다리 두 단분이다. <code>align</code>은 <em>가정된</em> 축에 맞추므로 이걸 못 본다(같은 런에서 0.016° 통과).</p>
+<p><strong>축척.</strong> <code>J</code>(센서 mm → 이미지 px)의 <strong>행</strong>이 직교하므로 모델은</p>
+<p>일치하는 것이 모델의 검증이다(29.6 / 30.4°).</p>
+<div class="tw"><table><thead><tr><th class=""></th><th class="num">실측</th><th class="num">설계값</th></tr></thead><tbody><tr><td class="">이미지 x</td><td class="num">96.1 px/mm = <strong>10.4 µm/px</strong></td><td class="num">75.3 = 13.286</td></tr><tr><td class="">이미지 y</td><td class="num">76.2 px/mm = <strong>13.1 µm/px</strong></td><td class="num">90.2 = 11.083</td></tr><tr><td class="">비등방</td><td class="num"><strong>1.26</strong></td><td class="num">0.834</td></tr><tr><td class="">FOV</td><td class="num"><strong>약 20.0 × 14.2 mm</strong></td><td class="num">25.51 × 11.97</td></tr></tbody></table></div>
+<p><strong>설계 FOV는 크기도 방향도 틀렸다. 쓰지 말 것.</strong> 4:3 센서를 16:9로 늘려 내보내면 1.333이 되는데 측정값 1.26과 가깝다. 자국의 2차 모멘트가 방향을 독립 확인한다.</p>
+<p><strong>픽셀→mm 변환에는 비등방 1.26과 회전 30°를 반드시 함께 적용한다.</strong> 빠뜨리면 복원된 형상이 4분의 1만큼 왜곡된다.</p>
+<p><strong>쓰지 말 것:</strong> 위상 상관(백색화가 정지한 센서 잡음을 영 이동에서 이기게 만들어 250 px 변위에 대해 모든 기울기가 0.05 px/mm 아래로 나왔다), 강도 가중 중심(조명 불균일에 끌려 구간별로 20–26 % 흔들린다).</p>
+</section>
+<section><h2><span class="num">§5</span>Pass B — 센서 1개당 절차</h2><hr class="rule">
+<p>Pass A가 <strong>54개 전부</strong> 끝난 뒤에 시작한다. 시험 4가 젤을 손상시키므로 Pass A의 데이터가 모두 확보된 뒤라야 한다.</p>
+<h3>B-0. 센서 장착, <code>ball8</code> 장착</h3>
+<p><strong>8 mm 볼을 쓰는 이유.</strong> 5 N에서 4 mm 볼은 9개 설계 <strong>전부</strong>에서 적도 아래까지 파묻힌다(최악 반지름의 2.18배). Hertz가 성립하지 않고 섕크가 젤에 닿으며,</p>
+<p>압력이 <strong>37 % 낮다</strong>.</p>
+<h3>B-1. 설정 + 영점 + 평면/축척</h3>
+<pre class="cmd-block">/usr/bin/python3 scripts/run_one_sensor.py \
+    --sensor &lt;sensor_id&gt; --probe ball8 --to zero --confirm RUN
+/usr/bin/python3 scripts/run_indentation.py \
+    --phase scale --sensor &lt;sensor_id&gt; --probe ball8</pre>
+<p>축척은 Pass A에서 이미 쟀지만 <strong>평면은 재장착으로 바뀌므로</strong> 다시 잰다(80초). 같은 phase가 둘 다 내므로 축척은 교차검증이 된다.</p>
+<p><strong>첫 센서에서 한 번만: 공통 끝점 검증.</strong> <code>ball8</code>의 적합 영점이 같은 장착의</p>
+<p>것이고, 그 차이가 곧 적용할 보정값이다.</p>
+<h3>B-2. 시험 1 — force estimation</h3>
+<pre class="cmd-block">/usr/bin/python3 scripts/run_one_sensor.py \
+    --sensor &lt;sensor_id&gt; --from collect --to collect --confirm RUN</pre>
+<div class="tw"><table><thead><tr><th class="">항목</th><th class="">값</th><th class="">근거</th></tr></thead><tbody><tr><td class="">수직력</td><td class=""><strong>0 – 4 N</strong></td><td class="">모든 센서 동일 고정. 그래야 오차가 비교 가능하고, 센서별 상한과 무관하다</td></tr><tr><td class="">전단력</td><td class=""><strong>0 – 1 N</strong></td><td class="">비율 0.25로 9DTact(3/12) 및 Deep-DA(0.75/3)와 일치. 전단은 명령이 아니라 마찰이 결정한다</td></tr><tr><td class="">프레임</td><td class=""><strong>센서당 1000장</strong></td><td class="">9DTact 방식 ResNet-18이 800장에서 포화: MAE 0.072 N, 범위의 1.5 %, R² 0.992 <strong>(실측)</strong></td></tr><tr><td class="">분포</td><td class="">힘 구간 균등</td><td class="">한 패스 안에서 0.02 N 이내 중복 거부, 릴리스 시 버퍼 초기화 — 9DTact와 동일</td></tr><tr><td class="">접촉 위치</td><td class="">1점</td><td class=""></td></tr></tbody></table></div>
+<h3>B-3. 시험 4 — maximum force (<strong>마지막, 되돌릴 수 없음</strong>)</h3>
+<pre class="cmd-block">/usr/bin/python3 scripts/run_one_sensor.py \
+    --sensor &lt;sensor_id&gt; --from characterize --to characterize --confirm RUN</pre>
+<p><strong>상한을 정하는 것은 로드셀이 아니라 이미지다.</strong> 젤은 사진이 더 이상 변하지 않게 된 뒤에도 힘을 계속 받을 수 있고, 그 지점을 넘으면 VBTS가 가진 유일한 수단으로는 힘을 측정할 수 없다. 뉴턴당 밝기 변화율이 최댓값의 <strong>15 %</strong> 아래로 떨어지면 정지. 최댓값은 상위 3개 구간 기울기의 <strong>중앙값</strong>이다 — 잡음 낀 구간 하나가 실제 초기 기울기 2.76에 대해 4.65 lvl/N을 읽어 15 % 기준이 사실상 25 %에서 발동한 적이 있다.</p>
+<p>깊이 백스톱(두께 × 0.9)이 항상 함께 걸린다.</p>
+<p><strong>4 mm 볼로 잰 참고값</strong> — 8 mm 볼과 백스톱 아래에서는 달라진다:</p>
+<div class="tw"><table><thead><tr><th class="">설계</th><th class="num">포화</th><th class="num">그때 깊이</th><th class="">비고</th></tr></thead><tbody><tr><td class="">soft 1 mm</td><td class="num">9.0 N <strong>(실측)</strong></td><td class="num">4.12 mm</td><td class="">도달</td></tr><tr><td class="">medium 2 mm</td><td class="num">21.24 N <strong>(실측)</strong></td><td class="num">6.19 mm</td><td class="">11.7 N부터 기재가 하중 부담</td></tr><tr><td class="">hard 3 mm</td><td class="num">&gt; 25.17 N</td><td class="num">6.58 mm</td><td class="">미도달, 응답이 최댓값의 83 %</td></tr></tbody></table></div>
+<h3>B-4. 종료</h3>
+</section>
+<section><h2><span class="num">§6</span>시간과 노력</h2><hr class="rule">
+<div class="tw"><table><thead><tr><th class=""></th><th class="num">단위</th><th class="num">횟수</th><th class="num">합계</th></tr></thead><tbody><tr><td class="">Pass A 설정</td><td class="num">56 s</td><td class="num">54</td><td class="num">0.8 h</td></tr><tr><td class="">Pass A <code>zero</code>+<code>shape</code></td><td class="num">233 s ᵖ</td><td class="num">432</td><td class="num"><strong>28.0 h</strong></td></tr><tr><td class="">Pass A <code>scale</code></td><td class="num">80 s</td><td class="num">54</td><td class="num">1.2 h</td></tr><tr><td class="">Pass B 설정 + <code>zero</code> + <code>scale</code></td><td class="num">250 s</td><td class="num">54</td><td class="num">3.8 h</td></tr><tr><td class="">Pass B 시험 1 (collect)</td><td class="num">~1000 s</td><td class="num">54</td><td class="num">15.0 h</td></tr><tr><td class="">Pass B 시험 4 (characterize)</td><td class="num">~600 s</td><td class="num">54</td><td class="num">9.0 h</td></tr><tr><td class=""></td><td class="num"></td><td class="num"><strong>로봇 시간 합계</strong></td><td class="num"><strong>≈ 58 h</strong></td></tr></tbody></table></div>
+<p>여기에 <strong>센서 장착 108회, 프로브 교체 432회</strong>가 사람 손으로 붙는다. <strong>Pass A 센서당 33분, Pass B 센서당 31분.</strong></p>
+<p>ᵖ 표시는 추정치다. <code>zero</code>는 접근 3회·성긴 0.2 mm에서 162 s로 실측됐고, 2회로 줄인 값(약 100 s)은 아직 실측 전이다. <code>shape</code> 133 s, <code>scale</code> 80 s, 설정 56 s는 모두 실측. Pass B의 두 항목은 옛 설정에서의 값이라 새 범위(0–4 N)에서는 줄어들 가능성이 크다.</p>
+</section>
+<section><h2><span class="num">§7</span>돌아가는 동안 지켜볼 것</h2><hr class="rule">
+<p>오늘 잡은 실패 방식과 각각의 가드. <strong>가드가 멈추면 그것은 고장이 아니라 작동이다.</strong></p>
+<div class="tw"><table><thead><tr><th class="">증상</th><th class="">뜻</th><th class="">가드</th></tr></thead><tbody><tr><td class=""><code>NO SURFACE FOUND (travel limit)</code></td><td class="">이동 한계가 시작 높이에 못 미침</td><td class="">탐색이 1을 반환. 이전에는 0을 반환하고 멈춘 높이를 &quot;표면&quot;으로 기록했다</td></tr><tr><td class=""><code>the probe is TOUCHING at the start</code></td><td class="">여유가 팁을 못 벗어남</td><td class=""><code>--zero-margin</code>을 키운다</td></tr><tr><td class=""><code>only X N at the cap</code></td><td class="">무른 젤이 목표 힘에 못 미침</td><td class="">더 깊게 누르지 말고 <code>--scale-force</code>를 낮춘다</td></tr><tr><td class=""><code>MONOTONE — this is drift</code></td><td class="">젤이 아직 움직이는 중</td><td class="">평균이 무의미. 회복 시간이나 압입 깊이를 본다</td></tr><tr><td class=""><code>nidaqmx is not importable</code></td><td class="">잘못된 파이썬</td><td class=""><code>/usr/bin/python3</code></td></tr><tr><td class=""><code>joint N would move ... over the ceiling</code></td><td class="">IK 분기 뒤집힘 의심</td><td class="">의도한 재배향이 아니면 그대로 둔다</td></tr></tbody></table></div>
+<p><strong>180° 재배향은 하지 말 것.</strong> 최단경로 자세 보간의 특이점이라 로봇이 법선에서 6.5° 벗어난 축으로 180°를 돌아 공구 축이 12.9° 기울었다 <strong>(실측)</strong>. 필요하면 <strong>90°씩 두 번</strong>으로 나눈다.</p>
+</section>
+<section><h2><span class="num">§8</span>수집 뒤 (오프라인)</h2><hr class="rule">
+<ol><li><strong>축척 적용</strong> — 모든 픽셀 값에 비등방 1.26과 회전 30°를, 센서별 측정값으로.</li><li><strong>평면 보정</strong> — 각 센서의 기울기로 접촉면의 깊이 편차를 보정.</li><li><strong>시험 2</strong> — <code>ball4</code>로 depth-from-intensity 룩업 보정, cube/cylinder/star로 채점. DIGIT·DIGIT_Marker는 photometric stereo 구현이 필요하다(<strong>미구현</strong>).</li><li><strong>시험 3</strong> — 프로파일 골 깊이 비로 분해 판정, 깊이별로.</li><li><strong>시험 1</strong> — 9DTact 방식 ResNet-18, 시간 기준 분할(무작위 분할은 5 fps 인접 프레임을 양쪽에 넣어 일반화와 무관한 수치를 낸다).</li><li><strong>시험 4</strong> — 포화 힘을 설계 인자에 대해 비교.</li></ol>
+</section>
+<section><h2><span class="num">§9</span>열려 있는 것</h2><hr class="rule">
+<p><strong>젤 평면이 3° 기울어 있다.</strong> 시험 2의 &quot;같은 깊이&quot; 전제에 0.21 mm의 편차를 만든다. 역전 시험으로 <strong>프로브가 아니라 젤/장착의 것</strong>임을 확인했다(프로브 몫 18 %, 젤 몫 82 %, 방향이 독립 측정한 평면 기울기와 일치). 센서별 장착 문제인지</p>
+<p><strong>축척 재현성이 런 간 5 %다.</strong> 제대로 된 보정 타깃이 없기 때문이다. 형상 복원의 정밀도가 부족하면 여기가 다음 개선점이다.</p>
+<p><strong>압력중심 공식에 이득 0.82의 계통 오차가 있다.</strong> 지렛대·전단·단위 어느 변형도 1.0을 주지 않았다. 캠페인에 필요한 값은 아니라 상대 비교로만 쓴다.</p>
+<p><strong><code>ball8</code> 출력 미확인.</strong> Pass B에서만 필요.</p>
+<p><strong>DIGIT / DIGIT_Marker 복원 파이프라인 미구현.</strong> 수집은 막지 않지만 결과를 막는다.</p>
+<p>기계가 읽는 원본: <code>config/probes.yaml</code>, <code>config/sensor_registry.yaml</code>,</p>
+</section><footer>scripts/run_indentation.py · scripts/run_one_sensor.py · config/probes.yaml · config/sensor_registry.yaml<br>"실측"으로 표시된 값은 이 장비에서 실제로 측정한 값입니다.</footer></div>

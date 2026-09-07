@@ -1,0 +1,93 @@
+at_depth:
+  target_depth_mm: 0.5
+  target_used_mm: 0.5
+  limited_by_depth_cap: false
+  at: '2026-09-04T00:53:13.658544'
+  image: at_depth.png
+  image_time: 1788450793.4544451
+  depth_mm: 0.4900882420143198
+  height_above_plane_mm: 25.18691175798568
+  normal_force_N: 0.25425010222525374
+  wrench:
+  - 0.006994786422325561
+  - 0.008116790311944833
+  - -0.25425010222525374
+  - -2.060679337415883e-05
+  - 0.00012867319945114586
+  - 1.9635477317470062e-05
+  region:
+    level: 3
+    blur_px: 5
+    mean_abs_diff_centre: 1.460578441619873
+    max_diff: 6.234375
+    changed_fraction: 0.00021846064814814815
+    area_px: 0
+    radius_px: 0.0
+    centroid_px: null
+    bbox_px: null
+    enclosing_radius_px: 0.0
+    mean_abs_diff_in_region: 0.0
+    n_blobs: 0
+    min_area_px: 200
+    border_frac: 0.05
+    dark_area_px: 0
+    dark_radius_px: 0.0
+    dark_centroid_px: null
+    dark_mean_diff: 0.0
+    bright_area_px: 0
+    bright_radius_px: 0.0
+    bright_centroid_px: null
+    bright_mean_diff: 0.0
+at_force:
+  target_force_N: 0.5
+  target_used_N: 0.4761551257613519
+  limited_by_force_cap: true
+  force_reached: false
+  stop_reason: travel limit 0.7 mm
+  at: '2026-09-04T00:53:22.088484'
+  image: at_force.png
+  image_time: 1788450801.865073
+  depth_mm: 0.6707072172829953
+  height_above_plane_mm: 25.006292782717004
+  normal_force_N: 0.39978603559906106
+  wrench:
+  - 0.01089246444892602
+  - 0.011959079099653814
+  - -0.39978603559906106
+  - -9.224859948426533e-05
+  - 0.00019613684170035616
+  - -0.00014208973893796716
+  region:
+    level: 3
+    blur_px: 5
+    mean_abs_diff_centre: 1.8698395490646362
+    max_diff: 13.2421875
+    changed_fraction: 0.016527295524691357
+    area_px: 33052
+    radius_px: 102.57084555635997
+    centroid_px:
+    - 927.9915587558997
+    - 617.5036911533341
+    bbox_px:
+    - 810
+    - 506
+    - 226
+    - 224
+    enclosing_radius_px: 117.4788818359375
+    mean_abs_diff_in_region: 6.801362991333008
+    n_blobs: 2
+    min_area_px: 200
+    border_frac: 0.05
+    dark_area_px: 32708
+    dark_radius_px: 102.03567884470327
+    dark_centroid_px:
+    - 927.6731380701968
+    - 617.9737678855325
+    dark_mean_diff: -6.829985618591309
+    bright_area_px: 0
+    bright_radius_px: 0.0
+    bright_centroid_px: null
+    bright_mean_diff: 0.0
+mm_per_px: null
+diff_level: 3
+diff_level_rule: max(3, 0.04 x reference centre mean)

@@ -1,0 +1,103 @@
+meter_at_terminals:
+  terminals: 60 - 26
+  unloaded_V: 1.348
+  loaded_V: 1.34
+  delta_mV: -8.0
+known_gauge_channels:
+  SG0: Dev1/ai0
+  SG1: Dev1/ai2
+  SG2: Dev1/ai1
+  SG3: Dev1/ai3
+  SG4: Dev1/ai4
+rse_deltas_mV:
+  Dev1/ai0: -59.41043468660246
+  Dev1/ai1: -90.87362125966703
+  Dev1/ai2: -4.4384943195496795
+  Dev1/ai3: -9.550035252317901
+  Dev1/ai4: -138.76252286609113
+  Dev1/ai5: -138.63464567910543
+  Dev1/ai6: 0.016656388277525025
+  Dev1/ai7: -0.11034857156033695
+  Dev1/ai8: -0.026189984339508587
+  Dev1/ai9: -0.5458255790417449
+  Dev1/ai10: -0.008218614396777318
+  Dev1/ai11: 0.00964317414540311
+  Dev1/ai12: -0.018519277627165875
+  Dev1/ai13: -0.036271484586877616
+  Dev1/ai14: 2.4176970999373464
+  Dev1/ai15: 2.2501470031154254
+  Dev1/ai16: 0.565111785980621
+  Dev1/ai17: 0.5078006623213671
+  Dev1/ai18: 0.4864322701845225
+  Dev1/ai19: 0.45750275486544645
+  Dev1/ai20: 0.4338331510811422
+  Dev1/ai21: 0.4143276445585098
+  Dev1/ai22: 0.3836448249847635
+  Dev1/ai23: 0.3758645388256543
+  Dev1/ai24: 1.3450033874228273
+  Dev1/ai25: 1.4336548538657623
+  Dev1/ai26: 1.4868018958797413
+  Dev1/ai27: 1.5248267014544292
+  Dev1/ai28: 1.5301961924692464
+  Dev1/ai29: 1.5606598646003556
+  Dev1/ai30: 1.5763300163488814
+  Dev1/ai31: 1.5605502944901484
+diff_deltas_mV:
+  Dev1/ai0: -59.52691965929646
+  Dev1/ai1: -90.45271619548933
+  Dev1/ai2: -4.555637058248019
+  Dev1/ai3: -9.655123953504097
+  Dev1/ai4: -138.85840614535726
+  Dev1/ai5: -138.72789825079357
+  Dev1/ai6: -2.455283107878792
+  Dev1/ai7: -2.453201057341481
+  Dev1/ai16: -2.5176349823550215
+  Dev1/ai17: -2.5628921420164374
+  Dev1/ai18: -2.5769185734507705
+  Dev1/ai19: -2.586561745568705
+  Dev1/ai20: -2.5750556933696878
+  Dev1/ai21: -2.6134092131802067
+  Dev1/ai22: -2.6153816810337016
+  Dev1/ai23: -2.6046426918873156
+responding_single_ended:
+- Dev1/ai0
+- Dev1/ai1
+- Dev1/ai2
+- Dev1/ai3
+- Dev1/ai4
+- Dev1/ai5
+- Dev1/ai14
+- Dev1/ai15
+unaccounted_single_ended:
+- Dev1/ai5
+- Dev1/ai14
+- Dev1/ai15
+ghosting_check:
+  Dev1/ai0:
+    min_gap_mV: 54.71683498802182
+    ghosting: false
+  Dev1/ai1:
+    min_gap_mV: 59.12639887488558
+    ghosting: false
+  Dev1/ai2:
+    min_gap_mV: 203.51552959623942
+    ghosting: false
+  Dev1/ai3:
+    min_gap_mV: 91.3011887107864
+    ghosting: false
+  Dev1/ai4:
+    min_gap_mV: 91.30392823742429
+    ghosting: false
+  Dev1/ai5:
+    min_gap_mV: 0.4065477453143451
+    ghosting: true
+  Dev1/ai6:
+    min_gap_mV: 2443.827399423701
+    ghosting: false
+  Dev1/ai7:
+    min_gap_mV: 0.16711191654772417
+    ghosting: true
+sample_rate_hz: 1000.0
+seconds_per_scan: 3.0
+config_modified: false
+robot: NOT USED

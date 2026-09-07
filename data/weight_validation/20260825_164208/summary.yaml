@@ -1,0 +1,96 @@
+run: '20260825_164208'
+frame: ATI_sensor_frame
+mass_kg: 1.004
+gravity_m_s2: 9.80665
+expected_abs_Fz_N: 9.845876599999999
+tolerance_fraction: 0.05
+configured_mapping:
+  SG0: Dev1/ai0
+  SG1: Dev1/ai2
+  SG2: Dev1/ai1
+  SG3: Dev1/ai3
+  SG4: Dev1/ai4
+  SG5: Dev1/ai5
+verdict: FAIL
+result_configured:
+  Fx: -2.5952427791425015
+  Fy: 1.460072900331268
+  Fz: -7.679876080990995
+  Tx: 0.00019974899400158376
+  Ty: 0.08946159688670424
+  Tz: 0.04197964571528896
+Fz_error_pct: -21.999062216654263
+lateral_ratio_configured: 0.38773637045245707
+candidates:
+- mapping: configured (SG0=ai0, per SCB-68A labels)
+  channels:
+  - Dev1/ai0
+  - Dev1/ai2
+  - Dev1/ai1
+  - Dev1/ai3
+  - Dev1/ai4
+  - Dev1/ai5
+  wrench:
+    Fx: -2.5952427791425015
+    Fy: 1.460072900331268
+    Fz: -7.679876080990995
+    Tx: 0.00019974899400158376
+    Ty: 0.08946159688670424
+    Tz: 0.04197964571528896
+  abs_Fz_N: 7.679876080990995
+  Fz_error_pct: -21.999062216654263
+  lateral_ratio: 0.38773637045245707
+- mapping: evidence-based (SG0=ai5, SG5=ai0)
+  channels:
+  - Dev1/ai5
+  - Dev1/ai2
+  - Dev1/ai1
+  - Dev1/ai3
+  - Dev1/ai4
+  - Dev1/ai0
+  wrench:
+    Fx: 0.23450829571679122
+    Fy: 0.2314402064392925
+    Fz: -11.636254912231925
+    Tx: -0.006356869505105127
+    Ty: -0.007430654266761537
+    Tz: -0.005182058772021978
+  abs_Fz_N: 11.636254912231925
+  Fz_error_pct: 18.184041756443772
+  lateral_ratio: 0.02831516587703365
+- mapping: evidence-based (SG0=ai5, SG5=ai6)
+  channels:
+  - Dev1/ai5
+  - Dev1/ai2
+  - Dev1/ai1
+  - Dev1/ai3
+  - Dev1/ai4
+  - Dev1/ai6
+  wrench:
+    Fx: 0.2396034762078798
+    Fy: 0.22849390094424052
+    Fz: -11.636002015624248
+    Tx: -0.006374476951235907
+    Ty: -0.007469231751784169
+    Tz: -0.005256229065223122
+  abs_Fz_N: 11.636002015624248
+  Fz_error_pct: 18.181473202947206
+  lateral_ratio: 0.028453762474559108
+observed_delta_mV:
+  Dev1/ai0: -0.22124505217790968
+  Dev1/ai1: -103.56874197321319
+  Dev1/ai2: -4.565334468286553
+  Dev1/ai3: -11.007743109458401
+  Dev1/ai4: -119.3780727862891
+  Dev1/ai5: -119.25934416450012
+  Dev1/ai6: -0.006520099363527265
+  Dev1/ai7: -0.1468940032356425
+root_cause: 'Dev1/ai0 is an open circuit (mux ghosting, confirmed 3x). SG0 therefore
+  contributes a ghosted value. The gauge signal expected on SG0 appears on Dev1/ai5
+  instead: reassigning SG0->ai5 drops the lateral coupling from 0.388 to 0.028 and
+  the gauge-pattern residual from 146 to 18 mV, on two independent measurements.'
+residual_scale_issue: 'Even with the evidence-based mapping |Fz| overreads: +11.5%
+  on the Task 5 load, +18.2% here. Not a channel-ordering effect. No software scale
+  factor has been applied. Case B: investigate IFPS gain / load path.'
+channel_mapping_confirmed_in_config: true
+all_channels_healthy: false

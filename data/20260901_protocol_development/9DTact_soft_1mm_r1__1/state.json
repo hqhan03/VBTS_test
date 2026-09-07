@@ -1,0 +1,266 @@
+{
+  "tare": {
+    "at": "2026-09-01T19:05:03.422554",
+    "tare_wrench": [
+      12.66497684576445,
+      5.484338605200318,
+      103.97874626309856,
+      0.025389424624470303,
+      -0.1685426500393941,
+      -1.1252777621766183
+    ],
+    "tare_volts": [
+      0.8672361192773688,
+      1.3138127521255725,
+      1.037647376854755,
+      0.8143876090697797,
+      1.012021392496169,
+      1.3360684507824336
+    ]
+  },
+  "reference": {
+    "at": "2026-09-01T19:05:11.801301",
+    "file": "reference.png",
+    "wrench": [
+      0.0012356088104539253,
+      0.0003312791460921005,
+      -0.010311116072657,
+      -7.474122253464666e-06,
+      -6.286581494779897e-05,
+      7.171850142784209e-05
+    ],
+    "quality": {
+      "full_mean": 67.12442370756173,
+      "centre_mean": 81.53331018518519,
+      "centre_min": 70,
+      "centre_max": 90,
+      "centre_saturated_pct": 0.0,
+      "centre_black_pct": 0.0
+    },
+    "stability": {
+      "n_frames": 15,
+      "fps": 5.0,
+      "mean": 69.24615434242111,
+      "frame_to_frame_std": 0.011861379173341374,
+      "drift": 0.02036069315842326
+    },
+    "camera_controls": {
+      "auto_exposure": 1.0,
+      "exposure": 2047.0,
+      "auto_wb": 0.0,
+      "wb_temperature": 4600.0,
+      "brightness": 64.0,
+      "contrast": 4.0,
+      "fourcc": "YUYV",
+      "width": 1920,
+      "height": 1080
+    },
+    "image_time": 1788257108.5991657
+  },
+  "samples": [
+    {
+      "index": 1,
+      "at": "2026-09-01T19:10:15.280382",
+      "image": "0001.png",
+      "image_time": 1788257415.002039,
+      "pose_time": 1788257415.2803905,
+      "wrench": [
+        0.013547316844068291,
+        0.008713440465953681,
+        0.010706273766857066,
+        -0.0001272040471742425,
+        -0.0003075283656439609,
+        0.00010795311694722365
+      ],
+      "wrench_first": [
+        0.013547316844068291,
+        0.008713440465953681,
+        0.010706273766857066,
+        -0.0001272040471742425,
+        -0.0003075283656439609,
+        0.00010795311694722365
+      ],
+      "wrench_second": [
+        0.013547316844068291,
+        0.008713440465953681,
+        0.010706273766857066,
+        -0.0001272040471742425,
+        -0.0003075283656439609,
+        0.00010795311694722365
+      ],
+      "force_drift_N": 0.0,
+      "tcp_mm": [
+        37.79994964599609,
+        363.2203674316406,
+        39.51881408691406
+      ],
+      "tcp_rpy_deg": [
+        -179.3115997314453,
+        -0.5732779502868652,
+        -116.5724716186523
+      ],
+      "active_tool": [
+        0,
+        1
+      ],
+      "image_quality": {
+        "full_mean": 66.99565779320987,
+        "centre_mean": 81.26030864197531,
+        "centre_min": 70,
+        "centre_max": 90,
+        "centre_saturated_pct": 0.0,
+        "centre_black_pct": 0.0
+      },
+      "label": "N0.10",
+      "probe_tilt_deg": 0.098947025268399,
+      "commanded": true,
+      "phase": "force_series",
+      "force_target_N": 0.1,
+      "force_reached": false,
+      "stop_reason": "travel limit 0.5 mm",
+      "travel_used_mm": 0.5069751007875605,
+      "height_above_plane_mm": 27.216436586822553,
+      "depth_mm": 0.5013338237684728,
+      "void": true,
+      "void_reason": "recorded while the probe was in air: force-series used the previous sensor 3 mm surface height, 2 mm above this one",
+      "sensor_id": "9DTact_soft_1mm_r1"
+    },
+    {
+      "index": 2,
+      "at": "2026-09-01T19:10:54.457132",
+      "image": "0002.png",
+      "image_time": 1788257454.1777742,
+      "pose_time": 1788257454.4571404,
+      "wrench": [
+        0.008254337668958556,
+        0.010256708530310021,
+        0.03312623599441622,
+        -0.00010765602846700417,
+        -0.00027366474465029267,
+        2.5898341475594222e-05
+      ],
+      "wrench_first": [
+        0.008254337668958556,
+        0.010256708530310021,
+        0.03312623599441622,
+        -0.00010765602846700417,
+        -0.00027366474465029267,
+        2.5898341475594222e-05
+      ],
+      "wrench_second": [
+        0.008254337668958556,
+        0.010256708530310021,
+        0.03312623599441622,
+        -0.00010765602846700417,
+        -0.00027366474465029267,
+        2.5898341475594222e-05
+      ],
+      "force_drift_N": 0.0,
+      "tcp_mm": [
+        38.66991806030273,
+        363.7130126953125,
+        39.7837677001953
+      ],
+      "tcp_rpy_deg": [
+        -179.3087921142578,
+        -0.5783867835998535,
+        -116.5731506347656
+      ],
+      "active_tool": [
+        0,
+        1
+      ],
+      "image_quality": {
+        "full_mean": 67.06281394675926,
+        "centre_mean": 81.31802469135802,
+        "centre_min": 70,
+        "centre_max": 90,
+        "centre_saturated_pct": 0.0,
+        "centre_black_pct": 0.0
+      },
+      "label": "+XS0.10",
+      "probe_tilt_deg": 0.10368422569951516,
+      "commanded": true,
+      "phase": "force_shear",
+      "shear_axis": "+X",
+      "shear_target_N": 0.1,
+      "force_reached": false,
+      "stop_reason": "12 iterations",
+      "travel_used_mm": 0.9980128189480691,
+      "normal_hold_N": 0.2,
+      "height_above_plane_mm": 27.48082506413776,
+      "void": true,
+      "void_reason": "recorded while the probe was in air: force-series used the previous sensor 3 mm surface height, 2 mm above this one",
+      "sensor_id": "9DTact_soft_1mm_r1"
+    },
+    {
+      "index": 3,
+      "at": "2026-09-01T19:11:03.054085",
+      "image": "0003.png",
+      "image_time": 1788257462.7790682,
+      "pose_time": 1788257463.0540938,
+      "wrench": [
+        0.01264034460972141,
+        0.017411752001184055,
+        -0.005989663291515512,
+        -7.3596127516673e-05,
+        -0.0004800450200170281,
+        0.0004148585935426219
+      ],
+      "wrench_first": [
+        0.01264034460972141,
+        0.017411752001184055,
+        -0.005989663291515512,
+        -7.3596127516673e-05,
+        -0.0004800450200170281,
+        0.0004148585935426219
+      ],
+      "wrench_second": [
+        0.01264034460972141,
+        0.017411752001184055,
+        -0.005989663291515512,
+        -7.3596127516673e-05,
+        -0.0004800450200170281,
+        0.0004148585935426219
+      ],
+      "force_drift_N": 0.0,
+      "tcp_mm": [
+        39.54325866699218,
+        364.2070007324218,
+        39.76245498657226
+      ],
+      "tcp_rpy_deg": [
+        -179.3063049316406,
+        -0.5823846459388733,
+        -116.5735931396484
+      ],
+      "active_tool": [
+        0,
+        1
+      ],
+      "image_quality": {
+        "full_mean": 67.13664351851853,
+        "centre_mean": 81.30867283950617,
+        "centre_min": 70,
+        "centre_max": 90,
+        "centre_saturated_pct": 0.0,
+        "centre_black_pct": 0.0
+      },
+      "label": "+XS0.20",
+      "probe_tilt_deg": 0.10368422569951516,
+      "commanded": true,
+      "phase": "force_shear",
+      "shear_axis": "+X",
+      "shear_target_N": 0.2,
+      "force_reached": false,
+      "stop_reason": "travel limit 1.0 mm",
+      "travel_used_mm": 1.0019930114868676,
+      "normal_hold_N": 0.2,
+      "height_above_plane_mm": 27.461369415996042,
+      "void": true,
+      "void_reason": "recorded while the probe was in air: force-series used the previous sensor 3 mm surface height, 2 mm above this one",
+      "sensor_id": "9DTact_soft_1mm_r1"
+    }
+  ],
+  "zero_checks": []
+}

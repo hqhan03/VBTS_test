@@ -1,0 +1,66 @@
+probe: ball4
+contact_law: hertz
+searched_surface_mm: 27.477
+surface_mm: 27.556944366452203
+sigma_mm: .nan
+sem_mm: .nan
+first_surface_mm: 27.556944366452203
+drift_first_to_last_mm: 0.0
+drift_per_approach_mm: 0.0
+monotone: false
+n_approaches: 1
+image_onset_surface_mm: null
+step_mm: 0.02
+fit_max_force_N: 1.0
+stop_force_N: 1.2
+fits:
+- ok: false
+  why: only 4 points under 1.0 N
+  zero_drift_N: -0.0045260799460579764
+  zero_drift_N_per_min: -0.03978021529468994
+  approach: 1
+  base_height_mm: 28.566019533625578
+  image_onset_depth_mm: 1.551248109114372
+- ok: false
+  why: only 4 points under 1.0 N
+  zero_drift_N: -0.026542003301363658
+  zero_drift_N_per_min: -0.2297656287737922
+  approach: 2
+  base_height_mm: 28.57789505729895
+  image_onset_depth_mm: 1.5427165804022955
+- ok: false
+  why: only 4 points under 1.0 N
+  zero_drift_N: -0.012550509992762733
+  zero_drift_N_per_min: -0.1109525130931079
+  approach: 3
+  base_height_mm: 28.57656515166028
+  image_onset_depth_mm: 1.5519285630030666
+- ok: true
+  d0_mm: 1.013684456815825
+  a: 0.5128351270386502
+  sigma_d0_mm: 0.044725701679879236
+  r2: 0.918474917610102
+  exponent: 1.5
+  law: hertz
+  n: 11
+  fit_max_force_N: 1.0
+  zero_drift_N: -0.0008456231300674492
+  zero_drift_N_per_min: -0.0033767144686893485
+  approach: 4
+  base_height_mm: 28.570628823268027
+  image_onset_depth_mm: null
+- ok: true
+  d0_mm: 0.5704584796545271
+  a: 0.15295611303359838
+  sigma_d0_mm: 0.18689977197109606
+  r2: 0.8091481604717474
+  exponent: 1.5
+  law: hertz
+  n: 11
+  fit_max_force_N: 1.0
+  zero_drift_N: -0.026764412130850315
+  zero_drift_N_per_min: -0.10521884540361152
+  approach: 5
+  base_height_mm: 28.572646369156548
+  image_onset_depth_mm: null
+at: '2026-09-06T15:19:27.122049'

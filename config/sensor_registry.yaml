@@ -1,0 +1,2213 @@
+created: '2026-09-01'
+design:
+  principles:
+  - 9DTact
+  - DIGIT
+  - DIGIT_Marker
+  hardness:
+  - soft
+  - medium
+  - hard
+  thickness_mm:
+  - 1
+  - 2
+  - 3
+  replicates: 2
+  total: 54
+  scheme: 'full factorial 3x3x3 with n=2. Replicates are deliberately NOT run back
+    to back: set 1 covers all 27 conditions, set 2 follows later, so replicate variance
+    carries mounting, temperature and day-to-day drift rather than five minutes of
+    the same session'
+force_policy:
+  mode: per-sensor ceiling with a common lower range
+  target_ladder_N:
+  - 0.1
+  - 0.2
+  - 0.3
+  - 0.4
+  - 0.5
+  - 0.6
+  - 0.7
+  - 0.8
+  - 0.9
+  - 1.0
+  - 1.1
+  - 1.2
+  - 1.3
+  - 1.4
+  - 1.5
+  - 1.6
+  - 1.7
+  - 1.8
+  - 1.9
+  - 2.0
+  - 2.1
+  - 2.2
+  - 2.3
+  - 2.4
+  - 2.5
+  - 2.6
+  - 2.7
+  - 2.8
+  - 2.9
+  - 3.0
+  - 3.1
+  - 3.2
+  - 3.3
+  - 3.4
+  - 3.5
+  - 3.6
+  - 3.7
+  - 3.8
+  - 3.9
+  - 4.0
+  - 4.1
+  - 4.2
+  - 4.3
+  - 4.4
+  - 4.5
+  - 4.6
+  - 4.7
+  - 4.8
+  - 4.9
+  - 5.0
+  shear_target_N: 1.0
+  rationale: every sensor climbs the same ladder and stops at its own safe ceiling.
+    The rungs all sensors reached form the comparable subset; the rungs above exist
+    only for the sensors that could take them, and are marked as such rather than
+    discarded
+  common_range_N: null
+  ladder_step_N: 0.1
+  shear_ladder_N:
+  - 0.1
+  - 0.2
+  - 0.3
+  - 0.4
+  - 0.5
+  - 0.6
+  - 0.7
+  - 0.8
+  - 0.9
+  - 1.0
+  tolerance_N: 0.03
+capture_policy:
+  mode: continuous capture with an equal frame budget per sensor
+  frames_per_sensor: 1000
+  normal_fraction: 0.5
+  ramp_step_N: 0.1
+  ramp_settle_s: 0.15
+  anchor_every_N: 0.1
+  rationale: the sensors are compared on how well a force estimator trains on each,
+    so every run saves exactly the same number of frames. Loading/unloading cycles
+    to the sensor's own ceiling repeat until the budget is spent, so a stiff 3 mm
+    gel and a soft 1 mm one give the same count; the 1 mm one simply sees more cycles.
+    Frames are saved at the camera rate during every commanded motion and labelled
+    with the F/T mean over the frame's own exposure window and the interpolated TCP
+    pose
+  speed_pct:
+    contact: 40
+    free: 60
+    basis: 'raised 2026-09-05. The 15 % contact limit came from a 0.05 mm step at
+      30 % reading back 0.111 mm, but that was read BEFORE it settled. Re-measured
+      with the settle actually used, eight 0.05 mm steps at 15/25/40/60 % landed to
+      sigma 0.0161/0.0091/0.0033/0.0054 mm -- no fall-off with speed, best at 40.
+      Speed buys little time either: 0.60 s per step at 15 % against 0.57 s at 60
+      %, because the step is settle and RPC, not motion'
+  frames_basis: 'set 2026-09-04 from a 9DTact-method force-estimation study on 9DTact_soft_1mm_r2:
+    a ResNet-18 trained their way reaches 0.072 N normal-force MAE (1.5% of range,
+    R2 0.992) on temporally held-out cycles from 800 frames, and 2424 frames scored
+    the same within seed noise. Below 4 N the error halves with data; above 4 N it
+    does not improve at all, because the image response is saturating there and only
+    8% of frames sit in that band'
+  ramp_step_basis: 0.05 N gave 234 moves and about two minutes per loading cycle for
+    roughly ten new frames once the separation rule had rejected the repeats. 0.1
+    N halves the moves without changing what the ramp covers; the diversity comes
+    from repeating the cycle, not from crawling through it
+  force_backstop_N: 30.0
+  limits_basis: '2026-09-04: both limits come from the force at which the sensor''s
+    own image stops responding, measured by characterize. Depth and force backstops
+    are set generously (10 mm, 25 N) because saturation has to be passed to be found
+    -- a 5 N cap always bound first, so the saturation test never once set a ceiling.
+    Measured saturation: 9.0 N on 9DTact soft 1 mm; not reached at 15.9 N on 9DTact
+    hard 3 mm, where the image response was still 117 % of its low-force value and
+    the local Hertz exponent 1.33-1.63 with no substrate stiffening'
+  range_normal_N: 2.0
+  range_basis: 'normal 2 N, shear 0.5 N (a quarter of it), set by the operator 2026-09-07;
+    4/1 N earlier the same day, 5 N before that. Comparing sensors on force-estimation
+    resolution requires the same span on each, and the span has to be one they can
+    all actually reach: at 3 N only 10 of 18 units clear the depth backstop, at 2
+    N 15 do, and the three that do not (soft 2 mm pair 1.83-1.89 N, hard_1mm_r1 2.02
+    N) sit close enough that the Hertz extrapolation they are judged by may itself
+    be under-reading. The range does NOT set the collection time: total ramp steps
+    are budget x bin_width / (frames_per_cell x ramp_step), in which the range cancels
+    -- measured 109/101/105/103 steps at 3.0/2.5/2.0/1.5 N. So it was chosen on data
+    quality alone, and the narrower range puts 13 frames in each 0.05 N bin instead
+    of 9. Friction does not cap the shear: mu >= 0.59 on the 1.2 N hold carries 0.71
+    N against the 0.5 N asked. Measured on 9DTact_medium_2mm_r1 over 0-19 N, one model
+    scored 9-10 % relative error over 0-2 N and 0.8-2.6 % over 14-17 N, so per-sensor
+    ceilings would have made the MAEs incomparable; characterize still records each
+    unit''s own limits and they only ever lower the range'
+  range_shear_N: 0.5
+  shear_hold_N: 1.2
+  shear_hold_basis: 60 % of the 2 N normal range, recomputed 2026-09-07 when the range
+    fell from 5 N. Nothing reads this key -- run_one_sensor derives the hold as 0.6
+    x min(range_normal, safe_force_N) -- so it is here to be read by a person, and
+    it was left saying 3.0 N through two changes of the range
+  depth_frac: 0.9
+  depth_offset_mm: 1.0
+  depth_limit_basis: '(thickness_mm + depth_offset_mm) x depth_frac from the gel surface,
+    binding in every phase. Reinstated 2026-09-04 as thickness_mm x 0.9 after 9DTact_medium_2mm_r1
+    was permanently deformed by probes reaching 5.5-6.6 mm on a 2 mm layer: its contact
+    height fell 26.234 -> 26.074 -> 25.964 mm and did not recover, against 0.03 mm
+    run-to-run repeatability. The 1 mm offset was added 2026-09-07 by the operator:
+    thickness_mm names the TRANSLUCENT gel the units are sorted by, and a 9DTact has
+    a black gel cast over it, so the compliant stack the probe presses into is about
+    a millimetre thicker than the label. Without the offset a 1 mm unit was held to
+    0.90 mm and about 1 N against a 3 N collection range. This supersedes both the
+    "depth_limit removed 2026-09-04" entry and the "runaway guard only" note that
+    stood beside it -- three generations of the policy were on file at once and only
+    this one was ever executed'
+  depth_limit_effect: 'reachable force at the limit, from each unit''s own Hertz fit
+    (an extrapolation 1.6-2.6x past the fitted depth, so a floor rather than a prediction;
+    the gel stiffens near its backing): 1 mm units 2.0-4.0 N, 2 mm 1.8-9.9 N, 3 mm
+    2.4-11.3 N. Fifteen of eighteen reach the 2 N range outright and the soft 2 mm
+    pair bind first at about 1.9 N, so a short range is recorded as short rather than
+    bought with a damaged gel'
+reference_sensor:
+  id: 9DTact_hard_3mm_r1
+  note: the unit characterised so far. 9DTact, HARDEST silicone, 3 mm. F = 1.628*depth^1.5
+    over 0.25-5 N, free exponent 1.495 against Hertz's 1.5, surface repeatable to
+    0.03 mm, mu > 0.58, no permanent set after two runs to 2.14 mm
+  implication: this is the STIFFEST elastomer in the set and it still needs 2.14 mm
+    to reach 5 N. Every softer one needs more depth for the same force, so the force
+    ceiling is set by depth, not by the 5 N target, for most of the matrix
+sensors:
+- id: 9DTact_soft_1mm_r1
+  principle: 9DTact
+  hardness: soft
+  thickness_mm: 1
+  replicate: 1
+  max_depth_mm: 0.7
+  depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
+    of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
+    marks the backing taking load. The 0.5 mm start had no data behind it
+  status: characterised
+  history:
+  - characterised_at: '2026-09-01T19:09:35.927019'
+    gel_model:
+      hertz_a: 0.9415736618445726
+      free_exponent: 1.2547647526683652
+      surface_mm: 25.672
+    safe_depth_mm: 0.5027358061124367
+    safe_force_N: 0.33900868934745176
+    stopped_on: depth backstop
+    ladder_rungs_reached: 3
+    depth_cap_used_mm: null
+    run: data/20260901_protocol_development/9DTact_soft_1mm_r1__1
+    valid: false
+    note: 'superseded protocol: 0.5 mm depth limit with the surface held at the search
+      contact point plus a guessed 0.3 mm. Mixing these with current runs inflated
+      this sensor''s apparent scatter to 15 %, which read as ''hardness is not separable
+      at 1 mm'' -- same-protocol runs sit at 7.5 %'
+    run_timestamp: '20260901_190500'
+  - characterised_at: '2026-09-01T19:16:53.126262'
+    gel_model:
+      hertz_a: 0.7067773326656746
+      free_exponent: 1.0368506199214012
+      surface_mm: 25.695
+    safe_depth_mm: 0.5114609796168921
+    safe_force_N: 0.2573840294928118
+    stopped_on: depth backstop
+    ladder_rungs_reached: 2
+    depth_cap_used_mm: null
+    run: data/20260901_protocol_development/9DTact_soft_1mm_r1__2
+    valid: false
+    note: 'superseded protocol: 0.5 mm depth limit with the surface held at the search
+      contact point plus a guessed 0.3 mm. Mixing these with current runs inflated
+      this sensor''s apparent scatter to 15 %, which read as ''hardness is not separable
+      at 1 mm'' -- same-protocol runs sit at 7.5 %'
+    run_timestamp: '20260901_191545'
+  - characterised_at: '2026-09-01T19:20:55.624843'
+    gel_model:
+      hertz_a: 1.66395808467361
+      free_exponent: 0.6736417081103097
+      surface_mm: 25.324
+    safe_depth_mm: 0.7041040992185934
+    safe_force_N: 0.8941095117247784
+    stopped_on: depth backstop
+    ladder_rungs_reached: 8
+    valid: false
+    note: 'VOID: the F/T was zeroed while the tip was still 0.13 mm inside the gel,
+      left there by the previous run. Taring a loaded contact defines that load as
+      zero, so the reference image shows an already-indented gel and the whole curve
+      is measured from a preloaded state. Free exponent came out 0.67 against Hertz''s
+      1.5'
+  - characterised_at: '2026-09-01T19:27:47.684472'
+    gel_model:
+      hertz_a: 0.5534422537083074
+      free_exponent: 1.8111199893554921
+      surface_mm: 25.826
+    safe_depth_mm: 0.701234905155232
+    safe_force_N: 0.33106580602947133
+    stopped_on: depth backstop
+    ladder_rungs_reached: 3
+    depth_cap_used_mm: null
+    run: data/20260901_protocol_development/9DTact_soft_1mm_r1__4
+    run_timestamp: '20260901_192519'
+  - discarded: true
+    reason: incomplete run deleted; shear ladder missing
+    gel_model:
+      hertz_a: 0.7730040443804316
+      free_exponent: 1.2996993756584905
+      surface_mm: 25.673000000000002
+    safe_force_N: 0.5061475736477519
+    safe_depth_mm: 0.7048564306587437
+    run: data/20260903_raw_dataset/9DTact_soft_1mm_r1
+  - characterised_at: '2026-09-03T15:30:11.911737'
+    gel_model:
+      hertz_a: 0.8955145315849309
+      free_exponent: 1.3057097416698875
+      surface_mm: 25.46
+    safe_depth_mm: 0.7006512153653901
+    safe_force_N: 0.5641826573510826
+    stopped_on: depth backstop
+    ladder_rungs_reached: 5
+    depth_cap_used_mm: null
+    image_response: null
+    run: null
+  - characterised_at: '2026-09-04T15:11:42.008251'
+    gel_model:
+      hertz_a: 1.1023020930363987
+      free_exponent: 1.471051890238447
+      surface_mm: 25.321
+    safe_depth_mm: 2.8385621994335324
+    safe_force_N: 5.1588708763498206
+    stopped_on: force cap
+    ladder_rungs_reached: 50
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: null
+      reached: false
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      note: 'not reached within the limits: stopped on force cap at 5.16 N with the
+        image still changing at 1.61 lvl/N (60% of peak)'
+      peak_slope_levels_per_N: 2.692400716980644
+      image_change_at_stop: 12.686229705810547
+    run: data/20260903_raw_dataset/9DTact_soft_1mm_r1
+  - characterised_at: '2026-09-04T16:24:03.472608'
+    gel_model:
+      hertz_a: 1.1123877325739757
+      free_exponent: 1.642361122024314
+      surface_mm: 25.319
+    safe_depth_mm: 2.86749978877393
+    safe_force_N: 5.101778613292242
+    stopped_on: force cap
+    ladder_rungs_reached: 50
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: null
+      reached: false
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      note: 'not reached within the limits: stopped on force cap at 5.10 N with the
+        image still changing at 2.06 lvl/N (77% of peak)'
+      peak_slope_levels_per_N: 2.6711026026492637
+      image_change_at_stop: 12.833208084106445
+    run: data/20260903_raw_dataset/9DTact_soft_1mm_r1
+  - characterised_at: '2026-09-04T16:49:24.604152'
+    gel_model:
+      hertz_a: 1.1295023595458085
+      free_exponent: 1.5241494728704992
+      surface_mm: 25.296
+    safe_depth_mm: 2.915863462873318
+    safe_force_N: 5.357778384704301
+    stopped_on: force cap
+    ladder_rungs_reached: 50
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: null
+      reached: false
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      note: 'not reached within the limits: stopped on force cap at 5.36 N with the
+        image still changing at 1.53 lvl/N (53% of peak)'
+      peak_slope_levels_per_N: 2.895464681135531
+      image_change_at_stop: 13.241625785827637
+    run: data/20260903_raw_dataset/9DTact_soft_1mm_r1
+  - characterised_at: '2026-09-04T17:13:20.747018'
+    gel_model:
+      hertz_a: 1.1389294043927438
+      free_exponent: 1.599156931652976
+      surface_mm: 25.716
+    safe_depth_mm: 2.9266509077790985
+    safe_force_N: 5.380586047433743
+    stopped_on: force cap
+    ladder_rungs_reached: 50
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: null
+      reached: false
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      note: 'not reached within the limits: stopped on force cap at 5.38 N with the
+        image still changing at 1.54 lvl/N (56% of peak)'
+      peak_slope_levels_per_N: 2.7324136552906517
+      image_change_at_stop: 13.279708862304688
+    run: data/20260903_raw_dataset/9DTact_soft_1mm_r1
+  - characterised_at: '2026-09-07T19:58:03.515230'
+    gel_model:
+      hertz_a: 1.804369359441545
+      free_exponent: 2.2734188551651684
+      surface_mm: 25.741999999999997
+    safe_depth_mm: 1.3042959413764237
+    safe_force_N: 1.936716219305822
+    stopped_on: substrate stiffening
+    ladder_rungs_reached: 19
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: null
+      reached: false
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      note: 'not reached within the limits: stopped on substrate stiffening at 1.94
+        N with the image still changing at 1.71 lvl/N (89% of peak)'
+      peak_slope_levels_per_N: 1.9172446920800432
+      image_change_at_stop: 5.462317943572998
+    run: data/9DTact/20260907_passB_ball8/9DTact_soft_1mm_r1
+  run_timestamp: '20260901_193153'
+  gel_model:
+    hertz_a: 2.1004793845941045
+    free_exponent: 1.6398871817116627
+    surface_mm: 25.684
+  safe_depth_mm: 1.5211734543097286
+  safe_force_N: 3.563177615965259
+  commanded_depth_mm: 1.5000000000000002
+  command_vs_measured_mm: -0.02117345430972839
+  stopped_on: force cap
+  ladder_rungs_reached: 35
+  characterised_at: '2026-09-07T20:00:30.349434'
+  run: data/9DTact/20260907_passB_ball8/9DTact_soft_1mm_r1
+  ladder_run: data/20260903_ladder_protocol/9DTact_soft_1mm_r1
+  image_response:
+    max_measurable_force_N: null
+    reached: false
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    note: 'not reached within the limits: stopped on force cap at 3.56 N with the
+      image still changing at 1.51 lvl/N (74% of peak)'
+    peak_slope_levels_per_N: 2.0321202266743694
+    image_change_at_stop: 8.893120765686035
+  contact_map:
+    at_depth:
+      target_depth_mm: 0.5
+      target_used_mm: 0.5
+      limited_by_depth_cap: false
+      at: '2026-09-07T20:00:46.030669'
+      image: at_depth.png
+      depth_mm: 0.46921338479170416
+      height_above_plane_mm: 25.214786615208297
+      normal_force_N: 0.7603311224679089
+      region:
+        mean_abs_diff_centre: 3.134831428527832
+        max_diff: 19.43359375
+        changed_fraction: 0.04979359567901234
+        area_px: 98882
+        radius_px: 177.41228301790605
+        centroid_px:
+        - 905.042697356445
+        - 577.3835480673935
+        enclosing_radius_px: 194.9152374267578
+        mean_abs_diff_in_region: 9.055792808532715
+        dark_area_px: 98629
+        dark_radius_px: 177.18517365857983
+        dark_centroid_px:
+        - 904.8829857344189
+        - 577.2290401403238
+        dark_mean_diff: -9.069233894348145
+        bright_area_px: 0
+        bright_radius_px: 0.0
+        bright_centroid_px: null
+        bright_mean_diff: 0.0
+    at_force:
+      target_force_N: 0.5
+      target_used_N: 0.5
+      limited_by_force_cap: false
+      force_reached: true
+      stop_reason: reached
+      at: '2026-09-07T20:00:52.848504'
+      image: at_force.png
+      depth_mm: 0.33962875007351556
+      height_above_plane_mm: 25.344371249926485
+      normal_force_N: 0.48623296591193255
+      region:
+        mean_abs_diff_centre: 2.5778098106384277
+        max_diff: 15.6796875
+        changed_fraction: 0.040014949845679014
+        area_px: 80666
+        radius_px: 160.23977433490617
+        centroid_px:
+        - 905.2000719014206
+        - 578.1924602682667
+        enclosing_radius_px: 179.8504638671875
+        mean_abs_diff_in_region: 7.855628490447998
+        dark_area_px: 80494
+        dark_radius_px: 160.0688476202601
+        dark_centroid_px:
+        - 905.2179541332273
+        - 578.2050587621437
+        dark_mean_diff: -7.863895893096924
+        bright_area_px: 0
+        bright_radius_px: 0.0
+        bright_centroid_px: null
+        bright_mean_diff: 0.0
+- id: 9DTact_soft_1mm_r2
+  principle: 9DTact
+  hardness: soft
+  thickness_mm: 1
+  replicate: 2
+  max_depth_mm: 0.7
+  depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
+    of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
+    marks the backing taking load. The 0.5 mm start had no data behind it
+  status: characterised
+  gel_model:
+    hertz_a: 1.8797552422423651
+    free_exponent: 2.608943810138667
+    surface_mm: 25.558
+  safe_force_N: 1.7633132248660786
+  safe_depth_mm: 1.3157477900067498
+  commanded_depth_mm: 1.4000000000000001
+  command_vs_measured_mm: 0.08425220999325034
+  stopped_on: substrate stiffening
+  ladder_rungs_reached: 17
+  characterised_at: '2026-09-07T20:29:41.871390'
+  run: data/9DTact/20260907_passB_ball8/9DTact_soft_1mm_r2__2
+  ladder_run: data/20260903_ladder_protocol/9DTact_soft_1mm_r2
+  history:
+  - characterised_at: '2026-09-03T23:38:41.779164'
+    gel_model:
+      hertz_a: 0.7925353665199641
+      free_exponent: 1.2603859472754617
+      surface_mm: 25.677999999999997
+    safe_depth_mm: 0.7052021776522004
+    safe_force_N: 0.5580690491814266
+    stopped_on: depth backstop
+    ladder_rungs_reached: 5
+    depth_cap_used_mm: null
+    image_response: null
+    run: null
+  - characterised_at: '2026-09-04T00:50:14.085759'
+    gel_model:
+      hertz_a: 0.869246130300427
+      free_exponent: 1.4904756229562106
+      surface_mm: 25.587
+    safe_depth_mm: 0.7052283426421155
+    safe_force_N: 0.46969114375091864
+    stopped_on: depth backstop
+    ladder_rungs_reached: 4
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: null
+      reached: false
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      note: 'not reached within the limits: stopped on depth backstop at 0.47 N with
+        the image still changing at 0.16 lvl/N (3% of peak)'
+      peak_slope_levels_per_N: 4.634774724159238
+      image_change_at_stop: 2.8305611610412598
+    run: data/20260903_raw_dataset/9DTact_soft_1mm_r2
+  - characterised_at: '2026-09-04T00:52:58.545692'
+    gel_model:
+      hertz_a: 0.7454976887854421
+      free_exponent: 1.570804106682145
+      surface_mm: 25.677
+    safe_depth_mm: 0.7300830108728071
+    safe_force_N: 0.4761551257613519
+    stopped_on: depth backstop
+    ladder_rungs_reached: 4
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: null
+      reached: false
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      note: 'not reached within the limits: stopped on depth backstop at 0.48 N with
+        the image still changing at 4.06 lvl/N (100% of peak)'
+      peak_slope_levels_per_N: 4.057358060464493
+      image_change_at_stop: 2.6152970790863037
+    run: data/20260903_raw_dataset/9DTact_soft_1mm_r2
+  - characterised_at: '2026-09-04T01:40:25.435023'
+    gel_model:
+      hertz_a: 1.0577549483802344
+      free_exponent: 1.5667028048524145
+      surface_mm: 25.521
+    safe_depth_mm: 2.9119196108881162
+    safe_force_N: 5.1247496600042695
+    stopped_on: force cap
+    ladder_rungs_reached: 50
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: null
+      reached: false
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      note: 'not reached within the limits: stopped on force cap at 5.12 N with the
+        image still changing at 1.89 lvl/N (49% of peak)'
+      peak_slope_levels_per_N: 3.8779666321400974
+      image_change_at_stop: 14.028670310974121
+    run: data/20260903_raw_dataset/9DTact_soft_1mm_r2
+  - characterised_at: '2026-09-07T20:27:20.331717'
+    gel_model:
+      hertz_a: 1.8172041630770908
+      free_exponent: 2.805203973777325
+      surface_mm: 25.549
+    safe_depth_mm: 1.3304429593744587
+    safe_force_N: 1.5143379916059359
+    stopped_on: substrate stiffening
+    ladder_rungs_reached: 15
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: null
+      reached: false
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      note: 'not reached within the limits: stopped on substrate stiffening at 1.51
+        N with the image still changing at 1.85 lvl/N (107% of peak)'
+      peak_slope_levels_per_N: 1.730649901185581
+      image_change_at_stop: 5.257141590118408
+    run: data/9DTact/20260907_passB_ball8/9DTact_soft_1mm_r2
+  image_response:
+    max_measurable_force_N: null
+    reached: false
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    note: 'not reached within the limits: stopped on substrate stiffening at 1.76
+      N with the image still changing at 1.71 lvl/N (100% of peak)'
+    peak_slope_levels_per_N: 1.70760008081925
+    image_change_at_stop: 5.768233299255371
+  contact_map:
+    at_depth:
+      target_depth_mm: 0.5
+      target_used_mm: 0.5
+      limited_by_depth_cap: false
+      at: '2026-09-04T01:54:14.210924'
+      image: at_depth.png
+      depth_mm: 0.47572939551006144
+      height_above_plane_mm: 25.03127060448994
+      normal_force_N: 0.3945406747328093
+      region:
+        mean_abs_diff_centre: 2.377763509750366
+        max_diff: 19.02734375
+        changed_fraction: 0.029618537808641977
+        area_px: 56426
+        radius_px: 134.0184824485286
+        centroid_px:
+        - 928.0611065820721
+        - 687.3797362917804
+        enclosing_radius_px: 147.9951171875
+        mean_abs_diff_in_region: 8.360076904296875
+        dark_area_px: 56248
+        dark_radius_px: 133.80692985815742
+        dark_centroid_px:
+        - 928.2380884653677
+        - 687.3337718674442
+        dark_mean_diff: -8.37463092803955
+        bright_area_px: 211
+        bright_radius_px: 8.19532708223289
+        bright_centroid_px:
+        - 948.0
+        - 913.4691943127962
+        bright_mean_diff: 4.043153762817383
+    at_force:
+      target_force_N: 0.5
+      target_used_N: 0.5
+      limited_by_force_cap: false
+      force_reached: true
+      stop_reason: reached
+      at: '2026-09-04T01:54:23.293018'
+      image: at_force.png
+      depth_mm: 0.5364414563826827
+      height_above_plane_mm: 24.97055854361732
+      normal_force_N: 0.48919261945447656
+      region:
+        mean_abs_diff_centre: 2.5074331760406494
+        max_diff: 20.8828125
+        changed_fraction: 0.03424479166666667
+        area_px: 63086
+        radius_px: 141.70708337902738
+        centroid_px:
+        - 928.9474368322607
+        - 687.1060457153727
+        enclosing_radius_px: 156.7926483154297
+        mean_abs_diff_in_region: 8.747572898864746
+        dark_area_px: 62778
+        dark_radius_px: 141.36073724640096
+        dark_centroid_px:
+        - 928.8894676479022
+        - 686.8336200579821
+        dark_mean_diff: -8.77109146118164
+        bright_area_px: 882
+        bright_radius_px: 16.755575776860173
+        bright_centroid_px:
+        - 950.3503401360545
+        - 913.2448979591836
+        bright_mean_diff: 4.238635540008545
+- id: 9DTact_soft_2mm_r1
+  principle: 9DTact
+  hardness: soft
+  thickness_mm: 2
+  replicate: 1
+  max_depth_mm: 1.2
+  depth_limit_basis: interpolated between the other two; expect characterize to refine
+    it
+  status: characterised
+  gel_model:
+    hertz_a: 1.5340341221265161
+    free_exponent: 1.7722363130860703
+    surface_mm: 26.579
+  safe_force_N: 2.9192265136023794
+  safe_depth_mm: 1.7018429273685953
+  commanded_depth_mm: 1.8000000000000005
+  command_vs_measured_mm: 0.09815707263140516
+  stopped_on: force cap
+  ladder_rungs_reached: 29
+  characterised_at: '2026-09-07T19:23:18.914585'
+  run: data/9DTact/20260907_passB_ball8/9DTact_soft_2mm_r1
+  run_timestamp: '20260902_123138'
+  ladder_run: data/20260903_ladder_protocol/9DTact_soft_2mm_r1
+  history:
+  - characterised_at: '2026-09-02T12:33:19.213881'
+    gel_model:
+      hertz_a: 0.5113981581240525
+      free_exponent: 1.3173477777366607
+      surface_mm: 26.565
+    safe_depth_mm: 1.2133978956803837
+    safe_force_N: 0.7772771710716739
+    stopped_on: depth backstop
+    ladder_rungs_reached: 7
+    depth_cap_used_mm: null
+    image_response: null
+    run: null
+  image_response:
+    max_measurable_force_N: null
+    reached: false
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    note: 'not reached within the limits: stopped on force cap at 2.92 N with the
+      image still changing at 4.16 lvl/N (77% of peak)'
+    peak_slope_levels_per_N: 5.4320620352973075
+    image_change_at_stop: 16.36619758605957
+  contact_map:
+    at_depth:
+      target_depth_mm: 0.5
+      target_used_mm: 0.5
+      limited_by_depth_cap: false
+      at: '2026-09-07T19:23:34.641411'
+      image: at_depth.png
+      depth_mm: 0.4844382998461221
+      height_above_plane_mm: 26.09456170015388
+      normal_force_N: 0.5394230257065118
+      region:
+        mean_abs_diff_centre: 4.746250629425049
+        max_diff: 27.84375
+        changed_fraction: 0.046833043981481484
+        area_px: 95550
+        radius_px: 174.39756198084078
+        centroid_px:
+        - 912.6194034536892
+        - 601.2718262689691
+        enclosing_radius_px: 189.2551727294922
+        mean_abs_diff_in_region: 14.427689552307129
+        dark_area_px: 95470
+        dark_radius_px: 174.32453881759304
+        dark_centroid_px:
+        - 912.5156593694354
+        - 601.3437205404839
+        dark_mean_diff: -14.434581756591797
+        bright_area_px: 0
+        bright_radius_px: 0.0
+        bright_centroid_px: null
+        bright_mean_diff: 0.0
+    at_force:
+      target_force_N: 0.5
+      target_used_N: 0.5
+      limited_by_force_cap: false
+      force_reached: true
+      stop_reason: reached
+      at: '2026-09-07T19:23:41.686009'
+      image: at_force.png
+      depth_mm: 0.4547469128176935
+      height_above_plane_mm: 26.124253087182307
+      normal_force_N: 0.472455174657955
+      region:
+        mean_abs_diff_centre: 4.559788703918457
+        max_diff: 26.91015625
+        changed_fraction: 0.04455584490740741
+        area_px: 91041
+        radius_px: 170.23292968182886
+        centroid_px:
+        - 912.3448446304412
+        - 601.4366494216891
+        enclosing_radius_px: 183.6446533203125
+        mean_abs_diff_in_region: 13.957366943359375
+        dark_area_px: 90991
+        dark_radius_px: 170.18617703488522
+        dark_centroid_px:
+        - 912.3327911551692
+        - 601.4119198602059
+        dark_mean_diff: -13.961820602416992
+        bright_area_px: 0
+        bright_radius_px: 0.0
+        bright_centroid_px: null
+        bright_mean_diff: 0.0
+- id: 9DTact_soft_2mm_r2
+  principle: 9DTact
+  hardness: soft
+  thickness_mm: 2
+  replicate: 2
+  max_depth_mm: 1.2
+  depth_limit_basis: interpolated between the other two; expect characterize to refine
+    it
+  status: characterised
+  gel_model:
+    hertz_a: 1.4198317107493448
+    free_exponent: 1.7641816424803112
+    surface_mm: 26.546
+  safe_force_N: 3.1953610685132845
+  safe_depth_mm: 1.8957554255648006
+  commanded_depth_mm: 1.9000000000000006
+  command_vs_measured_mm: 0.004244574435199988
+  stopped_on: force cap
+  ladder_rungs_reached: 31
+  characterised_at: '2026-09-07T19:40:48.967167'
+  run: data/9DTact/20260907_passB_ball8/9DTact_soft_2mm_r2
+  ladder_run: data/20260903_ladder_protocol/9DTact_soft_2mm_r2
+  history:
+  - characterised_at: '2026-09-03T16:40:20.026428'
+    gel_model:
+      hertz_a: 0.5705808614298246
+      free_exponent: 1.1716396923353976
+      surface_mm: 26.771
+    safe_depth_mm: 1.2002181011071507
+    safe_force_N: 0.8514381909309208
+    stopped_on: depth backstop
+    ladder_rungs_reached: 8
+    depth_cap_used_mm: null
+    image_response: null
+    run: null
+  image_response:
+    max_measurable_force_N: null
+    reached: false
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    note: 'not reached within the limits: stopped on force cap at 3.20 N with the
+      image still changing at 4.31 lvl/N (60% of peak)'
+    peak_slope_levels_per_N: 7.159708598230659
+    image_change_at_stop: 20.911569595336914
+  contact_map:
+    at_depth:
+      target_depth_mm: 0.5
+      target_used_mm: 0.5
+      limited_by_depth_cap: false
+      at: '2026-09-07T19:41:04.980596'
+      image: at_depth.png
+      depth_mm: 0.45331787665165635
+      height_above_plane_mm: 26.092682123348343
+      normal_force_N: 0.517004378031632
+      region:
+        mean_abs_diff_centre: 5.449143409729004
+        max_diff: 30.23046875
+        changed_fraction: 0.054864969135802466
+        area_px: 111586
+        radius_px: 188.46465705724367
+        centroid_px:
+        - 909.182298854695
+        - 583.5339558726005
+        enclosing_radius_px: 201.24269104003906
+        mean_abs_diff_in_region: 15.386189460754395
+        dark_area_px: 111457
+        dark_radius_px: 188.35568742245815
+        dark_centroid_px:
+        - 909.3025740868676
+        - 583.5107081654809
+        dark_mean_diff: -15.396875381469727
+        bright_area_px: 0
+        bright_radius_px: 0.0
+        bright_centroid_px: null
+        bright_mean_diff: 0.0
+    at_force:
+      target_force_N: 0.5
+      target_used_N: 0.5
+      limited_by_force_cap: false
+      force_reached: true
+      stop_reason: reached
+      at: '2026-09-07T19:41:12.209440'
+      image: at_force.png
+      depth_mm: 0.40248648829811984
+      height_above_plane_mm: 26.14351351170188
+      normal_force_N: 0.5116008499927858
+      region:
+        mean_abs_diff_centre: 4.964127540588379
+        max_diff: 27.6875
+        changed_fraction: 0.0494555362654321
+        area_px: 99346
+        radius_px: 177.828046024284
+        centroid_px:
+        - 910.9268818070179
+        - 585.1556278058503
+        enclosing_radius_px: 195.9517364501953
+        mean_abs_diff_in_region: 14.367412567138672
+        dark_area_px: 99305
+        dark_radius_px: 177.79134750454347
+        dark_centroid_px:
+        - 910.952147424601
+        - 585.1382508433613
+        dark_mean_diff: -14.37077522277832
+        bright_area_px: 0
+        bright_radius_px: 0.0
+        bright_centroid_px: null
+        bright_mean_diff: 0.0
+- id: 9DTact_soft_3mm_r1
+  principle: 9DTact
+  hardness: soft
+  thickness_mm: 3
+  replicate: 1
+  max_depth_mm: 2.2
+  depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
+  status: characterised
+  gel_model:
+    hertz_a: 0.5129292662831699
+    free_exponent: 1.2009060734139347
+    surface_mm: 27.705
+  safe_force_N: 1.8200159162515064
+  safe_depth_mm: 2.20078568239035
+  commanded_depth_mm: 2.2732532054702355
+  command_vs_measured_mm: 0.07246752307988524
+  stopped_on: depth backstop
+  ladder_rungs_reached: 18
+  characterised_at: '2026-09-02T12:43:01.431847'
+  run: null
+  run_timestamp: '20260902_124057'
+  ladder_run: data/20260903_ladder_protocol/9DTact_soft_3mm_r1
+- id: 9DTact_soft_3mm_r2
+  principle: 9DTact
+  hardness: soft
+  thickness_mm: 3
+  replicate: 2
+  max_depth_mm: 2.2
+  depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
+  status: characterised
+  gel_model:
+    hertz_a: 0.5424339413750532
+    free_exponent: 1.559532430972478
+    surface_mm: 27.695
+  safe_force_N: 1.638389210730523
+  safe_depth_mm: 2.20043221812735
+  commanded_depth_mm: 2.253329646236
+  command_vs_measured_mm: 0.05289742810865006
+  stopped_on: depth backstop
+  ladder_rungs_reached: 16
+  characterised_at: '2026-09-03T16:30:43.070700'
+  run: null
+  ladder_run: data/20260903_ladder_protocol/9DTact_soft_3mm_r2
+- id: 9DTact_medium_1mm_r1
+  principle: 9DTact
+  hardness: medium
+  thickness_mm: 1
+  replicate: 1
+  max_depth_mm: 0.7
+  depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
+    of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
+    marks the backing taking load. The 0.5 mm start had no data behind it
+  status: characterised
+  run_timestamp: '20260902_121727'
+  history:
+  - discarded: true
+    reason: incomplete run deleted; shear ladder missing
+    gel_model:
+      hertz_a: 0.9723311305254406
+      free_exponent: 1.5952783558661823
+      surface_mm: 25.546
+    safe_force_N: 0.5106448354830633
+    safe_depth_mm: 0.7005855538154186
+    run: data/20260903_raw_dataset/9DTact_medium_1mm_r1
+  gel_model:
+    hertz_a: 1.034825727797358
+    free_exponent: 1.7702811559886793
+    surface_mm: 25.547
+  safe_depth_mm: 0.7127472831043065
+  safe_force_N: 0.5490393008709162
+  commanded_depth_mm: 0.7146057537717723
+  command_vs_measured_mm: 0.0018584706674658058
+  stopped_on: depth backstop
+  ladder_rungs_reached: 5
+  characterised_at: '2026-09-03T16:03:50.311470'
+  run: null
+  ladder_run: data/20260903_ladder_protocol/9DTact_medium_1mm_r1
+- id: 9DTact_medium_1mm_r2
+  principle: 9DTact
+  hardness: medium
+  thickness_mm: 1
+  replicate: 2
+  max_depth_mm: 0.7
+  depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
+    of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
+    marks the backing taking load. The 0.5 mm start had no data behind it
+  status: characterised
+  gel_model:
+    hertz_a: 1.2910822114633804
+    free_exponent: 1.9326404527312113
+    surface_mm: 26.326
+  safe_force_N: 0.5560709950262321
+  safe_depth_mm: 0.7002491797003216
+  commanded_depth_mm: 0.715848552772735
+  command_vs_measured_mm: 0.015599373072413325
+  stopped_on: depth backstop
+  ladder_rungs_reached: 5
+  characterised_at: '2026-09-03T17:07:43.584567'
+  run: null
+  ladder_run: data/20260903_ladder_protocol/9DTact_medium_1mm_r2
+- id: 9DTact_medium_2mm_r1
+  principle: 9DTact
+  hardness: medium
+  thickness_mm: 2
+  replicate: 1
+  max_depth_mm: 1.2
+  depth_limit_basis: interpolated between the other two; expect characterize to refine
+    it
+  status: damaged
+  gel_model:
+    hertz_a: 0.9632432167550145
+    free_exponent: 1.5974864529921675
+    surface_mm: 26.123
+  safe_force_N: 11.697356309577023
+  safe_depth_mm: 5.229887264338334
+  commanded_depth_mm: 5.1999999999999975
+  command_vs_measured_mm: -0.02988726433833655
+  stopped_on: substrate stiffening
+  ladder_rungs_reached: 50
+  characterised_at: '2026-09-04T19:05:11.170677'
+  run: data/20260903_raw_dataset/9DTact_medium_2mm_r1
+  ladder_run: data/20260903_ladder_protocol/9DTact_medium_2mm_r1
+  history:
+  - characterised_at: '2026-09-03T15:56:31.279723'
+    gel_model:
+      hertz_a: 0.7476001899768459
+      free_exponent: 1.5029975150451766
+      surface_mm: 26.471999999999998
+    safe_force_N: 0.9955625490669178
+    safe_depth_mm: 1.202949067587106
+    stopped_on: depth backstop
+    image_response: null
+    run: null
+  - characterised_at: '2026-09-04T18:49:28.931308'
+    gel_model:
+      hertz_a: 1.2422412922541703
+      free_exponent: 1.6306306983733796
+      surface_mm: 26.373
+    safe_depth_mm: 6.189447645070512
+    safe_force_N: 23.105312667777888
+    stopped_on: image saturation
+    ladder_rungs_reached: 9
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: 21.236273767047667
+      reached: true
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      peak_slope_levels_per_N: 6.061415215530732
+      image_change_at_stop: 57.435279846191406
+    run: data/20260903_raw_dataset/9DTact_medium_2mm_r1
+  image_response:
+    reached: true
+    max_measurable_force_N: 21.238
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    source: measured 2026-09-04 in characterize_to30N_nosub with the substrate alarm
+      disabled; restored so the collection spans both sides of the 11.70 N substrate
+      limit it exists to adjudicate
+  note: 'limits from the 2026-09-04 wide probe with the substrate alarm disabled:
+    image saturates at 21.24 N, while the substrate alarm fires at 12.57 N. Collected
+    across both so the force-estimation error can adjudicate which is the real measurable
+    ceiling'
+  contact_map:
+    at_depth:
+      target_depth_mm: 0.5
+      target_used_mm: 0.5
+      limited_by_depth_cap: false
+      at: '2026-09-04T19:05:31.792349'
+      image: at_depth.png
+      depth_mm: 0.48364778120438245
+      height_above_plane_mm: 25.63935221879562
+      normal_force_N: 0.4159743205590189
+      region:
+        mean_abs_diff_centre: 3.482203483581543
+        max_diff: 22.74609375
+        changed_fraction: 0.036654128086419754
+        area_px: 74569
+        radius_px: 154.06508333441127
+        centroid_px:
+        - 915.1818047714197
+        - 631.8844694175864
+        enclosing_radius_px: 179.49855041503906
+        mean_abs_diff_in_region: 11.567459106445312
+        dark_area_px: 74307
+        dark_radius_px: 153.7941894632529
+        dark_centroid_px:
+        - 915.482686691698
+        - 632.2337464841805
+        dark_mean_diff: -11.589117050170898
+        bright_area_px: 0
+        bright_radius_px: 0.0
+        bright_centroid_px: null
+        bright_mean_diff: 0.0
+    at_force:
+      target_force_N: 0.5
+      target_used_N: 0.5
+      limited_by_force_cap: false
+      force_reached: true
+      stop_reason: reached
+      at: '2026-09-04T19:05:40.838476'
+      image: at_force.png
+      depth_mm: 0.5370206649558007
+      height_above_plane_mm: 25.5859793350442
+      normal_force_N: 0.45131417927011624
+      region:
+        mean_abs_diff_centre: 3.7638490200042725
+        max_diff: 26.296875
+        changed_fraction: 0.039657600308641974
+        area_px: 79938
+        radius_px: 159.51506412173072
+        centroid_px:
+        - 917.4463334083915
+        - 630.3594160474368
+        enclosing_radius_px: 185.52838134765625
+        mean_abs_diff_in_region: 12.615865707397461
+        dark_area_px: 79743
+        dark_radius_px: 159.320385556758
+        dark_centroid_px:
+        - 917.3634174786501
+        - 630.3838957651456
+        dark_mean_diff: -12.634078025817871
+        bright_area_px: 0
+        bright_radius_px: 0.0
+        bright_centroid_px: null
+        bright_mean_diff: 0.0
+  damage:
+    at: '2026-09-04'
+    kind: permanent gel deformation, visible
+    cause: wide-range characterize probes reaching 5.49 and 6.19 mm on a 2 mm layer
+      (2.7-3.1x thickness), plus a 1000-frame collection to 19.3 N
+    evidence: contact height fell 26.234 -> 26.074 -> 25.964 mm across the probes
+      and did not recover; run-to-run repeatability on undamaged sensors is 0.03 mm
+    consequence: excluded from campaign data; its replicate r2 carries this design
+- id: 9DTact_medium_2mm_r2
+  principle: 9DTact
+  hardness: medium
+  thickness_mm: 2
+  replicate: 2
+  max_depth_mm: 1.2
+  depth_limit_basis: interpolated between the other two; expect characterize to refine
+    it
+  status: characterised
+  gel_model:
+    hertz_a: 0.7715859041719234
+    free_exponent: 1.5526057031436988
+    surface_mm: 26.806
+  safe_force_N: 1.0119203483238977
+  safe_depth_mm: 1.202444882599977
+  commanded_depth_mm: 1.253004578106855
+  command_vs_measured_mm: 0.05055969550687811
+  stopped_on: depth backstop
+  ladder_rungs_reached: 10
+  characterised_at: '2026-09-03T16:48:17.356011'
+  run: null
+  ladder_run: data/20260903_ladder_protocol/9DTact_medium_2mm_r2
+- id: 9DTact_medium_3mm_r1
+  principle: 9DTact
+  hardness: medium
+  thickness_mm: 3
+  replicate: 1
+  max_depth_mm: 2.2
+  depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
+  status: characterised
+  gel_model:
+    hertz_a: 0.6412868133008386
+    free_exponent: 1.4394669630617576
+    surface_mm: 27.819
+  safe_force_N: 2.159336967214287
+  safe_depth_mm: 2.200565140841448
+  commanded_depth_mm: 2.2526812705228214
+  command_vs_measured_mm: 0.05211612968137347
+  stopped_on: depth backstop
+  ladder_rungs_reached: 21
+  characterised_at: '2026-09-03T15:44:46.269461'
+  run: null
+  ladder_run: data/20260903_ladder_protocol/9DTact_medium_3mm_r1
+- id: 9DTact_medium_3mm_r2
+  principle: 9DTact
+  hardness: medium
+  thickness_mm: 3
+  replicate: 2
+  max_depth_mm: 2.2
+  depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
+  status: characterised
+  gel_model:
+    hertz_a: 0.6363842293776788
+    free_exponent: 1.5053329740879895
+    surface_mm: 27.78
+  safe_force_N: 2.017328796999408
+  safe_depth_mm: 2.2026689794808654
+  commanded_depth_mm: 2.2790637378988916
+  command_vs_measured_mm: 0.07639475841802623
+  stopped_on: depth backstop
+  ladder_rungs_reached: 20
+  characterised_at: '2026-09-03T23:13:26.216455'
+  run: null
+  ladder_run: data/20260903_ladder_protocol/9DTact_medium_3mm_r2
+- id: 9DTact_hard_1mm_r1
+  principle: 9DTact
+  hardness: hard
+  thickness_mm: 1
+  replicate: 1
+  max_depth_mm: 0.7
+  depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
+    of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
+    marks the backing taking load. The 0.5 mm start had no data behind it
+  status: characterised
+  history:
+  - characterised_at: '2026-09-01T19:39:08.947258'
+    gel_model:
+      hertz_a: 0.9860387466016147
+      free_exponent: 1.521665638396508
+      surface_mm: 25.503
+    safe_depth_mm: 0.7086622201938937
+    safe_force_N: 0.5793454921953156
+    stopped_on: depth backstop
+    ladder_rungs_reached: 5
+    depth_cap_used_mm: null
+    run: data/20260901_protocol_development/9DTact_hard_1mm_r1__2
+    run_timestamp: '20260901_193738'
+  - discarded: true
+    reason: incomplete run deleted; shear ladder missing
+    gel_model:
+      hertz_a: 0.963182589974807
+      free_exponent: 1.2855717084654676
+      surface_mm: 25.54
+    safe_force_N: 0.6523991851905464
+    safe_depth_mm: 0.7023950305967404
+    run: data/20260903_raw_dataset/9DTact_hard_1mm_r1
+  run_timestamp: '20260901_194153'
+  gel_model:
+    hertz_a: 0.9510943174203241
+    free_exponent: 1.285428400117465
+    surface_mm: 25.576
+  safe_depth_mm: 0.7022859134222621
+  safe_force_N: 0.6141778265080546
+  commanded_depth_mm: 0.7167408140568816
+  command_vs_measured_mm: 0.014454900634619516
+  stopped_on: depth backstop
+  ladder_rungs_reached: 6
+  characterised_at: '2026-09-03T15:37:06.397706'
+  run: null
+  ladder_run: data/20260903_ladder_protocol/9DTact_hard_1mm_r1
+- id: 9DTact_hard_1mm_r2
+  principle: 9DTact
+  hardness: hard
+  thickness_mm: 1
+  replicate: 2
+  max_depth_mm: 0.7
+  depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
+    of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
+    marks the backing taking load. The 0.5 mm start had no data behind it
+  status: characterised
+  gel_model:
+    hertz_a: 1.2258813282027539
+    free_exponent: 1.420706731687953
+    surface_mm: 26.115
+  safe_force_N: 0.7692293462816195
+  safe_depth_mm: 0.7038025963724159
+  commanded_depth_mm: 0.7112042769846432
+  command_vs_measured_mm: 0.007401680612227235
+  stopped_on: depth backstop
+  ladder_rungs_reached: 7
+  characterised_at: '2026-09-03T16:54:19.159659'
+  run: null
+  ladder_run: data/20260903_ladder_protocol/9DTact_hard_1mm_r2
+- id: 9DTact_hard_2mm_r1
+  principle: 9DTact
+  hardness: hard
+  thickness_mm: 2
+  replicate: 1
+  max_depth_mm: 1.2
+  depth_limit_basis: interpolated between the other two; expect characterize to refine
+    it
+  status: characterised
+  gel_model:
+    hertz_a: 1.5489961289817606
+    free_exponent: 1.867501305896725
+    surface_mm: 26.501
+  safe_force_N: 1.7986393147553343
+  safe_depth_mm: 1.215190088347292
+  commanded_depth_mm: 1.235692363620236
+  command_vs_measured_mm: 0.020502275272944015
+  stopped_on: depth backstop
+  ladder_rungs_reached: 17
+  characterised_at: '2026-09-03T14:04:06.305940'
+  run: null
+  run_timestamp: '20260903_140215'
+  ladder_run: data/20260903_ladder_protocol/9DTact_hard_2mm_r1
+- id: 9DTact_hard_2mm_r2
+  principle: 9DTact
+  hardness: hard
+  thickness_mm: 2
+  replicate: 2
+  max_depth_mm: 1.2
+  depth_limit_basis: interpolated between the other two; expect characterize to refine
+    it
+  status: characterised
+  gel_model:
+    hertz_a: 1.5090535307163944
+    free_exponent: 1.5599235508245715
+    surface_mm: 26.364
+  safe_force_N: 1.9008277920306256
+  safe_depth_mm: 1.204237040211762
+  commanded_depth_mm: 1.2355933023695527
+  command_vs_measured_mm: 0.03135626215779075
+  stopped_on: depth backstop
+  ladder_rungs_reached: 19
+  characterised_at: '2026-09-03T23:32:01.721954'
+  run: null
+  ladder_run: data/20260903_ladder_protocol/9DTact_hard_2mm_r2
+- id: 9DTact_hard_3mm_r1
+  principle: 9DTact
+  hardness: hard
+  thickness_mm: 3
+  replicate: 1
+  max_depth_mm: 2.2
+  depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
+  status: characterised
+  gel_model:
+    hertz_a: 2.7412024814543923
+    free_exponent: 1.7750885362491158
+    surface_mm: 27.822
+  safe_force_N: 3.117100211568496
+  safe_depth_mm: 1.169649971730749
+  stopped_on: force cap
+  ladder_rungs_reached: 31
+  characterised_at: '2026-09-07T18:51:36.839310'
+  run: data/9DTact/20260907_passB_ball8/9DTact_hard_3mm_r1
+  history:
+  - characterised_at: '2026-09-01T18:10:34.761369'
+    gel_model:
+      hertz_a: 1.8845131601285188
+      free_exponent: 1.5647701852995934
+      surface_mm: 27.72
+    safe_depth_mm: 1.950000000000001
+    safe_force_N: 5.074788035794114
+    stopped_on: force cap
+    ladder_rungs_reached: 12
+    depth_cap_used_mm: null
+    run: data/20260903_raw_dataset/9DTact_hard_3mm_r1
+    note: after ~1.5 h rest following 164 samples of loading
+    run_timestamp: '20260901_180351'
+  - characterised_at: '2026-09-01T18:15:49.033070'
+    gel_model:
+      hertz_a: 1.685245781888314
+      free_exponent: 2.1919095235573156
+      surface_mm: 27.72
+    safe_depth_mm: 0.35
+    safe_force_N: 0.3707301342956413
+    stopped_on: substrate stiffening
+    ladder_rungs_reached: 1
+    valid: false
+    note: 'VOID: the exponent alarm fired at 0.35 mm on a 3 mm gel, which is impossible.
+      The log-log slope was fitted across forces of 0.06 to 0.37 N against a 0.02
+      N noise floor. Gates added afterwards: every point in the window above 0.5 N,
+      depth past 25 % of thickness, and two consecutive windows'
+  - characterised_at: '2026-09-01T18:23:27.952236'
+    gel_model:
+      hertz_a: 1.922341982128497
+      free_exponent: 1.4920561126762641
+      surface_mm: 27.72
+    safe_depth_mm: 1.950000000000001
+    safe_force_N: 5.09343041653608
+    stopped_on: force cap
+    ladder_rungs_reached: 12
+    depth_cap_used_mm: null
+    run: data/20260903_raw_dataset/9DTact_hard_3mm_r1
+    run_timestamp: '20260901_180351'
+  - characterised_at: '2026-09-01T18:28:10.598739'
+    gel_model:
+      hertz_a: 1.62750987774834
+      free_exponent: 1.5382343931474562
+      surface_mm: 27.72
+    safe_depth_mm: 2.1688325225713285
+    safe_force_N: 5.108767193340157
+    stopped_on: force cap
+    ladder_rungs_reached: 12
+    depth_cap_used_mm: null
+    run: data/20260901_protocol_development/9DTact_hard_3mm_r1__6
+  - characterised_at: '2026-09-03T15:15:07.136580'
+    gel_model:
+      hertz_a: 1.5194703370969103
+      free_exponent: 1.566871501190815
+      surface_mm: 27.751
+    safe_depth_mm: 2.205184762793788
+    safe_force_N: 5.0601548794148385
+    stopped_on: force cap
+    ladder_rungs_reached: 50
+    depth_cap_used_mm: null
+    image_response: null
+    run: null
+  - characterised_at: '2026-09-07T18:14:12.821797'
+    gel_model:
+      hertz_a: 2.5639346571341908
+      free_exponent: 2.0002755448209233
+      surface_mm: 27.901
+    safe_depth_mm: 1.3869138973454618
+    safe_force_N: 3.4332493547955494
+    stopped_on: force cap
+    ladder_rungs_reached: 34
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: null
+      reached: false
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      note: 'not reached within the limits: stopped on force cap at 3.43 N with the
+        image still changing at 2.15 lvl/N (78% of peak)'
+      peak_slope_levels_per_N: 2.7589398248482406
+      image_change_at_stop: 9.416977882385254
+    run: data/9DTact/20260907_passB_ball8/9DTact_hard_3mm_r1
+  commanded_depth_mm: 1.2
+  command_vs_measured_mm: 0.03035002826925104
+  run_timestamp: '20260901_180351'
+  ladder_run: data/20260903_ladder_protocol/9DTact_hard_3mm_r1
+  image_response:
+    max_measurable_force_N: null
+    reached: false
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    note: 'not reached within the limits: stopped on force cap at 3.12 N with the
+      image still changing at 2.65 lvl/N (106% of peak)'
+    peak_slope_levels_per_N: 2.498726563208986
+    image_change_at_stop: 8.362893104553223
+  contact_map:
+    at_depth:
+      target_depth_mm: 0.5
+      target_used_mm: 0.5
+      limited_by_depth_cap: false
+      at: '2026-09-07T18:51:52.084691'
+      image: at_depth.png
+      depth_mm: 0.45709732940612113
+      height_above_plane_mm: 27.364902670593878
+      normal_force_N: 0.9593967916429932
+      region:
+        mean_abs_diff_centre: 3.6607234477996826
+        max_diff: 16.7578125
+        changed_fraction: 0.020057870370370372
+        area_px: 37665
+        radius_px: 109.49493989729606
+        centroid_px:
+        - 918.1084826762246
+        - 582.1297225540953
+        enclosing_radius_px: 132.08587646484375
+        mean_abs_diff_in_region: 9.982522964477539
+        dark_area_px: 37665
+        dark_radius_px: 109.49493989729606
+        dark_centroid_px:
+        - 918.1084826762246
+        - 582.1297225540953
+        dark_mean_diff: -9.982519149780273
+        bright_area_px: 0
+        bright_radius_px: 0.0
+        bright_centroid_px: null
+        bright_mean_diff: 0.0
+    at_force:
+      target_force_N: 0.5
+      target_used_N: 0.5
+      limited_by_force_cap: false
+      force_reached: true
+      stop_reason: reached
+      at: '2026-09-07T18:51:59.049174'
+      image: at_force.png
+      depth_mm: 0.28372307098306493
+      height_above_plane_mm: 27.538276929016934
+      normal_force_N: 0.5027385569283951
+      region:
+        mean_abs_diff_centre: 2.9380922317504883
+        max_diff: 12.28515625
+        changed_fraction: 0.001979166666666667
+        area_px: 1695
+        radius_px: 23.227898249336405
+        centroid_px:
+        - 901.9103244837759
+        - 552.7120943952802
+        enclosing_radius_px: 42.86325454711914
+        mean_abs_diff_in_region: 8.543108940124512
+        dark_area_px: 1695
+        dark_radius_px: 23.227898249336405
+        dark_centroid_px:
+        - 901.9103244837759
+        - 552.7120943952802
+        dark_mean_diff: -8.543108940124512
+        bright_area_px: 0
+        bright_radius_px: 0.0
+        bright_centroid_px: null
+        bright_mean_diff: 0.0
+- id: 9DTact_hard_3mm_r2
+  principle: 9DTact
+  hardness: hard
+  thickness_mm: 3
+  replicate: 2
+  max_depth_mm: 2.2
+  depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
+  status: characterised
+  gel_model:
+    hertz_a: 1.5492061586718087
+    free_exponent: 1.5381471253418546
+    surface_mm: 27.687
+  safe_force_N: 5.026069341152038
+  safe_depth_mm: 2.1965880621266614
+  commanded_depth_mm: 2.2979570912638168
+  command_vs_measured_mm: 0.1013690291371554
+  stopped_on: force cap
+  ladder_rungs_reached: 50
+  characterised_at: '2026-09-03T16:21:24.255570'
+  run: null
+  ladder_run: data/20260903_ladder_protocol/9DTact_hard_3mm_r2
+- id: DIGIT_soft_1mm_r1
+  principle: DIGIT
+  hardness: soft
+  thickness_mm: 1
+  replicate: 1
+  max_depth_mm: 0.7
+  depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
+    of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
+    marks the backing taking load. The 0.5 mm start had no data behind it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_soft_1mm_r2
+  principle: DIGIT
+  hardness: soft
+  thickness_mm: 1
+  replicate: 2
+  max_depth_mm: 0.7
+  depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
+    of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
+    marks the backing taking load. The 0.5 mm start had no data behind it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_soft_2mm_r1
+  principle: DIGIT
+  hardness: soft
+  thickness_mm: 2
+  replicate: 1
+  max_depth_mm: 1.2
+  depth_limit_basis: interpolated between the other two; expect characterize to refine
+    it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_soft_2mm_r2
+  principle: DIGIT
+  hardness: soft
+  thickness_mm: 2
+  replicate: 2
+  max_depth_mm: 1.2
+  depth_limit_basis: interpolated between the other two; expect characterize to refine
+    it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_soft_3mm_r1
+  principle: DIGIT
+  hardness: soft
+  thickness_mm: 3
+  replicate: 1
+  max_depth_mm: 2.2
+  depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_soft_3mm_r2
+  principle: DIGIT
+  hardness: soft
+  thickness_mm: 3
+  replicate: 2
+  max_depth_mm: 2.2
+  depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_medium_1mm_r1
+  principle: DIGIT
+  hardness: medium
+  thickness_mm: 1
+  replicate: 1
+  max_depth_mm: 0.7
+  depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
+    of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
+    marks the backing taking load. The 0.5 mm start had no data behind it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_medium_1mm_r2
+  principle: DIGIT
+  hardness: medium
+  thickness_mm: 1
+  replicate: 2
+  max_depth_mm: 0.7
+  depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
+    of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
+    marks the backing taking load. The 0.5 mm start had no data behind it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_medium_2mm_r1
+  principle: DIGIT
+  hardness: medium
+  thickness_mm: 2
+  replicate: 1
+  max_depth_mm: 1.2
+  depth_limit_basis: interpolated between the other two; expect characterize to refine
+    it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_medium_2mm_r2
+  principle: DIGIT
+  hardness: medium
+  thickness_mm: 2
+  replicate: 2
+  max_depth_mm: 1.2
+  depth_limit_basis: interpolated between the other two; expect characterize to refine
+    it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_medium_3mm_r1
+  principle: DIGIT
+  hardness: medium
+  thickness_mm: 3
+  replicate: 1
+  max_depth_mm: 2.2
+  depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_medium_3mm_r2
+  principle: DIGIT
+  hardness: medium
+  thickness_mm: 3
+  replicate: 2
+  max_depth_mm: 2.2
+  depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_hard_1mm_r1
+  principle: DIGIT
+  hardness: hard
+  thickness_mm: 1
+  replicate: 1
+  max_depth_mm: 0.7
+  depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
+    of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
+    marks the backing taking load. The 0.5 mm start had no data behind it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_hard_1mm_r2
+  principle: DIGIT
+  hardness: hard
+  thickness_mm: 1
+  replicate: 2
+  max_depth_mm: 0.7
+  depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
+    of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
+    marks the backing taking load. The 0.5 mm start had no data behind it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_hard_2mm_r1
+  principle: DIGIT
+  hardness: hard
+  thickness_mm: 2
+  replicate: 1
+  max_depth_mm: 1.2
+  depth_limit_basis: interpolated between the other two; expect characterize to refine
+    it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_hard_2mm_r2
+  principle: DIGIT
+  hardness: hard
+  thickness_mm: 2
+  replicate: 2
+  max_depth_mm: 1.2
+  depth_limit_basis: interpolated between the other two; expect characterize to refine
+    it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_hard_3mm_r1
+  principle: DIGIT
+  hardness: hard
+  thickness_mm: 3
+  replicate: 1
+  max_depth_mm: 2.2
+  depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_hard_3mm_r2
+  principle: DIGIT
+  hardness: hard
+  thickness_mm: 3
+  replicate: 2
+  max_depth_mm: 2.2
+  depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_Marker_soft_1mm_r1
+  principle: DIGIT_Marker
+  hardness: soft
+  thickness_mm: 1
+  replicate: 1
+  max_depth_mm: 0.7
+  depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
+    of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
+    marks the backing taking load. The 0.5 mm start had no data behind it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_Marker_soft_1mm_r2
+  principle: DIGIT_Marker
+  hardness: soft
+  thickness_mm: 1
+  replicate: 2
+  max_depth_mm: 0.7
+  depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
+    of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
+    marks the backing taking load. The 0.5 mm start had no data behind it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_Marker_soft_2mm_r1
+  principle: DIGIT_Marker
+  hardness: soft
+  thickness_mm: 2
+  replicate: 1
+  max_depth_mm: 1.2
+  depth_limit_basis: interpolated between the other two; expect characterize to refine
+    it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_Marker_soft_2mm_r2
+  principle: DIGIT_Marker
+  hardness: soft
+  thickness_mm: 2
+  replicate: 2
+  max_depth_mm: 1.2
+  depth_limit_basis: interpolated between the other two; expect characterize to refine
+    it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_Marker_soft_3mm_r1
+  principle: DIGIT_Marker
+  hardness: soft
+  thickness_mm: 3
+  replicate: 1
+  max_depth_mm: 2.2
+  depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_Marker_soft_3mm_r2
+  principle: DIGIT_Marker
+  hardness: soft
+  thickness_mm: 3
+  replicate: 2
+  max_depth_mm: 2.2
+  depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_Marker_medium_1mm_r1
+  principle: DIGIT_Marker
+  hardness: medium
+  thickness_mm: 1
+  replicate: 1
+  max_depth_mm: 0.7
+  depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
+    of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
+    marks the backing taking load. The 0.5 mm start had no data behind it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_Marker_medium_1mm_r2
+  principle: DIGIT_Marker
+  hardness: medium
+  thickness_mm: 1
+  replicate: 2
+  max_depth_mm: 0.7
+  depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
+    of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
+    marks the backing taking load. The 0.5 mm start had no data behind it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_Marker_medium_2mm_r1
+  principle: DIGIT_Marker
+  hardness: medium
+  thickness_mm: 2
+  replicate: 1
+  max_depth_mm: 1.2
+  depth_limit_basis: interpolated between the other two; expect characterize to refine
+    it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_Marker_medium_2mm_r2
+  principle: DIGIT_Marker
+  hardness: medium
+  thickness_mm: 2
+  replicate: 2
+  max_depth_mm: 1.2
+  depth_limit_basis: interpolated between the other two; expect characterize to refine
+    it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_Marker_medium_3mm_r1
+  principle: DIGIT_Marker
+  hardness: medium
+  thickness_mm: 3
+  replicate: 1
+  max_depth_mm: 2.2
+  depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_Marker_medium_3mm_r2
+  principle: DIGIT_Marker
+  hardness: medium
+  thickness_mm: 3
+  replicate: 2
+  max_depth_mm: 2.2
+  depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_Marker_hard_1mm_r1
+  principle: DIGIT_Marker
+  hardness: hard
+  thickness_mm: 1
+  replicate: 1
+  max_depth_mm: 0.7
+  depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
+    of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
+    marks the backing taking load. The 0.5 mm start had no data behind it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_Marker_hard_1mm_r2
+  principle: DIGIT_Marker
+  hardness: hard
+  thickness_mm: 1
+  replicate: 2
+  max_depth_mm: 0.7
+  depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
+    of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
+    marks the backing taking load. The 0.5 mm start had no data behind it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_Marker_hard_2mm_r1
+  principle: DIGIT_Marker
+  hardness: hard
+  thickness_mm: 2
+  replicate: 1
+  max_depth_mm: 1.2
+  depth_limit_basis: interpolated between the other two; expect characterize to refine
+    it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_Marker_hard_2mm_r2
+  principle: DIGIT_Marker
+  hardness: hard
+  thickness_mm: 2
+  replicate: 2
+  max_depth_mm: 1.2
+  depth_limit_basis: interpolated between the other two; expect characterize to refine
+    it
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_Marker_hard_3mm_r1
+  principle: DIGIT_Marker
+  hardness: hard
+  thickness_mm: 3
+  replicate: 1
+  max_depth_mm: 2.2
+  depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
+  status: pending
+  gel_model: null
+  safe_force_N: null
+- id: DIGIT_Marker_hard_3mm_r2
+  principle: DIGIT_Marker
+  hardness: hard
+  thickness_mm: 3
+  replicate: 2
+  max_depth_mm: 2.2
+  depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
+  status: pending
+  gel_model: null
+  safe_force_N: null
+campaign:
+  created: '2026-09-02T12:09:13.725510'
+  seed: 20260902
+  order:
+  - 9DTact_medium_1mm_r1
+  - 9DTact_soft_2mm_r1
+  - 9DTact_soft_3mm_r1
+  - 9DTact_hard_2mm_r1
+  - 9DTact_hard_3mm_r1
+  - 9DTact_soft_1mm_r1
+  - 9DTact_hard_1mm_r1
+  - 9DTact_medium_3mm_r1
+  - 9DTact_soft_3mm_r2
+  - 9DTact_hard_3mm_r2
+  - 9DTact_soft_2mm_r2
+  - 9DTact_medium_2mm_r2
+  - 9DTact_hard_1mm_r2
+  - 9DTact_medium_1mm_r2
+  - 9DTact_medium_3mm_r2
+  - 9DTact_hard_2mm_r2
+  - 9DTact_soft_1mm_r2
+  - DIGIT_hard_3mm_r1
+  - DIGIT_soft_2mm_r1
+  - DIGIT_medium_1mm_r1
+  - DIGIT_hard_1mm_r1
+  - DIGIT_medium_3mm_r1
+  - DIGIT_soft_1mm_r1
+  - DIGIT_medium_2mm_r1
+  - DIGIT_soft_3mm_r1
+  - DIGIT_hard_2mm_r1
+  - DIGIT_soft_1mm_r2
+  - DIGIT_soft_3mm_r2
+  - DIGIT_hard_3mm_r2
+  - DIGIT_soft_2mm_r2
+  - DIGIT_medium_2mm_r2
+  - DIGIT_hard_2mm_r2
+  - DIGIT_medium_1mm_r2
+  - DIGIT_hard_1mm_r2
+  - DIGIT_medium_3mm_r2
+  - DIGIT_Marker_soft_2mm_r1
+  - DIGIT_Marker_hard_3mm_r1
+  - DIGIT_Marker_medium_3mm_r1
+  - DIGIT_Marker_hard_1mm_r1
+  - DIGIT_Marker_soft_1mm_r1
+  - DIGIT_Marker_hard_2mm_r1
+  - DIGIT_Marker_soft_3mm_r1
+  - DIGIT_Marker_medium_1mm_r1
+  - DIGIT_Marker_medium_2mm_r1
+  - DIGIT_Marker_soft_1mm_r2
+  - DIGIT_Marker_hard_3mm_r2
+  - DIGIT_Marker_hard_1mm_r2
+  - DIGIT_Marker_medium_3mm_r2
+  - DIGIT_Marker_soft_2mm_r2
+  - DIGIT_Marker_medium_2mm_r2
+  - DIGIT_Marker_medium_1mm_r2
+  - DIGIT_Marker_soft_3mm_r2
+  - DIGIT_Marker_hard_2mm_r2
+  policy: grouped by sensing principle, both replicates of a principle back to back;
+    a drift control every 9 sensors carries the session-to-session reproducibility
+    that separating the replicates used to carry
+  previous_order:
+  - 9DTact_medium_1mm_r1
+  - 9DTact_soft_2mm_r1
+  - 9DTact_soft_3mm_r1
+  - 9DTact_hard_2mm_r1
+  - 9DTact_hard_3mm_r1
+  - 9DTact_soft_1mm_r1
+  - 9DTact_hard_1mm_r1
+  - 9DTact_medium_3mm_r1
+  - 9DTact_medium_2mm_r1
+  - CONTROL:9DTact_hard_3mm_r1
+  - DIGIT_hard_3mm_r1
+  - DIGIT_soft_2mm_r1
+  - DIGIT_medium_1mm_r1
+  - DIGIT_hard_1mm_r1
+  - DIGIT_medium_3mm_r1
+  - DIGIT_soft_1mm_r1
+  - DIGIT_medium_2mm_r1
+  - DIGIT_soft_3mm_r1
+  - DIGIT_hard_2mm_r1
+  - CONTROL:9DTact_hard_3mm_r1
+  - DIGIT_Marker_soft_2mm_r1
+  - DIGIT_Marker_hard_3mm_r1
+  - DIGIT_Marker_medium_3mm_r1
+  - DIGIT_Marker_hard_1mm_r1
+  - DIGIT_Marker_soft_1mm_r1
+  - DIGIT_Marker_hard_2mm_r1
+  - DIGIT_Marker_soft_3mm_r1
+  - DIGIT_Marker_medium_1mm_r1
+  - DIGIT_Marker_medium_2mm_r1
+  - CONTROL:9DTact_hard_3mm_r1
+  - 9DTact_soft_3mm_r2
+  - 9DTact_hard_3mm_r2
+  - 9DTact_soft_2mm_r2
+  - 9DTact_medium_2mm_r2
+  - 9DTact_hard_1mm_r2
+  - 9DTact_medium_1mm_r2
+  - 9DTact_medium_3mm_r2
+  - 9DTact_hard_2mm_r2
+  - 9DTact_soft_1mm_r2
+  - CONTROL:9DTact_hard_3mm_r1
+  - DIGIT_soft_1mm_r2
+  - DIGIT_soft_3mm_r2
+  - DIGIT_hard_3mm_r2
+  - DIGIT_soft_2mm_r2
+  - DIGIT_medium_2mm_r2
+  - DIGIT_hard_2mm_r2
+  - DIGIT_medium_1mm_r2
+  - DIGIT_hard_1mm_r2
+  - DIGIT_medium_3mm_r2
+  - CONTROL:9DTact_hard_3mm_r1
+  - DIGIT_Marker_soft_1mm_r2
+  - DIGIT_Marker_hard_3mm_r2
+  - DIGIT_Marker_hard_1mm_r2
+  - DIGIT_Marker_medium_3mm_r2
+  - DIGIT_Marker_soft_2mm_r2
+  - DIGIT_Marker_medium_2mm_r2
+  - DIGIT_Marker_medium_1mm_r2
+  - DIGIT_Marker_soft_3mm_r2
+  - DIGIT_Marker_hard_2mm_r2
+  previous_order_with_controls:
+  - 9DTact_medium_1mm_r1
+  - 9DTact_soft_2mm_r1
+  - 9DTact_soft_3mm_r1
+  - 9DTact_hard_2mm_r1
+  - 9DTact_hard_3mm_r1
+  - 9DTact_soft_1mm_r1
+  - 9DTact_hard_1mm_r1
+  - 9DTact_medium_3mm_r1
+  - 9DTact_medium_2mm_r1
+  - CONTROL:9DTact_hard_3mm_r1
+  - 9DTact_soft_3mm_r2
+  - 9DTact_hard_3mm_r2
+  - 9DTact_soft_2mm_r2
+  - 9DTact_medium_2mm_r2
+  - 9DTact_hard_1mm_r2
+  - 9DTact_medium_1mm_r2
+  - 9DTact_medium_3mm_r2
+  - 9DTact_hard_2mm_r2
+  - 9DTact_soft_1mm_r2
+  - CONTROL:9DTact_hard_3mm_r1
+  - DIGIT_hard_3mm_r1
+  - DIGIT_soft_2mm_r1
+  - DIGIT_medium_1mm_r1
+  - DIGIT_hard_1mm_r1
+  - DIGIT_medium_3mm_r1
+  - DIGIT_soft_1mm_r1
+  - DIGIT_medium_2mm_r1
+  - DIGIT_soft_3mm_r1
+  - DIGIT_hard_2mm_r1
+  - CONTROL:9DTact_hard_3mm_r1
+  - DIGIT_soft_1mm_r2
+  - DIGIT_soft_3mm_r2
+  - DIGIT_hard_3mm_r2
+  - DIGIT_soft_2mm_r2
+  - DIGIT_medium_2mm_r2
+  - DIGIT_hard_2mm_r2
+  - DIGIT_medium_1mm_r2
+  - DIGIT_hard_1mm_r2
+  - DIGIT_medium_3mm_r2
+  - CONTROL:9DTact_hard_3mm_r1
+  - DIGIT_Marker_soft_2mm_r1
+  - DIGIT_Marker_hard_3mm_r1
+  - DIGIT_Marker_medium_3mm_r1
+  - DIGIT_Marker_hard_1mm_r1
+  - DIGIT_Marker_soft_1mm_r1
+  - DIGIT_Marker_hard_2mm_r1
+  - DIGIT_Marker_soft_3mm_r1
+  - DIGIT_Marker_medium_1mm_r1
+  - DIGIT_Marker_medium_2mm_r1
+  - CONTROL:9DTact_hard_3mm_r1
+  - DIGIT_Marker_soft_1mm_r2
+  - DIGIT_Marker_hard_3mm_r2
+  - DIGIT_Marker_hard_1mm_r2
+  - DIGIT_Marker_medium_3mm_r2
+  - DIGIT_Marker_soft_2mm_r2
+  - DIGIT_Marker_medium_2mm_r2
+  - DIGIT_Marker_medium_1mm_r2
+  - DIGIT_Marker_soft_3mm_r2
+  - DIGIT_Marker_hard_2mm_r2
+  order_basis: 'Revised 2026-09-05 by the operator: the five CONTROL revisits of 9DTact_hard_3mm_r1
+    are dropped, and 9DTact_medium_2mm_r1 is dropped because its gel took 0.27 mm
+    of permanent set on 2026-09-04 and its replicate r2 carries that design. 59 entries
+    -> 53. Replicates stay non-adjacent so replicate variance still carries mounting
+    and day-to-day drift rather than five minutes of the same session.'
+  structure: principle outer, probe middle, sensor inner
+  structure_decided: '2026-09-05'
+  structure_basis: 'Finish every probe on 9DTact''s 17 units before starting DIGIT,
+    rather than carrying one probe across all 53. One principle then completes as
+    a whole: its analysis can begin while the next is still being collected, a protocol
+    fault shows up in a finished dataset instead of a thin slice of everything, and
+    the ball4 calibration data that test 2 needs arrives early enough to check the
+    reconstruction before the bulk of the campaign is spent.'
+  probe_order:
+  - cyl4
+  - ball4
+  - cube4
+  - star10
+  - pair100
+  - pair075
+  - pair050
+  - pair025
+  - ball8
+  sensor_order_by_principle:
+    9DTact:
+    - 9DTact_medium_1mm_r1
+    - 9DTact_soft_2mm_r1
+    - 9DTact_soft_3mm_r1
+    - 9DTact_hard_2mm_r1
+    - 9DTact_hard_3mm_r1
+    - 9DTact_soft_1mm_r1
+    - 9DTact_hard_1mm_r1
+    - 9DTact_medium_3mm_r1
+    - 9DTact_soft_3mm_r2
+    - 9DTact_hard_3mm_r2
+    - 9DTact_soft_2mm_r2
+    - 9DTact_medium_2mm_r2
+    - 9DTact_hard_1mm_r2
+    - 9DTact_medium_1mm_r2
+    - 9DTact_medium_3mm_r2
+    - 9DTact_hard_2mm_r2
+    - 9DTact_soft_1mm_r2
+    DIGIT:
+    - DIGIT_hard_3mm_r1
+    - DIGIT_soft_2mm_r1
+    - DIGIT_medium_1mm_r1
+    - DIGIT_hard_1mm_r1
+    - DIGIT_medium_3mm_r1
+    - DIGIT_soft_1mm_r1
+    - DIGIT_medium_2mm_r1
+    - DIGIT_soft_3mm_r1
+    - DIGIT_hard_2mm_r1
+    - DIGIT_soft_1mm_r2
+    - DIGIT_soft_3mm_r2
+    - DIGIT_hard_3mm_r2
+    - DIGIT_soft_2mm_r2
+    - DIGIT_medium_2mm_r2
+    - DIGIT_hard_2mm_r2
+    - DIGIT_medium_1mm_r2
+    - DIGIT_hard_1mm_r2
+    - DIGIT_medium_3mm_r2
+    DIGIT_Marker:
+    - DIGIT_Marker_soft_2mm_r1
+    - DIGIT_Marker_hard_3mm_r1
+    - DIGIT_Marker_medium_3mm_r1
+    - DIGIT_Marker_hard_1mm_r1
+    - DIGIT_Marker_soft_1mm_r1
+    - DIGIT_Marker_hard_2mm_r1
+    - DIGIT_Marker_soft_3mm_r1
+    - DIGIT_Marker_medium_1mm_r1
+    - DIGIT_Marker_medium_2mm_r1
+    - DIGIT_Marker_soft_1mm_r2
+    - DIGIT_Marker_hard_3mm_r2
+    - DIGIT_Marker_hard_1mm_r2
+    - DIGIT_Marker_medium_3mm_r2
+    - DIGIT_Marker_soft_2mm_r2
+    - DIGIT_Marker_medium_2mm_r2
+    - DIGIT_Marker_medium_1mm_r2
+    - DIGIT_Marker_soft_3mm_r2
+    - DIGIT_Marker_hard_2mm_r2
+  runs_total: 477
+  probe_order_basis: 'cyl4 first: a flat face pins the depth zero four times better
+    than a sphere (+-0.003 against +-0.014 mm) and its 4.00 mm imprint is the scale
+    reference. ball4 second because it CALIBRATES the shape reconstruction -- a known
+    radius pressed to known depths is what the depth-from-intensity lookup is built
+    from -- so having it early lets the reconstruction be checked on all nine designs
+    before the rest of the campaign is spent. The four held-out shapes and the four
+    resolution pairs follow. ball8 is last and carries tests 1 and 4: force estimation
+    over the fixed 0-4 N range, then the saturation ramp, which damages gels and so
+    must come after everything else. ball4 cannot do test 1 -- inside the thickness
+    x 0.9 backstop it reaches only about 2.2 N on a soft 3 mm gel and 0.5 N on a soft
+    1 mm one, so the fixed range the comparison needs is out of reach.'
+  sensor_order_basis: 'From the ball4 pass on: replicate 1 in full, then replicate
+    2, each sorted soft -> medium -> hard and 3 mm -> 2 mm -> 1 mm. The cyl4 pass
+    ran in the original interleaved order, which was hard to follow at the bench.'
+  sensor_order_from_ball4:
+  - 9DTact_soft_3mm_r1
+  - 9DTact_soft_2mm_r1
+  - 9DTact_soft_1mm_r1
+  - 9DTact_medium_3mm_r1
+  - 9DTact_medium_1mm_r1
+  - 9DTact_hard_3mm_r1
+  - 9DTact_hard_2mm_r1
+  - 9DTact_hard_1mm_r1
+  - 9DTact_soft_3mm_r2
+  - 9DTact_soft_2mm_r2
+  - 9DTact_soft_1mm_r2
+  - 9DTact_medium_3mm_r2
+  - 9DTact_medium_2mm_r2
+  - 9DTact_medium_1mm_r2
+  - 9DTact_hard_3mm_r2
+  - 9DTact_hard_2mm_r2
+  - 9DTact_hard_1mm_r2
+depth_limits_mm_superseded:
+  1: 0.7
+  2: 1.2
+  3: 2.2
+indenter:
+  dataset: 20260904_4mmBall
+  tip: ball, 4 mm diameter (2 mm radius)
+  mounted: '2026-09-04'
+  note: 'recorded because it sets the contact geometry: Hertz contact radius is sqrt(2*R*depth),
+    so R halves the radius at a given depth against the 4 mm RADIUS previously assumed
+    when estimating mm per pixel. No mm/px calibration exists, so contact sizes stay
+    in pixels'

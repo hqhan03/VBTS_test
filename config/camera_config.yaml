@@ -1,0 +1,58 @@
+# VBTS internal camera — YJX-YL0320-2740 (USB 2b16:6689), UVC 1.00.
+# Standard UVC, so no vendor SDK: OpenCV opens it directly.
+#
+# EVERY control here is fixed on purpose. A VBTS encodes gel deformation in
+# pixel intensity, so a camera that adjusts its own exposure or white balance
+# makes contact indistinguishable from the camera changing its mind. Measured
+# on 2026-08-31: frame-to-frame mean brightness varied by 20.441 on auto and
+# 0.091 with these settings locked -- a factor of 224.
+device: 0                 # /dev/video0. video1 is the UVC metadata node, not video.
+
+format:
+  fourcc: YUYV            # uncompressed. MJPG reaches 15 fps but is lossy JPEG,
+                          # and JPEG ringing corrupts the intensity gradients a
+                          # VBTS reads. 5 fps of clean data beats 15 of damaged.
+  width: 1920
+  height: 1080
+  measured_fps: 4.9
+
+controls:
+  auto_exposure: 1        # V4L2: 1 = manual, 3 = auto. Must stay 1.
+  exposure: 2047          # driver maximum; larger requests clamp here
+  auto_wb: 0              # fixed white balance
+  wb_temperature: 4600
+  brightness: 64          # exposure alone gives mean 41, too dark. Gain is not
+                          # controllable on this camera (always reads -1), so
+                          # brightness is what lifts the level: 0->41, 32->86,
+                          # 64->132, all with no saturation.
+  contrast: 4             # default. Raising it darkened the image here.
+  gamma: 100              # driver default, pinned. It was changed during the
+                          # 15 fps trial below and a camera remembers its last
+                          # value across opens, so it is set every time.
+
+observed_unloaded:
+  full_frame_mean: 132.4
+  centre_25pct: {mean: 170.5, median: 174, min: 130, max: 191, saturated_pct: 0.0}
+  note: >
+    The frame vignettes strongly toward the edges; the dark corners are outside
+    the gel area that matters. Judge exposure on the centre, not the whole frame.
+
+# 15 fps ALTERNATIVE, measured 2026-09-04 on 9DTact_soft_1mm_r2 (reads 72.3 here):
+#   The frame rate is set by the exposure, not the format: 2047 x 100 us = 205 ms
+#   per frame = 4.9 fps whatever the codec, and 1080p YUYV is capped at 5 fps by
+#   the camera anyway. 15 fps needs exposure <= 666 AND MJPG (lossy JPEG):
+#     fourcc MJPG, exposure 666, gamma 100 -> 15.0 fps, centre mean 53.1
+#     fourcc MJPG, exposure 666, gamma 200 -> 15.0 fps, centre mean 67.4, noise 1.33
+#   JPEG cost at the same exposure: a uniform +10 level offset against YUYV, a
+#   spatial artefact of 0.35 levels rms, and 61 % less high-frequency energy
+#   (Laplacian std 0.33 vs 0.83) -- markers and fine texture are what it blurs.
+#   To use it: fourcc: MJPG, exposure: 666, gamma: 200, store_raw_jpeg: true
+#   (frames are then saved as the camera's own .jpg bitstream, ~0.3 MB each).
+
+storage:
+  # PNG is lossless, so it is "uncompressed" in the sense that matters: no pixel
+  # value is altered. It encodes in 74 ms against a 204 ms frame budget, and is
+  # half the size of a raw array dump (3.05 MB vs 6.22 MB).
+  format: png
+  bytes_per_frame: 3050000
+  rate_gb_per_min: 0.97

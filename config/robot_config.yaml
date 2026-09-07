@@ -1,0 +1,51 @@
+# FR5 robot configuration — VBTS testing platform
+#
+# Only values that are already verified, or that are structural, appear here.
+# Nothing in this file is a guess. Force limits, workspace limits, approach
+# speeds and contact thresholds are deliberately ABSENT: they belong to the
+# experimental protocol and will be set when that protocol is defined, not
+# invented now.
+
+robot:
+  # Verified on this robot: FR5 controller at 192.168.58.2, reachable via the
+  # "cabinet" network profile (see ~/Desktop/FR5_network_connection_notes.md
+  # and ~/Desktop/fr5_net.sh). Same value already used by fr5_tcp_jog_gui.py
+  # and by teleop_slave/config/fr5_tracker_teleop.yaml.
+  ip: "192.168.58.2"
+
+  # Tool / workpiece coordinate frame ids.
+  # The SDK's English header documents the range as [0..14]; the Chinese source
+  # comments in robot.cpp say [1..15] for the same argument. Hardware logs from
+  # this robot show "TCP=0 WObj=0" in use, so 0 is valid and the English header
+  # matches reality. Recorded here because the SDK contradicts itself.
+  default_tool_id: 0
+  default_user_frame_id: 0
+
+  units:
+    position: mm      # DescTran x/y/z
+    orientation: deg  # Rpy rx/ry/rz, FIXED-AXIS (extrinsic) RPY
+    joint: deg        # JointPos jPos[6]
+
+  # Value to pass to the FR5 Mode() call before protocol motion.
+  #
+  # null = TO BE VERIFIED ON HARDWARE. Do not fill this in from inference.
+  #
+  # What is known: the RT-stream struct comment (robot_types.h) says
+  # "robot_mode: 1-Manual mode; 0-Auto mode", and the C++ teleop node calls
+  # Mode(0) before MoveJ/ServoJ with 521 successful runs on this robot. The jog
+  # GUI calls Mode(1) for jogging. The SDK header for Mode() itself documents
+  # no meaning for either value. Mode(0) is therefore likely correct for our
+  # MoveL protocol but is not confirmed for it.
+  #
+  # Resolve by observing `robot_mode` on the 20004 stream during a read-only
+  # connect, before any motion is attempted.
+  operation_mode: null
+
+safety:
+  # Gate 2 of the motion interlock. Must be true AND dry_run.enabled must be
+  # false before any real motion is possible. See robot_interface.py.
+  allow_real_motion: false
+
+dry_run:
+  # Gate 1. While true, no socket is opened and no RPC is sent.
+  enabled: true

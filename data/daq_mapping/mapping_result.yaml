@@ -1,0 +1,109 @@
+method: delta of DIFF channel means between unloaded and loaded states
+sample_rate_hz: 1000.0
+seconds_per_scan: 3.0
+terminal_reference_operator_meter:
+  SG0:
+    terminals: 68 - 34
+    unloaded_V: 1.175
+    loaded_V: 1.155
+    delta_mV: -20.0
+  SG5:
+    terminals: 60 - 26
+    unloaded_V: 1.348
+    loaded_V: 1.34
+    delta_mV: -8.0
+responding_channels:
+- Dev1/ai0
+- Dev1/ai1
+- Dev1/ai2
+- Dev1/ai3
+- Dev1/ai4
+- Dev1/ai5
+- Dev1/ai6
+- Dev1/ai17
+- Dev1/ai18
+- Dev1/ai19
+- Dev1/ai20
+- Dev1/ai21
+- Dev1/ai22
+- Dev1/ai23
+all_diff_deltas_mV:
+  Dev1/ai0: -56.597255207608384
+  Dev1/ai1: -112.37835120781226
+  Dev1/ai2: -4.352143955248078
+  Dev1/ai3: -12.079506980403053
+  Dev1/ai4: -117.34699072317056
+  Dev1/ai5: -117.1927030382538
+  Dev1/ai6: -2.114375058753337
+  Dev1/ai7: -1.924908642281009
+  Dev1/ai16: -1.985068888225694
+  Dev1/ai17: -2.01323133379927
+  Dev1/ai18: -2.042599175490656
+  Dev1/ai19: -2.0646250571934033
+  Dev1/ai20: -2.036572197245956
+  Dev1/ai21: -2.084130564270925
+  Dev1/ai22: -2.0685699918225886
+  Dev1/ai23: -2.073829902224489
+matched:
+  SG0:
+    channel: Dev1/ai3
+    delta_mV: -12.079506980403053
+    target_mV: -20.0
+    mismatch_mV: 7.920493019596947
+    terminals: 68 - 34
+  SG5:
+    channel: Dev1/ai2
+    delta_mV: -4.352143955248078
+    target_mV: -8.0
+    mismatch_mV: 3.647856044751922
+    terminals: 60 - 26
+note: Matching is by response magnitude against meter readings taken at the screw
+  terminals. It names the channels carrying SG0 and SG5; the other four gauges need
+  their own terminal measurements to be named the same way.
+robot: NOT USED
+confirmed_channel_set:
+  channels:
+  - Dev1/ai0
+  - Dev1/ai1
+  - Dev1/ai2
+  - Dev1/ai3
+  - Dev1/ai4
+  - Dev1/ai5
+  evidence: only Dev1/ai0..ai5 responded to the 1.004 kg load (-4.4 to -117 mV); ai6,
+    ai7 and every connector-1 channel sat at the -2 mV floating floor
+scb_label_mapping:
+  SG0: Dev1/ai0
+  SG1: Dev1/ai2
+  SG2: Dev1/ai1
+  SG3: Dev1/ai3
+  SG4: Dev1/ai4
+  SG5: Dev1/ai5
+wrench_under_scb_label_mapping:
+  Fx: -2.542360017536
+  Fy: 1.635256122834
+  Fz: -9.847712388489999
+  Tx: 0.0075670494670000005
+  Ty: 0.05554186374
+  Tz: 0.038527484275999994
+Fz_error_pct: 0.018645251861070574
+lateral_N: 3.022855776584741
+total_force_N: 10.30121819652662
+tilt_deg: 17.064402293211998
+sg0_reference_correction: SG0 reference is terminal 34 (AI0-), not 35 (AI GND). With
+  the reference on 35 the AI0 differential negative was floating, which is what the
+  earlier 'ai0 open circuit' diagnosis detected. With terminal 34, Dev1/ai0 reads
+  1.179 V DIFF at std 0.756 mV, matching the meter's 1.175 V, and responds -56.6 mV
+  to the load.
+scale_resolved: '|Fz| error is now +0.02% (-9.848 N vs -9.846 N expected). The +18%
+  / -23% errors seen in Tasks 5-8 were artifacts of the broken SG0 reference, not
+  a gain problem.'
+order_not_uniquely_determined: 58 of 720 permutations reproduce |Fz| within 1%, so
+  a single vertical load cannot fix the order among the six. The SCB-68A labels remain
+  the authority for order; this measurement confirms the channel SET and the Fz scale.
+residual_lateral_is_physical: ~3.0 N lateral appears in essentially every permutation
+  that gets Fz right, so it is a property of the load, not of the mapping. Total force
+  10.30 N tilted 17.1 deg from vertical, with an implied application height of 21.8
+  mm.
+config_not_modified: 'ft_config.yaml still lists the connector-1 channels ai16..ai21
+  and is now STALE, since the SCB-68A is back on connector 0. Not changed: this task
+  forbids it.'

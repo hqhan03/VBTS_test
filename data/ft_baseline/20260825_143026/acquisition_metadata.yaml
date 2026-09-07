@@ -1,0 +1,65 @@
+acquired_at_wall: '2026-08-25T14:30:26.640187'
+acquired_at_wall_epoch: 1787635826.6401865
+host_monotonic_at_start: 3107.368173372
+timestamp_strategy: Block-level host monotonic + wall clock; per-sample times reconstructed
+  as t_i = t0 + i/fs from the NI hardware sample clock, never from host polling time.
+operator_confirmation: skipped (--yes)
+daq:
+  manufacturer: NI
+  model: PCIe-6343
+  device: Dev1
+  channels_in_read_order:
+  - Dev1/ai0
+  - Dev1/ai1
+  - Dev1/ai2
+  - Dev1/ai3
+  - Dev1/ai4
+  - Dev1/ai5
+  - Dev1/ai6
+  - Dev1/ai7
+  terminal_configuration: DIFF
+  voltage_range_v: 10.0
+  sample_rate_hz: 2000.0
+  samples_per_read: 200
+  buffer_size: 2000
+  timing: hardware-timed continuous (cfg_samp_clk_timing)
+  channel_mapping_confirmed: false
+ft_sensor:
+  manufacturer: ATI
+  model: Mini45
+  interface: FTIFPS1
+calibration:
+  calibration_file: /home/nrel/Desktop/KDC-tactile-testing-platform/FT29831.cal
+  serial: FT29831
+  body_style: Mini45
+  family: DAQ
+  part_number: SI-145-5
+  cal_date: 1/8/2020
+  num_gauges: 6
+  native_force_unit: N
+  native_torque_unit: N-m
+  dist_units: m
+  output_mode: Ground Referenced Differential
+  output_range: '20'
+  hw_temp_comp: 'True'
+  gain_multiplier: '1'
+  output_bipolar: 'True'
+  basic_transform:
+    Dx: 0.0
+    Dy: 0.0
+    Dz: 0.006858
+    Rx: 0.0
+    Ry: 0.0
+    Rz: 0.0
+  max_loads_native:
+    Fx: 145.0
+    Fy: 145.0
+    Fz: 290.0
+    Tx: 5.0
+    Ty: 5.0
+    Tz: 5.0
+  force_to_N: 1.0
+  torque_to_Nm: 1.0
+  internally_consistent: true
+  frame: ATI_sensor
+robot: "NOT USED \u2014 FAIRINO not accessed in this measurement"

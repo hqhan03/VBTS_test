@@ -1,0 +1,28 @@
+run: 9DTact_soft_1mm_r2
+sensor_id: 9DTact_soft_1mm_r2
+note: 9DTact_soft_1mm_r2
+n_samples: 149
+n_zero_checks: 3
+sensor_normal_in_base:
+- -0.006932754982489325
+- 0.016018792703046052
+- 0.9998476559899961
+force_depth_fit:
+  n_contact_samples: 147
+  noise_sigma_N: 0.02
+  contact_threshold_N: 0.1
+  linear:
+    stiffness_N_per_mm: 2.028148643894555
+    rms_N: 0.19100746513225353
+    contact_origin_descent_mm: 0.3775405638207092
+  hertz:
+    a_N_per_mm1p5: 1.1961966805959365
+    rms_N: 0.07891079039362449
+    contact_origin_descent_mm: 0.07754056382070923
+  model_used: hertz
+  contact_origin_descent_mm: 0.07754056382070923
+  gel_surface_height_mm: 25.367211561779758
+depth_reference: contact origin from extrapolating the contact-region fit to zero
+  force; pre-contact samples are excluded
+drift_correction: interpolated between zero checks
+robot_commanded: false

@@ -1,0 +1,59 @@
+probe: cyl4
+contact_law: punch
+searched_surface_mm: 26.538
+surface_mm: 26.617193790109123
+sigma_mm: 0.008027488008485281
+sem_mm: 0.00463467236261547
+first_surface_mm: 26.625274429592142
+drift_first_to_last_mm: -0.008188019753156084
+drift_per_approach_mm: -0.004094009876578042
+monotone: false
+n_approaches: 3
+image_onset_surface_mm: 26.495321184955102
+step_mm: 0.02
+fit_max_force_N: 1.0
+stop_force_N: 1.2
+fits:
+- ok: true
+  d0_mm: 0.4783351887203966
+  a: 3.1501669451838303
+  sigma_d0_mm: 0.004981247867323838
+  r2: 0.9978719989856304
+  exponent: 1.0
+  law: punch
+  n: 14
+  fit_max_force_N: 1.0
+  zero_drift_N: 0.032397129157189786
+  zero_drift_N_per_min: 0.09641404409201204
+  approach: 1
+  base_height_mm: 27.10360961831254
+  image_onset_depth_mm: 0.6281389729668305
+- ok: true
+  d0_mm: 0.5034968308427096
+  a: 3.4430633535771418
+  sigma_d0_mm: 0.004285141664749685
+  r2: 0.9978309364959437
+  exponent: 1.0
+  law: punch
+  n: 13
+  fit_max_force_N: 1.0
+  zero_drift_N: -0.0009044869477023154
+  zero_drift_N_per_min: -0.0027660968265372037
+  approach: 2
+  base_height_mm: 27.11271736173895
+  image_onset_depth_mm: 0.6003375442755434
+- ok: true
+  d0_mm: 0.4917912239555568
+  a: 3.366260779341185
+  sigma_d0_mm: 0.004291000340142597
+  r2: 0.9979008589867263
+  exponent: 1.0
+  law: punch
+  n: 14
+  fit_max_force_N: 1.0
+  zero_drift_N: 0.00288066624985283
+  zero_drift_N_per_min: 0.0085063019366016
+  approach: 3
+  base_height_mm: 27.108877633794542
+  image_onset_depth_mm: 0.6107645417383516
+at: '2026-09-05T21:08:05.739338'
