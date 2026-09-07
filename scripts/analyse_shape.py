@@ -173,9 +173,31 @@ def zero_surface(st):
 
 
 def deepest_centre(run, probe, lad, ref):
+    """Where the contact is in the image, from the deepest frame.
+
+    Always found at the camera's FULL resolution and then scaled by DOWNSCALE.
+    The resolution sweep asks whether the shape can be reconstructed with
+    fewer pixels, not whether the contact can be located with fewer pixels --
+    and the locator (threshold, 5x5 opening, 11x11 closing, in PIXELS) fails
+    first: at 30x16 the 4 mm imprint is five pixels wide and the closing
+    kernel is larger than the imprint, so the mask vanishes and the run was
+    reported as "no contact" while the reconstruction itself had never been
+    tried. Found once at full resolution, the centre is the same physical
+    point at every scale and the sweep measures the reconstruction alone.
+    """
     deep = lad.sort_values("depth_mm").iloc[-1]
-    d = np.clip(ref.astype(np.int32) - gray(run, probe, deep.file).astype(np.int32), 0, 255)
-    return contact_circle(d.astype(np.uint8))
+    full_ref = cv2.cvtColor(cv2.imread(str(run / "reference.png")), cv2.COLOR_BGR2GRAY)
+    full_img = cv2.cvtColor(cv2.imread(str(run / f"shape_{probe}" / deep["file"])), cv2.COLOR_BGR2GRAY)
+    d = np.clip(full_ref.astype(np.int32) - full_img.astype(np.int32), 0, 255)
+    saved = globals()["DOWNSCALE"]
+    globals()["DOWNSCALE"] = 1             # contact_circle's area floor is scale-aware
+    try:
+        c = contact_circle(d.astype(np.uint8))
+    finally:
+        globals()["DOWNSCALE"] = saved
+    if c is None:
+        return None
+    return (c[0] / saved, c[1] / saved, c[2] / saved)
 
 
 # ------------------------------------------------------------ evaluation --
@@ -197,6 +219,35 @@ def imprint_size(depth, mm_per_px, d_centre, axis):
     return (hi - lo + 1) * mm_per_px
 
 
+def imprint_geometry(depth, mm_per_px, d_centre):
+    """Size and orientation of the imprint from its half-depth contour.
+
+    Rotation-invariant on purpose. The first version measured the width along
+    the image x and y axes through the centre, which is right for a disc and
+    wrong for a square: cube4 sits in its holder at whatever angle it was
+    pushed in, and a square rotated by theta is wider along x by 1/cos(theta)
+    -- the +0.46 mm median "edge error" reported on 2026-09-07 was mostly
+    that angle, not the reconstruction. The minimum-area rectangle around the
+    half-depth contour gives the two edge lengths whatever the angle, and its
+    angle is recorded so the true shape can be drawn where the probe actually
+    was.
+
+    Returns (edge_long, edge_short, angle_deg, equivalent_diameter) in mm/deg,
+    or NaNs if there is no usable contour.
+    """
+    m = (depth >= d_centre / 2.0).astype(np.uint8)
+    cnts, _ = cv2.findContours(m, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if not cnts:
+        return np.nan, np.nan, np.nan, np.nan
+    c = max(cnts, key=cv2.contourArea)
+    if cv2.contourArea(c) < 20:
+        return np.nan, np.nan, np.nan, np.nan
+    (_, _), (w, h), ang = cv2.minAreaRect(c)
+    w, h = w * mm_per_px, h * mm_per_px
+    d_eq = 2.0 * np.sqrt(cv2.contourArea(c) / np.pi) * mm_per_px
+    return max(w, h), min(w, h), float(ang), d_eq
+
+
 def evaluate(run, probe, lad, ref, J, lut, mm_per_px, zero_shift):
     circ = deepest_centre(run, probe, lad, ref)
     if circ is None:
@@ -212,11 +263,13 @@ def evaluate(run, probe, lad, ref, J, lut, mm_per_px, zero_shift):
         dep = reconstruct(ref_w, img_w, lut)
         core = dep[r_mm < 0.5 * CYL_R]
         d_c = float(np.median(core)); flat = float(np.std(core))
-        wx = imprint_size(dep, mm_per_px, d_c, "x")
-        wy = imprint_size(dep, mm_per_px, d_c, "y")
+        e_long, e_short, ang, d_eq = imprint_geometry(dep, mm_per_px, d_c)
+        # disc: the equivalent-area diameter is the size; square: the two
+        # edges of the fitted rectangle are, whatever its angle
+        wx, wy = (d_eq, d_eq) if probe == "cyl4" else (e_long, e_short)
         rows.append(dict(probe=probe, repeat=int(r["repeat"]), target=float(r["target_depth_mm"]),
                          true=float(r["depth_mm"]), recon=d_c, flat=flat,
-                         width_x=wx, width_y=wy))
+                         width_x=wx, width_y=wy, angle_deg=ang))
     return rows
 
 
@@ -279,6 +332,13 @@ def analyse(sensor, verbose=False):
 
     lut_raw, n_raw, mg = results["raw"]
     lut_c, _, _ = results["corrected"]
+    if len(lut_c) <= LIGHTING_THRESHOLD + 1:
+        # A lookup with no grey range: the contact is a pixel or two and the
+        # calibration frames cannot separate depths. That is the genuine end
+        # of the method at this resolution, and it is reported as such.
+        out["error"] = f"lookup spans only {len(lut_c)} grey levels"
+        out["grey_levels_used"] = mg
+        return out, []
     deepest = float(cal_lad.depth_mm.max()) + shift
     out["grey_levels_used"] = mg
     out["mm_per_grey_level"] = deepest / max(mg, 1)
@@ -319,12 +379,18 @@ def analyse(sensor, verbose=False):
                 out[f"{k}_slope"] = float(a)
                 out[f"{k}_rms_after_linear"] = float(np.sqrt(np.mean((s["recon"] - (a * s["true"] + b)) ** 2)))
             dd = s[s["true"] >= 0.35] if (s["true"] >= 0.35).any() else s
-            wmean = np.nanmean(np.r_[dd["width_x"].values, dd["width_y"].values])
+            wv = np.r_[dd["width_x"].values, dd["width_y"].values]
+            wmean = float(np.nanmean(wv)) if np.isfinite(wv).any() else np.nan
             out[f"{k}_size"] = float(wmean)
             out[f"{k}_size_err"] = float(wmean - size_true)
             out[f"{k}_flat"] = float(dd["flat"].mean())
             if probe == "cube4":
-                out[f"{k}_squareness"] = float(np.nanmean(dd["width_x"] / dd["width_y"]))
+                # short / long of the fitted rectangle: 1.00 is square,
+                # independent of how the cube sat in the holder
+                q = (dd["width_y"] / dd["width_x"]).values
+                out[f"{k}_squareness"] = float(np.nanmean(q)) if np.isfinite(q).any() else np.nan
+                out[f"{k}_angle_deg"] = (float(np.nanmedian(dd["angle_deg"]))
+                                         if np.isfinite(dd["angle_deg"]).any() else np.nan)
     if verbose:
         print(f"\n{sensor}: {ppm:.1f} px/mm ({out['scale_source']}), zero shift "
               f"{shift:+.3f} mm ({out['zero_shift_source']}), {mg} grey levels over "
