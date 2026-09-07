@@ -139,20 +139,21 @@ capture_policy:
     the same within seed noise. Below 4 N the error halves with data; above 4 N it
     does not improve at all, because the image response is saturating there and only
     8% of frames sit in that band'
-  ramp_mode_basis: 'continuous since 2026-09-07 (12th unit on, 9DTact_hard_1mm_r1): the probe
-    glides instead of stepping, and the glide is PACED -- each segment aims at 0.25 N and
-    1.7 s (0.15 N/s), its length and velocity computed from the stiffness measured on the
-    segment before, and the arm''s mm/s at 100 % learned from each glide''s own elapsed time.
-    The pace is what matters: a frame is kept only if its force differs by --min-sep (0.02 N)
-    from one already in its bin, and frames arrive every 0.206 s, so the force must move
-    about 0.1 N/s. A first attempt at a fixed 0.5 % gave 0.035 N/s and the same 31 % acceptance
-    the stepped ramp had. The shear RETURN is not paced -- it retraces forces already covered,
-    and pacing it cost 426 s of a 788 s collect on the first unit; it runs at 0.6 mm/s in three
-    segments, as the stepped ramp did. Measured on 9DTact_hard_1mm_r2: collect 434 s at 50 %
-    acceptance against 713 s at 30 % for the stepped ramp on 9DTact_medium_3mm_r2, a whole run
-    7.6 min against 12-15. Labels, bins, separation, budget and range are unchanged; the gel''s
-    loading history is (no pauses at the rungs), which is why the eleven units before
-    hard_1mm_r1 are marked as stepped'
+  ramp_mode_basis: 'continuous since 2026-09-07 (12th unit on, 9DTact_hard_1mm_r1):
+    the probe glides instead of stepping, and the glide is PACED -- each segment aims
+    at 0.25 N and 1.7 s (0.15 N/s), its length and velocity computed from the stiffness
+    measured on the segment before, and the arm''s mm/s at 100 % learned from each
+    glide''s own elapsed time. The pace is what matters: a frame is kept only if its
+    force differs by --min-sep (0.02 N) from one already in its bin, and frames arrive
+    every 0.206 s, so the force must move about 0.1 N/s. A first attempt at a fixed
+    0.5 % gave 0.035 N/s and the same 31 % acceptance the stepped ramp had. The shear
+    RETURN is not paced -- it retraces forces already covered, and pacing it cost
+    426 s of a 788 s collect on the first unit; it runs at 0.6 mm/s in three segments,
+    as the stepped ramp did. Measured on 9DTact_hard_1mm_r2: collect 434 s at 50 %
+    acceptance against 713 s at 30 % for the stepped ramp on 9DTact_medium_3mm_r2,
+    a whole run 7.6 min against 12-15. Labels, bins, separation, budget and range
+    are unchanged; the gel''s loading history is (no pauses at the rungs), which is
+    why the eleven units before hard_1mm_r1 are marked as stepped'
   ramp_step_basis: 0.05 N gave 234 moves and about two minutes per loading cycle for
     roughly ten new frames once the separation rule had rejected the repeats. 0.1
     N halves the moves without changing what the ramp covers; the diversity comes
@@ -2128,19 +2129,108 @@ sensors:
     it
   status: characterised
   gel_model:
-    hertz_a: 1.5489961289817606
-    free_exponent: 1.867501305896725
-    surface_mm: 26.501
-  safe_force_N: 1.7986393147553343
-  safe_depth_mm: 1.215190088347292
-  commanded_depth_mm: 1.235692363620236
-  command_vs_measured_mm: 0.020502275272944015
-  stopped_on: depth backstop
-  ladder_rungs_reached: 17
-  characterised_at: '2026-09-03T14:04:06.305940'
-  run: null
+    hertz_a: 2.6198806368083214
+    free_exponent: 2.8738298230145127
+    surface_mm: 26.581999999999997
+  safe_force_N: 2.963338914623435
+  safe_depth_mm: 1.4605285558899332
+  commanded_depth_mm: 1.5000000000000002
+  command_vs_measured_mm: 0.03947144411006698
+  stopped_on: force cap
+  ladder_rungs_reached: 29
+  characterised_at: '2026-09-08T00:05:45.860542'
+  run: data/9DTact/20260907_passB_ball8/9DTact_hard_2mm_r1
   run_timestamp: '20260903_140215'
   ladder_run: data/20260903_ladder_protocol/9DTact_hard_2mm_r1
+  history:
+  - characterised_at: '2026-09-03T14:04:06.305940'
+    gel_model:
+      hertz_a: 1.5489961289817606
+      free_exponent: 1.867501305896725
+      surface_mm: 26.501
+    safe_depth_mm: 1.215190088347292
+    safe_force_N: 1.7986393147553343
+    stopped_on: depth backstop
+    ladder_rungs_reached: 17
+    depth_cap_used_mm: null
+    image_response: null
+    run: null
+  image_response:
+    max_measurable_force_N: null
+    reached: false
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    note: 'not reached within the limits: stopped on force cap at 2.96 N with the
+      image still changing at 2.30 lvl/N (100% of peak)'
+    peak_slope_levels_per_N: 2.30318103338147
+    image_change_at_stop: 8.329560279846191
+  contact_map:
+    at_depth:
+      target_depth_mm: 0.5
+      target_used_mm: 0.5
+      limited_by_depth_cap: false
+      at: '2026-09-08T00:06:01.480724'
+      image: at_depth.png
+      depth_mm: 0.45734930687486397
+      height_above_plane_mm: 26.124650693125133
+      normal_force_N: 0.9365922248657341
+      region:
+        mean_abs_diff_centre: 3.63862943649292
+        max_diff: 20.95703125
+        changed_fraction: 0.04408130787037037
+        area_px: 86023
+        radius_px: 165.47498704997147
+        centroid_px:
+        - 909.9685084221661
+        - 595.1787545191403
+        enclosing_radius_px: 192.07850646972656
+        mean_abs_diff_in_region: 10.482661247253418
+        dark_area_px: 85758
+        dark_radius_px: 165.21991169150746
+        dark_centroid_px:
+        - 909.9861470649969
+        - 595.2467408288439
+        dark_mean_diff: -10.499022483825684
+        bright_area_px: 246
+        bright_radius_px: 8.848967849484623
+        bright_centroid_px:
+        - 478.5
+        - 349.9593495934959
+        bright_mean_diff: 6.6452460289001465
+    at_force:
+      target_force_N: 0.5
+      target_used_N: 0.5
+      limited_by_force_cap: false
+      force_reached: true
+      stop_reason: reached
+      at: '2026-09-08T00:06:07.882878'
+      image: at_force.png
+      depth_mm: 0.2656492733104088
+      height_above_plane_mm: 26.31635072668959
+      normal_force_N: 0.4650850273962277
+      region:
+        mean_abs_diff_centre: 2.5575106143951416
+        max_diff: 14.88671875
+        changed_fraction: 0.01787374614197531
+        area_px: 31998
+        radius_px: 100.9221469158724
+        centroid_px:
+        - 905.7806112882055
+        - 594.7431714482155
+        enclosing_radius_px: 128.95970153808594
+        mean_abs_diff_in_region: 7.418452262878418
+        dark_area_px: 31929
+        dark_radius_px: 100.81327470111391
+        dark_centroid_px:
+        - 905.7801058598766
+        - 594.80209214194
+        dark_mean_diff: -7.423275947570801
+        bright_area_px: 0
+        bright_radius_px: 0.0
+        bright_centroid_px: null
+        bright_mean_diff: 0.0
 - id: 9DTact_hard_2mm_r2
   principle: 9DTact
   hardness: hard
