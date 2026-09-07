@@ -2241,18 +2241,109 @@ sensors:
     it
   status: characterised
   gel_model:
-    hertz_a: 1.5090535307163944
-    free_exponent: 1.5599235508245715
-    surface_mm: 26.364
-  safe_force_N: 1.9008277920306256
-  safe_depth_mm: 1.204237040211762
-  commanded_depth_mm: 1.2355933023695527
-  command_vs_measured_mm: 0.03135626215779075
-  stopped_on: depth backstop
-  ladder_rungs_reached: 19
-  characterised_at: '2026-09-03T23:32:01.721954'
-  run: null
+    hertz_a: 2.4951256845323146
+    free_exponent: 2.574704005026722
+    surface_mm: 26.64
+  safe_force_N: 3.1932223483248436
+  safe_depth_mm: 1.559974988433325
+  commanded_depth_mm: 1.6000000000000003
+  command_vs_measured_mm: 0.04002501156667537
+  stopped_on: force cap
+  ladder_rungs_reached: 31
+  characterised_at: '2026-09-08T00:16:00.631190'
+  run: data/9DTact/20260907_passB_ball8/9DTact_hard_2mm_r2
   ladder_run: data/20260903_ladder_protocol/9DTact_hard_2mm_r2
+  history:
+  - characterised_at: '2026-09-03T23:32:01.721954'
+    gel_model:
+      hertz_a: 1.5090535307163944
+      free_exponent: 1.5599235508245715
+      surface_mm: 26.364
+    safe_depth_mm: 1.204237040211762
+    safe_force_N: 1.9008277920306256
+    stopped_on: depth backstop
+    ladder_rungs_reached: 19
+    depth_cap_used_mm: null
+    image_response: null
+    run: null
+  image_response:
+    max_measurable_force_N: null
+    reached: false
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    note: 'not reached within the limits: stopped on force cap at 3.19 N with the
+      image still changing at 2.25 lvl/N (99% of peak)'
+    peak_slope_levels_per_N: 2.2731556551735608
+    image_change_at_stop: 8.224492073059082
+  contact_map:
+    at_depth:
+      target_depth_mm: 0.5
+      target_used_mm: 0.5
+      limited_by_depth_cap: false
+      at: '2026-09-08T00:16:16.569312'
+      image: at_depth.png
+      depth_mm: 0.4568394453393445
+      height_above_plane_mm: 26.183160554660656
+      normal_force_N: 0.881354827371851
+      region:
+        mean_abs_diff_centre: 3.278123140335083
+        max_diff: 20.94140625
+        changed_fraction: 0.03492042824074074
+        area_px: 68623
+        radius_px: 147.79505850870072
+        centroid_px:
+        - 911.8400973434563
+        - 592.8688632091281
+        enclosing_radius_px: 170.6942901611328
+        mean_abs_diff_in_region: 10.288393020629883
+        dark_area_px: 68470
+        dark_radius_px: 147.63020662115238
+        dark_centroid_px:
+        - 911.6753614721775
+        - 592.8476413027603
+        dark_mean_diff: -10.299667358398438
+        bright_area_px: 403
+        bright_radius_px: 11.32602684669552
+        bright_centroid_px:
+        - 665.1712158808933
+        - 347.01736972704714
+        bright_mean_diff: 9.659662246704102
+    at_force:
+      target_force_N: 0.5
+      target_used_N: 0.5
+      limited_by_force_cap: false
+      force_reached: true
+      stop_reason: reached
+      at: '2026-09-08T00:16:23.842379'
+      image: at_force.png
+      depth_mm: 0.28981841663963337
+      height_above_plane_mm: 26.350181583360367
+      normal_force_N: 0.477927868964386
+      region:
+        mean_abs_diff_centre: 2.5457890033721924
+        max_diff: 16.54296875
+        changed_fraction: 0.018737461419753087
+        area_px: 36325
+        radius_px: 107.52956158948197
+        centroid_px:
+        - 904.6560770818995
+        - 594.2085891259463
+        enclosing_radius_px: 122.67497253417969
+        mean_abs_diff_in_region: 8.094863891601562
+        dark_area_px: 36126
+        dark_radius_px: 107.23461637118689
+        dark_centroid_px:
+        - 904.5815479156287
+        - 594.6167303327244
+        dark_mean_diff: -8.110490798950195
+        bright_area_px: 327
+        bright_radius_px: 10.202319970580199
+        bright_centroid_px:
+        - 667.131498470948
+        - 350.56269113149847
+        bright_mean_diff: 7.336893081665039
 - id: 9DTact_hard_3mm_r1
   principle: 9DTact
   hardness: hard
