@@ -1198,7 +1198,17 @@ def _seek_force(ip, a, reader, axis_vec, target, measure, model_step,
         err = target - f
         if abs(err) <= a.force_tol:
             return True, f, travel_used, "reached"
-        if f >= force_cap:
+        # The cap means "do not push in past this", not "stop doing anything".
+        # It used to return on force alone, so once a contact was over the cap
+        # every mechanism that could have pulled it back gave up -- including
+        # the re-seat that starts each shear cycle. Measured 2026-09-08 on
+        # DIGIT_Marker_soft_2mm_r1 (ball8, 1.20 N hold, 2.0 N cap): the shear
+        # block started each cycle wherever the last one ended, and the depth
+        # walked 0.485 -> 0.788 mm over twelve cycles while the normal force
+        # went 2.9 -> 6.5 N, four times the hold, with the re-seat returning
+        # "force cap" every time and never once retracting. Retracting is
+        # always safe; only the inward direction is capped.
+        if f >= force_cap and err > 0:
             return False, f, travel_used, f"force cap {force_cap} N"
         step = model_step(f, target)
 
@@ -1692,6 +1702,9 @@ class ForceBinner:
         self.bin_normal = bin_normal
         self.bin_shear = bin_shear
         self.min_sep = min_sep
+        self.force_cap = float(force_cap)
+        self.shear_cap = float(shear_cap)
+        self.n_rejected_range = 0
         n_bins = max(1, int(np.ceil(force_cap / bin_normal)))
         s_bins = max(1, int(np.ceil(shear_cap / bin_shear))) * 4
         self.quota = {"normal": max(1, int(np.ceil(self.n_budget / n_bins))),
@@ -1718,9 +1731,46 @@ class ForceBinner:
         f = -float(w[2])
         return ("normal", int(max(f, 0.0) / self.bin_normal)), f
 
+    def in_range(self, k, scalar) -> bool:
+        """Is this frame inside the FIXED collection range?
+
+        key() floors the force into a bin with no upper bound, so a frame past
+        the cap simply lands in a bin above the last one the quota was sized
+        for -- a new bin, created on demand, handed the full per-bin quota. The
+        range is fixed precisely so that every unit is measured over the same
+        span, and nothing was holding the saved frames to it.
+
+        Measured 2026-09-08 on the first Pass B DIGIT units: 54 normal bins
+        occupied against the 40 that 0-2 N at 0.05 N allows, and 5.7-16.7 % of
+        saved frames above 2 N (2.15 N and 1.3 % across the seventeen 9DTact
+        units, whose softer gels overshoot far less). A sixth of a unit's
+        frames outside the common span is not a rounding error -- it is the
+        comparison the fixed range exists to make.
+
+        The ramp still overshoots; that is a control problem and it costs
+        motion, not data. This is what keeps the overshoot out of the dataset.
+        """
+        if k[0] == "shear":
+            # NOT capped. Shear is set by friction, not by command -- the
+            # block asks for min(range_shear, mu x hold) and the gel gives
+            # what it gives, up to 0.85 N on a DIGIT 2 mm marker gel and
+            # 0.91 N on 9DTact_hard_3mm_r2 against the same 0.5 N ask.
+            # Rejecting the excess was tried on 2026-09-08 and starved the
+            # shear bins: the outward glide crosses 0-0.5 N quickly and spends
+            # the rest of its travel above it, so the block ran 54 cycles and
+            # relaxed TWENTY times, which drives min_sep from 0.020 N to
+            # 1.6e-5 N and lets near-duplicate frames in. A collapsed
+            # separation rule is worse than a wide range. The normal channel
+            # has no such problem -- its cap is what the ramp is servoing to.
+            return True
+        return scalar <= self.force_cap + 1e-9
+
     def offer(self, w, tag) -> bool:
         self.n_offered += 1
         k, scalar = self.key(w, tag)
+        if not self.in_range(k, scalar):
+            self.n_rejected_range += 1
+            return False
         block = k[0]
         seen = self.kept.setdefault(k, [])
         if len(seen) >= self.quota[block]:
@@ -1754,6 +1804,8 @@ class ForceBinner:
                 "offered": self.n_offered,
                 "rejected_bin_full": self.n_rejected_bin,
                 "rejected_too_close": self.n_rejected_sep,
+                "rejected_out_of_range": self.n_rejected_range,
+                "force_cap_N": self.force_cap, "shear_cap_N": self.shear_cap,
                 "bins_occupied_normal": len(nb), "bins_occupied_shear": len(sb),
                 "frames_per_bin_normal": {"min": min(nb) if nb else 0,
                                           "max": max(nb) if nb else 0},
@@ -2067,8 +2119,27 @@ def phase_collect(a) -> int:
             return float(np.clip(v_mm_s / max(pace["mm_per_s_100"], 0.05) * 100.0,
                                  0.2, 20.0))
 
-        def _step_for(k_local):
-            return float(np.clip(RAMP_DF / max(k_local, 1e-3), 0.05, 0.40))
+        # STEP_MIN was 0.05 mm, which is a floor on the FORCE a segment adds,
+        # not on its length: 0.05 mm on a gel of stiffness k adds 0.05k
+        # newtons whatever RAMP_DF asks for. On 9DTact's gels k is small enough
+        # that the floor never binds. On a DIGIT 1 mm gel under ball8, k is
+        # about 12.8 N/mm, so one floor-length step adds 0.64 N against the
+        # 0.25 N target, and the ramp sails past the fixed 2 N range before it
+        # can be stopped: measured 2026-09-08, Fz reaching 3.11 N (55 % over)
+        # with 16.7 % of the saved frames above 2 N, against 2.15 N and 1.3 %
+        # across the seventeen 9DTact units. The whole reason the range is
+        # fixed is that the units have to be compared over the same span, so
+        # a sixth of a unit's frames sitting outside it is not a rounding
+        # error. 0.02 mm is the step the zero phase already uses, so its
+        # accuracy at that length is established.
+        #
+        # `head` is the force still available before the cap. Near the top of
+        # the ramp the segment is sized to land ON the cap rather than to add
+        # a full RAMP_DF past it.
+        STEP_MIN = 0.02
+        def _step_for(k_local, head=None):
+            want = RAMP_DF if head is None else max(min(RAMP_DF, float(head)), 0.02)
+            return float(np.clip(want / max(k_local, 1e-3), STEP_MIN, 0.40))
 
         def _return_to_origin(origin, vel):
             """Absolute MoveL back to `origin`, wiping the accumulated drift.
@@ -2107,6 +2178,29 @@ def phase_collect(a) -> int:
                 print("  MoveL failed returning to the ladder origin")
                 return 1
             return 0
+
+        def _recentre_lateral(ref, vel):
+            """Remove the PERPENDICULAR offset from the axis through `ref`.
+
+            The shear block cannot use _return_to_origin: its height is held by
+            the force servo at every cycle, so a full 3-D return would fight it.
+            What has to be undone is only the radial part -- the component of
+            (here - ref) perpendicular to the gel normal.
+
+            Measured 2026-09-08 on DIGIT_Marker_soft_2mm_r1: anchoring the four
+            axes of ONE cycle to a shared point took the block from 4 cycles to
+            14, but the anchor was re-read inside the cycle loop, so it still
+            followed the walk from cycle to cycle and the run aborted at
+            0.306 mm with 797 of 1000 frames. `shear_origin` is captured once,
+            before the loop, and is the reference that does not move.
+            """
+            p_ = np.array(q("GetActualTCPPose", 0)[1:][:3])
+            pose_ = q("GetActualTCPPose", 0)[1:]
+            d_ = p_ - np.asarray(ref, dtype=float)
+            perp = d_ - (d_ @ n) * n
+            if float(np.linalg.norm(perp)) < 5e-4:
+                return 0
+            return _return_to_origin(p_ - perp, vel)
 
         def _glide(vec, mm, vel):
             """One MoveL of `mm` along unit `vec` at `vel` %, frames saved throughout.
@@ -2161,7 +2255,8 @@ def phase_collect(a) -> int:
             k_local = max(1.5 * a_h * max(d_goal, 0.05) ** 0.5, 0.2)   # Hertz slope, refined below
             while True:
                 room = depth_cap - a.travel_margin - used
-                step = min(_step_for(k_local), room)
+                head_N = max(force_cap - abs(measure_n()), 0.0)
+                step = min(_step_for(k_local, head_N), room)
                 if step <= 1e-4:
                     why = f"depth cap {depth_cap:.2f} mm"
                     break
@@ -2432,9 +2527,39 @@ def phase_collect(a) -> int:
                 print(f"\n  ABORT: carrying {measure_n():.3f} N against a {hold} N "
                       "hold. Shearing from here would drag through air.")
                 return 1
+            # ONE origin for the whole shear block. `centre` used to be re-read
+            # from the actual pose at the top of every axis, so it FOLLOWED the
+            # drift instead of removing it: each axis started wherever the last
+            # one left off, the per-axis return converged on that moved point,
+            # and the block walked. Measured 2026-09-08 on
+            # DIGIT_Marker_soft_2mm_r1: the normal block ended on-axis to
+            # 0.079 mm and the shear block added 0.22 mm in four cycles, past
+            # the 0.3 mm abort with 563 of 1000 frames saved. Anchoring every
+            # axis to the same point makes the existing return an absolute one.
+            # Back onto the axis through shear_origin -- the point captured
+            # before this loop, so the correction cannot drift with it.
+            if _recentre_lateral(shear_origin,
+                                 max(a.release_mm_s / 2.5 * 100.0, 1.0)):
+                return 1
+            shear_block_origin = np.array(q("GetActualTCPPose", 0)[1:][:3])
             for axis in a.order.split(","):
                 axis = axis.strip()
                 u = uvec[axis]
+                # LATERAL ONLY. A full 3-D return here restores the height
+                # the cycle started at, and during shear the probe rides UP on
+                # the gel -- so putting the height back drives it deeper, four
+                # times a cycle, cycle after cycle. Measured 2026-09-08 on
+                # DIGIT_Marker_soft_2mm_r1: the normal force during the shear
+                # block reached 13.4 N (median 5.7) against a 1.20 N hold, and
+                # the depth reached 1.355 mm against a 1.40 mm backstop. The
+                # gel survived -- its surface came back to 24.619 mm against
+                # 24.597 at the start, no permanent set -- but a thinner or
+                # softer one need not have. The height belongs to the force
+                # servo; only the radial walk is ours to undo.
+                _rc_s = _recentre_lateral(shear_block_origin,
+                                          max(a.release_mm_s / 2.5 * 100.0, 1.0))
+                if _rc_s:
+                    return _rc_s
                 fz_now = measure_n()
                 shear_cap = min(a.max_shear_force, a.mu_floor * fz_now)
                 centre = q("GetActualTCPPose", 0)[1:]
@@ -2471,6 +2596,27 @@ def phase_collect(a) -> int:
                     if fz_here < a.slip_off_frac * fz_now:
                         why = "load collapsed"
                         break
+                    # The load can run AWAY as well as collapse, and until
+                    # 2026-09-08 only the collapse was watched. The normal
+                    # servo below corrects at most 0.04 mm per segment, so
+                    # anything that drives the probe in faster than that wins:
+                    # a full 3-D re-centre inside the shear block put 13.4 N
+                    # on a gel held at 1.20 N, eleven times the hold, with
+                    # nothing objecting the whole way down. That bug is gone,
+                    # but the gel had no guard of its own and now it does.
+                    # 4x the hold, not 2.5x. A stiff gel gives large single-
+                    # segment force swings even when the hold is stable: with
+                    # the runaway fixed, DIGIT_Marker_soft_2mm_r1 sat at a
+                    # 1.202 N median against its 1.20 N hold and still touched
+                    # 3.21 N (p95 2.27), because 0.04 mm on a 10 N/mm gel is
+                    # 0.4 N. The guard is for a load that WALKS -- 6.5 N and
+                    # climbing -- not for the peaks of one that holds.
+                    _fz_max = max(4.0 * hold, force_cap + 2.0)
+                    if fz_here > _fz_max:
+                        print(f"\n  ABORT: carrying {fz_here:.2f} N normal against "
+                              f"a {hold:.2f} N hold, past the {_fz_max:.2f} N "
+                              f"guard. The shear block is driving the probe in.")
+                        return 1
                     # hold the normal load: one model step if it has sagged
                     if abs(hold - fz_here) > a.force_tol:
                         d_now = max(surf - height(), 0.0)
@@ -2553,9 +2699,12 @@ def phase_collect(a) -> int:
                 print(f"\n  ABORT: carrying {measure_n():.3f} N against a {hold} N "
                       "hold. Shearing from here would drag through air.")
                 return 1
+            # off, see the continuous branch above
+            shear_block_origin = np.array(q("GetActualTCPPose", 0)[1:][:3])
             for axis in a.order.split(","):
                 axis = axis.strip()
                 u = uvec[axis]
+                # off, see the continuous branch above
                 fz_now = measure_n()
                 shear_cap = min(a.max_shear_force, a.mu_floor * fz_now)
                 targets = [round(shear_cap * fr, 4) for fr in fracs
