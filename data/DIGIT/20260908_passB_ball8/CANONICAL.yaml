@@ -5,21 +5,23 @@
 canonical:
   DIGIT_hard_1mm_r1:
     run: DIGIT_hard_1mm_r1
-    reference: reference_working.png
+    reference: reference_collect.png
   DIGIT_hard_1mm_r2:
     run: DIGIT_hard_1mm_r2
-    reference: reference_working.png
+    reference: reference_collect.png
   DIGIT_hard_2mm_r1:
     run: DIGIT_hard_2mm_r1
-    reference: reference_working.png
+    reference: reference_collect.png
   DIGIT_hard_2mm_r2:
     run: DIGIT_hard_2mm_r2
-    reference: reference_working.png
+    reference: reference_collect.png
   DIGIT_hard_3mm_r1:
-    run: null
+    run: DIGIT_hard_3mm_r1
     note: no complete run
-    not_data:
-    - DIGIT_hard_3mm_r1 (0 frames)
+    reference: reference_collect.png
+  DIGIT_hard_3mm_r2:
+    run: DIGIT_hard_3mm_r2
+    reference: reference_collect.png
   DIGIT_medium_1mm_r1:
     run: DIGIT_medium_1mm_r1__2
     not_data:
@@ -33,13 +35,13 @@ canonical:
     reference: reference_collect.png
   DIGIT_medium_2mm_r2:
     run: DIGIT_medium_2mm_r2
-    reference: reference.png (probe far away -- 8-14 % bright on DIGIT)
+    reference: reference_collect.png
   DIGIT_medium_3mm_r1:
     run: DIGIT_medium_3mm_r1
-    reference: reference.png (probe far away -- 8-14 % bright on DIGIT)
+    reference: reference_collect.png
   DIGIT_medium_3mm_r2:
     run: DIGIT_medium_3mm_r2
-    reference: reference.png (probe far away -- 8-14 % bright on DIGIT)
+    reference: reference_collect.png
   DIGIT_soft_1mm_r1:
     run: DIGIT_soft_1mm_r1
     reference: reference_collect.png
