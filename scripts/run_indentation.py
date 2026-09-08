@@ -2653,12 +2653,34 @@ def phase_collect(a) -> int:
                 back_v = float(np.clip(a.release_mm_s / max(pace["mm_per_s_100"], 0.05)
                                        * 100.0, 0.5, 40.0))
                 nb = 0
+                # The return had no normal-force guard -- the outward loop's
+                # guard does not run here -- and on DIGIT_Marker_medium_1mm_r2
+                # (2026-09-09, ball8, 1.20 N hold, 1 mm gel) two return frames
+                # read 6.08 N at 0.556 mm while the out-glide before them sat
+                # at 2.7-3.3 N / 0.43 mm. Transient, and the next axis re-seated
+                # to 1.08 N, but 6 N on a 1 mm gel is five times the hold with
+                # nothing watching. Same guard as the outward loop; on a hit,
+                # back out along the normal one small step and re-check, and
+                # only abort if it does not clear.
+                _fz_max_b = max(4.0 * hold, force_cap + 2.0)
                 while dist > 1e-3 and nb < 12:
                     step = min(max(dist / 3.0, 0.05), dist)
                     rv, _dt = _glide(vec / dist, step, back_v)
                     if rv:
                         return rv
                     nb += 1
+                    _fz_b = measure_n()
+                    if _fz_b > _fz_max_b:
+                        rv, _dt = _glide(+n, 0.05, back_v)      # retract 0.05 mm
+                        if rv:
+                            return rv
+                        _fz_b2 = measure_n()
+                        print(f"  return guard: {_fz_b:.2f} N against a {hold:.2f} N "
+                              f"hold, retracted 0.05 mm -> {_fz_b2:.2f} N")
+                        if _fz_b2 > _fz_max_b:
+                            print(f"\n  ABORT: still {_fz_b2:.2f} N after retracting; "
+                                  "the return glide is driving the probe in.")
+                            return 1
                     p_now = np.array(q("GetActualTCPPose", 0)[1:][:3])
                     vec = axis_origin - p_now
                     dist = float(np.linalg.norm(vec))
