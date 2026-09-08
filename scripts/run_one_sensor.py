@@ -639,8 +639,23 @@ def main() -> int:
     print(f"SENSOR RUN — {ent['id']}")
     print(f"  {ent['principle']}, {ent['hardness']}, {ent['thickness_mm']} mm, "
           f"replicate {ent['replicate']}")
-    print("  no depth limit (removed 2026-09-04); the ramp ends at the force "
-          "ceiling or where the image stops responding")
+    # This banner said "no depth limit (removed 2026-09-04)" until 2026-09-08.
+    # It was one of three generations of the policy that were on file at once;
+    # the limit was REINSTATED the same day it was removed and has bound in
+    # every phase since (registry capture_policy.depth_limit_basis). Printing
+    # that it was gone, above a run that enforces it, is the kind of note an
+    # operator acts on. Print the number that actually binds.
+    try:
+        _cp = yaml.safe_load(open(ROOT / "config" / "sensor_registry.yaml"))["capture_policy"]
+        _pp = _cp.get("per_principle", {}).get(ent["principle"], {})
+        _bk = ((ent["thickness_mm"] + _pp.get("depth_offset_mm", _cp["depth_offset_mm"]))
+               * _pp.get("depth_frac", _cp["depth_frac"]))
+        print(f"  depth backstop {_bk:.2f} mm, binding in every phase "
+              f"({ent['thickness_mm']} mm + "
+              f"{_pp.get('depth_offset_mm', _cp['depth_offset_mm'])}) x "
+              f"{_pp.get('depth_frac', _cp['depth_frac'])}")
+    except Exception as _e:
+        print(f"  depth backstop: could not be read ({_e}) -- check the registry")
     print("=" * 62)
     print("\n  steps: " + " -> ".join(order))
     if a.dry_run:
@@ -935,8 +950,12 @@ def main() -> int:
             # mean the same thing, and friction (mu x hold) is what caps them.
             hold = a.normal_hold if a.normal_hold is not None else \
                 round(0.6 * min(a.range_normal, float(e2["safe_force_N"])), 2)
+            # --probe matters here even though collect does not press a ladder:
+            # _gel_model uses it to decide whether THIS run's zero was measured
+            # with the probe now fitted, and a surface read through ball4 is
+            # 0.218 mm from the same gel read through ball8.
             cmd = R + ["--phase", "collect", "--sensor", a.sensor,
-                       "--normal-hold", str(hold)]
+                       "--probe", a.probe, "--normal-hold", str(hold)]
             if a.frames:
                 cmd += ["--frames", str(a.frames)]
             print(f"\n  shearing at {hold} N normal (60 % of the fixed "

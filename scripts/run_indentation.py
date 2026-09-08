@@ -2070,6 +2070,44 @@ def phase_collect(a) -> int:
         def _step_for(k_local):
             return float(np.clip(RAMP_DF / max(k_local, 1e-3), 0.05, 0.40))
 
+        def _return_to_origin(origin, vel):
+            """Absolute MoveL back to `origin`, wiping the accumulated drift.
+
+            _glide chains every target off the pose just achieved, so MoveL's
+            few-micron Cartesian bias accumulates -- the same leak descend_from()
+            and _seek_force were written to avoid, and the reason run_one_sensor
+            re-centres before collect. The stepped ramp did not care because it
+            went through _seek_force, which is origin-anchored; the continuous
+            glide added 2026-09-07 does not, and nothing noticed until a run
+            needed enough cycles to matter.
+
+            Measured 2026-09-08 on DIGIT_Marker_soft_1mm_r2 (ball8): 0.0216 mm
+            of lateral walk per load/unload cycle, monotone and along the gel's
+            own tilt, so 9 cycles reached the 0.3 mm abort. It is not a DIGIT
+            fault -- 9DTact_hard_1mm_r1 walked 0.0355 mm per cycle in Pass B --
+            it is that 9DTact filled its 1000-frame budget in 5-10 cycles and
+            never got far enough for the limit to bite. The walk grows with gel
+            stiffness (0.02-0.036 mm/cycle on the hard 1 mm units against
+            0.001-0.004 on the soft 3 mm ones), which is what a lateral load on
+            a tilted surface deflecting the arm looks like.
+
+            Called at the end of each unload, where the force is back to about
+            zero and the tip is at the surface it started from, so this is a
+            few tens of microns of motion against no load.
+            """
+            pose_ = q("GetActualTCPPose", 0)[1:]
+            tgt_ = [float(v) for v in origin] + [float(v) for v in pose_[3:]]
+            pl_ = mv.plan(ip, tgt_, a.approach_joint_step)
+            if not pl_.get("ok"):
+                print(f"  refusing the re-centre: {pl_.get('why')}")
+                return 2
+            tool_ = pl_["active_tool"][1] if isinstance(pl_["active_tool"], list) else 1
+            if mv.send_movel(ip, pl_["target_joints"], pl_["target_pose"], tool_,
+                             float(vel), a.ovl) != 0:
+                print("  MoveL failed returning to the ladder origin")
+                return 1
+            return 0
+
         def _glide(vec, mm, vel):
             """One MoveL of `mm` along unit `vec` at `vel` %, frames saved throughout.
 
@@ -2196,8 +2234,14 @@ def phase_collect(a) -> int:
                 if moved > 1e-3:
                     k_local = 0.5 * k_local + 0.5 * max((f_before - measure_n()) / moved, 0.05)
             rec.retag(segment="dwell", target_N=0.0)
+            # Wipe the per-cycle drift here, at zero force, rather than let it
+            # accumulate into the 0.3 mm abort. See _return_to_origin.
+            _rc_o = _return_to_origin(ladder_origin, max(_pace(k_local, 0.10), 1.0))
+            if _rc_o:
+                return _rc_o
             time.sleep(a.cycle_dwell)
-            print(f"  {normal_cycles:>3} {'unload':>6} {nback:>5} {'':>7} {'':>7} {rec.saved:>6}")
+            print(f"  {normal_cycles:>3} {'unload':>6} {nback:>5} {'':>7} {'':>7} {rec.saved:>6}"
+                  f"  r={radial():.3f}")
             if rec.capped:
                 break
             if rec.error:
@@ -3364,10 +3408,28 @@ def sensor_limits(a) -> tuple:
     if not a.sensor:
         return (a.max_travel_normal, a.max_force, None, None)
     reg, ent = load_sensor(a.sensor)
-    if ent.get("status") != "characterised" or not ent.get("safe_force_N"):
+    # 'ladder_only' is a WEAKER provenance than 'characterised' and is named
+    # so on every run. It exists because collect and characterize want each
+    # other first: collect refuses without a measured ceiling, and characterize
+    # is the test that damages gels, so it is deliberately last. A DIGIT unit's
+    # ceiling here comes from its ball4 shape ladder -- a Hertz fit over 6 rungs
+    # that stop at 0.6 mm -- extrapolated to the depth backstop. That is an
+    # extrapolation 1.2-3.5x past the fitted depth and the gel stiffens near its
+    # backing, so it is a FLOOR on what the unit can take, not a prediction of
+    # where it fails. It is sound for the one question this gate asks -- can
+    # this unit reach the fixed 2 N range inside its backstop -- and it is not
+    # sound for anything else. characterize overwrites it.
+    _prov = ent.get("status")
+    if _prov not in ("characterised", "ladder_only") or not ent.get("safe_force_N"):
         raise SystemExit(
             f"{a.sensor} has not been characterised. Run --phase characterize "
             "first; without it there is no measured ceiling to hold to.")
+    if _prov == "ladder_only":
+        print(f"  !! {a.sensor}'s ceiling is 'ladder_only', NOT characterised: "
+              f"{ent['safe_force_N']:.2f} N extrapolated from the ball4 ladder "
+              f"(fitted to {ent.get('gel_model',{}).get('fitted_depth_max_mm','?')} mm, "
+              f"backstop {ent.get('safe_depth_mm',float('nan')):.2f} mm). "
+              f"The 2 N range and the depth backstop are what actually bind.")
     # The per-thickness depth limit was removed on 2026-09-04 (operator
     # decision) after a 1 mm soft gel was driven to 5 N -- 3 mm of TCP travel
     # -- four times with no permanent set, no image clipping and a Hertz
@@ -3495,6 +3557,31 @@ def _gel_model(a):
     """
     if a.surface is not None and a.hertz_a is not None:
         return a.surface, a.hertz_a
+    # THIS RUN'S OWN zero, when it was measured with the probe now fitted, beats
+    # anything stored. The registry's gel_model carries whatever probe wrote it,
+    # and a surface is not probe-independent: the same gel on the same mount
+    # read 23.636 mm through ball4 and 23.854 mm through ball8 -- 0.218 mm of
+    # tip-endpoint difference. Depth is (surface - height), so mixing one
+    # probe's surface with another's height subtracts that difference straight
+    # out of every depth: the first Pass B collect (DIGIT_Marker_soft_1mm_r2,
+    # 2026-09-08) recorded 0.148 mm at 2.6 N where its own ball4 ladder needs
+    # 0.45 mm, and the depth backstop was reading half the indentation it was
+    # meant to be guarding. zero also fits the Hertz coefficient with that same
+    # probe, so both numbers come from one self-consistent measurement taken
+    # minutes earlier on this mount.
+    try:
+        _run = active_run()
+        _z = (load_state(_run) or {}).get("zero") or {}
+        if (_z.get("probe") and getattr(a, "probe", None) == _z["probe"]
+                and _z.get("surface_mm")):
+            _fits = [f for f in (_z.get("fits") or []) if f.get("ok") and f.get("a")]
+            _a = float(_fits[0]["a"]) if _fits else None
+            if _a:
+                print(f"  gel model from THIS run's zero ({_z['probe']}): "
+                      f"surface {float(_z['surface_mm']):.3f} mm, a {_a:.3f}")
+                return float(_z["surface_mm"]), _a
+    except Exception as _e:
+        print(f"  (could not read this run's zero: {_e})")
     if getattr(a, "sensor", None):
         _reg, ent = load_sensor(a.sensor)
         gm = ent.get("gel_model") or {}
