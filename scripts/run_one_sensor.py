@@ -446,6 +446,23 @@ def qc_touch(run_dir: Path, a) -> str:
                f"lift {a.qc_lift} mm to weigh the contact"):
         return "fail"
     fz_up = read_fz()
+    # While the probe is lifted clear -- 0 N, but still only qc_lift mm above
+    # the gel -- grab the reference that the run should actually be measured
+    # against. reference.png was taken with the probe parked far away, and on
+    # a DIGIT the probe's shadow makes every later frame 8-14 % darker than
+    # it (campaign_protocol.md 4.7 (10)); this frame has the shadow in it.
+    # Loaders prefer reference_collect.png > reference_working.png >
+    # reference.png. 9DTact does not need it and it does no harm there.
+    try:
+        with Camera.from_config(camera_config_for_run(run_dir)) as cam2:
+            fw, _ = cam2.grab_settled()
+        cv2.imwrite(str(run_dir / "reference_working.png"), fw,
+                    [cv2.IMWRITE_PNG_COMPRESSION, 1])
+        print(f"  reference_working.png saved at {a.qc_lift} mm standoff "
+              f"(mean {float(fw.mean()):.1f}; reference.png {float(ref.mean()):.1f}, "
+              f"ratio {float(fw.mean()) / max(float(ref.mean()), 1e-6):.3f})")
+    except Exception as e:                       # noqa: BLE001
+        print(f"  (reference_working.png not saved: {e})")
     if not run([PY, str(ROOT / "scripts" / "move_probe.py"), "--test-up",
                 f"{-a.qc_lift:.3f}", "--vel", "15", "--confirm", "MOVE"],
                "back down"):
