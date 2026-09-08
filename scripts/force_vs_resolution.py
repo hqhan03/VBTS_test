@@ -239,6 +239,12 @@ def main():
     ap.add_argument("--sizes", default=None, help="e.g. 1920x1080,320x180")
     ap.add_argument("--epochs", type=int, default=40)
     ap.add_argument("--max-frames", type=int, default=None)
+    # One seed per (unit, size) makes a table whose cells cannot be compared:
+    # measured 2026-09-08, a single unit's error wandered 0.022-0.096 N across
+    # the twelve sizes with no order to it, which is what training noise looks
+    # like, not resolution. --seeds repeats the fit so the noise can be
+    # measured instead of argued about.
+    ap.add_argument("--seeds", type=int, default=1)
     ap.add_argument("--out", default=str(ROOT / "data" / "9DTact" / "force_vs_resolution.csv"))
     a = ap.parse_args()
     sizes = SIZES if not a.sizes else [tuple(int(v) for v in s.split("x"))
@@ -252,10 +258,11 @@ def main():
     if out.exists():
         rows = list(csv.DictReader(open(out)))
         print(f"  resuming: {len(rows)} rows already in {out.name}")
-    done = {(r["sensor"], int(r["width_px"])) for r in rows}
+    done = {(r["sensor"], int(r["width_px"]), int(r.get("seed") or 0)) for r in rows}
     for run in runs:
         sensor = run.name.replace("9DTact_", "")
-        todo = [s for s in sizes if (sensor, s[0]) not in done]
+        todo = [(s, k) for s in sizes for k in range(a.seeds)
+                if (sensor, s[0], k) not in done]
         if not todo:
             continue
         t0 = time.time()
@@ -263,24 +270,27 @@ def main():
         tr, te = split_by_cycle(cyc, blk)
         print(f"\n{sensor}: {len(X)} frames, train {tr.sum()} / test {te.sum()}, "
               f"Fz {y[:,2].min():+.2f}..{y[:,2].max():+.2f} N, decoded in {time.time()-t0:.0f}s")
-        for size in todo:
+        last_size, Xs = None, None
+        for size, seed in todo:
             t1 = time.time()
-            Xs = shrink(X, size)
-            r = train_eval(Xs, y, tr, te, epochs=a.epochs, size=size)
-            r.update(sensor=sensor, width_px=size[0], height_px=size[1],
+            if size != last_size:
+                Xs, last_size = shrink(X, size), size
+            r = train_eval(Xs, y, tr, te, epochs=a.epochs, size=size, seed=seed)
+            r.update(sensor=sensor, width_px=size[0], height_px=size[1], seed=seed,
                      epochs=a.epochs, seconds=round(time.time() - t1, 1))
             rows.append(r)
-            print(f"  {size[0]:5d}x{size[1]:<4d} Fz MAE {r['fz_mae']:.4f} N "
+            print(f"  {size[0]:5d}x{size[1]:<4d} s{seed} Fz MAE {r['fz_mae']:.4f} N "
                   f"(baseline {r['fz_mae_baseline']:.4f}, R2 {r['fz_r2']:+.3f})  "
                   f"lat {r['lat_mae']:.4f} (base {r['lat_mae_baseline']:.4f})  "
                   f"{r['seconds']:.0f}s", flush=True)
-            cols = ["sensor", "width_px", "height_px", "fz_mae", "fz_mae_baseline",
+            cols = ["sensor", "width_px", "height_px", "seed", "fz_mae", "fz_mae_baseline",
                     "fz_r2", "lat_mae", "lat_mae_baseline", "n_train", "n_test",
                     "fz_range", "tx_mae", "ty_mae", "tz_mae", "epochs", "batch", "seconds"]
             with open(out, "w", newline="") as fh:
                 wtr = csv.DictWriter(fh, fieldnames=cols)
                 wtr.writeheader()
                 for rr in rows:
+                    rr.setdefault("seed", 0)
                     wtr.writerow({c: rr.get(c) for c in cols})
         del X
     print(f"\n-> {out} ({len(rows)} rows)")

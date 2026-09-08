@@ -25,7 +25,7 @@
 | 2.00 mm | 11 / 17 |
 | 1.75 mm | 9 / 17 |
 | 1.50 mm | 4 / 17 |
-| 1.25 mm | 5 / 17 |
+| 1.25 mm | 6 / 17 |
 
 분해능 한계는 **1.75 mm 와 1.50 mm 사이**에 있다. 방법·판정·민감도·유닛별 결과는
 `spatial_resolution.md`. DIGIT 360(arXiv:2411.02479)의 MTF ≥ 0.5
@@ -38,15 +38,23 @@
 4.00 mm 원판은 4.13 mm 로, 정사각형은 변 비 0.93 로 되찾힌다. 상세는
 `shape_reconstruction.md`.
 
-**소요 시간** — 유닛당 Pass B 14~17분(collect 이 10~13분). 남은 14개면 약 3.5시간.
+**Pass B 시험 1 (힘 추정) 결과** — `data/9DTact/force_vs_resolution.csv`, 17 유닛 ×
+12 입력 크기: **Fz MAE 중앙값 0.052 N**(R² 0.969), lateral MAE 0.031 N.
+**해상도는 1920×1080 부터 48×27 까지 성능을 바꾸지 않는다** — 있더라도 0.007 N 이하로
+학습 시드 산포(±0.022 N)에 묻힌다. 오차의 바닥은 카메라가 아니라 **F/T 라벨 자신의
+잡음**(MAE 환산 0.028 N)이다. 상세는 `force_estimation.md`.
+
+**소요 시간** — 유닛당 Pass B 14~17분(collect 이 10~13분).
 
 **미해결 항목**
 
 - `sensor_to_base_transform` 의 법선이 sensor y 로 **+2.19°** 틀어져 있다
   (17개 전부 같은 부호). 지금은 유닛별 실측 젤 법선에 정렬해 우회 중.
   `frames_and_transforms.md` 참조.
-- `9DTact_soft_1mm_r1`, `9DTact_hard_1mm_r1` 의 pair100 재측정이 밀려 있다.
 - DIGIT / DIGIT_Marker 의 photometric stereo 재구성 파이프라인 미구현.
+- 힘 추정 해상도 표는 칸마다 시드 하나다. 작은 해상도 효과가 실제로 있는지 보려면
+  전 표를 5 시드로 다시 돌려야 한다(약 15 시간). `force_estimation.md` §6.
+- 시험 4(최대 힘)는 젤을 상하게 하므로 마지막에 한다. 미착수.
 
 ---
 

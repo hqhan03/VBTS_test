@@ -70,6 +70,12 @@ def interp(x, y, at):
 
 def build():
     res = pd.read_csv(DATA / "resolution_measurements.csv")
+    # Force estimation error, pooled over the twelve input sizes -- no size
+    # effect is detectable (force_estimation.md §2.1), so the twelve cells act
+    # as twelve repeats and the median is the unit's best available figure.
+    fvr = DATA / "force_vs_resolution.csv"
+    force = (pd.read_csv(fvr).groupby("sensor").fz_mae.median()
+             if fvr.exists() else pd.Series(dtype=float))
     shp = pd.read_csv(DATA / "shape_reconstruction.csv").set_index("sensor")
     reg = yaml.safe_load(open(ROOT / "config" / "sensor_registry.yaml"))
     hertz = {e["id"].replace("9DTact_", ""): (e.get("gel_model") or {}).get("hertz_a")
@@ -96,7 +102,8 @@ def build():
                    um_per_level=1000 * float(s.mm_per_grey_level),
                    cyl4_corrected_rms_after_linear=float(s.cyl4_corrected_rms_after_linear),
                    cyl4_corrected_bias_deep=float(s.cyl4_corrected_bias_deep),
-                   hertz_a=hertz.get(sensor))
+                   hertz_a=hertz.get(sensor),
+                   fz_mae=float(force[sensor]) if sensor in force.index else np.nan)
         if lad is not None:
             r_mm = lad.radius_px / ppm
             rec.update(Fmax_ladder=float(lad.force.max()),
@@ -117,7 +124,8 @@ CANDIDATES = [("r_img_d05", "반지름 @ 0.5 mm"), ("r_img_F02", "반지름 @ 0.
               ("hertz_a", "접촉 강성 a"), ("img_slope_lvl_per_mm", "이미지 감도")]
 SCORES = [("n_resolved", "분해 간격 수"), ("dip_175_max", "dip @ 1.75 mm"),
           ("um_per_level", "µm / 단계"),
-          ("cyl4_corrected_rms_after_linear", "형상 RMS")]
+          ("cyl4_corrected_rms_after_linear", "형상 RMS"),
+          ("fz_mae", "힘 MAE")]
 
 
 def correlations(df):
@@ -203,7 +211,7 @@ def main() -> int:
     a = ap.parse_args()
     df = build()
     print(df[["sensor", "scale_source", "ppm", "r_img_d05", "r_img_F02",
-              "n_resolved", "um_per_level"]].to_string(index=False,
+              "n_resolved", "um_per_level", "fz_mae"]].to_string(index=False,
                                                        float_format=lambda v: f"{v:8.3f}"))
     correlations(df)
     if a.no_figs:
@@ -224,6 +232,7 @@ def main() -> int:
                           ("hertz_a", "contact stiffness a (N/mm^1.5)", "hertz_a_vs_metrics.png"),
                           ("img_slope_lvl_per_mm", "image sensitivity (levels/mm)", "imgslope_vs_metrics.png")):
         scatter_grid(df, col, name, FIGS / fn)
+    bar3d(df, "fz_mae", "Force estimation: Fz MAE", "N", FIGS / "force3d_grid.png")
     return 0
 
 
