@@ -88,7 +88,9 @@ def figure(dd, out):
             u = u.sort_values("width_px"); hd = HARD[s.replace("9DTact_", "").split("_")[0]]
             ax.plot([xi[v] for v in u.width_px], u.lat_mae_shear, "-", color=col[hd], alpha=.35, lw=1)
         for hd in (0, 1, 2):
-            sel = g[g.sensor.str.contains(f"_{lab[hd]}_")]
+            # the CSV's sensor column has no principle prefix (hard_1mm_r1),
+            # so the hardness is the first token, not an infix
+            sel = g[g.sensor.str.replace("9DTact_", "", regex=False).str.startswith(lab[hd] + "_")]
             med = sel.groupby("width_px").lat_mae_shear.median().reindex(w)
             ax.plot(range(len(w)), med, "o-", color=col[hd], lw=2.4, ms=6, label=f"{lab[hd]} (median)")
         ax.set_xticks(range(len(w))); ax.set_xticklabels([str(v) for v in w], rotation=45, fontsize=8)
