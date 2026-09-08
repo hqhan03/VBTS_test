@@ -1,0 +1,42 @@
+# Which run directory is THE Pass B collect for each DIGIT_Marker unit.
+# Written 2026-09-09 after the marker pass finished (18/18, 1000 frames each).
+#
+# soft_2mm_r1 was the unit on which six collect defects were found and fixed
+# (campaign_protocol.md 4.7); it was run nine times. Only __9 has every fix.
+# The others are kept for the record and must not be analysed as data:
+#   __2  step floor fixed only                       1000 frames
+#   __3  + normal range enforced (shear too)          563, aborted (shear drift)
+#   __4  + shear-axis origin                          797, aborted
+#   __5  + lateral recentre                          1000, but 20 relaxations, shear starved
+#   __6  shear cap reverted                          1000, but 13.4 N on the gel (3-D return)
+#   __7  lateral-only recentre                        668, aborted by the new 3 N guard
+#   __8  recentres off                                918, aborted 4.87 N (force-cap bug)
+#   __9  force cap made directional                  1000  <-- canonical
+# hard_1mm_r1: first run stopped at the surface check (degenerate zero fit);
+# __2 is canonical.
+#
+# PRE-FIX UNITS: soft_1mm_r2 and soft_1mm_r1 were collected before fixes 3-6
+# (step floor, normal-range enforcement, guards, directional cap). Their
+# normal-block frames run past 2 N (13.8 % and 26.1 % of frames above the
+# fixed range, Fz max 2.62 / 3.11 N). Either filter Fz <= 2.0 N at analysis
+# time -- which every other unit in the campaign effectively satisfies at
+# <= 2.4 % -- or re-collect them. Not re-collected yet.
+canonical:
+  DIGIT_Marker_soft_1mm_r2:   {run: DIGIT_Marker_soft_1mm_r2,   note: pre-fix, 13.8 % frames > 2 N}
+  DIGIT_Marker_soft_1mm_r1:   {run: DIGIT_Marker_soft_1mm_r1,   note: pre-fix, 26.1 % frames > 2 N}
+  DIGIT_Marker_soft_2mm_r1:   {run: DIGIT_Marker_soft_2mm_r1__9}
+  DIGIT_Marker_soft_2mm_r2:   {run: DIGIT_Marker_soft_2mm_r2}
+  DIGIT_Marker_soft_3mm_r1:   {run: DIGIT_Marker_soft_3mm_r1}
+  DIGIT_Marker_soft_3mm_r2:   {run: DIGIT_Marker_soft_3mm_r2}
+  DIGIT_Marker_medium_1mm_r1: {run: DIGIT_Marker_medium_1mm_r1}
+  DIGIT_Marker_medium_1mm_r2: {run: DIGIT_Marker_medium_1mm_r2, note: 6.08 N for 2 frames in a shear return (4.7 (7)); check surface next pass}
+  DIGIT_Marker_medium_2mm_r1: {run: DIGIT_Marker_medium_2mm_r1}
+  DIGIT_Marker_medium_2mm_r2: {run: DIGIT_Marker_medium_2mm_r2}
+  DIGIT_Marker_medium_3mm_r1: {run: DIGIT_Marker_medium_3mm_r1}
+  DIGIT_Marker_medium_3mm_r2: {run: DIGIT_Marker_medium_3mm_r2}
+  DIGIT_Marker_hard_1mm_r1:   {run: DIGIT_Marker_hard_1mm_r1__2}
+  DIGIT_Marker_hard_1mm_r2:   {run: DIGIT_Marker_hard_1mm_r2}
+  DIGIT_Marker_hard_2mm_r1:   {run: DIGIT_Marker_hard_2mm_r1}
+  DIGIT_Marker_hard_2mm_r2:   {run: DIGIT_Marker_hard_2mm_r2}
+  DIGIT_Marker_hard_3mm_r1:   {run: DIGIT_Marker_hard_3mm_r1}
+  DIGIT_Marker_hard_3mm_r2:   {run: DIGIT_Marker_hard_3mm_r2}
