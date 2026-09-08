@@ -178,8 +178,14 @@ def load_unit(run: Path, max_frames: int | None = None, norm: str = "none",
     # 'darker' channel carries a pedestal over the whole field and the
     # imprint rides on top of it. The collect frames at ~0 N are the same
     # gel, same session, same exposure as every other frame.
-    rc = run / "reference_collect.png"
-    ref_bgr = cv2.imread(str(rc if rc.exists() else run / "reference.png"))
+    # Preference: reference_collect.png (this run's own ~0 N collect frames)
+    # > reference_working.png (0 N with the probe at working height, saved at
+    # touchcheck from 2026-09-09 on) > reference.png (probe far away -- on a
+    # DIGIT that frame is 8-14 % brighter than anything the probe's shadow
+    # later allows; see campaign_protocol.md 4.7 (10)).
+    for name in ("reference_collect.png", "reference_working.png", "reference.png"):
+        if (run / name).exists():
+            ref_bgr = cv2.imread(str(run / name)); break
     ref = ref_bgr if rep == "colour" else cv2.cvtColor(ref_bgr, cv2.COLOR_BGR2GRAY)
     h, w = ref.shape[:2]
     X = np.zeros((len(rows), h, w, 3), dtype=np.uint8)
