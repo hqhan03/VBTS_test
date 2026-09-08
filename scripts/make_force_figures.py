@@ -85,6 +85,59 @@ def fig_resolution(f, seed, floor, scalar):
     print(f"  -> {(FIGS/'force_vs_resolution.png').relative_to(ROOT)}")
 
 
+def fig_per_unit(f, seed, floor, scalar):
+    """One panel per unit, laid out as the 3x3 design plus replicate.
+
+    The point of the small multiples is not to find each unit's best size --
+    that is what the seed study says cannot be read off one fit. It is to show
+    that every unit's curve wanders inside the same band, so the wandering is
+    the fit's noise and not seventeen different resolution requirements.
+    """
+    sd = seed.groupby(["sensor", "width_px"]).fz_mae.std(ddof=1).median()
+    order = [f"{h}_{t}mm_{r}" for t in THICK for r in ("r1", "r2") for h in HARDS]
+    w = sorted(f.width_px.unique())
+    hgt = {int(a): int(b) for a, b in zip(f.width_px, f.height_px)}
+    fig, axes = plt.subplots(6, 3, figsize=(11.5, 13.5), sharex=True, sharey=True)
+    for ax, s in zip(axes.ravel(), order):
+        g = f[f.sensor == s].sort_values("width_px")
+        if not len(g):
+            ax.axis("off")
+            continue
+        med = g.fz_mae.median()
+        ax.axhspan(med - sd, med + sd, color="#4c72b0", alpha=.13, zorder=1,
+                   label="median ± seed sd")
+        ax.axhline(med, color="#4c72b0", lw=1.1, ls="-", alpha=.55, zorder=2)
+        ax.axhline(floor[s], color="#c44e52", ls="--", lw=1.3, zorder=3,
+                   label="label noise floor")
+        ax.axhline(scalar[s], color="#55a868", ls=":", lw=1.5, zorder=3,
+                   label="two scalars")
+        ax.plot(g.width_px, g.fz_mae, "o-", color="#22303f", lw=1.5, ms=4.5, zorder=5)
+        ax.set_title(f"{s}   median {med:.3f} N", fontsize=9.5, pad=4)
+        ax.grid(alpha=.22, lw=.5)
+    for ax in axes.ravel():
+        ax.set_xscale("log"); ax.set_yscale("log")
+        ax.set_xticks(w)
+        ax.set_yticks([0.02, 0.05, 0.1, 0.3, 0.7])
+        ax.set_yticklabels(["0.02", "0.05", "0.10", "0.30", "0.70"])
+        ax.minorticks_off()
+    for ax in axes[-1]:
+        ax.set_xticklabels([f"{a}×{hgt[a]}" for a in w], rotation=90, fontsize=7)
+    for r in range(6):
+        axes[r][0].set_ylabel("Fz MAE (N)", fontsize=9)
+    h, lb = axes[0][0].get_legend_handles_labels()
+    fig.legend(h, lb, loc="upper center", ncol=3, fontsize=9, frameon=False,
+               bbox_to_anchor=(0.5, 0.972))
+    fig.suptitle("Force estimation error against input size, one panel per unit\n"
+                 "columns: soft / medium / hard   ·   rows: 1 mm r1, r2, 2 mm r1, r2, "
+                 "3 mm r1, r2   ·   shared log axes",
+                 fontsize=11.5, y=0.995)
+    fig.supxlabel("input size the network sees", fontsize=10)
+    fig.tight_layout(rect=(0, 0.012, 1, 0.955))
+    fig.savefig(FIGS / "force_vs_resolution_units.png", dpi=140)
+    plt.close(fig)
+    print(f"  -> {(FIGS/'force_vs_resolution_units.png').relative_to(ROOT)}")
+
+
 def fig_grid(per):
     fig = plt.figure(figsize=(7.5, 5.5))
     ax = fig.add_subplot(111, projection="3d")
@@ -122,6 +175,7 @@ def main() -> int:
     per["se"] = per.sd / np.sqrt(per.n)
     FIGS.mkdir(parents=True, exist_ok=True)
     fig_resolution(f, seed, floor, float(sc.fz_mae.median()))
+    fig_per_unit(f, seed, floor, sc.set_index("sensor").fz_mae.to_dict())
     fig_grid(per)
     return 0
 
