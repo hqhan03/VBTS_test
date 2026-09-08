@@ -4036,13 +4036,27 @@ def fit_zero(depth, force, law: str, fmax: float) -> dict:
         return {"ok": False, "why": f"fit failed: {e}"}
     r = f[m] - model(d[m], *po)
     denom = float(((f[m] - f[m].mean()) ** 2).sum())
-    return {"ok": True,
-            "d0_mm": float(po[1]),
-            "a": float(po[0]),
-            "sigma_d0_mm": float(np.sqrt(np.diag(pc))[1]),
-            "r2": float(1 - (r ** 2).sum() / denom) if denom > 0 else float("nan"),
-            "exponent": p, "law": law, "n": int(m.sum()),
-            "fit_max_force_N": float(fmax)}
+    r2 = float(1 - (r ** 2).sum() / denom) if denom > 0 else float("nan")
+    sig = float(np.sqrt(np.diag(pc))[1])
+    # curve_fit "succeeding" is not a fit being any good. On
+    # DIGIT_Marker_hard_1mm_r1 (2026-09-09) an approach converged to
+    # d0 = -14163 mm, a = 8e-9, sigma_d0 = 4e8 mm, r2 = -3e-6 -- the model
+    # pinned to zero force everywhere -- and came back ok: True. The zero
+    # phase's own vote survived it, but anything that averaged the ok fits
+    # did not (see check_surface_plausible). A fit is ok when it explains
+    # the data and locates the surface to better than a millimetre.
+    ok = bool(np.isfinite(r2) and r2 > 0.5 and np.isfinite(sig) and sig < 1.0
+              and abs(float(po[1])) < 50.0)
+    out = {"ok": ok,
+           "d0_mm": float(po[1]),
+           "a": float(po[0]),
+           "sigma_d0_mm": sig,
+           "r2": r2,
+           "exponent": p, "law": law, "n": int(m.sum()),
+           "fit_max_force_N": float(fmax)}
+    if not ok:
+        out["why"] = f"degenerate fit: r2 {r2:.3g}, sigma_d0 {sig:.3g} mm, d0 {float(po[1]):.3g} mm"
+    return out
 
 
 def _steady_fz(reader, seconds: float) -> tuple:

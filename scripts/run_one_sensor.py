@@ -129,10 +129,20 @@ def check_surface_plausible(run_dir: Path, sensor: str, probe: str,
     z = st.get("zero")
     if not rec or not z:
         return True
-    f = [x for x in z["fits"] if x.get("ok")]
-    if not f:
-        return True
-    surf = sum(x["base_height_mm"] - x["d0_mm"] for x in f) / len(f)
+    # Use the surface the zero phase itself settled on -- the number every
+    # later depth is measured from -- not a re-average of its fits. On
+    # DIGIT_Marker_hard_1mm_r1 (2026-09-09) the first of two approaches gave a
+    # degenerate Hertz fit (d0 -14163 mm, r2 ~ 0, sigma 4e8) still flagged
+    # ok; the zero phase discarded it and reported 23.584 mm, but this check
+    # averaged base_height - d0 over both fits, got 7105.7 mm, and stopped
+    # the run for "the wrong sensor in the holder".
+    surf = z.get("surface_mm")
+    if surf is None:
+        f = [x for x in z["fits"] if x.get("ok")]
+        if not f:
+            return True
+        surf = sum(x["base_height_mm"] - x["d0_mm"] for x in f) / len(f)
+    surf = float(surf)
     off = surf - float(rec)
     reg_all = {e["id"]: (e.get("gel_model") or {}).get("surface_mm")
                for e in yaml.safe_load(open(ROOT / "config" /
