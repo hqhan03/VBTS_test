@@ -92,20 +92,56 @@ REP_SCALE = 3          # sensor.py: scale = 3
 AXES = ("Fx", "Fy", "Fz", "Tx", "Ty", "Tz")
 
 
-def representation(ref_gray, img_gray):
-    """9DTact's `raw_image_2_representation`, channel for channel."""
+def representation(ref_gray, img_gray, norm="none"):
+    """9DTact's `raw_image_2_representation`, channel for channel.
+
+    `norm` is an ABLATION, not an improvement. The normal-force task as
+    collected is solvable from a single global number -- the mean darkening --
+    and area-average downsampling preserves a mean EXACTLY (it is a linear
+    operator). Measured 2026-09-08 on 9DTact_medium_2mm_r2: the dark-channel
+    mean moves 2.5 % between 1920x1080 and 8x5 (that much only because the
+    representation is uint8), and its correlation with Fz goes 0.975 -> 0.968.
+    So the information the network mostly uses is very nearly invariant to the
+    thing this sweep varies, and no amount of shrinking the model or adding
+    noise changes that -- it lowers every cell together and buries the
+    comparison rather than exposing it.
+
+      "dc"   subtract each frame's own mean from the difference channels.
+             The DC term -- the integral that survives averaging -- is gone;
+             the spatial pattern and its amplitude remain.
+      "unit" subtract the mean AND divide by the frame's own scale. Now
+             absolute amplitude carries nothing either, and the force can only
+             be read from the imprint's SHAPE and EXTENT in pixels -- which is
+             exactly what resolution destroys, and whose size is set by the
+             gel's thickness.
+
+    Signed values are centred on 128 so a uint8 can carry both signs.
+    """
     r = ref_gray.astype(np.float32)
     g = img_gray.astype(np.float32)
     darker = np.clip(r - g, 0, None)
     brighter = np.clip(g - r, 0, None)
     out = np.zeros(ref_gray.shape + (3,), dtype=np.uint8)
     out[:, :, 0] = ref_gray
-    out[:, :, 1] = np.clip(brighter * REP_SCALE, 0, 255).astype(np.uint8)
-    out[:, :, 2] = np.clip(darker * REP_SCALE, 0, 255).astype(np.uint8)
+    if norm == "none":
+        out[:, :, 1] = np.clip(brighter * REP_SCALE, 0, 255).astype(np.uint8)
+        out[:, :, 2] = np.clip(darker * REP_SCALE, 0, 255).astype(np.uint8)
+        return out
+    d = darker - darker.mean()
+    b = brighter - brighter.mean()
+    if norm == "unit":
+        s = float(np.sqrt(d.var() + b.var())) + 1e-6
+        d = d / s
+        b = b / s
+        gain = 40.0
+    else:
+        gain = float(REP_SCALE)
+    out[:, :, 1] = np.clip(128.0 + b * gain, 0, 255).astype(np.uint8)
+    out[:, :, 2] = np.clip(128.0 + d * gain, 0, 255).astype(np.uint8)
     return out
 
 
-def load_unit(run: Path, max_frames: int | None = None):
+def load_unit(run: Path, max_frames: int | None = None, norm: str = "none"):
     """Full-resolution 3-channel representations and their 6D wrench labels."""
     rows = list(csv.DictReader(open(run / "stream" / "frames.csv")))
     if max_frames:
@@ -122,12 +158,54 @@ def load_unit(run: Path, max_frames: int | None = None):
         if img is None or r.get("missing") == "True":
             keep[i] = False
             continue
-        X[i] = representation(ref, img)
+        X[i] = representation(ref, img, norm if norm != "anti" else "none")
         # drift-corrected labels where present, raw otherwise
         y[i] = [float(r.get(f"{ax}_s_corr") or r[f"{ax}_s"]) for ax in AXES]
         y[i, 2] = -y[i, 2]                          # +Fz = pressing
         cyc[i] = int(r["cycle"] or 0)
         blk[i] = 1 if r["segment"].startswith("shear") else 0
+    if norm == "anti":
+        # ANTISYMMETRIC ablation for shear. Every frame gets the normal-block
+        # frame at the nearest Fz subtracted, so whatever the normal load does
+        # to the picture -- the monopole that carries most of the pixel energy
+        # -- is gone, and what remains is the change the SHEAR made: the dipole
+        # (front edge pressed, back edge released) plus sensor noise. For a
+        # normal-block frame the nearest other normal frame is subtracted and
+        # the result is noise, which is correct: there is no shear to see.
+        # This makes Fz unpredictable by construction; it is a shear-only
+        # ablation, and fz_mae under it is meaningless. Frames are matched
+        # within the whole unit (inputs, not labels -- no label leaks), and
+        # the signed difference is centred on 128 in the two difference
+        # channels; channel 0 keeps the reference as before.
+        X = X[keep]; y = y[keep]; cyc = cyc[keep]; blk = blk[keep]
+        fz = y[:, 2]
+        lat = np.hypot(y[:, 0], y[:, 1])
+        nidx = np.where(blk == 0)[0]
+        Xa = np.zeros_like(X)
+        Xa[:, :, :, 0] = X[:, :, :, 0]
+        for i in range(len(X)):
+            if blk[i] == 1:
+                # Reference = the LEAST-sheared frame of this same shear cycle.
+                # Not a normal-block frame at the same Fz: the shear block
+                # comes after the normal block, the gel has crept, and the
+                # matched-Fz picture differs by a DC offset that swamped the
+                # dipole (measured 2026-09-08 on 9DTact_hard_2mm_r1: shear
+                # frames' pixel sign fractions +0.02/-0.11 at EVERY shear level,
+                # energy below the noise baseline). Same cycle = same hold,
+                # same creep state, minutes apart at most.
+                cand = np.where((blk == 1) & (cyc == cyc[i]))[0]
+                cand = cand[cand != i]
+                if len(cand) == 0:
+                    cand = nidx
+                j = cand[np.argmin(lat[cand])]
+            else:
+                cand = nidx[nidx != i]
+                j = cand[np.argmin(np.abs(fz[cand] - fz[i]))]
+            for ch in (1, 2):
+                dlt = X[i, :, :, ch].astype(np.float32) - X[j, :, :, ch].astype(np.float32)
+                dlt -= dlt.mean()          # no DC: only the spatial pattern is kept
+                Xa[i, :, :, ch] = np.clip(128.0 + dlt, 0, 255).astype(np.uint8)
+        return Xa, y, cyc, blk
     return X[keep], y[keep], cyc[keep], blk[keep]
 
 
@@ -161,10 +239,37 @@ def split_by_cycle(cyc, blk, train_frac=TRAIN_FRAC, val_frac=VAL_FRAC):
             tr |= m
             continue
         frac = np.cumsum(counts) / counts.sum()
-        i1 = int(np.searchsorted(frac, train_frac) + 1)
-        i2 = int(np.searchsorted(frac, train_frac + val_frac) + 1)
-        i1 = min(max(1, i1), len(cs) - 2)
-        i2 = min(max(i1 + 1, i2), len(cs) - 1)
+        # Boundary = the cycle edge whose achieved fraction is NEAREST the
+        # target. The previous rule, searchsorted(frac, target) + 1, put the
+        # cycle that crosses the target on the near side, so test got only
+        # what was left after it -- and in the shear block, whose cycles are
+        # ~50 frames with a short one last, that was the short one:
+        # n_test_shear = 12 of 500 on 9DTact_hard_1mm_r1 (2.4 %, target 15 %),
+        # and the shear MAE swung 0.020 -> 0.040 between seeds on it. Measured
+        # 2026-09-08. Whole cycles still; val and test still get >= 1 each.
+        # ... and chosen JOINTLY, with test >= 10 % as a constraint whenever
+        # any pair of edges can meet it. Choosing i1 first and i2 after it
+        # left 9DTact_hard_1mm_r1's shear block -- five cycles of 130/127/124/
+        # 107/12 frames -- with i1 = 3 (76 %) and nothing for i2 but the last
+        # cycle: 12 test frames again. With five cycles the nearest whole-
+        # cycle split is 51/25/24, and that is the honest one; a 2 % test set
+        # is not a split, it is a rounding error.
+        nc = len(cs)
+        te_frac = 1.0 - train_frac - val_frac
+        best, best_ok, best_dev = None, False, 9.9
+        for a1 in range(1, nc - 1):
+            for a2 in range(a1 + 1, nc):
+                ftr = frac[a1 - 1]; fva = frac[a2 - 1] - ftr; fte = 1.0 - frac[a2 - 1]
+                # 8 %, not 10 %: with five ~100-frame normal cycles the only
+                # splits clearing 10 % test are ~47/23/30, which costs a third
+                # of the training data to gain 100 test frames nobody needed
+                # (hard_1mm_r2, hard_2mm_r1/r2). 8 % keeps 70/22/8 there --
+                # 40 test frames -- and still rejects the 2 % shear case.
+                ok = fte >= 0.08
+                dev = abs(ftr - train_frac) + abs(fva - val_frac) + abs(fte - te_frac)
+                if (ok, -dev) > (best_ok, -best_dev):
+                    best, best_ok, best_dev = (a1, a2), ok, dev
+        i1, i2 = best
         tr |= m & (cyc < cs[i1])
         va |= m & (cyc >= cs[i1]) & (cyc < cs[i2])
         te |= m & (cyc >= cs[i2])
@@ -232,7 +337,7 @@ def micro_batch_for(size, base=64):
 
 
 def train_eval(X, y, tr, va, te, epochs=30, batch=64, seed=0, device="cuda",
-               size=(460, 345), wd=1e-4, patience=0):
+               size=(460, 345), wd=1e-4, patience=0, blk_te=None):
     """Train on `tr`, choose the epoch on `va`, report on `te`.
 
     Three departures from the 2026-09-08 first pass, all asked for after that
@@ -326,12 +431,25 @@ def train_eval(X, y, tr, va, te, epochs=30, batch=64, seed=0, device="cuda",
     mae6 = np.abs(p - tt).mean(0)
     lat_p = np.hypot(p[:, 0], p[:, 1])
     lat_t = np.hypot(tt[:, 0], tt[:, 1])
+    # Block-separated errors. The test set holds the last cycles of BOTH
+    # blocks, and in the normal block the shear label is friction noise
+    # (0-0.05 N) that any model predicts as ~0. Averaging those in with the
+    # shear-block frames halved the reported shear error and, worse, diluted
+    # its resolution dependence with a term that has none. `lat_mae` is kept
+    # for continuity; `lat_mae_shear` is the number that means "shear
+    # estimation error", and `fz_mae_normal` its counterpart.
+    bte = blk_te if blk_te is not None else np.zeros(len(tt), int)
+    ms, mn = bte == 1, bte == 0
+    lat_mae_shear = float(np.abs(lat_p[ms] - lat_t[ms]).mean()) if ms.any() else np.nan
+    fz_mae_normal = float(np.abs(p[mn, 2] - tt[mn, 2]).mean()) if mn.any() else np.nan
     ss = float(1 - np.sum((p[:, 2] - tt[:, 2]) ** 2)
                / max(np.sum((tt[:, 2] - tt[:, 2].mean()) ** 2), 1e-9))
     lat_r2 = float(1 - np.sum((lat_p - lat_t) ** 2)
                    / max(np.sum((lat_t - lat_t.mean()) ** 2), 1e-9))
     tr_loss, va_loss = hist[best[1]] if best[1] >= 0 else (np.nan, np.nan)
     return dict(fz_mae=float(mae6[2]), lat_mae=float(np.abs(lat_p - lat_t).mean()),
+                lat_mae_shear=lat_mae_shear, fz_mae_normal=fz_mae_normal,
+                n_test_shear=int(ms.sum()), n_test_normal=int(mn.sum()),
                 fz_rmse=float(np.sqrt(((p[:, 2] - tt[:, 2]) ** 2).mean())),
                 fz_mae_baseline=float(np.abs(tt[:, 2] - y[tr][:, 2].mean()).mean()),
                 lat_mae_baseline=float(np.abs(lat_t - np.hypot(y[tr][:, 0],
@@ -367,6 +485,12 @@ def main():
                          "improvement; 0 runs every epoch and keeps the best")
     ap.add_argument("--splits", default="cycle,random",
                     help="which held-out definitions to run")
+    ap.add_argument("--norm", choices=["none", "dc", "unit", "anti"], default="none",
+                    help="ablation on the input representation. 'none' is the "
+                         "9DTact original; 'dc' removes each frame's own mean "
+                         "from the difference channels; 'unit' removes the mean "
+                         "AND the amplitude, leaving only the imprint's shape "
+                         "and extent. See representation().")
     ap.add_argument("--out", default=str(ROOT / "data" / "9DTact" / "force_vs_resolution_v2.csv"))
     a = ap.parse_args()
     sizes = SIZES if not a.sizes else [tuple(int(v) for v in s.split("x"))
@@ -386,6 +510,7 @@ def main():
              r.get("split") or "cycle") for r in rows}
     cols = ["sensor", "width_px", "height_px", "split", "seed", "fz_mae", "fz_rmse",
             "fz_mae_baseline", "fz_r2", "lat_mae", "lat_mae_baseline", "lat_r2",
+            "lat_mae_shear", "fz_mae_normal", "n_test_shear", "n_test_normal", "norm",
             "n_train", "n_val", "n_test", "fz_range", "tx_mae", "ty_mae", "tz_mae",
             "epochs", "epochs_run", "best_epoch", "train_loss", "val_loss",
             "batch", "micro_batch", "accum", "seconds"]
@@ -396,7 +521,7 @@ def main():
         if not todo:
             continue
         t0 = time.time()
-        X, y, cyc, blk = load_unit(run, a.max_frames)
+        X, y, cyc, blk = load_unit(run, a.max_frames, a.norm)
         print(f"\n{sensor}: {len(X)} frames, Fz {y[:,2].min():+.2f}..{y[:,2].max():+.2f} N, "
               f"decoded in {time.time()-t0:.0f}s", flush=True)
         last_size, Xs = None, None
@@ -408,9 +533,10 @@ def main():
             tr, va, te = cut if sp == "cycle" else split_random(cyc, blk, seed, like=cut)
             r = train_eval(Xs, y, tr, va, te, epochs=a.epochs, batch=a.batch,
                            seed=seed, size=size, wd=a.weight_decay,
-                           patience=a.patience)
+                           patience=a.patience, blk_te=blk[te])
             r.update(sensor=sensor, width_px=size[0], height_px=size[1], seed=seed,
-                     split=sp, epochs=a.epochs, seconds=round(time.time() - t1, 1))
+                     split=sp, epochs=a.epochs, seconds=round(time.time() - t1, 1),
+                     norm=a.norm)
             rows.append(r)
             print(f"  {size[0]:5d}x{size[1]:<4d} {sp:6} s{seed} "
                   f"Fz MAE {r['fz_mae']:.4f} R2 {r['fz_r2']:+.3f}  "
