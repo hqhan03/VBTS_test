@@ -6,13 +6,17 @@ cycle split, block-separated metrics) and answers one question per unit: how
 much shear accuracy is lost when the picture shrinks, and where the loss
 starts. Two numbers per unit and per preprocessing:
 
-  left arm   lat_mae_shear at 8x5 minus the unit's own best (3-seed means)
+  res_loss   lat_mae_shear at 8x5 minus the unit's own best (3-seed means):
+             the accuracy lost to SHRINKING the picture -- the resolution
+             requirement. (Its counterpart, overfit_loss = error at the largest
+             size minus the best, is the accuracy lost to a large input with
+             few training frames; not measured here, the sweep stops at 854.)
   knee       the smallest width at which the 3-seed mean is still within
              max(2 x seed sd, 15 %) of the unit's best, scanning leftwards
              from the best -- the resolution below which the unit degrades
 
 Then: does either track gel hardness or thickness (Spearman), and a figure.
-The RIGHT arm (overfitting at large inputs) is not in this sweep by design:
+The overfit loss (error growing again at large inputs) is not in this sweep by design:
 sizes stop at 854x480, where val/train is still ~1.
 """
 import sys
@@ -49,7 +53,7 @@ def per_unit(d):
         name = s.replace("9DTact_", "")
         rows.append(dict(unit=name, hard=HARD[name.split("_")[0]],
                          th=int(name.split("_")[1][0]), best=best, w_best=w[ib],
-                         at8=m[0], left=m[0] - best, knee=knee,
+                         at8=m[0], res_loss=m[0] - best, knee=knee,
                          seed_sd=float(np.median(sd)), n_sizes=len(w),
                          n_seeds=int(u["count"].min())))
     return pd.DataFrame(rows)
@@ -60,18 +64,18 @@ def report(name, df):
         print(f"\n=== {name}: no unit has 4+ sizes yet ===")
         return
     print(f"\n=== {name}:  {len(df)} units,  seeds/cell >= {df.n_seeds.min()} ===")
-    print(f"  {'unit':16s}{'hd':>3}{'th':>3}{'best':>8}{'@':>5}{'8x5':>8}{'left':>8}{'knee':>6}{'seed sd':>9}")
+    print(f"  {'unit':16s}{'hd':>3}{'th':>3}{'best':>8}{'@':>5}{'8x5':>8}{'res_loss':>9}{'knee':>6}{'seed sd':>9}")
     for _, r in df.sort_values(["hard", "th"]).iterrows():
         print(f"  {r.unit:16s}{r.hard:3d}{r.th:3d}{r.best:8.4f}{r.w_best:5d}{r.at8:8.4f}"
-              f"{r.left:8.4f}{r.knee:6d}{r.seed_sd:9.4f}")
-    for col in ("left", "knee"):
+              f"{r.res_loss:9.4f}{r.knee:6d}{r.seed_sd:9.4f}")
+    for col in ("res_loss", "knee"):
         h = spearmanr(df.hard, df[col]); t = spearmanr(df.th, df[col])
         print(f"  {col:5s} hardness rho {h.statistic:+.3f} p {h.pvalue:.4f}   "
               f"thickness rho {t.statistic:+.3f} p {t.pvalue:.4f}")
     print("  knee by hardness (median):", df.groupby("hard").knee.median().to_dict(),
           "  by thickness:", df.groupby("th").knee.median().to_dict())
-    print("  left by hardness (median):", df.groupby("hard").left.median().round(4).to_dict(),
-          "  by thickness:", df.groupby("th").left.median().round(4).to_dict())
+    print("  res_loss by hardness (median):", df.groupby("hard").res_loss.median().round(4).to_dict(),
+          "  by thickness:", df.groupby("th").res_loss.median().round(4).to_dict())
 
 
 def figure(dd, out):
