@@ -24,12 +24,15 @@ HARDS = ["soft", "medium", "hard"]
 THICK = [1, 2, 3]
 
 
-def label_noise():
+def label_noise(axis="fz"):
     """MAE a perfect model would still show, from the F/T reading's own scatter.
 
     Second differences, which cancel the ramp's linear part; var = 6 sigma^2.
     A first difference would be dominated by the real force change between
     frames (0.048 N median) and overstate the noise by a factor of five.
+
+    `axis` is "fz" for the normal force or "lat" for the shear magnitude
+    hypot(Fx, Fy), which is the quantity `lat_mae` scores.
     """
     out = {}
     for d in sorted((DATA / "20260907_passB_ball8").iterdir()):
@@ -37,23 +40,27 @@ def label_noise():
         if not p.exists():
             continue
         s = pd.read_csv(p)
-        fz = np.abs(s.Fz_s_corr.fillna(s.Fz_s).values)
+        if axis == "fz":
+            v = np.abs(s.Fz_s_corr.fillna(s.Fz_s).values)
+        else:
+            v = np.hypot(s.Fx_s_corr.fillna(s.Fx_s).values,
+                         s.Fy_s_corr.fillna(s.Fy_s).values)
         seg = s.segment.values
         k = (seg[2:] == seg[:-2]) & (seg[1:-1] == seg[:-2])
-        d2 = (fz[2:] - 2 * fz[1:-1] + fz[:-2])[k]
+        d2 = (v[2:] - 2 * v[1:-1] + v[:-2])[k]
         out[d.name.replace("9DTact_", "")] = 0.798 * np.median(np.abs(d2)) / 0.6745 / np.sqrt(6)
     return out
 
 
-def fig_resolution(f, seed, floor, scalar):
+def fig_resolution(f, seed, floor, scalar, col="fz_mae", name="Fz", out="force_vs_resolution.png"):
     fig, ax = plt.subplots(figsize=(8.2, 4.6))
     w = sorted(f.width_px.unique())
     for s, g in f.groupby("sensor"):
         g = g.sort_values("width_px")
-        ax.plot(g.width_px, g.fz_mae, color="0.75", lw=0.8, zorder=1)
-    med = f.groupby("width_px").fz_mae.median().reindex(w)
+        ax.plot(g.width_px, g[col], color="0.75", lw=0.8, zorder=1)
+    med = f.groupby("width_px")[col].median().reindex(w)
     # the seed band: what one fit scatters by with everything else held fixed
-    sd = seed.groupby(["sensor", "width_px"]).fz_mae.std(ddof=1).median()
+    sd = seed.groupby(["sensor", "width_px"])[col].std(ddof=1).median()
     ax.fill_between(w, med - sd, med + sd, color="#4c72b0", alpha=.18, zorder=2,
                     label=f"seed-to-seed sd of one fit (±{sd:.3f} N)")
     ax.plot(w, med, "o-", color="#4c72b0", lw=2.2, ms=7, zorder=4,
@@ -63,7 +70,8 @@ def fig_resolution(f, seed, floor, scalar):
     ax.axhline(scalar, color="#55a868", ls=":", lw=1.8, zorder=3,
                label=f"two scalars per frame ({scalar:.3f} N)")
     ax.axhline(1 / 16, color="0.4", ls="-.", lw=1.2, zorder=3,
-               label="ATI Mini45 quoted Fz resolution (1/16 N)")
+               label=f"ATI Mini45 quoted {'Fz' if name == 'Fz' else 'Fxy'} resolution "
+                     f"({'1/16' if name == 'Fz' else '1/32'} N)")
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xticks(w)
@@ -73,19 +81,19 @@ def fig_resolution(f, seed, floor, scalar):
     ax.set_yticklabels(["0.02", "0.03", "0.05", "0.08", "0.15", "0.30", "0.70"])
     ax.minorticks_off()
     ax.set_xlabel("input size the network sees")
-    ax.set_ylabel("Fz MAE (N), held-out cycles")
-    ax.set_title("Force estimation does not improve with camera resolution\n"
+    ax.set_ylabel(f"{name} MAE (N), held-out cycles")
+    ax.set_title(f"{name} estimation does not improve with camera resolution\n"
                  "17 units, one fit per cell — the spread between cells is the fit's own noise",
                  fontsize=10)
     ax.grid(alpha=.25, lw=.6)
     ax.legend(fontsize=8, framealpha=.9)
     fig.tight_layout()
-    fig.savefig(FIGS / "force_vs_resolution.png", dpi=140)
+    fig.savefig(FIGS / out, dpi=140)
     plt.close(fig)
-    print(f"  -> {(FIGS/'force_vs_resolution.png').relative_to(ROOT)}")
+    print(f"  -> {(FIGS/out).relative_to(ROOT)}")
 
 
-def fig_per_unit(f, seed, floor, scalar):
+def fig_per_unit(f, seed, floor, scalar, col="fz_mae", name="Fz", out="force_vs_resolution_units.png"):
     """One panel per unit, laid out as the 3x3 design plus replicate.
 
     The point of the small multiples is not to find each unit's best size --
@@ -93,7 +101,7 @@ def fig_per_unit(f, seed, floor, scalar):
     that every unit's curve wanders inside the same band, so the wandering is
     the fit's noise and not seventeen different resolution requirements.
     """
-    sd = seed.groupby(["sensor", "width_px"]).fz_mae.std(ddof=1).median()
+    sd = seed.groupby(["sensor", "width_px"])[col].std(ddof=1).median()
     order = [f"{h}_{t}mm_{r}" for t in THICK for r in ("r1", "r2") for h in HARDS]
     w = sorted(f.width_px.unique())
     hgt = {int(a): int(b) for a, b in zip(f.width_px, f.height_px)}
@@ -103,7 +111,7 @@ def fig_per_unit(f, seed, floor, scalar):
         if not len(g):
             ax.axis("off")
             continue
-        med = g.fz_mae.median()
+        med = g[col].median()
         ax.axhspan(med - sd, med + sd, color="#4c72b0", alpha=.13, zorder=1,
                    label="median ± seed sd")
         ax.axhline(med, color="#4c72b0", lw=1.1, ls="-", alpha=.55, zorder=2)
@@ -111,7 +119,7 @@ def fig_per_unit(f, seed, floor, scalar):
                    label="label noise floor")
         ax.axhline(scalar[s], color="#55a868", ls=":", lw=1.5, zorder=3,
                    label="two scalars")
-        ax.plot(g.width_px, g.fz_mae, "o-", color="#22303f", lw=1.5, ms=4.5, zorder=5)
+        ax.plot(g.width_px, g[col], "o-", color="#22303f", lw=1.5, ms=4.5, zorder=5)
         ax.set_title(f"{s}   median {med:.3f} N", fontsize=9.5, pad=4)
         ax.grid(alpha=.22, lw=.5)
     for ax in axes.ravel():
@@ -123,19 +131,19 @@ def fig_per_unit(f, seed, floor, scalar):
     for ax in axes[-1]:
         ax.set_xticklabels([f"{a}×{hgt[a]}" for a in w], rotation=90, fontsize=7)
     for r in range(6):
-        axes[r][0].set_ylabel("Fz MAE (N)", fontsize=9)
+        axes[r][0].set_ylabel(f"{name} MAE (N)", fontsize=9)
     h, lb = axes[0][0].get_legend_handles_labels()
     fig.legend(h, lb, loc="upper center", ncol=3, fontsize=9, frameon=False,
                bbox_to_anchor=(0.5, 0.972))
-    fig.suptitle("Force estimation error against input size, one panel per unit\n"
+    fig.suptitle(f"{name} estimation error against input size, one panel per unit\n"
                  "columns: soft / medium / hard   ·   rows: 1 mm r1, r2, 2 mm r1, r2, "
                  "3 mm r1, r2   ·   shared log axes",
                  fontsize=11.5, y=0.995)
     fig.supxlabel("input size the network sees", fontsize=10)
     fig.tight_layout(rect=(0, 0.012, 1, 0.955))
-    fig.savefig(FIGS / "force_vs_resolution_units.png", dpi=140)
+    fig.savefig(FIGS / out, dpi=140)
     plt.close(fig)
-    print(f"  -> {(FIGS/'force_vs_resolution_units.png').relative_to(ROOT)}")
+    print(f"  -> {(FIGS/out).relative_to(ROOT)}")
 
 
 def fig_grid(per):
@@ -168,7 +176,8 @@ def main() -> int:
     f = pd.read_csv(DATA / "force_vs_resolution.csv")
     seed = pd.read_csv(DATA / "force_seed_study.csv")
     sc = pd.read_csv(DATA / "force_scalar_baseline.csv")
-    floor = label_noise()
+    floor = label_noise("fz")
+    floor_lat = label_noise("lat")
     per = f.groupby("sensor").agg(fz=("fz_mae", "median"), lat=("lat_mae", "median"),
                                   r2=("fz_r2", "median"), sd=("fz_mae", "std"),
                                   n=("fz_mae", "size"))
@@ -176,6 +185,10 @@ def main() -> int:
     FIGS.mkdir(parents=True, exist_ok=True)
     fig_resolution(f, seed, floor, float(sc.fz_mae.median()))
     fig_per_unit(f, seed, floor, sc.set_index("sensor").fz_mae.to_dict())
+    fig_resolution(f, seed, floor_lat, float(sc.lat_mae.median()),
+                   col="lat_mae", name="shear |Fxy|", out="shear_vs_resolution.png")
+    fig_per_unit(f, seed, floor_lat, sc.set_index("sensor").lat_mae.to_dict(),
+                 col="lat_mae", name="shear |Fxy|", out="shear_vs_resolution_units.png")
     fig_grid(per)
     return 0
 
