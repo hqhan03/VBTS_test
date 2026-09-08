@@ -55,7 +55,7 @@ class Camera:
     def opened(self) -> bool:
         return self._cap is not None and self._cap.isOpened()
 
-    def open(self, settle_s: float = 1.0, discard: int = 10,
+    def open(self, settle_s: float | None = None, discard: int | None = None,
              buffersize: int | None = None) -> None:
         """Open the camera. `buffersize` is the driver queue depth.
 
@@ -78,6 +78,14 @@ class Camera:
         """
         if self.opened:
             raise CameraError("already open")
+        # A camera whose controls are all fixed does not need the settling the
+        # defaults allow for; `open:` in the config says how much this one
+        # actually needs, and an explicit argument still wins over both.
+        o = self.cfg.get("open") or {}
+        if settle_s is None:
+            settle_s = float(o.get("settle_s", 1.0))
+        if discard is None:
+            discard = int(o.get("discard", 10))
         f = self.cfg["format"]
         cap = cv2.VideoCapture(self.cfg.get("device", 0), cv2.CAP_V4L2)
         if not cap.isOpened():

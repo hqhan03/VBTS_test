@@ -510,7 +510,18 @@ def main() -> int:
     ap.add_argument("--ip", default=None)
     ap.add_argument("--from", dest="start", default="enable", choices=STEPS)
     ap.add_argument("--to", dest="stop", default="park", choices=STEPS)
-    ap.add_argument("--speed", type=int, default=5)  # global SetSpeed; per-move vel is what governs
+    # The controller's global SetSpeed multiplies every commanded velocity, so
+    # it is not the harmless preamble the old comment here called it: measured
+    # 2026-09-08, an 8 mm free move takes 6.50 s at 5 %, 4.00 s at 20 % and
+    # 3.58 s at 40 %, which is 2.4, 8.9 and 16.7 mm/s of travel. Raising it
+    # speeds up the approaches onto the gel by the same factor, so `--vel-
+    # contact` below is scaled DOWN to keep the product -- the speed the probe
+    # actually meets the gel at -- exactly what it has always been.
+    ap.add_argument("--speed", type=int, default=5)
+    ap.add_argument("--vel-contact", type=float, default=None,
+                    help="per-move velocity for anything that touches the gel. "
+                         "Default keeps speed x vel at its historical 5 x 40, so "
+                         "changing --speed cannot change contact dynamics")
     ap.add_argument("--park-vel", type=float, default=100.0,
                     help="speed %% for the final park lift only")
     ap.add_argument("--park-mm", type=float, default=50.0,
@@ -653,6 +664,11 @@ def main() -> int:
         return 2
 
     R = [PY, str(ROOT / "scripts" / "run_indentation.py")]
+    vc = a.vel_contact if a.vel_contact is not None else max(1.0, 40.0 * 5.0 / max(a.speed, 1))
+    R += ["--vel-contact", f"{vc:.2f}"]
+    if abs(vc - 40.0) > 1e-6 or a.speed != 5:
+        print(f"  speed {a.speed} %% global, contact velocity {vc:.1f} "
+              f"(product {a.speed * vc:.0f}, historical 200)")
     if a.dataset:
         # One dataset per PROBE. The campaign loops probe-outer, so each sensor
         # is mounted once per probe and visited eight times overall; without

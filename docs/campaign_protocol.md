@@ -51,6 +51,13 @@
 - `sensor_to_base_transform` 의 법선이 sensor y 로 **+2.19°** 틀어져 있다
   (17개 전부 같은 부호). 지금은 유닛별 실측 젤 법선에 정렬해 우회 중.
   `frames_and_transforms.md` 참조.
+- **DIGIT_Marker 의 마커 격자가 축척으로 쓸 수 있는지 미확정.** 공칭 2.5 mm 간격 ·
+  1.0 mm 지름의 점 격자가 모든 프레임에 들어 있어 로봇 없이 축척이 나오지만,
+  `DIGIT_Marker_hard_3mm_r1` 에서 97.57 px/mm 가 나와 18 유닛 표면-축척 회귀의 예측
+  84.96 보다 15 % 높다(잔차 1.01 px/mm 이므로 12 시그마). 마커가 접촉면보다 0.5 mm
+  아래라 +6.2 px/mm 는 설명되고 6 % 가 남는다. 간격과 지름이 서로 1.1 % 로 맞으므로
+  격자 전체가 공칭보다 작을(인쇄 배율 또는 경화 수축) 가능성이 있다. pair100 캘리퍼로
+  격자 치수를 역산해 확정할 것 — `scripts/scale_from_markers.py`.
 - DIGIT / DIGIT_Marker 의 photometric stereo 재구성 파이프라인 미구현.
 - 힘 추정 해상도 표는 칸마다 시드 하나다. 작은 해상도 효과가 실제로 있는지 보려면
   전 표를 5 시드로 다시 돌려야 한다(약 15 시간). `force_estimation.md` §6.

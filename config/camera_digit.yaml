@@ -53,6 +53,19 @@ controls:
   contrast: 4
   gamma: 100
 
+# Frames to throw away and seconds to wait when the camera is opened. The
+# defaults in `Camera.open` are 10 and 1.0, which were sized for a camera that
+# might still be settling; with every control fixed manually this one is not.
+# Measured 2026-09-08 on DIGIT_hard_1mm_r2: opened with settle 0 and discard 0,
+# the centre mean of frame 1 is within 0.06 grey levels of the value it holds
+# at frame 14, on two independent opens. At 390 ms a frame the old defaults
+# cost 4.9 s, and `cam.open()` is called once per phase -- 20 s of a 254 s run
+# spent waiting for a camera that was already right. Two frames and 0.2 s is
+# kept as margin against a stale first frame after a long idle.
+open:
+  settle_s: 0.2
+  discard: 2
+
 observed_unloaded:
   sensor: DIGIT_hard_3mm_r1
   at: '2026-09-08'
