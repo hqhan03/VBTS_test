@@ -117,6 +117,17 @@ def representation(ref_gray, img_gray, norm="none"):
 
     Signed values are centred on 128 so a uint8 can carry both signs.
     """
+    if ref_gray.ndim == 3:
+        # COLOUR representation, for DIGIT. A DIGIT imprint is a colour change
+        # -- its three LEDs make the channels move in opposite directions --
+        # and averaging to grey cancels it (measured 2026-09-08: the dark
+        # channel of a grey difference is a fraction of the per-channel
+        # movement). The 9DTact recipe above is kept for cross-principle
+        # comparability; this is the input that gives a DIGIT a fair reading.
+        # Signed per-channel difference, x3 like the 9DTact channels, centred
+        # on 128. The reference itself is dropped -- it is constant.
+        d = (img_gray.astype(np.float32) - ref_gray.astype(np.float32)) * REP_SCALE
+        return np.clip(128.0 + d, 0, 255).astype(np.uint8)
     r = ref_gray.astype(np.float32)
     g = img_gray.astype(np.float32)
     darker = np.clip(r - g, 0, None)
@@ -141,20 +152,34 @@ def representation(ref_gray, img_gray, norm="none"):
     return out
 
 
-def load_unit(run: Path, max_frames: int | None = None, norm: str = "none"):
-    """Full-resolution 3-channel representations and their 6D wrench labels."""
+def load_unit(run: Path, max_frames: int | None = None, norm: str = "none",
+              rep: str = "grey", fz_max: float | None = None):
+    """Full-resolution 3-channel representations and their 6D wrench labels.
+
+    `rep`: 'grey' is the 9DTact recipe; 'colour' keeps the three camera
+    channels (see representation). `fz_max`: drop frames whose |Fz| exceeds
+    it -- the collect's fixed range is 0-2 N but the ramp overshoots, by
+    0.4-3 % of frames on most units and 14-26 % on the two DIGIT_Marker units
+    collected before the step-floor fix (CANONICAL.yaml), so a common cap
+    makes the units comparable.
+    """
     rows = list(csv.DictReader(open(run / "stream" / "frames.csv")))
     if max_frames:
         rows = rows[:max_frames]
-    ref = cv2.cvtColor(cv2.imread(str(run / "reference.png")), cv2.COLOR_BGR2GRAY)
-    h, w = ref.shape
+    if fz_max is not None:
+        rows = [r for r in rows
+                if abs(float(r.get("Fz_s_corr") or r["Fz_s"])) <= fz_max]
+    ref_bgr = cv2.imread(str(run / "reference.png"))
+    ref = ref_bgr if rep == "colour" else cv2.cvtColor(ref_bgr, cv2.COLOR_BGR2GRAY)
+    h, w = ref.shape[:2]
     X = np.zeros((len(rows), h, w, 3), dtype=np.uint8)
     y = np.zeros((len(rows), 6), dtype=np.float32)
     keep = np.ones(len(rows), dtype=bool)
     cyc = np.zeros(len(rows), dtype=np.int32)
     blk = np.zeros(len(rows), dtype=np.int32)      # 0 normal, 1 shear
     for i, r in enumerate(rows):
-        img = cv2.imread(str(run / "stream" / r["file"]), cv2.IMREAD_GRAYSCALE)
+        img = cv2.imread(str(run / "stream" / r["file"]),
+                         cv2.IMREAD_COLOR if rep == "colour" else cv2.IMREAD_GRAYSCALE)
         if img is None or r.get("missing") == "True":
             keep[i] = False
             continue
@@ -491,13 +516,33 @@ def main():
                          "from the difference channels; 'unit' removes the mean "
                          "AND the amplitude, leaving only the imprint's shape "
                          "and extent. See representation().")
+    ap.add_argument("--dataset-dir", default=None,
+                    help="Pass B dataset folder; default data/9DTact/20260907_passB_ball8. "
+                         "The principle prefix is taken from its parent folder name.")
+    ap.add_argument("--canonical", default=None,
+                    help="CANONICAL.yaml naming one run per unit (skips __N re-runs)")
+    ap.add_argument("--rep", choices=["grey", "colour"], default="grey",
+                    help="input representation: 'grey' = 9DTact recipe (comparable "
+                         "across principles); 'colour' = signed per-channel difference, "
+                         "the fair input for a DIGIT (see representation)")
+    ap.add_argument("--fz-max", type=float, default=None,
+                    help="drop frames with |Fz| above this (N); 2.0 = the fixed range")
     ap.add_argument("--out", default=str(ROOT / "data" / "9DTact" / "force_vs_resolution_v2.csv"))
     a = ap.parse_args()
     sizes = SIZES if not a.sizes else [tuple(int(v) for v in s.split("x"))
                                        for s in a.sizes.split(",")]
     splits = [s.strip() for s in a.splits.split(",") if s.strip()]
-    runs = sorted(DATASET.glob("9DTact_*")) if not a.units else \
-        [DATASET / u for u in a.units]
+    dataset = Path(a.dataset_dir) if a.dataset_dir else DATASET
+    prefix = dataset.parent.name + "_"           # 9DTact_ / DIGIT_ / DIGIT_Marker_
+    if a.canonical:
+        # one run per unit, named by the manifest (re-runs exist as __N)
+        import yaml
+        man = yaml.safe_load(open(a.canonical))["canonical"]
+        runs = [dataset / v["run"] for k, v in man.items()
+                if not a.units or k in a.units or k.replace(prefix, "") in a.units]
+    else:
+        runs = sorted(dataset.glob(prefix + "*")) if not a.units else \
+            [dataset / u for u in a.units]
     runs = [r for r in runs if (r / "stream" / "frames.csv").exists()]
     print(f"{len(runs)} units x {len(sizes)} sizes x {len(splits)} splits x "
           f"{a.seeds} seed(s), {a.epochs} epochs, batch {a.batch}")
@@ -510,18 +555,19 @@ def main():
              r.get("split") or "cycle") for r in rows}
     cols = ["sensor", "width_px", "height_px", "split", "seed", "fz_mae", "fz_rmse",
             "fz_mae_baseline", "fz_r2", "lat_mae", "lat_mae_baseline", "lat_r2",
-            "lat_mae_shear", "fz_mae_normal", "n_test_shear", "n_test_normal", "norm",
+            "lat_mae_shear", "fz_mae_normal", "n_test_shear", "n_test_normal", "norm", "rep",
             "n_train", "n_val", "n_test", "fz_range", "tx_mae", "ty_mae", "tz_mae",
             "epochs", "epochs_run", "best_epoch", "train_loss", "val_loss",
             "batch", "micro_batch", "accum", "seconds"]
     for run in runs:
-        sensor = run.name.replace("9DTact_", "")
+        import re as _re
+        sensor = _re.sub(r"__\d+$", "", run.name.replace(prefix, ""))
         todo = [(s, k, sp) for s in sizes for k in range(a.seeds) for sp in splits
                 if (sensor, s[0], k, sp) not in done]
         if not todo:
             continue
         t0 = time.time()
-        X, y, cyc, blk = load_unit(run, a.max_frames, a.norm)
+        X, y, cyc, blk = load_unit(run, a.max_frames, a.norm, a.rep, a.fz_max)
         print(f"\n{sensor}: {len(X)} frames, Fz {y[:,2].min():+.2f}..{y[:,2].max():+.2f} N, "
               f"decoded in {time.time()-t0:.0f}s", flush=True)
         last_size, Xs = None, None
@@ -536,7 +582,7 @@ def main():
                            patience=a.patience, blk_te=blk[te])
             r.update(sensor=sensor, width_px=size[0], height_px=size[1], seed=seed,
                      split=sp, epochs=a.epochs, seconds=round(time.time() - t1, 1),
-                     norm=a.norm)
+                     norm=a.norm, rep=a.rep)
             rows.append(r)
             print(f"  {size[0]:5d}x{size[1]:<4d} {sp:6} s{seed} "
                   f"Fz MAE {r['fz_mae']:.4f} R2 {r['fz_r2']:+.3f}  "
