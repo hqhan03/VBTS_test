@@ -12,7 +12,8 @@ from pathlib import Path
 
 import matplotlib
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt          # noqa: E402
+import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator          # noqa: E402
 import numpy as np                       # noqa: E402
 import pandas as pd                      # noqa: E402
 from mpl_toolkits.mplot3d import Axes3D   # noqa: F401,E402
@@ -55,15 +56,21 @@ def label_noise(axis="fz"):
 def fig_resolution(f, seed, floor, scalar, col="fz_mae", name="Fz", out="force_vs_resolution.png"):
     fig, ax = plt.subplots(figsize=(8.2, 4.6))
     w = sorted(f.width_px.unique())
+    # x is CATEGORICAL and evenly spaced (operator, 2026-09-08). The twelve
+    # sizes are a ladder, not samples of a continuous variable, and a log x
+    # crowded the four largest into the right-hand fifth of the plot -- which
+    # reads as a log axis even after the y was made linear.
+    xi = {v: i for i, v in enumerate(w)}
     for s, g in f.groupby("sensor"):
         g = g.sort_values("width_px")
-        ax.plot(g.width_px, g[col], color="0.75", lw=0.8, zorder=1)
+        ax.plot([xi[v] for v in g.width_px], g[col], color="0.75", lw=0.8, zorder=1)
     med = f.groupby("width_px")[col].median().reindex(w)
     # the seed band: what one fit scatters by with everything else held fixed
     sd = seed.groupby(["sensor", "width_px"])[col].std(ddof=1).median()
-    ax.fill_between(w, med - sd, med + sd, color="#4c72b0", alpha=.18, zorder=2,
+    X = list(range(len(w)))
+    ax.fill_between(X, med - sd, med + sd, color="#4c72b0", alpha=.18, zorder=2,
                     label=f"seed-to-seed sd of one fit (±{sd:.3f} N)")
-    ax.plot(w, med, "o-", color="#4c72b0", lw=2.2, ms=7, zorder=4,
+    ax.plot(X, med, "o-", color="#4c72b0", lw=2.2, ms=7, zorder=4,
             label="median of 17 units")
     ax.axhline(np.median(list(floor.values())), color="#c44e52", ls="--", lw=1.6,
                zorder=3, label=f"label noise floor ({np.median(list(floor.values())):.3f} N)")
@@ -75,15 +82,18 @@ def fig_resolution(f, seed, floor, scalar, col="fz_mae", name="Fz", out="force_v
     # y is LINEAR (operator, 2026-09-08). A log y flattens the one thing this
     # figure is for -- how much worse 8x5 is than everything above it -- into a
     # step that looks like the wobble between neighbouring sizes.
-    ax.set_xscale("log")
-    ax.set_xticks(w)
+    ax.set_xticks(X)
     hgt = {int(a): int(b) for a, b in zip(f.width_px, f.height_px)}
     ax.set_xticklabels([f"{a}×{hgt[a]}" for a in w], rotation=45, ha="right", fontsize=8)
+    ax.set_xlim(-0.4, len(w) - 0.6)
     ax.set_ylim(0, None)
+    ax.yaxis.set_major_locator(MaxNLocator(nbins=8, steps=[1, 2, 2.5, 5, 10]))
     ax.minorticks_off()
     ax.set_xlabel("input size the network sees")
     ax.set_ylabel(f"{name} MAE (N), held-out cycles")
-    ax.set_title(f"{name} estimation is flat from 1920×1080 down to 16×9, and breaks at 8×5\n"
+    _sub = ("flat from 1920×1080 down to 16×9, and breaks at 8×5" if col == "fz_mae"
+            else "is a U: best near 80×45, worse at both ends")
+    ax.set_title(f"{name} estimation {_sub}\n"
                  "17 units, one fit per cell; the band is what a re-run with a different seed moves by",
                  fontsize=10)
     ax.grid(alpha=.25, lw=.6)
@@ -105,6 +115,8 @@ def fig_per_unit(f, seed, floor, scalar, col="fz_mae", name="Fz", out="force_vs_
     sd = seed.groupby(["sensor", "width_px"])[col].std(ddof=1).median()
     order = [f"{h}_{t}mm_{r}" for t in THICK for r in ("r1", "r2") for h in HARDS]
     w = sorted(f.width_px.unique())
+    xi = {v: i for i, v in enumerate(w)}      # categorical x, as in fig_resolution
+    X = list(range(len(w)))
     hgt = {int(a): int(b) for a, b in zip(f.width_px, f.height_px)}
     fig, axes = plt.subplots(6, 3, figsize=(11.5, 13.5), sharex=True, sharey=True)
     for ax, s in zip(axes.ravel(), order):
@@ -120,13 +132,15 @@ def fig_per_unit(f, seed, floor, scalar, col="fz_mae", name="Fz", out="force_vs_
                    label="label noise floor")
         ax.axhline(scalar[s], color="#55a868", ls=":", lw=1.5, zorder=3,
                    label="two scalars")
-        ax.plot(g.width_px, g[col], "o-", color="#22303f", lw=1.5, ms=4.5, zorder=5)
+        ax.plot([xi[v] for v in g.width_px], g[col], "o-", color="#22303f",
+                lw=1.5, ms=4.5, zorder=5)
         ax.set_title(f"{s}   median {med:.3f} N", fontsize=9.5, pad=4)
         ax.grid(alpha=.22, lw=.5)
     for ax in axes.ravel():
-        ax.set_xscale("log")           # y stays linear, see above
-        ax.set_xticks(w)
+        ax.set_xticks(X)               # categorical x, linear y -- see above
+        ax.set_xlim(-0.4, len(w) - 0.6)
         ax.set_ylim(0, None)
+        ax.yaxis.set_major_locator(MaxNLocator(nbins=5, steps=[1, 2, 2.5, 5, 10]))
         ax.minorticks_off()
     for ax in axes[-1]:
         ax.set_xticklabels([f"{a}×{hgt[a]}" for a in w], rotation=90, fontsize=7)
