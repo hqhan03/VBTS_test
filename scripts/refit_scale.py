@@ -35,7 +35,7 @@ import yaml
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 from run_indentation import (_diff_f32, _scale_jacobian, _track_series,  # noqa: E402
-                             _window_for)
+                             _window_for, shadows_the_gel)
 
 DATASET = "20260905_passA_ball4"
 
@@ -54,6 +54,11 @@ def refit(run: Path, probe: str, theta_tol: float, max_rms: float,
     if not rows:
         return None
     st = json.loads(state_path.read_text())
+    # Grey loses a DIGIT's imprint; see `_diff_f32`. The unit is read from the
+    # run so a re-fit uses the same reduction the live phase did.
+    sid = (yaml.safe_load((run / "meta.yaml").read_text()) or {}).get("sensor_id") \
+        if (run / "meta.yaml").exists() else None
+    colour = shadows_the_gel(sid)
     old = ((st.get("scale") or {}).get("rot0") or {})
     result = dict(old)                      # keep plane, cop, force, offsets
     log = []
@@ -70,7 +75,7 @@ def refit(run: Path, probe: str, theta_tol: float, max_rms: float,
                 log.append(f"  axis {axis}: {x['file']} is missing")
                 imgs = []
                 break
-            imgs.append(_diff_f32(im, ref))
+            imgs.append(_diff_f32(im, ref, colour))
         if not imgs:
             continue
         mid = len(r) // 2

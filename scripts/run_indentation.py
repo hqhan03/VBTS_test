@@ -4700,7 +4700,20 @@ def _track_series(imgs, cx, cy, half: int, srch: int, log=None):
     return p
 
 
-def _diff_f32(frame_bgr, ref_bgr):
+def _diff_f32(frame_bgr, ref_bgr, colour: bool = False):
+    """The picture the scale tracker correlates.
+
+    `colour` reduces by the largest per-channel deviation after removing each
+    channel's mean, for the reasons `contact_region` does: an approaching probe
+    shadows a side-lit gel, and the imprint is a shift in the balance of three
+    LEDs that grey averages away. Measured 2026-09-08 on DIGIT_hard_3mm_r1,
+    down one depth ladder the per-channel peak grew 25 -> 53 levels while the
+    greyscale peak stayed at 23.
+    """
+    if colour:
+        f = frame_bgr.astype(np.float32) - ref_bgr.astype(np.float32)
+        f -= f.mean(axis=(0, 1), keepdims=True)
+        return np.abs(f).max(axis=2)
     g = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY).astype(np.float32)
     r = cv2.cvtColor(ref_bgr, cv2.COLOR_BGR2GRAY).astype(np.float32)
     return np.abs(g - r)
@@ -4846,10 +4859,29 @@ def phase_scale(a) -> int:
     pose0 = q("GetActualTCPPose", 0)[1:]
     rpy_now = [float(v) for v in pose0[3:]]
     if abs(a.scale_rotate) > 1e-6:
-        M = rot_about(n, a.scale_rotate) @ cal.rpy_to_matrix(*rpy_now)
+        # About the TOOL's own axis, not the registry's nominal normal. The two
+        # are not the same once the tool has been aligned to the gel: this
+        # unit's gel sits 2.51 deg off nominal, so turning about the nominal
+        # axis sweeps the tool round a cone of that half-angle and its tilt
+        # AGAINST THE GEL runs from 0 to 5.02 deg with the rotation. Measured
+        # 2026-09-08 on DIGIT_hard_3mm_r1 with pair100, whose two posts are
+        # 2 mm apart and therefore 0, 45, 88 and 124 um apart in height at 0,
+        # 30, 60 and 90 deg of rotation -- against a contact depth of 50-100 um.
+        # The posts' symmetry followed exactly: 0.96, 0.58, 0.36, and then no
+        # second post at all. Aligning first did not help, because the
+        # alignment was being undone by the rotation itself.
+        #
+        # A roll about the tool axis leaves the tilt where alignment put it, at
+        # every angle. The 180 deg probe-versus-gel test this was written for
+        # still works: a tilt belonging to the probe reverses with a tool-axis
+        # roll just as it did with a normal-axis one.
+        M = cal.rpy_to_matrix(*rpy_now) @ rot_about([0, 0, 1], a.scale_rotate)
         rpy0 = matrix_to_rpy(M)
-        print(f"\n  tool turned {a.scale_rotate:+.0f} deg about the sensor normal: "
-              f"rpy {np.round(rpy_now, 2)} -> {np.round(rpy0, 2)}")
+        tool_n = cal.rpy_to_matrix(*rpy_now)[:, 2]
+        print(f"\n  tool rolled {a.scale_rotate:+.0f} deg about its own axis "
+              f"(which is {np.degrees(np.arccos(np.clip(abs(tool_n @ n), 0, 1))):.2f} deg "
+              f"off the nominal normal): rpy {np.round(rpy_now, 2)} -> "
+              f"{np.round(rpy0, 2)}")
     else:
         rpy0 = rpy_now
     p0 = np.array(pose0[:3], dtype=float)
@@ -4886,6 +4918,42 @@ def phase_scale(a) -> int:
                           a.approach_joint_step, vel=a.vel_free):
             return 2
 
+    # EVERY robot move that takes time must happen BEFORE the DAQ task
+    # exists. The guard just above already learned that -- the phase used to
+    # begin with a 50 mm descent after connecting and overran twice. The
+    # reorientation is the same mistake somewhere else: it lifts to a 40 mm
+    # standoff, sweeps joint 6 through the whole angle and comes back down,
+    # all while an open task fills a buffer nobody is reading, and the tare
+    # after it died with -200279 on the first rotated press of
+    # DIGIT_hard_3mm_r1 (2026-09-08). Rotate first, connect second.
+    if abs(a.scale_rotate) > 1e-6:
+        # Turning the tool about its own axis is a WRIST reconfiguration --
+        # joint 6 sweeps the full angle -- and the 15 deg step ceiling
+        # refuses it, correctly, because it cannot tell a deliberate
+        # reorientation from an IK branch flip. So it is its own move, at a
+        # standoff far enough that a swinging tool body cannot reach the
+        # gel, under a ceiling that has to be asked for by name.
+        print(f"\n  reorienting {a.scale_rotate:+.0f} deg at "
+              f"{a.rotate_height:.0f} mm standoff, joint ceiling "
+              f"{a.rotate_joint_ceiling:.0f} deg")
+        if _move_to_point(ip, p_surf + a.rotate_height * n, rpy_now, a,
+                          a.approach_joint_step, vel=a.vel_free):
+            return 2
+        if _move_to_point(ip, p_surf + a.rotate_height * n, rpy0, a,
+                          a.rotate_joint_ceiling, vel=a.vel_free):
+            return 2
+        got = [float(v) for v in q("GetActualTCPPose", 0)[1:][3:]]
+        err = float(np.abs(cal.rpy_to_matrix(*got)
+                           - cal.rpy_to_matrix(*rpy0)).max())
+        print(f"  reached rpy {np.round(got, 2)}, orientation error {err:.2e}")
+        if err > 0.02:
+            print("  the tool did not reach the requested orientation.")
+            return 1
+    # already clear, and now at the working orientation
+    if _move_to_point(ip, p_surf + a.retract * n, rpy0, a,
+                      a.approach_joint_step, vel=a.vel_free):
+        return 2
+
     cam = Camera.from_config(camera_config_for(a.sensor))
     cam.open()                      # before the DAQ task: it must not sit unread
     ft = FTInterface.from_config()
@@ -4893,33 +4961,6 @@ def phase_scale(a) -> int:
     reader = None
     rows = []
     try:
-        if abs(a.scale_rotate) > 1e-6:
-            # Turning the tool about its own axis is a WRIST reconfiguration --
-            # joint 6 sweeps the full angle -- and the 15 deg step ceiling
-            # refuses it, correctly, because it cannot tell a deliberate
-            # reorientation from an IK branch flip. So it is its own move, at a
-            # standoff far enough that a swinging tool body cannot reach the
-            # gel, under a ceiling that has to be asked for by name.
-            print(f"\n  reorienting {a.scale_rotate:+.0f} deg at "
-                  f"{a.rotate_height:.0f} mm standoff, joint ceiling "
-                  f"{a.rotate_joint_ceiling:.0f} deg")
-            if _move_to_point(ip, p_surf + a.rotate_height * n, rpy_now, a,
-                              a.approach_joint_step, vel=a.vel_free):
-                return 2
-            if _move_to_point(ip, p_surf + a.rotate_height * n, rpy0, a,
-                              a.rotate_joint_ceiling, vel=a.vel_free):
-                return 2
-            got = [float(v) for v in q("GetActualTCPPose", 0)[1:][3:]]
-            err = float(np.abs(cal.rpy_to_matrix(*got)
-                               - cal.rpy_to_matrix(*rpy0)).max())
-            print(f"  reached rpy {np.round(got, 2)}, orientation error {err:.2e}")
-            if err > 0.02:
-                print("  the tool did not reach the requested orientation.")
-                return 1
-        # already clear, and now at the working orientation
-        if _move_to_point(ip, p_surf + a.retract * n, rpy0, a,
-                          a.approach_joint_step, vel=a.vel_free):
-            return 2
         tare = ft.tare(duration_s=2.0)
         res = ft.read_wrench_mean(duration_s=1.0, tared=True)
         print(f"\n  zero residual |F| {np.linalg.norm(res[:3]):.4f} N")
@@ -5110,7 +5151,7 @@ def phase_scale(a) -> int:
                        key=lambda z: z["offset_mm"])
             if len(r) < 3:
                 continue
-            imgs = [_diff_f32(cv2.imread(str(out / x["file"])), ref_img)
+            imgs = [_diff_f32(cv2.imread(str(out / x["file"])), ref_img, _shadow)
                     for x in r]
             mid = len(r) // 2
             m = (imgs[mid] >= 6).astype(np.uint8)
