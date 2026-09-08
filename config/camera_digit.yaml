@@ -62,9 +62,19 @@ controls:
 # cost 4.9 s, and `cam.open()` is called once per phase -- 20 s of a 254 s run
 # spent waiting for a camera that was already right. Two frames and 0.2 s is
 # kept as margin against a stale first frame after a long idle.
+# REVISED 2026-09-09. The 0.2 s / 2 frames above was measured on a camera that
+# had already been opened once with these controls. On the FIRST open of a run
+# the first frames still carry the sensor's previous exposure: every DIGIT
+# reference.png of 2026-09-08/09 (44 runs, Pass A and B) is 8-14 % brighter
+# than every frame grabbed later in the same run, multiplicatively -- a gain
+# state, not the probe's shadow, which would scale with force and does not.
+# 9DTact, opened with the 1.0 s / 10 frame defaults, shows no such gap. The
+# datasets carry reference_collect.png (median of the run's own ~0 N collect
+# frames) as the corrected reference; from here on the open waits long enough
+# that reference.png is right in the first place. ~5 s per phase.
 open:
-  settle_s: 0.2
-  discard: 2
+  settle_s: 1.0
+  discard: 12
 
 observed_unloaded:
   sensor: DIGIT_hard_3mm_r1

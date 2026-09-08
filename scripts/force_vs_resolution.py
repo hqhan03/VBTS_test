@@ -169,7 +169,17 @@ def load_unit(run: Path, max_frames: int | None = None, norm: str = "none",
     if fz_max is not None:
         rows = [r for r in rows
                 if abs(float(r.get("Fz_s_corr") or r["Fz_s"])) <= fz_max]
-    ref_bgr = cv2.imread(str(run / "reference.png"))
+    # reference_collect.png -- the median of this run's own lowest-force
+    # collect frames -- when present. On every DIGIT run (2026-09-08/09,
+    # Pass A and B, 44 of 44) reference.png is 8-14 % BRIGHTER than every
+    # frame after it, multiplicatively: the first open of the run grabbed it
+    # after two discarded frames, before the sensor had settled to the manual
+    # exposure. 9DTact runs show no such gap. Against that reference the
+    # 'darker' channel carries a pedestal over the whole field and the
+    # imprint rides on top of it. The collect frames at ~0 N are the same
+    # gel, same session, same exposure as every other frame.
+    rc = run / "reference_collect.png"
+    ref_bgr = cv2.imread(str(rc if rc.exists() else run / "reference.png"))
     ref = ref_bgr if rep == "colour" else cv2.cvtColor(ref_bgr, cv2.COLOR_BGR2GRAY)
     h, w = ref.shape[:2]
     X = np.zeros((len(rows), h, w, 3), dtype=np.uint8)

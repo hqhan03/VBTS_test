@@ -534,8 +534,28 @@ def phase_reference(a) -> int:
     ft.connect()
     try:
         w = read_tared(ft, s, a.seconds)
-        frame, t_img = cam.grab_settled()
+        # The reference is the one frame every later picture is subtracted
+        # from, and on DIGIT it was being grabbed too early. All 44 DIGIT runs
+        # of 2026-09-08/09 have a reference 8-14 % brighter than every frame
+        # after it, multiplicatively -- the sensor still on its previous
+        # exposure in the first frames of the run's first open (9DTact, opened
+        # with a longer settle, shows none of this). So: grab, sit through the
+        # stability window, grab again, and only keep a reference that two
+        # grabs 3 s apart agree on to 1 %. Otherwise keep grabbing.
+        frame0, _ = cam.grab_settled()
         stab = cam.stability(3.0)
+        frame, t_img = cam.grab_settled()
+        m0, m1 = float(frame0.mean()), float(frame.mean())
+        tries = 0
+        while abs(m1 - m0) / max(m1, 1e-6) > 0.01 and tries < 6:
+            print(f"  exposure still settling: {m0:.1f} -> {m1:.1f} "
+                  f"({100 * (m1 - m0) / max(m0, 1e-6):+.1f} %), grabbing again")
+            time.sleep(1.0)
+            frame0, m0 = frame, m1
+            frame, t_img = cam.grab_settled()
+            m1 = float(frame.mean())
+            tries += 1
+        settle_pct = 100 * (m1 - m0) / max(m0, 1e-6)
         q = cam.quality(frame)
         controls = cam.read_controls()
     finally:
@@ -556,11 +576,17 @@ def phase_reference(a) -> int:
         print("\n  the image brightness is not steady — auto exposure may have")
         print("  re-enabled itself. NOT saved.")
         return 1
+    if abs(settle_pct) > 1.0:
+        print(f"\n  the exposure did not settle ({settle_pct:+.1f} % between grabs "
+              "3 s apart after six tries). NOT saved.")
+        return 1
+    print(f"  exposure settle check: {settle_pct:+.2f} % between two grabs 3 s apart")
 
     p = run / "reference.png"
     cv2.imwrite(str(p), frame, [cv2.IMWRITE_PNG_COMPRESSION, 1])
     s["reference"] = {"at": datetime.now().isoformat(), "file": p.name,
                       "wrench": w.tolist(), "quality": q, "stability": stab,
+                      "settle_pct": settle_pct,
                       "camera_controls": controls, "image_time": t_img}
     save_state(run, s)
     print(f"\n  saved {p.name}")

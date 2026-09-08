@@ -1,6 +1,10 @@
 # Which run directory is THE Pass B collect for each DIGIT_Marker unit.
 # Written 2026-09-09 after the marker pass finished (18/18, 1000 frames each).
 #
+# Every run also carries reference_collect.png: the median of its own 15
+# lowest-force normal-block frames. USE IT, not reference.png, which on every
+# DIGIT run is 8-14 % brighter than the frames (campaign_protocol.md 4.7 (10)).
+#
 # soft_2mm_r1 was the unit on which six collect defects were found and fixed
 # (campaign_protocol.md 4.7); it was run nine times. Only __9 has every fix.
 # The others are kept for the record and must not be analysed as data:
