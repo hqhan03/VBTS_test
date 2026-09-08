@@ -1,0 +1,61 @@
+# DIGIT internal camera. The BOARD is the same YJX-YL0320-2740 (USB 2b16:6689)
+# the 9DTact uses, so everything about the interface carries over -- what does
+# not carry over is the exposure.
+#
+# A DIGIT is lit by three coloured LEDs from three sides and reads shape from
+# the COLOUR of the reflection, so a clipped channel is not a dim picture, it
+# is a lost surface normal, and no amount of later processing brings it back.
+# On the 9DTact settings (exposure 2047, brightness 64) 15.2 % of the frame was
+# at 254-255 and the whole centre was white: measured 2026-09-08 on
+# DIGIT_hard_3mm_r1.
+#
+# Exposure sweep on that unit, unloaded, brightness 64 throughout:
+#
+#   exposure   centre mean   frame max   saturated
+#       2047         252.3         255      15.2 %
+#       1000         194.0         239         0
+#        900         182.2         225         0
+#        800         167.1         208         0
+#        700         150.7         191         0
+#        600         133.8         177         0      <- chosen
+#        500         115.8         155         0
+#        250          70.6          92         0
+#
+# 600 is the conservative end of the usable band: it leaves 78 grey levels
+# between the brightest unloaded pixel and clipping, and contact BRIGHTENS the
+# gel where its normal turns toward an LED. The headroom actually needed is not
+# known until a press is measured; raise this only after measuring it, and
+# never past the point where the blue channel clips -- blue reads highest here
+# (103 against 82 for red at this exposure), so it goes first.
+#
+# Brightness is not a free parameter on this board. At 32 the image collapses
+# (centre 23.9) and at 0 it is black; 64 is the only usable value, as on the
+# 9DTact.
+device: 0
+
+format:
+  fourcc: YUYV
+  width: 1920
+  height: 1080
+  # Measured 2.6 fps at every exposure from 30 to 2047, so the rate here is NOT
+  # set by the exposure the way it is on the 9DTact (205 ms -> 4.9 fps). It is
+  # the link and the uncompressed 1080p frame. Lowering the exposure buys
+  # brightness headroom, not speed.
+  measured_fps: 2.6
+
+controls:
+  auto_exposure: 1
+  exposure: 600
+  auto_wb: 0
+  wb_temperature: 4600    # fixed, as on the 9DTact. The three LEDs ARE the
+                          # measurement, so the camera must never rebalance them.
+  brightness: 64
+  contrast: 4
+  gamma: 100
+
+observed_unloaded:
+  sensor: DIGIT_hard_3mm_r1
+  at: '2026-09-08'
+  full_frame_mean: {B: 103.3, G: 88.0, R: 81.8}
+  centre_25pct: {mean: 133.8, max: 177, saturated_pct: 0.0}
+  p99_per_channel: {B: 166, G: 131, R: 127}

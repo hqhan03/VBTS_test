@@ -327,6 +327,27 @@ def check_alignment(ip: str, a, ref_normal=None) -> bool:
     return ok
 
 
+def camera_config_for_run(run_dir):
+    """The camera file this run's principle needs.
+
+    `qc_touch` opened the camera itself and got the default config, so on the
+    first DIGIT the reference was written at exposure 600 and the touch-check
+    frame at 2047: the whole picture came out 100 grey levels brighter with
+    10 % of it clipped, and the check duly reported "100 % of pixels moved" --
+    a lighting change read as a contact. Measured 2026-09-08. Any code that
+    opens the camera has to know which sensor it is looking at.
+    """
+    import sys as _sys
+    _sys.path.insert(0, str(ROOT / "scripts"))
+    from run_indentation import camera_config_for  # noqa: E402
+    try:
+        sid = (yaml.safe_load((Path(run_dir) / "meta.yaml").read_text())
+               or {}).get("sensor_id")
+    except Exception:
+        sid = None
+    return camera_config_for(sid)
+
+
 def qc_reference(run_dir: Path, a) -> bool:
     """Is this sensor worth thirty more minutes?"""
     st = json.loads((run_dir / "state.json").read_text())
@@ -387,7 +408,7 @@ def qc_touch(run_dir: Path, a) -> str:
     if ref is None:
         print("  !! no reference image to compare against")
         return "fail"
-    with Camera.from_config() as cam:
+    with Camera.from_config(camera_config_for_run(run_dir)) as cam:
         frame, _ = cam.grab_settled()
     # Confirm the F/T agrees that something is being touched before reading
     # anything into the picture.
@@ -683,10 +704,10 @@ def main() -> int:
             run_dir = (ROOT / "data"
                        / (ROOT / "data" / "_active_run.txt").read_text().strip())
         elif step == "tare":
-            if not run(R + ["--phase", "tare"], "zero the F/T"):
+            if not run(R + ["--phase", "tare", "--sensor", a.sensor], "zero the F/T"):
                 return 1
         elif step == "reference":
-            if not run(R + ["--phase", "reference"], "reference image"):
+            if not run(R + ["--phase", "reference", "--sensor", a.sensor], "reference image"):
                 return 1
         elif step == "qc":
             run_dir = run_dir or (ROOT / "data"

@@ -197,9 +197,30 @@ def diff_level_for(ref_bgr, rel: float, floor: int) -> int:
     return int(max(floor, round(rel * float(c.mean()))))
 
 
+def diff_level_for_sensor(ref_bgr, a, sensor: str | None) -> int:
+    """`diff_level_for`, with the floor this principle's noise actually needs.
+
+    The threshold is a fraction of the reference brightness, which on a DIGIT
+    comes out at 4 levels -- far under its floor. A DIGIT is measured by the
+    largest PER-CHANNEL deviation rather than a grey difference (see
+    `contact_region`), and that reduction takes the worst of three noisy
+    channels instead of averaging them, so its background sits higher: measured
+    2026-09-08 on DIGIT_hard_3mm_r1 with the probe 2 mm above the gel and NOT
+    touching, the blurred per-channel deviation had a median of 4.6, a sigma of
+    1.8 and a 99.9th percentile of 12.9. A threshold of 10 found 813 px of
+    "contact" on that empty frame; 12 found none. The floor is read from the
+    registry so it stays with the data.
+    """
+    lvl = diff_level_for(ref_bgr, a.diff_rel, a.diff_min)
+    reg, _ent = (load_sensor(sensor) if sensor else (None, None))
+    pol = ((reg or {}).get("capture_policy") or {}).get("per_principle") or {}
+    floor = (pol.get(principle_of(sensor) or "", {}) or {}).get("diff_level_min")
+    return max(lvl, int(floor)) if floor else lvl
+
+
 def contact_region(frame_bgr, ref_bgr, level: int = 6, blur: int = 5,
                    centre_frac: float = 0.5, border_frac: float = 0.05,
-                   min_area: int = 200) -> dict:
+                   min_area: int = 200, colour: bool = False) -> dict:
     """Where, and how much, an image differs from the unloaded reference.
 
     The difference image is blurred (5 px Gaussian) so single-pixel noise does
@@ -211,9 +232,32 @@ def contact_region(frame_bgr, ref_bgr, level: int = 6, blur: int = 5,
     central half of the frame -- is the single "how much did the image change"
     figure the saturation test tracks against force.
     """
-    g = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY).astype(np.float32)
-    r = cv2.cvtColor(ref_bgr, cv2.COLOR_BGR2GRAY).astype(np.float32)
-    d = np.abs(g - r)
+    signed = None
+    if colour:
+        # A DIGIT encodes shape in the BALANCE of three coloured LEDs, so its
+        # imprint is a colour change and grey throws it away: measured
+        # 2026-09-08 on DIGIT_hard_3mm_r1, the channels move in OPPOSITE
+        # directions under the probe (B -27.6, G -6.8, R +0.9 at 0.28 mm), the
+        # per-channel peak grows 25 -> 53 levels down the ladder, and the
+        # greyscale peak sits flat at 23 the whole way. Reduce by the largest
+        # per-channel deviation instead.
+        #
+        # The per-channel MEAN is removed first because the probe shadows the
+        # gel: the same unit darkened 2.7 levels with the probe 20 mm above the
+        # gel, 5.2 at 5 mm and 7.2 in contact, WITHOUT touching, and then held
+        # at 7.2-7.5 while the force went 0.02 -> 0.63 N. That pedestal is a
+        # standoff effect, not a load, and it is bigger than the imprint under
+        # it. A 9DTact lights its gel from inside a light guide, so nothing
+        # outside can shadow it and neither correction applies there.
+        f = frame_bgr.astype(np.float32) - ref_bgr.astype(np.float32)
+        f -= f.mean(axis=(0, 1), keepdims=True)
+        k = np.abs(f).argmax(axis=2)
+        signed = np.take_along_axis(f, k[:, :, None], axis=2)[:, :, 0]
+        d = np.abs(signed)
+    else:
+        g = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY).astype(np.float32)
+        r = cv2.cvtColor(ref_bgr, cv2.COLOR_BGR2GRAY).astype(np.float32)
+        d = np.abs(g - r)
     if blur and blur > 1:
         d = cv2.GaussianBlur(d, (blur | 1, blur | 1), 0)
     h, w = d.shape
@@ -263,7 +307,9 @@ def contact_region(frame_bgr, ref_bgr, level: int = 6, blur: int = 5,
     # touched and the "largest blob" doubled overnight while its mean |diff|
     # fell from 17 to 5 levels -- a merged region, not a bigger contact. The
     # signed halves are measured separately so the core radius stays a core.
-    sd = g - r
+    # The 9DTact split is on the grey difference; for a DIGIT it is on the
+    # channel that moved most, which is the same quantity `d` was reduced from.
+    sd = (g - r) if signed is None else signed
     if blur and blur > 1:
         sd = cv2.GaussianBlur(sd, (blur | 1, blur | 1), 0)
     for name, m in (("dark", sd < -level), ("bright", sd > level)):
@@ -299,6 +345,57 @@ def _mm_per_px() -> float | None:
     cfg = yaml.safe_load(open(ROOT / "config" / "camera_config.yaml")) or {}
     v = (cfg.get("calibration") or {}).get("mm_per_px")
     return float(v) if v else None
+
+
+def shadows_the_gel(sensor: str | None) -> bool:
+    """Does an approaching probe darken this principle's whole frame?
+
+    True for the DIGIT family, whose three LEDs light the gel from the side so
+    anything above it casts a shadow, and false for the 9DTact, whose light
+    guide is inside the sensor. See `contact_region(drop_global=...)` for the
+    measurement behind it.
+    """
+    pr = principle_of(sensor) or ""
+    return pr.startswith("DIGIT")
+
+
+def camera_config_for(sensor: str | None):
+    """The camera file this unit's principle needs, or None for the default.
+
+    The board is the same on every principle, so nothing stops a DIGIT run from
+    opening `camera_config.yaml` and getting the 9DTact's 205 ms exposure --
+    which on 2026-09-08 put 15 % of a DIGIT frame at 254-255 and blew the whole
+    centre white. A DIGIT reads shape from the COLOUR of three LEDs, so a
+    clipped channel is a lost normal, not a bright picture. Pick the file from
+    the registry's `principle` and let it fail loudly if it is missing, rather
+    than fall back to settings that quietly ruin the data.
+    """
+    if not sensor:
+        # Not every phase is given --sensor: `run_one_sensor` calls the
+        # reference phase with only --dataset, and on 2026-09-08 that opened
+        # the first DIGIT with the 9DTact's 205 ms exposure and wrote a
+        # reference whose centre was 41 % clipped. Recover the unit from the
+        # run the phase is about to write into, so the config follows the DATA
+        # rather than the argument list.
+        try:
+            sensor = (yaml.safe_load((active_run() / "meta.yaml").read_text())
+                      or {}).get("sensor_id")
+        except Exception:
+            sensor = None
+    pr = principle_of(sensor)
+    if not pr or pr == "9DTact":
+        return None
+    f = ROOT / "config" / f"camera_{pr.lower()}.yaml"
+    if f.exists():
+        return f
+    # DIGIT_Marker shares the DIGIT optics; only the gel carries markers.
+    if pr.startswith("DIGIT"):
+        f = ROOT / "config" / "camera_digit.yaml"
+        if f.exists():
+            return f
+    raise SystemExit(f"no camera config for principle {pr!r} "
+                     f"(expected config/camera_{pr.lower()}.yaml). Refusing to "
+                     f"open a {pr} with another principle's exposure.")
 
 
 def principle_of(sensor: str | None) -> str | None:
@@ -431,7 +528,7 @@ def phase_reference(a) -> int:
     # driver queue was cut to one buffer -- and the DAQ task starts filling its
     # one-second buffer the moment it connects, so connecting first overruns it
     # (-200279) before anything reads.
-    cam = Camera.from_config()
+    cam = Camera.from_config(camera_config_for(a.sensor))
     cam.open()
     ft = FTInterface.from_config()
     ft.connect()
@@ -518,7 +615,7 @@ def phase_sample(a) -> int:
     # driver queue was cut to one buffer -- and the DAQ task starts filling its
     # one-second buffer the moment it connects, so connecting first overruns it
     # (-200279) before anything reads.
-    cam = Camera.from_config()
+    cam = Camera.from_config(camera_config_for(a.sensor))
     cam.open()
     ft = FTInterface.from_config()
     ft.connect()
@@ -628,7 +725,7 @@ def phase_series(a) -> int:
     # driver queue was cut to one buffer -- and the DAQ task starts filling its
     # one-second buffer the moment it connects, so connecting first overruns it
     # (-200279) before anything reads.
-    cam = Camera.from_config()
+    cam = Camera.from_config(camera_config_for(a.sensor))
     cam.open()
     ft = FTInterface.from_config()
     ft.connect()
@@ -842,7 +939,7 @@ def phase_shear(a) -> int:
     # driver queue was cut to one buffer -- and the DAQ task starts filling its
     # one-second buffer the moment it connects, so connecting first overruns it
     # (-200279) before anything reads.
-    cam = Camera.from_config()
+    cam = Camera.from_config(camera_config_for(a.sensor))
     cam.open()
     ft = FTInterface.from_config()
     ft.connect()
@@ -1239,7 +1336,7 @@ def phase_force_series(a) -> int:
     # driver queue was cut to one buffer -- and the DAQ task starts filling its
     # one-second buffer the moment it connects, so connecting first overruns it
     # (-200279) before anything reads.
-    cam = Camera.from_config()
+    cam = Camera.from_config(camera_config_for(a.sensor))
     cam.open()
     ft = FTInterface.from_config()
     ft.connect()
@@ -1413,7 +1510,7 @@ def phase_force_shear(a) -> int:
     # driver queue was cut to one buffer -- and the DAQ task starts filling its
     # one-second buffer the moment it connects, so connecting first overruns it
     # (-200279) before anything reads.
-    cam = Camera.from_config()
+    cam = Camera.from_config(camera_config_for(a.sensor))
     cam.open()
     ft = FTInterface.from_config()
     ft.connect()
@@ -1822,7 +1919,7 @@ def phase_collect(a) -> int:
           f"(quota {binner.quota['normal']}/bin), {a.bin_shear:.2f} N shear bins "
           f"per axis (quota {binner.quota['shear']}/bin), "
           f"frames closer than {a.min_sep:.3f} N to a kept frame are dropped")
-    cam = Camera.from_config()
+    cam = Camera.from_config(camera_config_for(a.sensor))
     # Four driver buffers, not the usual one. This is the only phase that reads
     # the camera flat out, and with a single buffer the driver drops every
     # second frame: measured 2026-09-07, 2.48 fps against the exposure's own
@@ -2680,13 +2777,14 @@ def phase_contactmap(a) -> int:
         print(f"  {whyt}")
         return 1
     ref_img = cv2.imread(str(run / "reference.png"))
+    _shadow = shadows_the_gel(getattr(a, "sensor", None))
     if ref_img is None:
         print("  no reference.png")
         return 2
     out_dir = run / "contactmap"
     out_dir.mkdir(exist_ok=True)
     scale = _mm_per_px()
-    diff_level = diff_level_for(ref_img, a.diff_rel, a.diff_min)
+    diff_level = diff_level_for_sensor(ref_img, a, getattr(a, "sensor", None))
 
     d_target = min(a.map_depth, depth_cap)
     f_target = min(a.map_force, force_cap)
@@ -2701,7 +2799,7 @@ def phase_contactmap(a) -> int:
     if clearance > 0:
         if _move_along_normal(ip, clearance, a, a.approach_joint_step, vel=a.vel_free):
             return 2
-    cam = Camera.from_config()
+    cam = Camera.from_config(camera_config_for(a.sensor))
     cam.open()
     ft = FTInterface.from_config()
     ft.connect()
@@ -2742,7 +2840,8 @@ def phase_contactmap(a) -> int:
             frame, t_img = cam.grab_after(t_moved + a.map_settle)
             w, _ = reader.read_fresh()
             h = height()
-            r = contact_region(frame, ref_img, diff_level)
+            r = contact_region(frame, ref_img, diff_level,
+                               colour=_shadow)
             cv2.imwrite(str(out_dir / f"{tag}.png"), frame, [cv2.IMWRITE_PNG_COMPRESSION, 1])
             cv2.imwrite(str(out_dir / f"{tag}_diff.png"),
                         np.clip(r["_diff"] * 4, 0, 255).astype(np.uint8))
@@ -2952,13 +3051,14 @@ def phase_characterize(a) -> int:
     # measures with. So every step also takes a frame, and the ramp stops when
     # the brightness change per newton falls under `sat_frac` of its peak.
     ref_img = cv2.imread(str(run / "reference.png"))
+    _shadow = shadows_the_gel(getattr(a, "sensor", None))
     if ref_img is None:
         print("  no reference.png; --phase reference first")
         return 2
     char_dir = run / ("characterize" if not a.char_tag else f"characterize_{a.char_tag}")
     char_dir.mkdir(exist_ok=True)
-    diff_level = diff_level_for(ref_img, a.diff_rel, a.diff_min)
-    cam = Camera.from_config()
+    diff_level = diff_level_for_sensor(ref_img, a, getattr(a, "sensor", None))
+    cam = Camera.from_config(camera_config_for(a.sensor))
     cam.open()                      # before the DAQ task: it must not sit unread
     ft = FTInterface.from_config()
     ft.connect()
@@ -3018,7 +3118,8 @@ def phase_characterize(a) -> int:
                 return 1
             f = -float(w[2])
             frame, _t = cam.grab_settled()
-            reg_img = contact_region(frame, ref_img, diff_level)
+            reg_img = contact_region(frame, ref_img, diff_level,
+                               colour=_shadow)
             S = reg_img["mean_abs_diff_centre"]
             k = len(d_hist) + 1
             cv2.imwrite(str(char_dir / f"{k:02d}.png"), frame,
@@ -3363,8 +3464,20 @@ def depth_backstop(reg: dict | None = None, ent: dict | None = None) -> float:
     """
     reg = reg or yaml.safe_load(open(REGISTRY))
     pol = reg.get("capture_policy") or {}
-    frac = float(pol.get("depth_frac", 0.9))
-    off = float(pol.get("depth_offset_mm", 1.0))
+    # The policy above is the 9DTact's. Its +1 mm offset is a fact about that
+    # sensor's construction -- a black gel cast over the translucent layer the
+    # unit is named by -- and carries no meaning on a principle built
+    # differently. The operator confirmed on 2026-09-08 that a DIGIT gel has no
+    # such extra layer, so the label IS the whole compliant stack there, and
+    # asked for a deliberately tight 0.7 to start with, to be raised once the
+    # ladders show where the substrate actually begins.
+    #
+    # Getting this wrong is not recoverable: 9DTact_medium_2mm_r1 was
+    # permanently deformed and left the campaign.
+    per = (pol.get("per_principle") or {}).get(principle_of(
+        (ent or {}).get("id")) or "", {})
+    frac = float(per.get("depth_frac", pol.get("depth_frac", 0.9)))
+    off = float(per.get("depth_offset_mm", pol.get("depth_offset_mm", 1.0)))
     if ent is not None and ent.get("thickness_mm"):
         return (float(ent["thickness_mm"]) + off) * frac
     return float(pol.get("depth_backstop_mm", 0.9))
@@ -3759,10 +3872,11 @@ def phase_zero(a) -> int:
           f"stop at {a.zero_stop_force} N")
 
     ref_img = cv2.imread(str(run / "reference.png"))
+    _shadow = shadows_the_gel(getattr(a, "sensor", None))
     if ref_img is None:
         print("  no reference.png; --phase reference first")
         return 2
-    diff_level = diff_level_for(ref_img, a.diff_rel, a.diff_min)
+    diff_level = diff_level_for_sensor(ref_img, a, getattr(a, "sensor", None))
     zdir = run / "zero"
     zdir.mkdir(exist_ok=True)
 
@@ -3779,7 +3893,7 @@ def phase_zero(a) -> int:
                               vel=a.vel_free):
             return 2
 
-    cam = Camera.from_config()
+    cam = Camera.from_config(camera_config_for(a.sensor))
     cam.open()                      # before the DAQ task: it must not sit unread
     ft = FTInterface.from_config()
     ft.connect()
@@ -3911,7 +4025,8 @@ def phase_zero(a) -> int:
                 # than three frame periods at 2.7 fps, and whatever sits in the
                 # one-deep queue was exposed after the move ended.
                 frame, _t = cam.grab()
-                area = contact_region(frame, ref_img, diff_level)["area_px"]
+                area = contact_region(frame, ref_img, diff_level,
+                               colour=_shadow)["area_px"]
                 if onset is None and area > 0:
                     onset = depth
                 d_h.append(depth)
@@ -4216,10 +4331,11 @@ def phase_shape(a) -> int:
 
     surf = float(zero["surface_mm"])
     ref_img = cv2.imread(str(run / "reference.png"))
+    _shadow = shadows_the_gel(getattr(a, "sensor", None))
     if ref_img is None:
         print("  no reference.png; --phase reference first")
         return 2
-    diff_level = diff_level_for(ref_img, a.diff_rel, a.diff_min)
+    diff_level = diff_level_for_sensor(ref_img, a, getattr(a, "sensor", None))
     out = run / f"shape_{probe['id']}"
     out.mkdir(exist_ok=True)
 
@@ -4234,7 +4350,7 @@ def phase_shape(a) -> int:
                               vel=a.vel_free):
             return 2
 
-    cam = Camera.from_config()
+    cam = Camera.from_config(camera_config_for(a.sensor))
     cam.open()                      # before the DAQ task: it must not sit unread
     ft = FTInterface.from_config()
     ft.connect()
@@ -4271,7 +4387,8 @@ def phase_shape(a) -> int:
                 f = -float(w[2])
                 t_moved = time.time()
                 frame, t_img = cam.grab_after(t_moved)
-                rg = contact_region(frame, ref_img, diff_level)
+                rg = contact_region(frame, ref_img, diff_level,
+                               colour=_shadow)
                 name = f"{probe['id']}_d{dtgt:.2f}_r{rep}.png"
                 cv2.imwrite(str(out / name), frame,
                             [cv2.IMWRITE_PNG_COMPRESSION, 1])
@@ -4739,6 +4856,7 @@ def phase_scale(a) -> int:
     p_surf = p0 - (height() - surf) * n
 
     ref_img = cv2.imread(str(run / "reference.png"))
+    _shadow = shadows_the_gel(getattr(a, "sensor", None))
     if ref_img is None:
         print("  no reference.png")
         return 2
@@ -4768,7 +4886,7 @@ def phase_scale(a) -> int:
                           a.approach_joint_step, vel=a.vel_free):
             return 2
 
-    cam = Camera.from_config()
+    cam = Camera.from_config(camera_config_for(a.sensor))
     cam.open()                      # before the DAQ task: it must not sit unread
     ft = FTInterface.from_config()
     ft.connect()

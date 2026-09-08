@@ -4,6 +4,13 @@ design:
   - 9DTact
   - DIGIT
   - DIGIT_Marker
+# The hardness labels are NOT comparable between principles. 9DTact and DIGIT
+# gels are cast from different silicones and the soft/medium/hard steps are
+# different durometers, so "DIGIT_hard_3mm" is not a harder version of
+# "9DTact_hard_3mm" and the two must never be put on one hardness axis. Within
+# one principle the three steps are ordered and comparable; across principles
+# only the THICKNESS is the same physical quantity. Recorded 2026-09-08 on the
+# operator's instruction at the start of the DIGIT campaign.
   hardness:
   - soft
   - medium
@@ -188,6 +195,24 @@ capture_policy:
     fell from 5 N. Nothing reads this key -- run_one_sensor derives the hold as 0.6
     x min(range_normal, safe_force_N) -- so it is here to be read by a person, and
     it was left saying 3.0 N through two changes of the range
+  per_principle:
+    # The keys above describe the 9DTact. A principle listed here overrides
+    # them; anything not listed keeps the 9DTact numbers.
+    DIGIT:
+      diff_level_min: 12
+      depth_frac: 0.7
+      depth_offset_mm: 0.0
+      basis: >-
+        No black gel over the translucent layer, so thickness_mm is the whole
+        compliant stack (operator, 2026-09-08). 0.7 rather than 0.9 is a
+        deliberately tight start for a principle whose substrate behaviour has
+        not been measured yet; raise it once the ladders show where the backing
+        takes load. Gives 2.10 / 1.40 / 0.70 mm for the 3 / 2 / 1 mm gels.
+    DIGIT_Marker:
+      diff_level_min: 12
+      depth_frac: 0.7
+      depth_offset_mm: 0.0
+      basis: same gel construction as DIGIT; markers are printed on the surface
   depth_frac: 0.9
   depth_offset_mm: 1.0
   depth_limit_basis: '(thickness_mm + depth_offset_mm) x depth_frac from the gel surface,
@@ -2817,7 +2842,15 @@ sensors:
   max_depth_mm: 2.2
   depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
   status: pending
-  gel_model: null
+  gel_model:
+    # First-contact height from the drift-immune search, 2026-09-08, ball4.
+    # This is the SEARCH surface, not the extrapolated one the zero phase
+    # fits -- it is here so later searches can cross the empty air in one
+    # move instead of crawling 53 mm, which is what made the first descent
+    # take five minutes and let the F/T zero drift into the contact
+    # threshold. The zero phase will overwrite it with the fitted value.
+    surface_mm: 24.910
+    surface_basis: search_first_contact
   safe_force_N: null
 - id: DIGIT_hard_3mm_r2
   principle: DIGIT
