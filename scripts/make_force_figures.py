@@ -173,7 +173,13 @@ def fig_grid(per):
 
 
 def main() -> int:
-    f = pd.read_csv(DATA / "force_vs_resolution.csv")
+    # v2: one batch for every resolution, a validation split choosing the
+    # epoch, and both held-out definitions. The v1 table it replaces had a
+    # batch that shrank with the picture and no validation set at all.
+    src = DATA / "force_vs_resolution_v2.csv"
+    f = pd.read_csv(src if src.exists() else DATA / "force_vs_resolution.csv")
+    if "split" in f.columns:
+        f = f[f.split == "cycle"].copy()      # the honest split; random is §2.5
     seed = pd.read_csv(DATA / "force_seed_study.csv")
     sc = pd.read_csv(DATA / "force_scalar_baseline.csv")
     floor = label_noise("fz")
