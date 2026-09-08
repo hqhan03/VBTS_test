@@ -72,18 +72,19 @@ def fig_resolution(f, seed, floor, scalar, col="fz_mae", name="Fz", out="force_v
     ax.axhline(1 / 16, color="0.4", ls="-.", lw=1.2, zorder=3,
                label=f"ATI Mini45 quoted {'Fz' if name == 'Fz' else 'Fxy'} resolution "
                      f"({'1/16' if name == 'Fz' else '1/32'} N)")
+    # y is LINEAR (operator, 2026-09-08). A log y flattens the one thing this
+    # figure is for -- how much worse 8x5 is than everything above it -- into a
+    # step that looks like the wobble between neighbouring sizes.
     ax.set_xscale("log")
-    ax.set_yscale("log")
     ax.set_xticks(w)
     hgt = {int(a): int(b) for a, b in zip(f.width_px, f.height_px)}
     ax.set_xticklabels([f"{a}×{hgt[a]}" for a in w], rotation=45, ha="right", fontsize=8)
-    ax.set_yticks([0.02, 0.03, 0.05, 0.08, 0.15, 0.3, 0.7])
-    ax.set_yticklabels(["0.02", "0.03", "0.05", "0.08", "0.15", "0.30", "0.70"])
+    ax.set_ylim(0, None)
     ax.minorticks_off()
     ax.set_xlabel("input size the network sees")
     ax.set_ylabel(f"{name} MAE (N), held-out cycles")
-    ax.set_title(f"{name} estimation does not improve with camera resolution\n"
-                 "17 units, one fit per cell — the spread between cells is the fit's own noise",
+    ax.set_title(f"{name} estimation is flat from 1920×1080 down to 16×9, and breaks at 8×5\n"
+                 "17 units, one fit per cell; the band is what a re-run with a different seed moves by",
                  fontsize=10)
     ax.grid(alpha=.25, lw=.6)
     ax.legend(fontsize=8, framealpha=.9)
@@ -123,10 +124,9 @@ def fig_per_unit(f, seed, floor, scalar, col="fz_mae", name="Fz", out="force_vs_
         ax.set_title(f"{s}   median {med:.3f} N", fontsize=9.5, pad=4)
         ax.grid(alpha=.22, lw=.5)
     for ax in axes.ravel():
-        ax.set_xscale("log"); ax.set_yscale("log")
+        ax.set_xscale("log")           # y stays linear, see above
         ax.set_xticks(w)
-        ax.set_yticks([0.02, 0.05, 0.1, 0.3, 0.7])
-        ax.set_yticklabels(["0.02", "0.05", "0.10", "0.30", "0.70"])
+        ax.set_ylim(0, None)
         ax.minorticks_off()
     for ax in axes[-1]:
         ax.set_xticklabels([f"{a}×{hgt[a]}" for a in w], rotation=90, fontsize=7)
@@ -137,7 +137,7 @@ def fig_per_unit(f, seed, floor, scalar, col="fz_mae", name="Fz", out="force_vs_
                bbox_to_anchor=(0.5, 0.972))
     fig.suptitle(f"{name} estimation error against input size, one panel per unit\n"
                  "columns: soft / medium / hard   ·   rows: 1 mm r1, r2, 2 mm r1, r2, "
-                 "3 mm r1, r2   ·   shared log axes",
+                 "3 mm r1, r2   ·   shared axes, linear y",
                  fontsize=11.5, y=0.995)
     fig.supxlabel("input size the network sees", fontsize=10)
     fig.tight_layout(rect=(0, 0.012, 1, 0.955))
@@ -180,7 +180,12 @@ def main() -> int:
     f = pd.read_csv(src if src.exists() else DATA / "force_vs_resolution.csv")
     if "split" in f.columns:
         f = f[f.split == "cycle"].copy()      # the honest split; random is §2.5
-    seed = pd.read_csv(DATA / "force_seed_study.csv")
+    # v2 seed study: the same recipe as the v2 sweep (one batch, a validation
+    # split choosing the epoch). The v1 numbers cannot be mixed with the v2
+    # sweep -- they were measured under an optimiser that changed with the
+    # picture, and they are 3x noisier for it (Fz sd 0.0219 against 0.0072).
+    _sv2 = DATA / "force_seed_study_v2.csv"
+    seed = pd.read_csv(_sv2 if _sv2.exists() else DATA / "force_seed_study.csv")
     sc = pd.read_csv(DATA / "force_scalar_baseline.csv")
     floor = label_noise("fz")
     floor_lat = label_noise("lat")
