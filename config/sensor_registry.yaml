@@ -2851,6 +2851,26 @@ sensors:
     # threshold. The zero phase will overwrite it with the fitted value.
     surface_mm: 24.910
     surface_basis: search_first_contact
+  image_scale:
+    # From the pair100 caliper, 2026-09-08: twelve presses over 119 deg of tool
+    # roll, ellipse residual 0.049 on 9 of them. The cross-correlation scale
+    # phase, run three times on the same unit, gave 87.4 / 91.7 / 95.6 px/mm --
+    # 8.6 % spread, because a DIGIT imprint has no texture for it to track. The
+    # caliper agrees with the middle of that to 0.4 % and pins the anisotropy,
+    # which the correlation could not (0.813 / 0.898 / 0.955 over its three
+    # runs).
+    px_per_mm_major: 95.42
+    px_per_mm_minor: 92.44
+    anisotropy: 1.032
+    isotropic_px_per_mm: 93.92
+    um_per_px: 10.647
+    method: pair100 caliper, ellipse over tool rolls
+    rotation_deg: 29.80
+    rotation_basis: >-
+      the scale phase's better row. A caliper fixes the SHAPE of J and not its
+      rotation -- it cannot tell which sensor direction the posts lay along.
+      The correlation determines the rotation well even where its magnitudes
+      wander: 29.6 +- 0.5 deg over the 17 9DTact units, and 29.80 here.
   safe_force_N: null
 - id: DIGIT_hard_3mm_r2
   principle: DIGIT
