@@ -3746,6 +3746,13 @@ def _gel_model(a):
         if (_z.get("probe") and getattr(a, "probe", None) == _z["probe"]
                 and _z.get("surface_mm")):
             _fits = [f for f in (_z.get("fits") or []) if f.get("ok") and f.get("a")]
+            # The BEST fit, not the first. zero can approach more than once,
+            # and on DIGIT_Marker_hard_1mm_r2 (2026-09-09) approach 1 fitted
+            # a = 1.25 (r2 0.67, sigma_d0 0.35 mm) while approach 2 fitted
+            # a = 13.9 (r2 0.99, sigma 0.006). zero chose its surface from
+            # approach 2; this took a from approach 1, sized the 1.2 N hold
+            # at 0.97 mm on a 1 mm gel, and collect refused.
+            _fits.sort(key=lambda f: float(f.get("sigma_d0_mm", 1e9)))
             _a = float(_fits[0]["a"]) if _fits else None
             if _a:
                 print(f"  gel model from THIS run's zero ({_z['probe']}): "
@@ -4045,7 +4052,10 @@ def fit_zero(depth, force, law: str, fmax: float) -> dict:
     # phase's own vote survived it, but anything that averaged the ok fits
     # did not (see check_surface_plausible). A fit is ok when it explains
     # the data and locates the surface to better than a millimetre.
-    ok = bool(np.isfinite(r2) and r2 > 0.5 and np.isfinite(sig) and sig < 1.0
+    # r2 > 0.8 and sigma_d0 < 0.2 mm: a 0.67 / 0.35 mm fit (approach 1 above)
+    # is not a surface, it is a guess, and the zero phase's own vote already
+    # discards such approaches.
+    ok = bool(np.isfinite(r2) and r2 > 0.8 and np.isfinite(sig) and sig < 0.2
               and abs(float(po[1])) < 50.0)
     out = {"ok": ok,
            "d0_mm": float(po[1]),
