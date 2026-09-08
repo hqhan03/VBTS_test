@@ -736,7 +736,9 @@ Pass B 34 런 비 0.87–0.92, Pass A 37 런 0.86–0.93, **9DTact 는 47 런 0.
 조치: ① 모든 DIGIT/DIGIT_Marker Pass B 런에 `reference_collect.png`(그 런의 0 N collect
 프레임 15 장 중앙값)를 만들고 학습 로더가 그것을 우선 쓴다. ② touchcheck 단계(프로브가 작업
 높이에서 살짝 뜬 0 N)에서 `reference_working.png` 을 저장하고 로더는 collect > working >
-reference 순으로 고른다. ③ `camera_digit.yaml` 의 open 대기는 잰 값(0.2 s / 2)으로 되돌렸고,
+reference 순으로 고른다 — 첫 적용 유닛 `DIGIT_hard_1mm_r1` 에서 collect 0 N 프레임 /
+`reference_working` = **0.997** (같은 프레임 / `reference.png` = 0.889): 확인됐다. ③ `camera_digit.yaml` 의
+open 대기는 잰 값(0.2 s / 2)으로 되돌렸고,
 reference 단계의 3 s 정착 검사는 해롭지 않아 남겼다(+0.02 % 를 읽는다 — 이 결함을 잡을 수는
 없다).
 **Pass A 의 DIGIT 분석(사다리 자국 면적, `diff_level`, 축척의 자국 검출)은 밝은 기준 위에서
