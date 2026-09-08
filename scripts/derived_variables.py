@@ -135,8 +135,31 @@ def unit_row(pr, unit_full, D):
         i = out.lat.idxmax(); row.update(mu=float(out.loc[i, "lat"] / max(out.loc[i, "fz"], 1e-6)), shear_max_N=float(out.lat.max()))
         st = [g.depth_mm.iloc[0] for _, g in shr.groupby("cycle")]
         if len(st) >= 3: row.update(creep_mm_per_cycle=float(np.polyfit(range(len(st)), st, 1)[0]))
-    # --- labels
+    # --- labels. Three different things, kept apart:
+    #   fz_noise_mae / lat_noise_mae : second-difference "noise floor" of the
+    #       per-frame label. On a stiff gel the ramp's force steps are large,
+    #       so this picks up STEP ROUGHNESS, not the sensor -- DIGIT_Marker
+    #       units read 0.10-0.17 N here while their F/T at 0 N is as quiet as
+    #       9DTact's (measured 2026-09-09). Kept for continuity, read with care.
+    #   fz_rate_per_frame / lat_rate_per_frame : median |dF| between consecutive
+    #       frames inside a segment -- how far the label moves per frame, i.e.
+    #       how much the label can disagree with the picture's exposure window.
+    #   fz_sd_0N / lat_sd_0N : the F/T's own noise, from 1 s windows of ft.csv
+    #       where |Fz| < 0.05 N. The sensor property.
     row.update(fz_noise_mae=noise_mae(fr.fz.values, seg.values), lat_noise_mae=noise_mae(fr.lat.values, seg.values))
+    rates_fz, rates_lat = [], []
+    for _, g in fr.groupby(seg.values):
+        if len(g) > 3:
+            rates_fz.append(np.median(np.abs(np.diff(g.fz.values)))); rates_lat.append(np.median(np.abs(np.diff(g.lat.values))))
+    row.update(fz_rate_per_frame=float(np.median(rates_fz)) if rates_fz else np.nan,
+               lat_rate_per_frame=float(np.median(rates_lat)) if rates_lat else np.nan)
+    ftp = os.path.join(D, "stream", "ft.csv")
+    if os.path.exists(ftp):
+        ft = pd.read_csv(ftp); v = ft["Fz"].values; latv = np.hypot(ft["Fx"].values, ft["Fy"].values); tt = ft["t"].values
+        dt = float(np.median(np.diff(tt))) if len(tt) > 2 else 0.02; win = max(int(1.0 / dt), 20); q = np.abs(v) < 0.05; sd, sdl = [], []
+        for i in range(0, len(v) - win, win):
+            if q[i:i + win].mean() > 0.95: sd.append(np.std(v[i:i + win])); sdl.append(np.std(latv[i:i + win]))
+        row.update(fz_sd_0N=float(np.median(sd)) if sd else np.nan, lat_sd_0N=float(np.median(sdl)) if sdl else np.nan, ft_rate_hz=1 / dt)
     # --- optics: reference, pedestal, response slopes, bandwidths
     ref, refname = ref_image(D, pr); row["reference_used"] = refname
     ref0 = cv2.imread(os.path.join(D, "reference.png"))

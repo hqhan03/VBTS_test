@@ -31,9 +31,22 @@
 | | `img_slope_lvl_per_N`, `img_slope_lvl_per_mm` | 정규 블록 0.2–2 N, 전체 프레임 \|diff\| 평균의 기울기 | **이미지 응답률** — 뉴턴당·mm 당 그림이 얼마나 변하나 |
 | | `imprint_area_slope_pct_per_N`, `img_resp_at_2N` | 같은 구간 | 자국이 얼마나 넓어지나, 2 N 에서의 응답 |
 | | `bw_normal_f90`, `bw_shear_f90`, `shear_snr` | 잡음 차감 스펙트럼, 0–3 c/mm | 자국·전단 신호의 공간 대역폭, 전단 S/N |
-| 라벨 | `fz_noise_mae`, `lat_noise_mae` | 세그먼트 안 2 차 차분 | F/T 라벨 자신의 잡음 바닥 |
+| 라벨 | `fz_noise_mae`, `lat_noise_mae` | 세그먼트 안 2 차 차분 | 프레임별 라벨의 "잡음 바닥" — **단단한 젤에서는 램프의 힘 스텝 거칠기를 읽는다** (아래) |
+| | `fz_rate_per_frame`, `lat_rate_per_frame` | 세그먼트 안 연속 프레임 \|ΔF\| 중앙값 | 프레임당 라벨이 얼마나 움직이나 — 라벨과 노출 창의 불일치 크기 |
+| | `fz_sd_0N`, `lat_sd_0N` | `ft.csv` 의 \|Fz\| < 0.05 N 인 1 s 창들의 sd | **F/T 센서 자신의 잡음** |
 | 성능 | `fz_best/knee/res_loss`, `sh_best/knee/res_loss` | 해상도 스윕 (`analyse_saturation`) | 최소 오차, 무릎, 해상도 손실 |
 | | `n_resolved`, `dip_175_max`, `um_per_level`, `cyl4_corrected_rms` | 9DTact 만, Pass A | 공간 분해능·형상 복원 |
+
+### 1.1 "라벨 잡음 바닥" 은 센서 잡음이 아니었다
+
+첫 상관 표에서 DIGIT_Marker 유닛의 `lat_noise_mae` 가 0.16–0.17 N 으로 9DTact(0.01–0.07)의
+3–10 배였다. 같은 F/T, 같은 DAQ 인데 그럴 수 없다. `ft.csv` 의 0 N 구간에서 센서 잡음을 직접
+재면 **세 원리가 같다**: Fz sd 0.0145 / 0.0156 / 0.0158 N, 측면 0.0022 / 0.0026 / 0.0024 N
+(9DTact / DIGIT / DIGIT_Marker, 각 6 런 중앙값, 49.5–49.9 Hz). 2 차 차분 추정기는 램프가 국소
+선형이라고 가정하는데, 단단한 젤에서는 세그먼트 하나가 0.3–0.6 N 을 뛰어 그 가정이 깨진다 —
+추정기가 읽는 것은 **힘 스텝의 거칠기**다. 그래서 세 변수로 나눴다: 센서 잡음(`*_sd_0N`), 프레임당
+라벨 변화(`*_rate_per_frame`), 그리고 옛 추정기(`*_noise_mae`, 참고용). `force_estimation.md` §3.1
+의 "라벨 잡음 바닥 0.028 N" 은 9DTact 안에서는 여전히 유효한 하한이지만, 원리 간 비교에는 쓰지 않는다.
 
 ## 2. 가설 (결과 전에 적음)
 

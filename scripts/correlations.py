@@ -28,7 +28,8 @@ D = lambda *p: os.path.join(ROOT, "data", *p)
 DERIVED = ["hertz_k", "hertz_n", "hertz_a_ball8", "d_2N_mm", "a_2N_mm", "mu", "creep_mm_per_cycle",
            "px_per_mm", "tilt_deg", "pedestal_ratio", "img_slope_lvl_per_N", "img_slope_lvl_per_mm",
            "imprint_area_slope_pct_per_N", "img_resp_at_2N", "bw_normal_f90", "bw_shear_f90", "shear_snr",
-           "fz_noise_mae", "lat_noise_mae", "thickness_mm", "hard"]
+           "fz_noise_mae", "lat_noise_mae", "fz_rate_per_frame", "lat_rate_per_frame", "fz_sd_0N", "lat_sd_0N",
+           "thickness_mm", "hard"]
 PERF = ["fz_best", "fz_knee", "fz_res_loss", "sh_best", "sh_knee", "sh_res_loss"]
 
 
@@ -48,13 +49,29 @@ def bh(p):
     return np.minimum(out, 1.0)
 
 
-def table(df, label, min_n=8):
+def _resid_ranks(s, col, group):
+    """Ranks of `col` with the per-group mean rank removed -- a rank-partial
+    correlation that controls for principle. Pooling principles otherwise turns
+    every DIGIT-vs-9DTact difference (worse floor, brighter pedestal, stiffer
+    gels, other bandwidth) into a spurious 'correlation'."""
+    r = s[col].rank()
+    return r - r.groupby(s[group]).transform("mean")
+
+
+def table(df, label, min_n=8, partial=None):
     rows = []
     for x in DERIVED:
         for y in PERF:
-            s = df[[x, y]].dropna()
+            cols = [x, y] + ([partial] if partial else [])
+            s = df[cols].dropna()
             if len(s) < min_n or s[x].nunique() < 3 or s[y].nunique() < 3: continue
-            r = spearmanr(s[x], s[y]); rows.append(dict(scope=label, x=x, y=y, n=len(s), rho=r.statistic, p=r.pvalue))
+            if partial:
+                if s[partial].nunique() < 2: continue
+                rx, ry = _resid_ranks(s, x, partial), _resid_ranks(s, y, partial)
+                r = spearmanr(rx, ry)
+            else:
+                r = spearmanr(s[x], s[y])
+            rows.append(dict(scope=label, x=x, y=y, n=len(s), rho=r.statistic, p=r.pvalue))
     t = pd.DataFrame(rows)
     if len(t): t["q"] = bh(t.p.values)
     return t
@@ -78,7 +95,8 @@ if __name__ == "__main__":
         df = df.merge(c[["unit", "principle", "n_resolved", "dip_175_max", "um_per_level", "cyl4_corrected_rms_after_linear"]], on=["unit", "principle"], how="left")
     df.to_csv(D("derived_with_performance.csv"), index=False)
     print(f"  joined: {len(df)} units; performance available for {df.fz_best.notna().sum()}")
-    tabs = [table(df[df.principle == pr], pr) for pr in df.principle.unique()] + [table(df, "pooled")]
+    tabs = ([table(df[df.principle == pr], pr) for pr in df.principle.unique()]
+            + [table(df, "pooled"), table(df, "pooled|principle", partial="principle")])
     T = pd.concat([t for t in tabs if len(t)], ignore_index=True)
     T.to_csv(D("correlations.csv"), index=False)
     for scope in T.scope.unique():
@@ -96,7 +114,7 @@ if __name__ == "__main__":
                 if len(s) >= 8 and s[x].nunique() > 2: r = spearmanr(s[x], s[y]); best.append((r.pvalue, x, r.statistic, len(s)))
             best.sort(); print(f"  {y:32s} " + "  ".join(f"{x} rho {rho:+.2f} p {p:.3f}" for p, x, rho, n in best[:3]))
     # figure: heatmap of pooled rho, masked where q >= 0.1
-    P = T[T.scope == "pooled"]
+    P = T[T.scope == "pooled|principle"]
     if len(P):
         M = P.pivot(index="x", columns="y", values="rho").reindex(index=DERIVED, columns=PERF)
         Q = P.pivot(index="x", columns="y", values="q").reindex(index=DERIVED, columns=PERF)
@@ -107,6 +125,6 @@ if __name__ == "__main__":
                 v = M.values[i, j]; q = Q.values[i, j]
                 if np.isfinite(v): ax.text(j, i, f"{v:+.2f}" + ("*" if q < 0.10 else ""), ha="center", va="center", fontsize=8, color="k")
         ax.set_xticks(range(len(PERF))); ax.set_xticklabels(PERF, rotation=45, ha="right"); ax.set_yticks(range(len(DERIVED))); ax.set_yticklabels(DERIVED)
-        ax.set_title("Spearman rho, derived unit property x force-estimation performance\n(all principles pooled; * = BH q < 0.10)", fontsize=10)
+        ax.set_title("Spearman rho, derived unit property x force-estimation performance\n(all principles, rank-partial controlling for principle; * = BH q < 0.10)", fontsize=10)
         fig.colorbar(im, ax=ax, shrink=0.6); fig.tight_layout(); fig.savefig(os.path.join(ROOT, "docs", "figures", "correlations_pooled.png"), dpi=140); plt.close(fig)
         print("  -> docs/figures/correlations_pooled.png")
