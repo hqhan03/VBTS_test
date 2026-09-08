@@ -4029,7 +4029,19 @@ def fit_zero(depth, force, law: str, fmax: float) -> dict:
     p = 1.5 if law == "hertz" else 1.0
     m = (f < fmax) & (f > -0.05)
     if int(m.sum()) < 5:
-        return {"ok": False, "why": f"only {int(m.sum())} points under {fmax} N"}
+        # A stiff gel can cross the whole fit window in three fine steps:
+        # DIGIT_medium_1mm_r1 under ball8 (2026-09-09) went 0.835 -> 0.909 ->
+        # 1.200 N in 0.02 mm steps and left four points under 1.0 N, and the
+        # zero phase failed outright. The window exists to keep the fit in the
+        # Hertz regime, not to starve it; the ball4 ladders fit d^1.5 cleanly
+        # to 3 N on these gels. Widen it to the smallest force that admits six
+        # points, and say so in fit_max_force_N.
+        fin = np.sort(f[f > -0.05])
+        if len(fin) >= 6:
+            fmax = float(fin[5]) + 1e-6
+            m = (f < fmax) & (f > -0.05)
+        if int(m.sum()) < 5:
+            return {"ok": False, "why": f"only {int(m.sum())} points under {fmax:.2f} N"}
 
     def model(x, aa, d0):
         return aa * np.clip(x - d0, 0.0, None) ** p
