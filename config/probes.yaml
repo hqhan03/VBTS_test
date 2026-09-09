@@ -243,3 +243,19 @@ probes:
     tests: [resolution]
     tcp_z_mm: 36.794
     tcp_status: common endpoint by design
+
+  - id: pair010
+    tip: cylinder_pair
+    element_diameter_mm: 1.0
+    gap_mm: 0.10
+    contact_law: punch
+    tests: [resolution]
+    tcp_z_mm: 36.794
+    tcp_status: common endpoint by design
+    note: |
+      Added 2026-09-09 because every DIGIT unit resolved pair025 (1.25 mm
+      centre-to-centre) -- 18 of 18, most of them at the first 0.1 mm rung --
+      so the limit is below what the older set can reach. Centres are 1.10 mm
+      apart here. Geometry and the common tip endpoint confirmed by the
+      operator; the first unit checks the spacing against the imprint the way
+      pair025 was checked (measured 1.19-1.33 mm against a designed 1.25).

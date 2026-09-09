@@ -326,7 +326,7 @@ def dip_fraction(x, prof, sep_mm):
 
 def main():
     dataset, sensor = sys.argv[1], sys.argv[2]
-    probes = sys.argv[3:] or ["pair100", "pair075", "pair050", "pair025"]
+    probes = sys.argv[3:] or ["pair100", "pair075", "pair050", "pair025", "pair010"]
     cfg = yaml.safe_load(open(ROOT / "config" / "probes.yaml"))
     gaps = {p["id"]: p["gap_mm"] for p in cfg["probes"] if p["tip"] == "cylinder_pair"}
     print(f"  {sensor}   Rayleigh dip >= {RAYLEIGH:.3f}, "
