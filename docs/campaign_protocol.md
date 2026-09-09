@@ -849,6 +849,38 @@ DIGIT_Marker 1.8 % (수정 전 두 유닛 제외 시; 그 둘은 13.8 / 26.1 %).
 
 ---
 
+### 4.9 학습 스윕이 RAM 을 다 먹고 편집기를 내렸다 (2026-09-09)
+
+**증상.** 06:05 와 14:39, 두 번 VSCode 가 예고 없이 종료되고 그 안에서 돌던 모든
+백그라운드 작업(스윕·수집 대기 큐)이 함께 사라졌다.
+
+**원인.** 편집기 잘못이 아니라 **RAM OOM** 이다. `journalctl` 에:
+
+```
+kernel: Out of memory: Killed process 337479 (python) anon-rss:25785592kB
+systemd[4349]: app-code-6471.scope: Failed with result 'oom-kill'.
+```
+
+`force_vs_resolution.py` 의 `train_eval` 이 스플릿 전체를 float32 텐서로 CPU 에
+올렸다 — 최대 해상도에서 1000 × 1080 × 1920 × 3 × 4 B = **25 GB**. grey 와 colour
+스윕을 병렬로 돌리면 두 프로세스가 같은 시점에 1920×1080 에 도달해 50 GB 를 넘고,
+62 GB 기계에서 전역 OOM 이 난다. 커널이 python 하나를 죽이면 systemd 는 그 프로세스가
+속한 `app-code-*.scope` 를 `oom-kill` 로 실패 처리하고 **스코프 전체**를 정리하므로,
+`nohup` 이나 `setsid` 로 띄운 자식도 편집기와 함께 사라진다.
+
+**조치 (둘 다 필요).**
+1. 스플릿을 **uint8 로 CPU 에 두고 배치마다 GPU 에서 float 로 캐스팅**한다
+   (`prep()` 에서 `.float()` 제거, 배치 경로에 `.to(device).float()`).
+   최대 해상도 프로세스의 피크가 26 GB → 약 12 GB. 값은 0–255 레벨 그대로이므로
+   이미 기록된 CSV 행과 수치가 같고 resume 이 그대로 유효하다.
+2. 장시간 작업은 편집기 스코프가 아니라 **자기 스코프에 상한을 걸고** 띄운다:
+   `systemd-run --user --scope -p MemoryMax=20G -p MemorySwapMax=0 -- python ...`.
+   상한을 넘으면 그 cgroup 안에서만 OOM 이 나므로 전역 OOM 이 아니고, 편집기 스코프는
+   실패하지 않는다.
+
+**교훈.** 이 저장소에서 오래 도는 작업은 `nohup ... &` 만으로는 세션 수명을 넘기지
+못한다. `setsid` 도 cgroup 을 바꾸지 않으므로 부족하다. 스코프를 따로 만들 것.
+
 ## 6. 시간과 노력
 
 | | 단위 | 횟수 | 합계 |

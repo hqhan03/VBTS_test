@@ -414,7 +414,14 @@ def train_eval(X, y, tr, va, te, epochs=30, batch=64, seed=0, device="cuda",
     rng = np.where(hi - lo < 1e-6, 1.0, hi - lo)
 
     def prep(m):
-        return torch.from_numpy(X[m]).permute(0, 3, 1, 2).float()
+        # uint8 on the CPU; the float cast happens per batch on the device.
+        # Holding a split as float32 at full resolution is
+        # 1000 x 1080 x 1920 x 3 x 4 B = 25 GB, and with the grey and colour
+        # sweeps both at 1920x1080 that OOM-killed the machine twice on
+        # 2026-09-09 -- systemd then failed the whole app-code scope, which
+        # took the editor down with it. The cast is numerically identical
+        # (raw 0-255 levels, no scaling), so resumed CSV rows stay comparable.
+        return torch.from_numpy(X[m]).permute(0, 3, 1, 2)
 
     Xtr, Xva, Xte = prep(tr), prep(va), prep(te)
     ytr = torch.from_numpy((y[tr] - lo) / rng).float()
@@ -431,7 +438,7 @@ def train_eval(X, y, tr, va, te, epochs=30, batch=64, seed=0, device="cuda",
         out, loss = [], 0.0
         with torch.no_grad():
             for i in range(0, len(Xs), max(2, micro)):
-                xb = Xs[i:i + max(2, micro)].to(device)
+                xb = Xs[i:i + max(2, micro)].to(device).float()
                 pb = net(xb).float()
                 if ys is not None:
                     loss += float(lossf(pb, ys[i:i + max(2, micro)].to(device)))
@@ -447,7 +454,7 @@ def train_eval(X, y, tr, va, te, epochs=30, batch=64, seed=0, device="cuda",
         tot, k = 0.0, 0
         for i in range(0, n, micro):
             idx = perm[i:i + micro]
-            xb = Xtr[idx].to(device, non_blocking=True)
+            xb = Xtr[idx].to(device, non_blocking=True).float()
             yb = ytr[idx].to(device, non_blocking=True)
             loss = lossf(net(xb), yb)
             loss.backward()
