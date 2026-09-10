@@ -41,6 +41,7 @@ import argparse
 import csv
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -840,6 +841,11 @@ def phase_series(a) -> int:
     return 0
 
 
+# Speed (%) for any move that travels AWAY from the gel. The descent keeps
+# whatever the caller asked for, because that is where contact happens.
+UP_VEL = 100.0
+
+
 def _move_along_normal(ip: str, mm: float, a, ceiling: float | None = None,
                        vel: float | None = None) -> int:
     """One commanded move along the sensor normal. Positive is away from the gel.
@@ -862,8 +868,15 @@ def _move_along_normal(ip: str, mm: float, a, ceiling: float | None = None,
         print(f"  refusing the move: {pl.get('why')}")
         return 2
     tool = pl["active_tool"][1] if isinstance(pl["active_tool"], list) else 1
+    _v = vel if vel is not None else a.vel
+    if mm > 0:
+        # Away from the gel: nothing is measured on the way up and there is
+        # nothing to run into, so it goes at UP_VEL instead of the velocity the
+        # descent needs (operator, 2026-09-10). Only mm > 0 takes this branch,
+        # so contact velocity is untouched.
+        _v = max(_v, UP_VEL)
     rv = mv.send_movel(ip, pl["target_joints"], pl["target_pose"], tool,
-                       vel if vel is not None else a.vel, a.ovl)
+                       _v, a.ovl)
     if rv != 0:
         print(f"  MoveL returned {rv}")
         return 1
@@ -4093,7 +4106,17 @@ def fit_zero(depth, force, law: str, fmax: float) -> dict:
     # r2 > 0.8 and sigma_d0 < 0.2 mm: a 0.67 / 0.35 mm fit (approach 1 above)
     # is not a surface, it is a guess, and the zero phase's own vote already
     # discards such approaches.
-    ok = bool(np.isfinite(r2) and r2 > 0.8 and np.isfinite(sig) and sig < 0.2
+    # r2 asks how well a Hertz curve F = a*d^n describes the approach, which is
+    # the wrong question for a FLAT PUNCH: its force rises almost linearly from
+    # first contact, so a punch that seated perfectly still scores badly. On the
+    # marker 1 mm gels cyl4 was rejected three times with r2 0.31-0.45 while the
+    # three independent approaches agreed on the surface to 0.035 mm and each
+    # reported its own uncertainty as 0.07-0.15 mm -- the estimate was fine and
+    # the gate was measuring the model, not the measurement. For a punch the
+    # gate is therefore sigma_d0, which is the uncertainty in the surface, and
+    # r2 only has to show the fit is not noise. Spheres keep the old gate.
+    r2_min = 0.2 if str(law).lower().startswith("punch") else 0.8
+    ok = bool(np.isfinite(r2) and r2 > r2_min and np.isfinite(sig) and sig < 0.2
               and abs(float(po[1])) < 50.0)
     out = {"ok": ok,
            "d0_mm": float(po[1]),
@@ -4103,7 +4126,8 @@ def fit_zero(depth, force, law: str, fmax: float) -> dict:
            "exponent": p, "law": law, "n": int(m.sum()),
            "fit_max_force_N": float(fmax)}
     if not ok:
-        out["why"] = f"degenerate fit: r2 {r2:.3g}, sigma_d0 {sig:.3g} mm, d0 {float(po[1]):.3g} mm"
+        out["why"] = (f"degenerate fit: r2 {r2:.3g} (needs > {r2_min}), "
+                      f"sigma_d0 {sig:.3g} mm, d0 {float(po[1]):.3g} mm")
     return out
 
 
@@ -4593,6 +4617,13 @@ def phase_zero(a) -> int:
         cam.close()
 
 
+# Fraction of a gel's safe force at which the depth ladder stops descending.
+# 0.7 leaves room for the next rung to be much stiffer than the last, which is
+# what a thin gel on a rigid backing does (4.6 N at 0.58 mm where 0.47 mm gave
+# 2.3 N).
+SHAPE_FORCE_FRAC = 0.7
+
+
 def phase_shape(a) -> int:
     """The depth ladder: press to fixed indentations and photograph each one.
 
@@ -4626,6 +4657,14 @@ def phase_shape(a) -> int:
         print(f"  deepest rung {max(depths)} mm exceeds the {cap:.2f} mm "
               f"backstop for a {ent['thickness_mm']} mm gel")
         return 2
+    # The depth backstop is the only limit this phase had, and depth is not what
+    # breaks a gel -- force is. A flat punch has eight times the paired
+    # cylinders' area, so on 2026-09-10 the cyl4 ladder on DIGIT_hard_1mm_r2
+    # reached 4.60 N at 0.578 mm against that unit's 4.95 N ceiling, on the rung
+    # before last, with nothing in the code watching. Stop descending once a
+    # rung passes this fraction of the registry's safe force; the rung that
+    # triggers it is kept (it is already measured and was under the ceiling).
+    f_stop = SHAPE_FORCE_FRAC * float(sensor_limits(a)[1])
 
     rc = yaml.safe_load(open(ROOT / "config" / "robot_config.yaml"))
     ip = a.ip or rc["robot"]["ip"]
@@ -4729,6 +4768,13 @@ def phase_shape(a) -> int:
                              "diff_level": diff_level})
                 print(f"  {rep:>4} {dtgt:>8.2f} {reached:>8.3f} {f:>8.3f} "
                       f"{rg['area_px']:>9d} {rg['radius_px']:>10.1f}")
+                if f >= f_stop:
+                    print(f"  stopping the ladder here: {f:.3f} N is past "
+                          f"{SHAPE_FORCE_FRAC:.0%} of the {f_stop/SHAPE_FORCE_FRAC:.2f} N "
+                          f"ceiling this phase runs under (the fixed collection "
+                          f"range, or the gel's own limit where that is lower). "
+                          f"Deeper rungs skipped.")
+                    break
 
         _write_rows(out / "ladder.csv", rows)
         st_run.setdefault("shape", {})[probe["id"]] = {
@@ -5037,6 +5083,413 @@ def _diff_f32(frame_bgr, ref_bgr, colour: bool = False):
     g = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY).astype(np.float32)
     r = cv2.cvtColor(ref_bgr, cv2.COLOR_BGR2GRAY).astype(np.float32)
     return np.abs(g - r)
+
+
+def _grid_gel_tilt(sensor: str):
+    """Mean gel plane slope (sx, sy) for this unit, from any pass that fitted
+    one in its scale phase. Same source run_one_sensor uses to square the probe."""
+    import glob, json
+    sx, sy = [], []
+    for p in (glob.glob(str(ROOT / "data" / "*" / "*" / "state.json"))
+              + glob.glob(str(ROOT / "data" / "*" / "*" / "*" / "state.json"))):
+        name = re.sub(r"__\w+$", "", Path(p).parent.name)
+        if name != sensor:
+            continue
+        try:
+            sc = json.loads(Path(p).read_text()).get("scale") or {}
+        except Exception:
+            continue
+        for v in sc.values():
+            if isinstance(v, dict) and v.get("plane_slope_y") is not None:
+                sx.append(float(v["plane_slope_x"]))
+                sy.append(float(v["plane_slope_y"]))
+    return (sum(sx) / len(sx), sum(sy) / len(sy)) if sx else None
+
+
+def phase_calibgrid(a) -> int:
+    """Photometric-stereo calibration: a known sphere pressed over a grid.
+
+    9DTact reads depth from one number per pixel -- how dark the pigment layer
+    went -- so its calibration is one curve. DIGIT lights the gel from the side
+    with three coloured LEDs and reads the SLOPE of the surface from the colour,
+    then integrates it; that map from (R, G, B) to (dz/dx, dz/dy) is what has to
+    be calibrated, and it is not one curve because the lighting is not uniform.
+    Measured on this rig (cross_principle.md 1.1): moving the same contact
+    1.5 mm sideways changes the green channel by 72 counts and can flip its
+    sign. A single central calibration therefore cannot be used off-centre,
+    which is why the cube4 and star10 frames collected so far have no
+    reconstruction to be scored against.
+
+    So: press a sphere of KNOWN radius at a grid of positions across the field,
+    at several depths each. At every contact point the true surface slope is
+    analytic -- for a sphere of radius R indented by d, the contact patch has
+    radius sqrt(2Rd - d^2) and the slope at distance r from the centre is
+    r / sqrt(R^2 - r^2) -- so each frame gives (position, colour) -> slope for
+    a whole disc of slopes at once, and the grid covers the field.
+
+    Depth-controlled, not force-controlled: the slope field is set by the
+    geometry of the indentation, so the depth is the quantity that has to be
+    held, and the force is recorded and used only as the safety guard.
+
+    Writes calibgrid_<probe>/grid.csv and one PNG per (position, depth).
+    """
+    from vbts_platform.ft_stream import ForceReader
+
+    reg, ent = load_sensor(a.sensor)
+    pcfg, probe = load_probe(a.probe)
+    if probe.get("tip") != "sphere":
+        print(f"  {probe['id']} is a {probe.get('tip')}. The calibration needs a "
+              "SPHERE: its slope field is the thing that is known.")
+        return 2
+    run = active_run()
+    st_run = load_state(run)
+    zero = st_run.get("zero")
+    if not zero:
+        print("  --phase zero first: the grid is measured from its surface")
+        return 2
+    if zero["probe"] != probe["id"]:
+        print(f"  the zero on file used {zero['probe']!r}, not {probe['id']!r}.")
+        return 2
+    depths = [float(x) for x in a.grid_depths.split(",")]
+    cap = depth_backstop(reg, ent)
+    if max(depths) > cap:
+        print(f"  deepest rung {max(depths)} mm exceeds the {cap:.2f} mm backstop")
+        return 2
+    nx, ny = (int(v) for v in a.grid_n.split(","))
+    # The gel plane is NOT perpendicular to the sensor axis: it is tilted about
+    # 2 deg per unit (rig-geometry note, 2026-09-05), and the align step squares
+    # the PROBE to it without changing the axis this phase steps along. So a
+    # lateral move of 4 mm along the sensor x climbs or drops ~0.14 mm relative
+    # to the gel -- as much as the whole indentation. Measured on the first grid
+    # (DIGIT_medium_2mm_r1): at 0.15 mm the x = -4 mm column left almost no
+    # imprint while x = +4 mm left twice the central one. The surface height at
+    # each grid point therefore gets the plane's own correction.
+    tilt = _grid_gel_tilt(a.sensor)
+    if tilt is None:
+        print("  no measured gel plane for this unit; the grid will run flat "
+              "and the outer columns may not touch")
+        sx = sy = 0.0
+    else:
+        sx, sy = tilt
+        print(f"  gel plane slope ({sx:+.5f}, {sy:+.5f}) -> correcting the "
+              f"surface by {sx * a.grid_x:+.3f} / {sy * a.grid_y:+.3f} mm at the edges")
+
+    rc = yaml.safe_load(open(ROOT / "config" / "robot_config.yaml"))
+    ip = a.ip or rc["robot"]["ip"]
+    if not cal.preflight(ip):
+        return 2
+    ok, why = mv.ready_to_move(mv.read_state(ip))
+    if not ok:
+        print(f"  not moving: {why}")
+        return 2
+    okt, whyt = check_indenter_tool(robot_pose(ip))
+    if not okt:
+        print(f"  {whyt}")
+        return 1
+
+    meta = yaml.safe_load(open(run / "meta.yaml"))
+    R = np.array(meta["sensor_to_base_transform"]["rotation_sensor_to_base"])
+    n = R[:, 2]
+    q = chk.ReadOnlyProxy(ip)
+    t_sensor, _ = mv.sensor_axis()
+
+    def height():
+        return float((np.array(q("GetActualTCPPose", 0)[1:][:3]) - t_sensor) @ n)
+
+    surf = float(zero["surface_mm"])
+    pose0 = q("GetActualTCPPose", 0)[1:]
+    rpy0 = [float(v) for v in pose0[3:]]
+    p_now = np.array(pose0[:3])
+    p_surf = p_now - (height() - surf) * n          # the surface point, on axis
+    # ...but on WHICH axis. Taking the origin from wherever the TCP happens to
+    # be starts the grid at the end of whatever ran last: two of the first six
+    # units began 4.02 / 2.52 mm off centre -- exactly the last grid point of a
+    # previous calibgrid attempt -- which pushed a third of their frames off the
+    # bottom of the image and made their response maps uncomparable to the rest
+    # (2026-09-10). Anchor on the sensor centre instead, and correct the surface
+    # height for the gel plane over the distance moved to get there.
+    o_base = np.array(yaml.safe_load(
+        open(run / "meta.yaml"))["sensor_to_base_transform"]["origin_base_mm"])
+    dx0 = float((p_now - o_base) @ R[:, 0])
+    dy0 = float((p_now - o_base) @ R[:, 1])
+    if max(abs(dx0), abs(dy0)) > 0.5:
+        print(f"  zero sat {dx0:+.2f} / {dy0:+.2f} mm off the sensor centre; "
+              "the grid is anchored on the centre, not on it")
+    p_surf = (p_surf - dx0 * R[:, 0] - dy0 * R[:, 1]
+              - (dx0 * sx + dy0 * sy) * n)
+
+    ref_img = cv2.imread(str(run / "reference.png"))
+    if ref_img is None:
+        print("  no reference.png; --phase reference first")
+        return 2
+    diff_level = diff_level_for_sensor(ref_img, a, getattr(a, "sensor", None))
+    out = run / f"calibgrid_{probe['id']}"
+    out.mkdir(exist_ok=True)
+    f_stop = SHAPE_FORCE_FRAC * float(sensor_limits(a)[1])
+
+    print(f"\n  sensor {ent['id']}  probe {probe['id']} (R = "
+          f"{float(probe.get('element_diameter_mm', 4.0)) / 2:.1f} mm sphere)")
+    print(f"  surface {surf:.4f} mm, backstop {cap:.2f} mm, force stop {f_stop:.2f} N")
+    print(f"  grid {nx} x {ny} over +-{a.grid_x:.1f} x +-{a.grid_y:.1f} mm, "
+          f"depths {depths} mm -> {nx * ny * len(depths)} frames")
+
+    # Get clear BEFORE the DAQ task exists. A commanded move takes seconds, and
+    # the task is a running acquisition -- leaving it unread that long overran
+    # the buffer and the phase died with "the application is not able to keep up
+    # with the hardware acquisition" (2026-09-10).
+    if _move_to_point(ip, p_surf + a.retract * n, rpy0, a,
+                      a.approach_joint_step, vel=a.vel_free):
+        return 2
+    cam = Camera.from_config(camera_config_for(a.sensor))
+    cam.open()
+    ft = FTInterface.from_config()
+    ft.connect()
+    reader = None
+    rows = []
+    try:
+        tare = ft.tare(duration_s=2.0)
+        res = ft.read_wrench_mean(duration_s=1.0, tared=True)
+        print(f"  zero residual |F| {np.linalg.norm(res[:3]):.4f} N")
+        if np.linalg.norm(res[:3]) > 0.15:
+            print("  not clear of the gel.")
+            return 1
+        reader = ForceReader(ft, tare).start()
+
+        def imprint_centre(frame):
+            """Centroid and area of the largest blob that moved, in pixels.
+
+            contact_region's level threshold is tuned for the ladder phases and
+            is not stable enough to solve a coordinate frame from: on the first
+            six grids it returned 0 px for two frames of thirty and 346 px right
+            beside 69179 on consecutive rungs of one point. This takes the
+            largest connected component of the blurred absolute difference at a
+            threshold relative to that frame's own peak, which on the same
+            thirty frames varied by 1.9x instead of 200x.
+            """
+            d = cv2.GaussianBlur(
+                np.abs(frame.astype(np.float32) - ref_img.astype(np.float32)).max(2),
+                (0, 0), 7)
+            m = (d > max(5.0, 0.5 * float(d.max()))).astype(np.uint8)
+            nb, _, st, cen = cv2.connectedComponentsWithStats(m, 8)
+            if nb < 2:
+                return None, 0
+            i = 1 + int(np.argmax(st[1:, 4]))
+            return np.array(cen[i], float), int(st[i, 4])
+
+        def press(dx, dy, dtgt, name):
+            """One indentation at a grid offset, gel-plane corrected."""
+            base = (p_surf + dx * R[:, 0] + dy * R[:, 1]
+                    + (dx * sx + dy * sy) * n)
+            if _move_to_point(ip, base + a.zero_margin * n, rpy0, a,
+                              a.approach_joint_step, vel=a.vel_free):
+                return None
+            time.sleep(a.zero_recover_s)
+            if _move_to_point(ip, base - dtgt * n, rpy0, a, a.max_joint_step):
+                return None
+            time.sleep(a.shape_dwell)
+            reached = surf - height()
+            w, err = reader.read_fresh()
+            if err:
+                print(f"  F/T failed: {err}")
+                return None
+            frame, t_img = cam.grab_after(time.time())
+            rg = contact_region(frame, ref_img, diff_level,
+                               colour=shadows_the_gel(getattr(a, "sensor", None)))
+            cv2.imwrite(str(out / name), frame, [cv2.IMWRITE_PNG_COMPRESSION, 1])
+            return dict(frame=frame, rg=rg, force=-float(w[2]), depth=reached,
+                        w=w, t_img=t_img)
+
+        # The grid has to be laid out in IMAGE coordinates, not robot ones.
+        # What is being calibrated is a map from a place in the PICTURE to a
+        # slope, and the picture is not squarely mounted on the robot axes:
+        # fitting the first six units' imprint centroids against the commanded
+        # offsets gave rotations of 20.8-32.4 deg, scales of 82-109 px/mm (it
+        # tracks gel thickness -- a thinner gel sits closer to the lens), and
+        # grid centres anywhere from (867, 519) to (1145, 955) in a 1920x1080
+        # frame. Two consequences, both measured (2026-09-10):
+        #   * the corners of a robot-axis grid ran off the bottom of the frame
+        #     on two of the six units, losing 13 of their 60 frames;
+        #   * comparing two units' response maps by their COMMANDED (x, y) was
+        #     comparing different places in the picture. Correlation between a
+        #     pair of units tracked how far apart their grid centres were
+        #     (Spearman -0.75, p 0.001) and NOT whether they were replicates:
+        #     the seven pairs within 150 px all agreed (median dG +0.56) and
+        #     the eight beyond it did not (-0.15), including a different-gel
+        #     pair at +0.75 and same-gel replicates at -0.33.
+        # So press three points first, read where their imprints actually land,
+        # solve the affine mm -> px, and invert it to place a lattice that is
+        # square to the frame and centred on it. Costs three indentations.
+        d_fit = max(depths)
+        aff = None
+        if a.grid_autoframe:
+            print(f"\n  autoframe: three presses at {d_fit:.2f} mm to find the "
+                  "frame's own axes")
+            fits = []
+            for dx, dy in ((0.0, 0.0), (a.grid_probe_mm, 0.0), (0.0, a.grid_probe_mm)):
+                r = press(dx, dy, d_fit, f"autoframe_x{dx:+.2f}_y{dy:+.2f}.png")
+                if r is None:
+                    return 2
+                c, area = imprint_centre(r["frame"])
+                print(f"    ({dx:+.2f}, {dy:+.2f}) -> centroid "
+                      f"{'-' if c is None else c.round(0)}  area {area} px  "
+                      f"{r['force']:.2f} N  depth {r['depth']:.3f} mm")
+                if c is None or area < 400:
+                    print("    imprint too faint to locate; falling back to the "
+                          "robot-axis grid")
+                    fits = []
+                    break
+                fits.append((c, area))
+            if len(fits) == 3:
+                c0, c1, c2 = (f[0] for f in fits)
+                M = np.column_stack([(c1 - c0) / a.grid_probe_mm,
+                                     (c2 - c0) / a.grid_probe_mm])
+                if abs(np.linalg.det(M)) < 100.0:
+                    print("    the two probe directions came out parallel; "
+                          "falling back to the robot-axis grid")
+                else:
+                    aff = (M, c0)
+                    rot = np.degrees(np.arctan2(M[1, 0], M[0, 0]))
+                    print(f"    mm -> px: rotation {rot:+.1f} deg, "
+                          f"{np.hypot(*M[:, 0]):.0f} / {np.hypot(*M[:, 1]):.0f} px/mm, "
+                          f"centre {c0.round(0)}")
+        H_img, W_img = ref_img.shape[:2]
+        if aff is None:
+            xs = np.linspace(-a.grid_x, a.grid_x, nx)
+            ys = np.linspace(-a.grid_y, a.grid_y, ny)
+            pts_rows = [[(float(dx), float(dy), float("nan"), float("nan"))
+                         for dx in xs] for dy in ys]
+        else:
+            M, c0 = aff
+            Minv = np.linalg.inv(M)
+            ctr = np.array([W_img / 2.0, H_img / 2.0])
+            # Hertzian contact radius of a known sphere at a known depth,
+            # in pixels -- exact, where a thresholded blob is not: the blob
+            # finds the strong core (about 55 px here) while the contact is
+            # really 1.05 mm across at 0.30 mm, which is 115 px at this scale.
+            R_ball = float(probe.get("element_diameter_mm", 4.0)) / 2.0
+            r_mm = float(np.sqrt(max(2.0 * R_ball * d_fit - d_fit ** 2, 1e-9)))
+            r_px = r_mm * float(np.hypot(*M[:, 0]))
+            marg = r_px + a.grid_margin_px
+            print(f"    contact radius {r_mm:.2f} mm = {r_px:.0f} px; keeping "
+                  f"{marg:.0f} px clear of the frame edge")
+            half = np.array([W_img / 2.0 - marg, H_img / 2.0 - marg])
+            # If the frame asks for more travel than the caps allow, shrink
+            # the lattice as a rectangle -- clipping point by point would put
+            # it back out of square with the image, which is the whole point of
+            # measuring the affine. Both half-extents are searched rather than
+            # scaled together, because the rotation makes the two axes cost
+            # different amounts of travel and a uniform scale throws away the
+            # cheaper one.
+            def fits(hx, hy):
+                for sgx in (-1, 1):
+                    for sgy in (-1, 1):
+                        v = Minv @ (ctr + np.array([sgx * hx, sgy * hy]) - c0)
+                        if abs(v[0]) > a.grid_x or abs(v[1]) > a.grid_y:
+                            return False
+                return True
+            if not fits(*half):
+                want = half.copy()
+                best = None
+                for fx in np.linspace(0.05, 1.0, 40):
+                    for fy in np.linspace(0.05, 1.0, 40):
+                        hx, hy = want[0] * fx, want[1] * fy
+                        if fits(hx, hy) and (best is None or hx * hy > best[0] * best[1]):
+                            best = (hx, hy)
+                if best is None:
+                    print(f"    even a single point at the frame centre needs "
+                          f"more than {a.grid_x:.1f} x {a.grid_y:.1f} mm of "
+                          "travel; not running")
+                    return 2
+                half = np.array(best)
+                print(f"    the frame needs more than the {a.grid_x:.1f} x "
+                      f"{a.grid_y:.1f} mm travel allows; lattice covers "
+                      f"{half[0] / (W_img / 2) * 100:.0f} % x "
+                      f"{half[1] / (H_img / 2) * 100:.0f} % of it")
+            pts_rows = []
+            for ty in np.linspace(-half[1], half[1], ny):
+                row = []
+                for tx in np.linspace(-half[0], half[0], nx):
+                    v = Minv @ (ctr + np.array([tx, ty]) - c0)
+                    row.append((float(v[0]), float(v[1]),
+                                float(ctr[0] + tx), float(ctr[1] + ty)))
+                pts_rows.append(row)
+            sp = [p for row in pts_rows for p in row]
+            print(f"    lattice spans {min(p[0] for p in sp):+.2f}..{max(p[0] for p in sp):+.2f} x "
+                  f"{min(p[1] for p in sp):+.2f}..{max(p[1] for p in sp):+.2f} mm "
+                  f"to cover the frame with {marg:.0f} px to spare")
+        print(f"\n  {'ix':>3} {'iy':>3} {'x':>6} {'y':>6} {'depth':>7} "
+              f"{'force':>8} {'area px':>9}")
+        for iy, row in enumerate(pts_rows):
+            for ix, (dx, dy, tx_px, ty_px) in enumerate(row):
+                base = (p_surf + dx * R[:, 0] + dy * R[:, 1]
+                        + (dx * sx + dy * sy) * n)
+                # Lift and cross to the new position ONCE, then walk the depths
+                # downward without coming back up. Each commanded move costs
+                # about two seconds of round trip whatever it travels -- the
+                # 0.2 mm steps take milliseconds -- so the way to make the grid
+                # faster is fewer moves, not faster ones. Going deeper from an
+                # existing contact does carry the shallower rung's creep into
+                # the deeper one, which for a photometric calibration is
+                # harmless: the force is recorded at every rung and the actual
+                # depth is taken from it, not from the command.
+                if _move_to_point(ip, base + a.zero_margin * n, rpy0, a,
+                                  a.approach_joint_step, vel=a.vel_free):
+                    return 2
+                time.sleep(a.zero_recover_s)
+                for dtgt in sorted(depths):
+                    if _move_to_point(ip, base - dtgt * n, rpy0, a,
+                                      a.max_joint_step):
+                        return 2
+                    time.sleep(a.shape_dwell)
+                    reached = surf - height()
+                    w, err = reader.read_fresh()
+                    if err:
+                        print(f"  F/T failed: {err}")
+                        return 1
+                    f = -float(w[2])
+                    frame, t_img = cam.grab_after(time.time())
+                    rg = contact_region(frame, ref_img, diff_level,
+                                        colour=shadows_the_gel(getattr(a, "sensor", None)))
+                    name = f"{probe['id']}_x{dx:+.2f}_y{dy:+.2f}_d{dtgt:.2f}.png"
+                    cv2.imwrite(str(out / name), frame,
+                                [cv2.IMWRITE_PNG_COMPRESSION, 1])
+                    pose = q("GetActualTCPPose", 0)[1:]
+                    rows.append({"probe": probe["id"], "ix": ix, "iy": iy,
+                                 "x_mm": float(dx), "y_mm": float(dy),
+                                 "img_x_px": tx_px, "img_y_px": ty_px,
+                                 "target_depth_mm": dtgt, "depth_mm": reached,
+                                 "force_N": f, "file": name, "t_img": t_img,
+                                 "Fx": float(w[0]), "Fy": float(w[1]),
+                                 "Fz": float(w[2]),
+                                 "tcp_x": pose[0], "tcp_y": pose[1], "tcp_z": pose[2],
+                                 "area_px": rg["area_px"],
+                                 "radius_px": rg["radius_px"],
+                                 "centroid_px": str(rg["centroid_px"]),
+                                 "diff_level": diff_level})
+                    print(f"  {ix:>3} {iy:>3} {dx:>6.2f} {dy:>6.2f} {reached:>7.3f} "
+                          f"{f:>8.3f} {rg['area_px']:>9d}")
+                    if f >= f_stop:
+                        print(f"    {f:.3f} N past the stop; deeper rungs here skipped")
+                        break
+        _write_rows(out / "grid.csv", rows)
+        st_run.setdefault("calibgrid", {})[probe["id"]] = {
+            "n_frames": len(rows), "grid_n": [nx, ny], "depths_mm": depths,
+            "span_mm": [a.grid_x, a.grid_y], "surface_mm": surf,
+            "affine_mm_to_px": (None if aff is None else
+                                {"M": aff[0].tolist(), "origin_px": aff[1].tolist(),
+                                 "probe_mm": a.grid_probe_mm}),
+            "dir": out.name, "at": datetime.now().isoformat()}
+        save_state(run, st_run)
+        print(f"\n  {len(rows)} frames -> {out}")
+    finally:
+        if reader is not None:
+            reader.stop()
+        cam.close()
+        ft.disconnect()
+        back = surf + a.retract - height()
+        if back > 0:
+            _move_along_normal(ip, back, a, a.approach_joint_step, vel=a.vel_free)
+    return 0
 
 
 def phase_scale(a) -> int:
@@ -5539,7 +5992,25 @@ def main() -> int:
                                         "sample", "series", "shear",
                                         "force-series", "force-shear",
                                         "collect", "characterize", "contactmap",
-                                        "zero", "shape", "scale", "summary"))
+                                        "zero", "shape", "scale", "summary",
+                                        "calibgrid"))
+    ap.add_argument("--grid-n", default="7,7",
+                    help="calibgrid: how many positions across x and y")
+    ap.add_argument("--grid-x", type=float, default=9.0,
+                    help="calibgrid: half-span along the sensor x, mm")
+    ap.add_argument("--grid-y", type=float, default=7.5,
+                    help="calibgrid: half-span along the sensor y, mm")
+    ap.add_argument("--grid-autoframe", action="store_true", default=True,
+                    help="press three points first and lay the grid out square "
+                         "to the IMAGE, not to the robot axes (default on)")
+    ap.add_argument("--no-grid-autoframe", dest="grid_autoframe",
+                    action="store_false")
+    ap.add_argument("--grid-probe-mm", type=float, default=3.0,
+                    help="offset of the two autoframe probe presses")
+    ap.add_argument("--grid-margin-px", type=float, default=120.0,
+                    help="clearance to keep between an imprint and the frame edge")
+    ap.add_argument("--grid-depths", default="0.1,0.2,0.3",
+                    help="calibgrid: indentation depths at each position")
     ap.add_argument("--probe", default=None,
                     help="probe id from config/probes.yaml. Required by the "
                          "zero and shape phases: the contact law used to "
@@ -6119,6 +6590,7 @@ def main() -> int:
             "collect": phase_collect, "contactmap": phase_contactmap,
             "characterize": phase_characterize,
             "zero": phase_zero, "shape": phase_shape, "scale": phase_scale,
+            "calibgrid": phase_calibgrid,
             "summary": phase_summary}[a.phase](a)
 
 
@@ -6129,6 +6601,7 @@ def main() -> int:
 # the operator noticed. The standing rule is that the probe ends up clear
 # whatever happens, so it is enforced here as well as in the callers.
 GEL_PHASES = {"search", "touchcheck", "zero", "shape", "scale", "characterize",
+              "calibgrid",
               "contactmap", "collect", "series", "shear", "force-series",
               "force-shear", "sample"}
 
