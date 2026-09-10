@@ -5351,7 +5351,7 @@ def phase_calibgrid(a) -> int:
         # not exact, so an off-centre press lands shallower than commanded --
         # the first attempt reached 0.164 mm where it asked for 0.30 -- and a
         # faint imprint is exactly what a centroid cannot be trusted on.
-        d_fit = min(max(depths) + 0.15, cap)
+        d_fit = max(depths)
         aff = None
         if a.grid_autoframe:
             q_mm = a.grid_probe_mm
@@ -5363,27 +5363,36 @@ def phase_calibgrid(a) -> int:
             a_hi = 4.0 * np.pi * (2.0 * R_ball * d_fit) * 120.0 ** 2
             pts = []
             for dx, dy in spots:
-                r = press(dx, dy, d_fit, f"autoframe_x{dx:+.2f}_y{dy:+.2f}.png")
-                if r is None:
-                    return 2
-                c, area = imprint_centre(r["frame"])
-                print(f"    ({dx:+.2f}, {dy:+.2f}) -> centroid "
-                      f"{'-' if c is None else c.round(0)}  area {area} px  "
-                      f"{r['force']:.2f} N  depth {r['depth']:.3f} mm")
+                # Go deeper only where the imprint comes out faint. A fixed
+                # extra 0.15 mm was 1.65 N on a hard 1 mm gel -- past the stop
+                # before the first point was measured -- while an off-centre
+                # press on a soft one reached 0.164 mm of the 0.30 asked for,
+                # because the gel-plane correction is not exact. The depth that
+                # is right depends on the gel and on where in the field it is.
+                dd = d_fit
+                for attempt in range(3):
+                    r = press(dx, dy, dd, f"autoframe_x{dx:+.2f}_y{dy:+.2f}.png")
+                    if r is None:
+                        return 2
+                    c, area = imprint_centre(r["frame"])
+                    print(f"    ({dx:+.2f}, {dy:+.2f}) at {dd:.2f} mm -> centroid "
+                          f"{'-' if c is None else c.round(0)}  area {area} px  "
+                          f"{r['force']:.2f} N  depth {r['depth']:.3f} mm")
+                    if area >= 3000 or r["force"] >= 0.7 * f_stop or dd >= cap:
+                        break
+                    dd = min(dd + 0.10, cap)
+                    print(f"      faint; pressing {dd:.2f} mm")
                 if r["force"] >= f_stop:
-                    print(f"    past the {f_stop:.2f} N stop; falling back to "
-                          "the robot-axis grid")
-                    pts = []
-                    break
+                    print(f"    past the {f_stop:.2f} N stop at {d_fit:.2f} mm; "
+                          "not running")
+                    return 2
                 # The contact of a known sphere at a known depth has a known
                 # area, so a blob far off it is not the contact.
                 if c is None or area < 400 or area > a_hi:
                     print(f"    blob of {area} px is not a "
                           f"{2.0 * np.sqrt(2.0 * R_ball * d_fit):.2f} mm contact "
-                          f"(want 400-{a_hi:.0f} px); falling back to the "
-                          "robot-axis grid")
-                    pts = []
-                    break
+                          f"(want 400-{a_hi:.0f} px); not running")
+                    return 2
                 pts.append((c, dx, dy))
             if len(pts) == len(spots):
                 P = np.array([q[0] for q in pts])
@@ -5409,8 +5418,8 @@ def phase_calibgrid(a) -> int:
                         or max(sxx, syy) / max(min(sxx, syy), 1e-9) > 1.35):
                     print(f"    the two axes came out {sxx:.0f} and {syy:.0f} "
                           f"px/mm at {ang:.0f} deg apart -- that is not a "
-                          "rotation of the gel plane; falling back to the "
-                          "robot-axis grid")
+                          "rotation of the gel plane; not running")
+                    return 2
                 else:
                     aff = (M, c0)
                     rot = np.degrees(np.arctan2(M[1, 0], M[0, 0]))
@@ -5419,8 +5428,19 @@ def phase_calibgrid(a) -> int:
                           f"centre {c0.round(0)}")
         H_img, W_img = ref_img.shape[:2]
         if aff is None:
-            xs = np.linspace(-a.grid_x, a.grid_x, nx)
-            ys = np.linspace(-a.grid_y, a.grid_y, ny)
+            # --grid-x / --grid-y are the TRAVEL BACKSTOP for the image-space
+            # lattice, not a grid span. Reaching a 1920 x 1080 frame through a
+            # 25 deg rotation costs about 9 x 7.5 mm of travel, but the gel is
+            # only about 19 x 11 mm across, so walking a grid to those numbers
+            # takes the probe off the sensor -- which is what happened on
+            # 2026-09-10 when an autoframe failure fell through to here: six of
+            # the first twelve points left no imprint at all (area 0 px) and
+            # pressed the bezel at up to 1.33 N. The robot-axis grid gets its
+            # own span, and it is small.
+            xs = np.linspace(-a.grid_span_x, a.grid_span_x, nx)
+            ys = np.linspace(-a.grid_span_y, a.grid_span_y, ny)
+            print(f"  robot-axis grid over +-{a.grid_span_x:.1f} x "
+                  f"+-{a.grid_span_y:.1f} mm")
             pts_rows = [[(float(dx), float(dy), float("nan"), float("nan"))
                          for dx in xs] for dy in ys]
         else:
@@ -6065,6 +6085,11 @@ def main() -> int:
                     help="calibgrid: half-span along the sensor x, mm")
     ap.add_argument("--grid-y", type=float, default=7.5,
                     help="calibgrid: half-span along the sensor y, mm")
+    ap.add_argument("--grid-span-x", type=float, default=4.0,
+                    help="half-width of the ROBOT-AXIS grid, used only when "
+                         "autoframe is off; --grid-x is a travel backstop, not "
+                         "a span, and is far too large to walk a grid to")
+    ap.add_argument("--grid-span-y", type=float, default=2.5)
     ap.add_argument("--grid-autoframe", action="store_true", default=True,
                     help="press three points first and lay the grid out square "
                          "to the IMAGE, not to the robot axes (default on)")
