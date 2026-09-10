@@ -3346,7 +3346,8 @@ def phase_characterize(a) -> int:
     ft.connect()
     reader = None
     img_rows = []
-    sat = {"max_measurable_force_N": None, "reached": False,
+    sat = {"max_measurable_force_N": None, "max_measurable_depth_mm": None,
+           "reached": False,
            "metric": "mean |frame - reference| over the central half, grey levels",
            "threshold_frac_of_peak_slope": a.sat_frac,
            "min_force_N": a.sat_min_force, "consecutive": a.sat_hits}
@@ -3472,6 +3473,7 @@ def phase_characterize(a) -> int:
                     # the force where the response first fell under threshold
                     sat_force = float(f_hist[-sat_hits])
                     sat["max_measurable_force_N"] = sat_force
+                    sat["max_measurable_depth_mm"] = float(d_hist[-sat_hits])
                     if a.past_saturation_n > 0:
                         # Carry on a little past the ceiling rather than
                         # stopping on it. Saturation is declared from a slope
@@ -3572,6 +3574,18 @@ def phase_characterize(a) -> int:
             print(f"  fitted on {int(m.sum())} points with the surface held fixed")
         safe_depth = float(d[-1])
         safe_force = float(f[-1])
+        # The envelope of a VBTS ends where its PICTURE ends, not where the gel
+        # is still willing to carry load. Taking the last step made the two
+        # disagree as soon as the ramp was allowed past saturation:
+        # DIGIT_hard_2mm_r2 saturated at 9.03 N and was recorded as 14.18 N,
+        # which would have told the collecting phases to drive a sensor half
+        # again past the force it can still read. Where saturation was found,
+        # that is the envelope.
+        if sat["reached"] and sat.get("max_measurable_depth_mm") is not None:
+            print(f"  ramp ended at {safe_depth:.3f} mm / {safe_force:.3f} N, "
+                  "but the envelope is where the image stopped answering")
+            safe_depth = float(sat["max_measurable_depth_mm"])
+            safe_force = float(sat["max_measurable_force_N"])
         drift = float(commanded - safe_depth)
         print(f"\n  commanded {commanded:.3f} mm, measured {safe_depth:.3f} mm, "
               f"difference {drift:+.3f} mm")

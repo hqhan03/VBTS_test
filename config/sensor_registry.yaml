@@ -3025,8 +3025,8 @@ sensors:
     hertz_a: 6.140240854987689
     free_exponent: 2.2431624690212626
     surface_mm: 23.901
-  safe_force_N: 9.041913375399412
-  safe_depth_mm: 1.6640180304505847
+  safe_force_N: 7.369257710949978
+  safe_depth_mm: 1.5522382917563746
   stopped_on: image saturation
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
@@ -3078,24 +3078,56 @@ sensors:
   max_depth_mm: 1.2
   depth_limit_basis: interpolated between the other two; expect characterize to refine
     it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 2.43579
-    free_exponent: 1.515424
-    surface_mm: 24.082856841288407
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.581
-    fitted_force_max_N: 1.1805
-  safe_force_N: 5.7359
-  safe_depth_mm: 1.4
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 7.273208477722999
+    free_exponent: 2.4240014246106543
+    surface_mm: 23.751
+  safe_force_N: 9.029345784596403
+  safe_depth_mm: 1.6302656865925904
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-10T21:35:09.886557'
+  commanded_depth_mm: 1.8000000000000005
+  command_vs_measured_mm: -0.010792493683094984
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 9.029345784596405
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 4.300627740900884
+    image_change_at_stop: 21.231826782226562
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_2mm_r2__2
+  history:
+  - characterised_at: '2026-09-10T21:23:57.119270'
+    gel_model:
+      hertz_a: 8.798353639669935
+      free_exponent: 2.09104563225247
+      surface_mm: 23.686
+    safe_depth_mm: 1.846242394940738
+    safe_force_N: 19.235788544139947
+    stopped_on: depth backstop
+    ladder_rungs_reached: 50
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: null
+      reached: false
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      note: 'not reached within the limits: stopped on depth backstop at 19.24 N with
+        the image still changing at 0.03 lvl/N (25% of peak)'
+      peak_slope_levels_per_N: 0.1065267700928766
+      image_change_at_stop: 7.927051544189453
+    run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_2mm_r2
 - id: DIGIT_hard_3mm_r1
   principle: DIGIT
   hardness: hard
