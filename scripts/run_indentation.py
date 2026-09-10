@@ -5504,28 +5504,62 @@ def phase_calibgrid(a) -> int:
             print(f"    each press is trimmed to {f_tgt:.2f} N so all five "
                   "contacts are the same size")
             for dx, dy in spots:
+                # Converge on the force even when the gel-plane correction is
+                # wrong. On DIGIT_hard_1mm_r2 a commanded 0.30 mm gave 0.00 N
+                # at (0, +3.5) and 0.43 mm of depth at (0, -3.5): 0.29 mm of
+                # residual tilt over 7 mm, the same size as the correction that
+                # had just been applied. A 1 mm gel has no room to absorb that,
+                # so three attempts with one Hertz step each ended on presses
+                # of 0.27-0.41 N against a 0.70 N target and the fit scattered
+                # by 194 px. Five attempts, a step clamped so a near-zero
+                # reading cannot slam into the depth cap, and a floor under
+                # what counts as contact at all.
                 dd = d_fit
-                for attempt in range(3):
+                f_min = max(0.15, 0.25 * f_tgt)
+                best = None
+                for attempt in range(5):
                     r = press(dx, dy, dd, f"autoframe_x{dx:+.2f}_y{dy:+.2f}.png")
                     if r is None:
                         return 2
                     c, area = imprint_centre(r["frame"])
+                    f_now = max(r["force"], 1e-3)
                     print(f"    ({dx:+.2f}, {dy:+.2f}) at {dd:.2f} mm -> centroid "
                           f"{'-' if c is None else c.round(0)}  area {area} px  "
-                          f"{r['force']:.2f} N  depth {r['depth']:.3f} mm")
-                    f_now = max(r["force"], 1e-3)
-                    if 0.75 * f_tgt <= f_now <= 1.3 * f_tgt or attempt == 2:
+                          f"{f_now:.2f} N  depth {r['depth']:.3f} mm")
+                    if f_now >= f_min and (best is None
+                                           or abs(f_now - f_tgt) < abs(best[2] - f_tgt)):
+                        best = (c, area, f_now)
+                    if 0.75 * f_tgt <= f_now <= 1.3 * f_tgt:
                         break
-                    dd = float(np.clip(dd * (f_tgt / f_now) ** (2.0 / 3.0),
-                                       0.05, cap))
+                    if dd >= cap - 1e-6 and f_now < f_tgt:
+                        print("      at the depth cap and still light; taking it")
+                        break
+                    if f_now < 0.02:
+                        nd = dd + 0.15          # not touching: the law says nothing
+                    else:
+                        nd = dd * (f_tgt / f_now) ** (2.0 / 3.0)
+                        nd = float(np.clip(nd, dd * 0.6, dd * 1.8))
+                    nd = float(np.clip(nd, 0.05, cap))
+                    if abs(nd - dd) < 0.01:
+                        break
+                    dd = nd
                     print(f"      {f_now:.2f} N against {f_tgt:.2f} N target; "
                           f"pressing {dd:.2f} mm")
-                if r["force"] >= f_stop:
-                    print(f"    past the {f_stop:.2f} N stop at {d_fit:.2f} mm; "
-                          "not running")
+                if best is not None:
+                    c, area, f_best = best
+                else:
+                    print(f"    never reached {f_min:.2f} N here; not running")
+                    return 2
+                # Judge the press that was KEPT, not whichever the loop tried
+                # last -- a search that overshoots once and comes back must not
+                # be failed on the overshoot.
+                if f_best >= f_stop:
+                    print(f"    past the {f_stop:.2f} N stop; not running")
                     return 2
                 # The contact of a known sphere at a known depth has a known
-                # area, so a blob far off it is not the contact.
+                # area, so a blob far off it is not the contact. The upper gate
+                # matters most when the probe is barely touching: at 0.00 N the
+                # detector picked a 394819 px region of noise as the imprint.
                 if c is None or area < 400 or area > a_hi:
                     print(f"    blob of {area} px is not a "
                           f"{2.0 * np.sqrt(2.0 * R_ball * d_fit):.2f} mm contact "
