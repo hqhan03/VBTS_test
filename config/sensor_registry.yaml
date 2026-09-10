@@ -2655,24 +2655,34 @@ sensors:
   depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
     of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
     marks the backing taking load. The 0.5 mm start had no data behind it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 11.388608
-    free_exponent: 1.757216
-    surface_mm: 23.169751617168515
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5824
-    fitted_force_max_N: 5.0536
-  safe_force_N: 8.6058
-  safe_depth_mm: 0.7
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 24.736064462303165
+    free_exponent: 2.780694972420199
+    surface_mm: 22.913999999999998
+  safe_force_N: 7.846187409128047
+  safe_depth_mm: 0.8282917758339856
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-11T00:06:14.896537'
+  commanded_depth_mm: 0.9
+  command_vs_measured_mm: 0.07170822416601441
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 7.846187409128047
+    max_measurable_depth_mm: 0.8282917758339856
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 2.1754269225370595
+    image_change_at_stop: 14.94471263885498
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_soft_1mm_r1
 - id: DIGIT_soft_1mm_r2
   principle: DIGIT
   hardness: soft
@@ -2682,24 +2692,34 @@ sensors:
   depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
     of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
     marks the backing taking load. The 0.5 mm start had no data behind it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 4.568943
-    free_exponent: 1.55802
-    surface_mm: 23.542149800072078
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5724
-    fitted_force_max_N: 2.2226
-  safe_force_N: 3.7067
-  safe_depth_mm: 0.7
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 13.75230411226098
+    free_exponent: 2.377670324612123
+    surface_mm: 23.201
+  safe_force_N: 8.468353444083665
+  safe_depth_mm: 1.1716026180060624
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-11T00:12:30.675593'
+  commanded_depth_mm: 1.2749999999999992
+  command_vs_measured_mm: 0.10339738199393689
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 8.468353444083665
+    max_measurable_depth_mm: 1.1716026180060624
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 2.954280317610225
+    image_change_at_stop: 15.351424217224121
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_soft_1mm_r2
 - id: DIGIT_soft_2mm_r1
   principle: DIGIT
   hardness: soft
@@ -2708,24 +2728,34 @@ sensors:
   max_depth_mm: 1.2
   depth_limit_basis: interpolated between the other two; expect characterize to refine
     it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 2.915536
-    free_exponent: 1.906652
-    surface_mm: 24.114701695030412
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5781
-    fitted_force_max_N: 0.9762
-  safe_force_N: 7.8316
-  safe_depth_mm: 1.4
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 6.504802409249041
+    free_exponent: 2.3463743209237427
+    surface_mm: 23.749
+  safe_force_N: 6.405215407156595
+  safe_depth_mm: 1.4752321560684436
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-10T23:52:54.372558'
+  commanded_depth_mm: 1.7749999999999992
+  command_vs_measured_mm: 0.29976784393155564
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 6.405215407156595
+    max_measurable_depth_mm: 1.4752321560684436
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 4.45200923732341
+    image_change_at_stop: 17.24268341064453
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_soft_2mm_r1
 - id: DIGIT_soft_2mm_r2
   principle: DIGIT
   hardness: soft
@@ -2734,24 +2764,34 @@ sensors:
   max_depth_mm: 1.2
   depth_limit_basis: interpolated between the other two; expect characterize to refine
     it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 1.830856
-    free_exponent: 1.622935
-    surface_mm: 24.32730551034906
-    probe: ball4
-    rungs: 5
-    fitted_depth_max_mm: 0.5803
-    fitted_force_max_N: 0.8183
-  safe_force_N: 4.4702
-  safe_depth_mm: 1.4
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 6.464232657525098
+    free_exponent: 2.0462724528514995
+    surface_mm: 23.913999999999998
+  safe_force_N: 6.802880733671438
+  safe_depth_mm: 1.5084007172497174
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-10T23:59:34.047411'
+  commanded_depth_mm: 1.7999999999999992
+  command_vs_measured_mm: 0.2915992827502818
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 6.802880733671438
+    max_measurable_depth_mm: 1.5084007172497174
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 5.724294413738537
+    image_change_at_stop: 18.678537368774414
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_soft_2mm_r2
 - id: DIGIT_soft_3mm_r1
   principle: DIGIT
   hardness: soft
@@ -2759,24 +2799,34 @@ sensors:
   replicate: 1
   max_depth_mm: 2.2
   depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 1.53911
-    free_exponent: 1.302902
-    surface_mm: 24.963160380697015
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5933
-    fitted_force_max_N: 0.8126
-  safe_force_N: 5.7228
-  safe_depth_mm: 2.1
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 3.5767881454832677
+    free_exponent: 2.082453456144248
+    surface_mm: 24.631999999999998
+  safe_force_N: 5.266272933010308
+  safe_depth_mm: 1.817245431635424
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-10T23:28:58.528430'
+  commanded_depth_mm: 2.399999999999999
+  command_vs_measured_mm: 0.582754568364575
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 5.266272933010308
+    max_measurable_depth_mm: 1.817245431635424
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 4.922459403698687
+    image_change_at_stop: 15.923470497131348
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_soft_3mm_r1__2
 - id: DIGIT_soft_3mm_r2
   principle: DIGIT
   hardness: soft
@@ -2784,24 +2834,34 @@ sensors:
   replicate: 2
   max_depth_mm: 2.2
   depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 1.370409
-    free_exponent: 1.227413
-    surface_mm: 25.192585197315136
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.586
-    fitted_force_max_N: 0.7621
-  safe_force_N: 4.8179
-  safe_depth_mm: 2.1
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 3.352502682585472
+    free_exponent: 2.1350503049116014
+    surface_mm: 24.866
+  safe_force_N: 7.114780330765035
+  safe_depth_mm: 2.136691929409455
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-10T23:45:17.565111'
+  commanded_depth_mm: 2.5749999999999993
+  command_vs_measured_mm: 0.4383080705905442
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 7.114780330765035
+    max_measurable_depth_mm: 2.136691929409455
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 4.6909016302858895
+    image_change_at_stop: 17.66773223876953
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_soft_3mm_r2__2
 - id: DIGIT_medium_1mm_r1
   principle: DIGIT
   hardness: medium
@@ -2811,24 +2871,34 @@ sensors:
   depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
     of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
     marks the backing taking load. The 0.5 mm start had no data behind it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 4.658379
-    free_exponent: 1.577408
-    surface_mm: 23.51509263494773
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5799
-    fitted_force_max_N: 2.3739
-  safe_force_N: 3.7532
-  safe_depth_mm: 0.7
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 16.625462118865368
+    free_exponent: 2.7079502882252746
+    surface_mm: 23.112
+  safe_force_N: 7.521938639870854
+  safe_depth_mm: 1.1024184236638277
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-10T22:27:36.635539'
+  commanded_depth_mm: 1.3
+  command_vs_measured_mm: 0.19758157633617235
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 7.521938639870854
+    max_measurable_depth_mm: 1.1024184236638277
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 3.5249677693771098
+    image_change_at_stop: 17.60466766357422
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_medium_1mm_r1
 - id: DIGIT_medium_1mm_r2
   principle: DIGIT
   hardness: medium
@@ -2838,24 +2908,34 @@ sensors:
   depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
     of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
     marks the backing taking load. The 0.5 mm start had no data behind it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 5.216954
-    free_exponent: 1.530716
-    surface_mm: 23.47671283075747
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5748
-    fitted_force_max_N: 2.7202
-  safe_force_N: 4.2739
-  safe_depth_mm: 0.7
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 14.3042716371991
+    free_exponent: 2.5655988725439074
+    surface_mm: 23.154999999999998
+  safe_force_N: 8.927928983453356
+  safe_depth_mm: 1.1137343618566113
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-10T22:35:53.942506'
+  commanded_depth_mm: 1.1749999999999996
+  command_vs_measured_mm: 0.06126563814338826
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 8.927928983453356
+    max_measurable_depth_mm: 1.1137343618566113
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 2.995382433902099
+    image_change_at_stop: 16.841480255126953
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_medium_1mm_r2
 - id: DIGIT_medium_2mm_r1
   principle: DIGIT
   hardness: medium
@@ -2864,24 +2944,34 @@ sensors:
   max_depth_mm: 1.2
   depth_limit_basis: interpolated between the other two; expect characterize to refine
     it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 1.416956
-    free_exponent: 1.217489
-    surface_mm: 24.518237511412522
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5907
-    fitted_force_max_N: 0.8539
-  safe_force_N: 3.0184
-  safe_depth_mm: 1.4
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 4.779218705498855
+    free_exponent: 2.1909993441213937
+    surface_mm: 24.136
+  safe_force_N: 5.195311888728128
+  safe_depth_mm: 1.6014551979600462
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-10T22:43:00.159668'
+  commanded_depth_mm: 2.0999999999999996
+  command_vs_measured_mm: 0.49854480203995344
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 5.195311888728128
+    max_measurable_depth_mm: 1.6014551979600462
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 7.306718786208827
+    image_change_at_stop: 21.933725357055664
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_medium_2mm_r1__2
 - id: DIGIT_medium_2mm_r2
   principle: DIGIT
   hardness: medium
@@ -2890,24 +2980,34 @@ sensors:
   max_depth_mm: 1.2
   depth_limit_basis: interpolated between the other two; expect characterize to refine
     it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 2.448046
-    free_exponent: 1.360745
-    surface_mm: 24.020887682113617
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5739
-    fitted_force_max_N: 1.317
-  safe_force_N: 5.4724
-  safe_depth_mm: 1.4
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 7.537844318243589
+    free_exponent: 2.468981284354808
+    surface_mm: 23.663
+  safe_force_N: 7.3305772103473625
+  safe_depth_mm: 1.4455435243355907
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-10T22:51:44.053834'
+  commanded_depth_mm: 1.6249999999999993
+  command_vs_measured_mm: 0.1794564756644086
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 7.3305772103473625
+    max_measurable_depth_mm: 1.4455435243355907
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 4.211086468297673
+    image_change_at_stop: 20.036579132080078
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_medium_2mm_r2__2
 - id: DIGIT_medium_3mm_r1
   principle: DIGIT
   hardness: medium
@@ -2915,24 +3015,34 @@ sensors:
   replicate: 1
   max_depth_mm: 2.2
   depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 1.405144
-    free_exponent: 1.747378
-    surface_mm: 25.286856980691912
-    probe: ball4
-    rungs: 5
-    fitted_depth_max_mm: 0.5926
-    fitted_force_max_N: 0.5543
-  safe_force_N: 7.2657
-  safe_depth_mm: 2.1
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 2.9706929262049857
+    free_exponent: 2.024509613983103
+    surface_mm: 24.88
+  safe_force_N: 6.634052774018221
+  safe_depth_mm: 2.2170745818890225
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-10T22:58:49.369710'
+  commanded_depth_mm: 2.799999999999999
+  command_vs_measured_mm: 0.5829254181109764
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 6.634052774018221
+    max_measurable_depth_mm: 2.2170745818890225
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 3.209953144876458
+    image_change_at_stop: 17.591135025024414
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_medium_3mm_r1
 - id: DIGIT_medium_3mm_r2
   principle: DIGIT
   hardness: medium
@@ -2940,24 +3050,34 @@ sensors:
   replicate: 2
   max_depth_mm: 2.2
   depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 1.15478
-    free_exponent: 1.196359
-    surface_mm: 25.2928557299028
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5928
-    fitted_force_max_N: 0.6805
-  safe_force_N: 3.9674
-  safe_depth_mm: 2.1
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 2.7974973277112265
+    free_exponent: 2.1622978571017963
+    surface_mm: 24.982
+  safe_force_N: 6.471092957569394
+  safe_depth_mm: 2.256683940930021
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-10T23:11:57.382527'
+  commanded_depth_mm: 2.8249999999999993
+  command_vs_measured_mm: 0.5683160590699785
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 6.471092957569394
+    max_measurable_depth_mm: 2.256683940930021
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 3.9445235509661876
+    image_change_at_stop: 20.21245765686035
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_medium_3mm_r2
 - id: DIGIT_hard_1mm_r1
   principle: DIGIT
   hardness: hard
@@ -2967,24 +3087,34 @@ sensors:
   depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
     of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
     marks the backing taking load. The 0.5 mm start had no data behind it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 5.734391
-    free_exponent: 1.623962
-    surface_mm: 23.42965509645849
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5767
-    fitted_force_max_N: 2.816
-  safe_force_N: 4.5441
-  safe_depth_mm: 0.7
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 17.01116051406852
+    free_exponent: 2.3566333235759465
+    surface_mm: 23.106
+  safe_force_N: 9.84857194359586
+  safe_depth_mm: 1.1207383017064672
+  stopped_on: depth backstop
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-10T22:20:11.659169'
+  commanded_depth_mm: 1.2
+  command_vs_measured_mm: 0.0792616982935328
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 9.84857194359586
+    max_measurable_depth_mm: 1.1207383017064672
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 3.306146132971909
+    image_change_at_stop: 16.807416915893555
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_1mm_r1__5
 - id: DIGIT_hard_1mm_r2
   principle: DIGIT
   hardness: hard
@@ -2994,24 +3124,34 @@ sensors:
   depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
     of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
     marks the backing taking load. The 0.5 mm start had no data behind it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 6.436095
-    free_exponent: 1.707768
-    surface_mm: 23.292297312905564
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5783
-    fitted_force_max_N: 2.9113
-  safe_force_N: 4.9499
-  safe_depth_mm: 0.7
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 18.328439526661956
+    free_exponent: 2.71665924804943
+    surface_mm: 22.980999999999998
+  safe_force_N: 5.194252392097544
+  safe_depth_mm: 0.9152609477115696
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-10T22:15:33.615965'
+  commanded_depth_mm: 1.2
+  command_vs_measured_mm: 0.2847390522884303
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 5.194252392097544
+    max_measurable_depth_mm: 0.9152609477115696
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 6.474547373225153
+    image_change_at_stop: 17.22289276123047
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_1mm_r2__7
 - id: DIGIT_hard_2mm_r1
   principle: DIGIT
   hardness: hard
@@ -3135,15 +3275,11 @@ sensors:
   replicate: 1
   max_depth_mm: 2.2
   depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 2.384707
-    free_exponent: 2.453269
-    surface_mm: 25.164550387525765
-    probe: ball4
-    rungs: 5
-    fitted_depth_max_mm: 0.5813
-    fitted_force_max_N: 0.5493
+    hertz_a: 3.409123850277148
+    free_exponent: 2.0044383633372345
+    surface_mm: 24.832
   image_scale:
     px_per_mm_major: 95.42
     px_per_mm_minor: 92.44
@@ -3156,15 +3292,29 @@ sensors:
       and not its rotation -- it cannot tell which sensor direction the posts lay
       along. The correlation determines the rotation well even where its magnitudes
       wander: 29.6 +- 0.5 deg over the 17 9DTact units, and 29.80 here.'
-  safe_force_N: 20.8181
-  safe_depth_mm: 2.1
-  stopped_on: depth backstop (extrapolated, not reached)
+  safe_force_N: 7.880387980449271
+  safe_depth_mm: 2.201433003320613
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-10T21:51:30.739537'
+  commanded_depth_mm: 2.600000000000001
+  command_vs_measured_mm: 0.3985669966793881
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 7.880387980449271
+    max_measurable_depth_mm: 2.201433003320613
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 2.8896851003685065
+    image_change_at_stop: 14.869571685791016
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_3mm_r1__2
 - id: DIGIT_hard_3mm_r2
   principle: DIGIT
   hardness: hard
@@ -3172,24 +3322,34 @@ sensors:
   replicate: 2
   max_depth_mm: 2.2
   depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 2.01427
-    free_exponent: 1.753556
-    surface_mm: 24.781035531092332
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5889
-    fitted_force_max_N: 0.7454
-  safe_force_N: 10.4631
-  safe_depth_mm: 2.1
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 4.088304305931011
+    free_exponent: 2.1195546397158136
+    surface_mm: 24.435
+  safe_force_N: 7.864814161882879
+  safe_depth_mm: 1.9808530848001347
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-10T21:58:11.984213'
+  commanded_depth_mm: 2.2000000000000006
+  command_vs_measured_mm: 0.21914691519986595
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 7.864814161882879
+    max_measurable_depth_mm: 1.9808530848001347
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 4.043757018536492
+    image_change_at_stop: 18.891855239868164
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_3mm_r2
 - id: DIGIT_Marker_soft_1mm_r1
   principle: DIGIT_Marker
   hardness: soft
@@ -3199,24 +3359,36 @@ sensors:
   depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
     of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
     marks the backing taking load. The 0.5 mm start had no data behind it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 9.987616
-    free_exponent: 1.721888
-    surface_mm: 23.550707719828164
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5787
-    fitted_force_max_N: 4.3014
-  safe_force_N: 7.6428
-  safe_depth_mm: 0.7
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 11.414367615331813
+    free_exponent: 2.345318951614369
+    surface_mm: 23.447999999999997
+  safe_force_N: 10.814951185330198
+  safe_depth_mm: 1.0741140472138788
+  stopped_on: depth backstop
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-11T00:19:06.571059'
+  commanded_depth_mm: 1.0999999999999996
+  command_vs_measured_mm: 0.025885952786120825
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: null
+    max_measurable_depth_mm: null
+    reached: false
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    note: 'not reached within the limits: stopped on depth backstop at 10.81 N with
+      the image still changing at 0.30 lvl/N (19% of peak)'
+    peak_slope_levels_per_N: 1.571255950862121
+    image_change_at_stop: 17.948955535888672
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r1
 - id: DIGIT_Marker_soft_1mm_r2
   principle: DIGIT_Marker
   hardness: soft
@@ -3226,24 +3398,36 @@ sensors:
   depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
     of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
     marks the backing taking load. The 0.5 mm start had no data behind it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 7.0346
-    free_exponent: 1.743378
-    surface_mm: 23.63636604719742
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5708
-    fitted_force_max_N: 2.948
-  safe_force_N: 5.342
-  safe_depth_mm: 0.7
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 14.060935187728285
+    free_exponent: 2.496635698437764
+    surface_mm: 23.268
+  safe_force_N: 16.634440060087037
+  safe_depth_mm: 1.4172919983432983
+  stopped_on: force cap
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-11T01:00:33.317625'
+  commanded_depth_mm: 1.4749999999999994
+  command_vs_measured_mm: 0.05770800165670109
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: null
+    max_measurable_depth_mm: null
+    reached: false
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    note: 'not reached within the limits: stopped on force cap at 16.63 N with the
+      image still changing at 0.14 lvl/N (8% of peak)'
+    peak_slope_levels_per_N: 1.7854750228535348
+    image_change_at_stop: 18.499286651611328
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r2
 - id: DIGIT_Marker_soft_2mm_r1
   principle: DIGIT_Marker
   hardness: soft
@@ -3252,24 +3436,34 @@ sensors:
   max_depth_mm: 1.2
   depth_limit_basis: interpolated between the other two; expect characterize to refine
     it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 3.853678
-    free_exponent: 1.741963
-    surface_mm: 24.40393602852983
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5746
-    fitted_force_max_N: 1.5592
-  safe_force_N: 9.7935
-  safe_depth_mm: 1.4
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 5.332518989278663
+    free_exponent: 1.9840571843697636
+    surface_mm: 24.169999999999998
+  safe_force_N: 12.25352802735473
+  safe_depth_mm: 1.9909762995799163
+  stopped_on: depth backstop
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-11T00:25:32.557493'
+  commanded_depth_mm: 2.224999999999999
+  command_vs_measured_mm: 0.23402370042008291
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 12.25352802735473
+    max_measurable_depth_mm: 1.9909762995799163
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 1.9036521924249954
+    image_change_at_stop: 23.921714782714844
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_2mm_r1
 - id: DIGIT_Marker_soft_2mm_r2
   principle: DIGIT_Marker
   hardness: soft
@@ -3278,24 +3472,34 @@ sensors:
   max_depth_mm: 1.2
   depth_limit_basis: interpolated between the other two; expect characterize to refine
     it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 3.206282
-    free_exponent: 1.60044
-    surface_mm: 24.599047079762244
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5881
-    fitted_force_max_N: 1.4393
-  safe_force_N: 7.7694
-  safe_depth_mm: 1.4
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 4.128771076205937
+    free_exponent: 1.9370834181973997
+    surface_mm: 24.421999999999997
+  safe_force_N: 9.41348192227478
+  safe_depth_mm: 1.892519039407965
+  stopped_on: depth backstop
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-11T00:54:07.328448'
+  commanded_depth_mm: 1.9976529142676893
+  command_vs_measured_mm: 0.10513387485972436
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 9.41348192227478
+    max_measurable_depth_mm: 1.892519039407965
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 2.1009131365418394
+    image_change_at_stop: 22.893983840942383
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_2mm_r2
 - id: DIGIT_Marker_soft_3mm_r1
   principle: DIGIT_Marker
   hardness: soft
@@ -3303,24 +3507,34 @@ sensors:
   replicate: 1
   max_depth_mm: 2.2
   depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 2.825292
-    free_exponent: 2.281161
-    surface_mm: 25.509892850110557
-    probe: ball4
-    rungs: 5
-    fitted_depth_max_mm: 0.5845
-    fitted_force_max_N: 0.7943
-  safe_force_N: 21.7076
-  safe_depth_mm: 2.1
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 2.588936013365367
+    free_exponent: 1.8117042710808564
+    surface_mm: 25.329
+  safe_force_N: 8.053216786675609
+  safe_depth_mm: 2.3053805692824056
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-11T00:36:22.117214'
+  commanded_depth_mm: 2.5999999999999988
+  command_vs_measured_mm: 0.2946194307175931
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 8.053216786675609
+    max_measurable_depth_mm: 2.3053805692824056
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 2.9731313065239
+    image_change_at_stop: 24.136445999145508
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_3mm_r1
 - id: DIGIT_Marker_soft_3mm_r2
   principle: DIGIT_Marker
   hardness: soft
@@ -3328,24 +3542,34 @@ sensors:
   replicate: 2
   max_depth_mm: 2.2
   depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 1.918844
-    free_exponent: 1.43925
-    surface_mm: 25.545053650248185
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.59
-    fitted_force_max_N: 1.0022
-  safe_force_N: 7.8942
-  safe_depth_mm: 2.1
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 2.8493816439451374
+    free_exponent: 1.7796290622652757
+    surface_mm: 25.366999999999997
+  safe_force_N: 7.054495608897099
+  safe_depth_mm: 2.0492864697147546
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-11T00:47:48.037139'
+  commanded_depth_mm: 2.424999999999999
+  command_vs_measured_mm: 0.37571353028524435
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 7.054495608897099
+    max_measurable_depth_mm: 2.0492864697147546
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 3.1694091614877795
+    image_change_at_stop: 25.118934631347656
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_3mm_r2
 - id: DIGIT_Marker_medium_1mm_r1
   principle: DIGIT_Marker
   hardness: medium
@@ -3355,24 +3579,34 @@ sensors:
   depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
     of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
     marks the backing taking load. The 0.5 mm start had no data behind it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 4.258421
-    free_exponent: 1.652728
-    surface_mm: 24.0630088927726
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5697
-    fitted_force_max_N: 1.7313
-  safe_force_N: 3.34
-  safe_depth_mm: 0.7
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 5.368547552720552
+    free_exponent: 2.0653545909586954
+    surface_mm: 23.884
+  safe_force_N: 8.257566191896903
+  safe_depth_mm: 1.6037119787833518
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-11T01:08:09.824492'
+  commanded_depth_mm: 1.7703591541718646
+  command_vs_measured_mm: 0.1666471753885128
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 8.257566191896903
+    max_measurable_depth_mm: 1.6037119787833518
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 2.121192348684651
+    image_change_at_stop: 20.406761169433594
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_medium_1mm_r1
 - id: DIGIT_Marker_medium_1mm_r2
   principle: DIGIT_Marker
   hardness: medium
@@ -3382,24 +3616,34 @@ sensors:
   depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
     of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
     marks the backing taking load. The 0.5 mm start had no data behind it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 9.434903
-    free_exponent: 2.286778
-    surface_mm: 23.731758778532196
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5726
-    fitted_force_max_N: 2.3724
-  safe_force_N: 5.9024
-  safe_depth_mm: 0.7
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 10.132974402250007
+    free_exponent: 2.8478391955649096
+    surface_mm: 23.485
+  safe_force_N: 12.56442504405656
+  safe_depth_mm: 1.5752936647203413
+  stopped_on: depth backstop
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-11T01:14:24.862184'
+  commanded_depth_mm: 1.7444720211368752
+  command_vs_measured_mm: 0.1691783564165339
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 12.56442504405656
+    max_measurable_depth_mm: 1.5752936647203413
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 1.7613579534543184
+    image_change_at_stop: 26.054712295532227
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_medium_1mm_r2
 - id: DIGIT_Marker_medium_2mm_r1
   principle: DIGIT_Marker
   hardness: medium
@@ -3408,24 +3652,34 @@ sensors:
   max_depth_mm: 1.2
   depth_limit_basis: interpolated between the other two; expect characterize to refine
     it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 3.192003
-    free_exponent: 1.860427
-    surface_mm: 24.79551920729611
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5878
-    fitted_force_max_N: 1.3323
-  safe_force_N: 8.4419
-  safe_depth_mm: 1.4
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 4.144366068490484
+    free_exponent: 1.8538280802700762
+    surface_mm: 24.616
+  safe_force_N: 6.2260423741513025
+  safe_depth_mm: 1.5152520646213397
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-11T01:21:13.382013'
+  commanded_depth_mm: 1.9690126310703626
+  command_vs_measured_mm: 0.45376056644902296
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 6.2260423741513025
+    max_measurable_depth_mm: 1.5152520646213397
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 2.4427120600360985
+    image_change_at_stop: 24.822025299072266
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_medium_2mm_r1
 - id: DIGIT_Marker_medium_2mm_r2
   principle: DIGIT_Marker
   hardness: medium
@@ -3434,24 +3688,34 @@ sensors:
   max_depth_mm: 1.2
   depth_limit_basis: interpolated between the other two; expect characterize to refine
     it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 2.885349
-    free_exponent: 1.613688
-    surface_mm: 24.695286972960847
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5851
-    fitted_force_max_N: 1.2703
-  safe_force_N: 7.0229
-  safe_depth_mm: 1.4
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 4.367321895728463
+    free_exponent: 2.062872588712778
+    surface_mm: 24.471
+  safe_force_N: 10.027504378909551
+  safe_depth_mm: 1.9627252858517004
+  stopped_on: depth backstop
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-11T01:29:24.036696'
+  commanded_depth_mm: 2.065591081843372
+  command_vs_measured_mm: 0.10286579599167167
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 10.027504378909551
+    max_measurable_depth_mm: 1.9627252858517004
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 2.5816980784372143
+    image_change_at_stop: 24.57159423828125
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_medium_2mm_r2
 - id: DIGIT_Marker_medium_3mm_r1
   principle: DIGIT_Marker
   hardness: medium
@@ -3459,24 +3723,34 @@ sensors:
   replicate: 1
   max_depth_mm: 2.2
   depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 1.731196
-    free_exponent: 1.306765
-    surface_mm: 25.33441637700286
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5879
-    fitted_force_max_N: 1.0143
-  safe_force_N: 6.4554
-  safe_depth_mm: 2.1
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 2.817148366868475
+    free_exponent: 1.8616783767894691
+    surface_mm: 25.293
+  safe_force_N: 6.939144782104512
+  safe_depth_mm: 2.0557431305114164
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-11T01:38:06.539887'
+  commanded_depth_mm: 2.60742225301295
+  command_vs_measured_mm: 0.5516791225015334
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 6.939144782104512
+    max_measurable_depth_mm: 2.0557431305114164
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 3.170588672130032
+    image_change_at_stop: 18.485111236572266
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_medium_3mm_r1__2
 - id: DIGIT_Marker_medium_3mm_r2
   principle: DIGIT_Marker
   hardness: medium
@@ -3484,24 +3758,34 @@ sensors:
   replicate: 2
   max_depth_mm: 2.2
   depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 2.258273
-    free_exponent: 1.448663
-    surface_mm: 25.485513957451385
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.588
-    fitted_force_max_N: 1.1605
-  safe_force_N: 9.3558
-  safe_depth_mm: 2.1
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 2.258600169972848
+    free_exponent: 1.7985283324306562
+    surface_mm: 25.771
+  safe_force_N: 6.7336824064301934
+  safe_depth_mm: 2.3297621188709137
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-11T01:44:07.133021'
+  commanded_depth_mm: 2.9155685053887908
+  command_vs_measured_mm: 0.5858063865178771
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 6.7336824064301934
+    max_measurable_depth_mm: 2.3297621188709137
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 1.7902929176851035
+    image_change_at_stop: 18.252901077270508
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_medium_3mm_r2
 - id: DIGIT_Marker_hard_1mm_r1
   principle: DIGIT_Marker
   hardness: hard
@@ -3511,24 +3795,34 @@ sensors:
   depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
     of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
     marks the backing taking load. The 0.5 mm start had no data behind it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 9.409014
-    free_exponent: 1.784402
-    surface_mm: 23.347791494396052
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5759
-    fitted_force_max_N: 4.1054
-  safe_force_N: 7.0413
-  safe_depth_mm: 0.7
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 12.004483710368643
+    free_exponent: 2.3072624327081894
+    surface_mm: 23.348
+  safe_force_N: 10.800870363452788
+  safe_depth_mm: 1.1734465279000403
+  stopped_on: depth backstop
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-11T01:50:12.047900'
+  commanded_depth_mm: 1.266833691152845
+  command_vs_measured_mm: 0.09338716325280472
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 10.800870363452788
+    max_measurable_depth_mm: 1.1734465279000403
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 1.3022864432502201
+    image_change_at_stop: 19.171714782714844
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_hard_1mm_r1
 - id: DIGIT_Marker_hard_1mm_r2
   principle: DIGIT_Marker
   hardness: hard
@@ -3538,24 +3832,34 @@ sensors:
   depth_limit_basis: raised from 0.5 mm after the first 1 mm gel showed a local exponent
     of 1.0-1.3 at its limit, well under Hertz's 1.5 and nowhere near the 2.0 that
     marks the backing taking load. The 0.5 mm start had no data behind it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 14.046887
-    free_exponent: 1.690514
-    surface_mm: 23.28309973272519
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5838
-    fitted_force_max_N: 5.9602
-  safe_force_N: 10.87
-  safe_depth_mm: 0.7
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 14.5109358343199
+    free_exponent: 2.469471527177229
+    surface_mm: 23.328
+  safe_force_N: 10.013795399696885
+  safe_depth_mm: 1.0445186621386249
+  stopped_on: depth backstop
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-11T01:55:28.211487'
+  commanded_depth_mm: 1.1249999999999996
+  command_vs_measured_mm: 0.08048133786137468
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 10.013795399696885
+    max_measurable_depth_mm: 1.0445186621386249
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 0.8737046468031284
+    image_change_at_stop: 13.838066101074219
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_hard_1mm_r2
 - id: DIGIT_Marker_hard_2mm_r1
   principle: DIGIT_Marker
   hardness: hard
@@ -3564,24 +3868,34 @@ sensors:
   max_depth_mm: 1.2
   depth_limit_basis: interpolated between the other two; expect characterize to refine
     it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 4.954044
-    free_exponent: 2.371191
-    surface_mm: 24.422857523393002
-    probe: ball4
-    rungs: 5
-    fitted_depth_max_mm: 0.583
-    fitted_force_max_N: 1.374
-  safe_force_N: 15.5587
-  safe_depth_mm: 1.4
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 5.2115923474321715
+    free_exponent: 2.0481340669996286
+    surface_mm: 24.335
+  safe_force_N: 9.696140478630076
+  safe_depth_mm: 1.6797744690066558
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-11T02:01:56.187895'
+  commanded_depth_mm: 1.8453112301174535
+  command_vs_measured_mm: 0.16553676111079763
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 9.696140478630076
+    max_measurable_depth_mm: 1.6797744690066558
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 2.268507543360011
+    image_change_at_stop: 22.781639099121094
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_hard_2mm_r1
 - id: DIGIT_Marker_hard_2mm_r2
   principle: DIGIT_Marker
   hardness: hard
@@ -3590,24 +3904,34 @@ sensors:
   max_depth_mm: 1.2
   depth_limit_basis: interpolated between the other two; expect characterize to refine
     it
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 3.677996
-    free_exponent: 1.366383
-    surface_mm: 24.456062357356572
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5728
-    fitted_force_max_N: 1.9063
-  safe_force_N: 8.2375
-  safe_depth_mm: 1.4
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 4.8781014284825295
+    free_exponent: 2.051248436997556
+    surface_mm: 24.355999999999998
+  safe_force_N: 9.415069372416507
+  safe_depth_mm: 1.7409262240222674
+  stopped_on: depth backstop
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-11T02:07:41.308060'
+  commanded_depth_mm: 1.8961265280602124
+  command_vs_measured_mm: 0.15520030403794505
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 9.415069372416507
+    max_measurable_depth_mm: 1.7409262240222674
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 3.1719928690044568
+    image_change_at_stop: 24.998178482055664
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_hard_2mm_r2
 - id: DIGIT_Marker_hard_3mm_r1
   principle: DIGIT_Marker
   hardness: hard
@@ -3615,24 +3939,34 @@ sensors:
   replicate: 1
   max_depth_mm: 2.2
   depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 2.460662
-    free_exponent: 1.579711
-    surface_mm: 25.584133906073443
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5867
-    fitted_force_max_N: 1.064
-  safe_force_N: 11.2352
-  safe_depth_mm: 2.1
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 2.726097555805034
+    free_exponent: 1.7276313566302945
+    surface_mm: 25.38
+  safe_force_N: 9.234974356675561
+  safe_depth_mm: 2.396653616661414
+  stopped_on: image saturation (+ margin)
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-11T02:15:57.078660'
+  commanded_depth_mm: 2.6497306779615353
+  command_vs_measured_mm: 0.2530770613001212
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 9.234974356675561
+    max_measurable_depth_mm: 2.396653616661414
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 2.408065276961918
+    image_change_at_stop: 24.10885238647461
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_hard_3mm_r1__2
 - id: DIGIT_Marker_hard_3mm_r2
   principle: DIGIT_Marker
   hardness: hard
@@ -3640,24 +3974,34 @@ sensors:
   replicate: 2
   max_depth_mm: 2.2
   depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
-  status: ladder_only
+  status: characterised
   gel_model:
-    hertz_a: 2.407449
-    free_exponent: 1.80232
-    surface_mm: 25.576304441013242
-    probe: ball4
-    rungs: 6
-    fitted_depth_max_mm: 0.5872
-    fitted_force_max_N: 0.9711
-  safe_force_N: 12.9662
-  safe_depth_mm: 2.1
-  stopped_on: depth backstop (extrapolated, not reached)
+    hertz_a: 2.798120077071786
+    free_exponent: 1.7218903138965072
+    surface_mm: 25.331
+  safe_force_N: 12.282480305298373
+  safe_depth_mm: 2.7536539445552783
+  stopped_on: depth backstop
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: null
+  characterised_at: '2026-09-11T02:24:49.357753'
+  commanded_depth_mm: 2.8490372793782717
+  command_vs_measured_mm: 0.09538333482299333
+  ladder_rungs_reached: 50
+  image_response:
+    max_measurable_force_N: 12.282480305298373
+    max_measurable_depth_mm: 2.7536539445552783
+    reached: true
+    metric: mean |frame - reference| over the central half, grey levels
+    threshold_frac_of_peak_slope: 0.15
+    min_force_N: 0.3
+    consecutive: 2
+    peak_slope_levels_per_N: 1.5273798255256767
+    image_change_at_stop: 21.95709991455078
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_hard_3mm_r2
 campaign:
   created: '2026-09-02T12:09:13.725510'
   seed: 20260902
