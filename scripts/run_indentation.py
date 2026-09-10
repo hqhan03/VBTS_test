@@ -5754,6 +5754,17 @@ def phase_calibgrid(a) -> int:
         # as the middle of the grid.
         n_h = float((ent.get("gel_model") or {}).get("free_exponent") or 2.0)
         f_ref = {}                    # rung -> force the centre point returned
+        rung_d = {}                   # rung -> depth the centre had to use
+        # A rung has to weigh something the F/T can actually resolve, or the
+        # correction is matching noise. DIGIT_medium_3mm_r1 is the softest unit
+        # yet (k = 1.405) and its 0.15 mm rung returned 0.037 N at the centre --
+        # twice the F/T's own noise -- so holding fourteen other points to that
+        # number put them anywhere from -0.043 to 0.19 mm deep and left five of
+        # them with no imprint. The centre now DEEPENS a rung until it weighs
+        # at least this much, and every other point uses the depth it settled
+        # on. The rungs stay depth-controlled and stay equal across the field;
+        # what changes is that a soft gel gets deeper ones than a stiff one.
+        f_floor = 0.15
         order = [(ix, iy) + tuple(pt)
                  for iy, rw in enumerate(pts_rows) for ix, pt in enumerate(rw)]
         c_ix, c_iy = nx // 2, ny // 2
@@ -5782,9 +5793,11 @@ def phase_calibgrid(a) -> int:
                 time.sleep(a.zero_recover_s)
                 for dtgt in sorted(depths):
                     f_want = f_ref.get(dtgt, 0.0)
+                    d_use = rung_d.get(dtgt, dtgt)
+                    is_centre = (ix, iy) == (c_ix, c_iy)
                     note = ""
-                    for attempt in range(3):
-                        if _move_to_point(ip, base - (dtgt + dz_off) * n, rpy0, a,
+                    for attempt in range(4):
+                        if _move_to_point(ip, base - (d_use + dz_off) * n, rpy0, a,
                                           a.max_joint_step):
                             return 2
                         time.sleep(a.shape_dwell)
@@ -5794,21 +5807,30 @@ def phase_calibgrid(a) -> int:
                             print(f"  F/T failed: {err}")
                             return 1
                         f = -float(w[2])
-                        if f_want <= 0 or f >= f_stop:
+                        if f >= f_stop:
+                            break
+                        if is_centre:
+                            # the centre sets this rung's depth
+                            if f >= f_floor or d_use >= cap - 1e-6 or attempt == 3:
+                                break
+                            d_use = float(np.clip(d_use + 0.15, 0.05, cap))
+                            note = f"{f:.3f} N is under {f_floor:.2f} N"
+                            continue
+                        if f_want <= 0:
                             break
                         # Hertz again: F goes as depth^n, so the depth this
                         # point is really at is (f/f_want)^(1/n) of what was
                         # asked, and the difference is where its surface sits.
                         if 0.6 * f_want <= f <= 1.6 * f_want:
                             break
-                        d_true = dtgt * (max(f, 1e-3) / f_want) ** (1.0 / n_h)
-                        corr = float(np.clip(dtgt - d_true, -0.4, 0.4))
-                        if abs(corr) < 0.01 or attempt == 2:
+                        d_true = d_use * (max(f, 1e-3) / f_want) ** (1.0 / n_h)
+                        corr = float(np.clip(d_use - d_true, -0.4, 0.4))
+                        if abs(corr) < 0.01 or attempt == 3:
                             note = f"{f:.2f} N vs {f_want:.2f} N wanted"
                             break
                         # never past the unit's own depth backstop
                         dz_off = float(np.clip(dz_off + corr, -0.6,
-                                               min(0.6, cap - dtgt)))
+                                               min(0.6, cap - d_use)))
                         note = f"surface {dz_off:+.3f} mm"
                     frame, t_img = cam.grab_after(time.time())
                     rg = contact_region(frame, ref_img, diff_level,
@@ -5821,6 +5843,7 @@ def phase_calibgrid(a) -> int:
                                  "x_mm": float(dx), "y_mm": float(dy),
                                  "img_x_px": tx_px, "img_y_px": ty_px,
                                  "target_depth_mm": dtgt, "depth_mm": reached,
+                                 "rung_depth_mm": d_use,
                                  "surface_offset_mm": dz_off,
                                  "force_wanted_N": f_want,
                                  "force_N": f, "file": name, "t_img": t_img,
@@ -5831,9 +5854,11 @@ def phase_calibgrid(a) -> int:
                                  "radius_px": rg["radius_px"],
                                  "centroid_px": str(rg["centroid_px"]),
                                  "diff_level": diff_level})
-                    if (ix, iy) == (c_ix, c_iy):
+                    if is_centre:
                         f_ref[dtgt] = f
-                        note = "centre: the reference for this rung"
+                        rung_d[dtgt] = d_use
+                        note = (f"centre: rung {dtgt:.2f} runs at {d_use:.2f} mm "
+                                f"for {f:.3f} N")
                     print(f"  {ix:>3} {iy:>3} {dx:>6.2f} {dy:>6.2f} {reached:>7.3f} "
                           f"{f:>8.3f} {rg['area_px']:>9d}  {note}")
                     if f >= f_stop:
