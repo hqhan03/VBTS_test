@@ -35,9 +35,11 @@ Added since (this table was written when only 9DTact had been measured):
 **Where the campaign stands (2026-09-11).** All 53 units have force-estimation
 sweeps; all 36 DIGIT-family units have a photometric calibration grid and a
 measured force ceiling. The headline question — whether the resolution at which
-error saturates depends on the gel — is **not settled**: the direction is
-consistent across three independent measurements but the trained knee moves
-between input representations (`cross_principle.md` §3.10).
+error saturates depends on the gel — is answered **no**: on a root-2 ladder
+both DIGIT principles give a flat knee against thickness (p 0.85 and p 0.66),
+and the one significant result from the doubling ladder was an artefact of an
+unstable knee estimate (`cross_principle.md` §3.10). The direction survives in
+two training-free measurements; the trained knee cannot show it.
 
 **The machine-readable truth is in `config/`, not here.**
 `sensor_registry.yaml` (per-sensor limits, gel models, capture policy),
