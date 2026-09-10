@@ -22,6 +22,23 @@ per question.
 | the 2026-09-05 single-unit shape pilot | `shape_reconstruction_pilot.html` |
 | superseded documents, kept for provenance | `archive/` |
 
+Added since (this table was written when only 9DTact had been measured):
+
+| I want to know… | read |
+|---|---|
+| **how the three principles compare, and what this campaign got wrong** | **`cross_principle.md`** ← the results, and section 5 is the self-criticism |
+| test 1 on DIGIT and DIGIT_Marker — all 36 units, and which input representation wins | `force_estimation_digit.md` |
+| how the DIGIT photometric calibration grid works and whether it transfers between units | `photometric_calibration.md` |
+| how this campaign's preprocessing and training differ from the DIGIT/GelSight literature | `method_vs_literature.md` |
+| what is still missing and what it would cost to collect | `data_wishlist.md` |
+
+**Where the campaign stands (2026-09-11).** All 53 units have force-estimation
+sweeps; all 36 DIGIT-family units have a photometric calibration grid and a
+measured force ceiling. The headline question — whether the resolution at which
+error saturates depends on the gel — is **not settled**: the direction is
+consistent across three independent measurements but the trained knee moves
+between input representations (`cross_principle.md` §3.10).
+
 **The machine-readable truth is in `config/`, not here.**
 `sensor_registry.yaml` (per-sensor limits, gel models, capture policy),
 `probes.yaml` (probe geometry, TCP, contact laws), `ft_config.yaml` (wiring,
