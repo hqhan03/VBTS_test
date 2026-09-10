@@ -5445,12 +5445,30 @@ def phase_calibgrid(a) -> int:
                 return None, 0
             d = cv2.GaussianBlur(
                 np.abs(frame.astype(np.float32) - rf).max(2), (0, 0), 7)
-            m = (d > max(5.0, 0.5 * float(d.max()))).astype(np.uint8)
-            nb, _, st, cen = cv2.connectedComponentsWithStats(m, 8)
-            if nb < 2:
-                return None, 0
-            i = 1 + int(np.argmax(st[1:, 4]))
-            return np.array(cen[i], float), int(st[i, 4])
+            # Raise the threshold until what it selects is the size a contact
+            # is. One fixed fraction of the peak does not survive the marker
+            # gels: pressing one moves every dot for millimetres around the
+            # contact, so the region that "changed" is far wider than the
+            # imprint, and on DIGIT_Marker_medium_3mm_r1 -- whose reference is
+            # also unusually dark at mean 48.8 -- the largest blob came out
+            # anywhere from 2903 to 357257 px across five presses of the same
+            # force. The contact's own area is known from the sphere and the
+            # depth, so climb the threshold until the blob is no bigger than
+            # that allows and take the tightest one that still has substance.
+            best = (None, 0)
+            for frac in (0.5, 0.6, 0.7, 0.8, 0.88):
+                m = (d > max(5.0, frac * float(d.max()))).astype(np.uint8)
+                nb, _, st, cen = cv2.connectedComponentsWithStats(m, 8)
+                if nb < 2:
+                    break
+                i = 1 + int(np.argmax(st[1:, 4]))
+                ar = int(st[i, 4])
+                if ar < 400:
+                    break
+                best = (np.array(cen[i], float), ar)
+                if a_hi <= 0 or ar <= a_hi:
+                    break
+            return best
 
         def press(dx, dy, dtgt, name):
             """One indentation at a grid offset, gel-plane corrected."""
@@ -5531,6 +5549,8 @@ def phase_calibgrid(a) -> int:
         # the first attempt reached 0.164 mm where it asked for 0.30 -- and a
         # faint imprint is exactly what a centroid cannot be trusted on.
         d_fit = max(depths)
+        R_ball = float(probe.get("element_diameter_mm", 4.0)) / 2.0
+        a_hi = 4.0 * np.pi * (2.0 * R_ball * d_fit) * 120.0 ** 2
         aff = None
         if a.grid_autoframe:
             q_mm = a.grid_probe_mm
@@ -5538,8 +5558,6 @@ def phase_calibgrid(a) -> int:
                      (0.0, q_mm), (0.0, -q_mm))
             print(f"\n  autoframe: {len(spots)} presses at {d_fit:.2f} mm, "
                   f"+-{q_mm:.1f} mm apart, to find the frame's own axes")
-            R_ball = float(probe.get("element_diameter_mm", 4.0)) / 2.0
-            a_hi = 4.0 * np.pi * (2.0 * R_ball * d_fit) * 120.0 ** 2
             pts = []
             # Match the FORCE at every autoframe point, not the depth. What
             # the affine needs is centroid DIFFERENCES, so a bias that is the
