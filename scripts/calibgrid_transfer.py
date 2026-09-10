@@ -146,9 +146,14 @@ if __name__ == "__main__":
         if len(m) < 6:
             print(f"  {u} vs {v}: 화면에서 겹치는 점 {len(m)}개뿐 -- 건너뜀")
             continue
-        cu = re.search(r"(soft|medium|hard)_(\d)mm", u)
-        cv_ = re.search(r"(soft|medium|hard)_(\d)mm", v)
-        same = bool(cu and cv_ and cu.groups() == cv_.groups())
+        # The PRINCIPLE is part of the cell. Matching only hardness and
+        # thickness made DIGIT_soft_1mm_r1 a "replicate" of
+        # DIGIT_Marker_soft_1mm_r1 -- a gel with a printed dot lattice on it --
+        # and turned eighteen replicate pairs into fifty-four.
+        def cell(x):
+            m = re.search(r"(soft|medium|hard)_(\d)mm", x)
+            return (("Marker" if "Marker" in x else "plain"),) + (m.groups() if m else ())
+        same = cell(u) == cell(v) and len(cell(u)) == 3
         rows.append(dict(a=u, b=v, n=len(m), replicate=same,
                          dist_px=float(m.dist.mean()),
                          **{c: float(np.corrcoef(m[f"{c}_a"], m[f"{c}_b"])[0, 1])
