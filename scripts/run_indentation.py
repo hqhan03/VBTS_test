@@ -5591,9 +5591,9 @@ def phase_calibgrid(a) -> int:
                     M[:, 0] @ M[:, 1] / (sxx * syy + 1e-9), -1, 1))))
                 print(f"    fit residual {res.mean():.0f} px mean, "
                       f"{res.max():.0f} px worst")
-                if res.mean() > 80.0:
-                    print("    that is too scattered to place a lattice with; "
-                          "not running")
+                if res.mean() > a.grid_res_max_px:
+                    print(f"    that is past the {a.grid_res_max_px:.0f} px "
+                          "limit; not running")
                     return 2
                 # A camera looking at a flat gel through square pixels maps mm
                 # to px as a rotation and a near-uniform scale. The first six
@@ -5655,8 +5655,24 @@ def phase_calibgrid(a) -> int:
             # over-read scale pushes the lattice OUTWARD, and that is what hung
             # its left column off the frame. So size the lattice to survive
             # being wrong by this much rather than trying to be right.
-            half = (np.array([W_img / 2.0 - marg, H_img / 2.0 - marg])
-                    * a.grid_safety)
+            # Size the lattice by how well the fit actually came out, not by a
+            # fixed guess. The residual is a direct measure of how far a placed
+            # point may land from where it was asked to: over a baseline of
+            # q_mm x scale pixels, a residual of `res` carries roughly
+            # res/baseline of relative error into the scale and the angle
+            # alike. Good units come in at 8-9 px and get the full lattice;
+            # DIGIT_hard_1mm_r2 came in at 85 px -- its imprints vary in size
+            # across the field because the ILLUMINATION does, which is the very
+            # thing being calibrated, so this is a floor of the method and not
+            # a fault to be fixed -- and gets a smaller one.
+            baseline_px = max(q_mm * float(np.hypot(*M[:, 0])), 1.0)
+            safety = float(np.clip(1.0 - 2.0 * res.mean() / baseline_px,
+                                   0.45, a.grid_safety))
+            if safety < a.grid_safety:
+                print(f"    a {res.mean():.0f} px residual over a "
+                      f"{baseline_px:.0f} px baseline pulls the lattice to "
+                      f"{safety * 100:.0f} % instead of {a.grid_safety * 100:.0f} %")
+            half = (np.array([W_img / 2.0 - marg, H_img / 2.0 - marg]) * safety)
             # If the frame asks for more travel than the caps allow, shrink
             # the lattice as a rectangle -- clipping point by point would put
             # it back out of square with the image, which is the whole point of
@@ -5698,7 +5714,7 @@ def phase_calibgrid(a) -> int:
                                 float(ctr[0] + tx), float(ctr[1] + ty)))
                 pts_rows.append(row)
             sp = [p for row in pts_rows for p in row]
-            print(f"    lattice pulled to {a.grid_safety * 100:.0f} % of the "
+            print(f"    lattice pulled to {safety * 100:.0f} % of the "
                   f"usable frame: +-{half[0]:.0f} x +-{half[1]:.0f} px")
             print(f"    lattice spans {min(p[0] for p in sp):+.2f}..{max(p[0] for p in sp):+.2f} x "
                   f"{min(p[1] for p in sp):+.2f}..{max(p[1] for p in sp):+.2f} mm "
@@ -6302,6 +6318,10 @@ def main() -> int:
                          "phase's force stop")
     ap.add_argument("--grid-probe-mm", type=float, default=3.5,
                     help="offset of the two autoframe probe presses")
+    ap.add_argument("--grid-res-max-px", type=float, default=150.0,
+                    help="refuse to place a lattice when the autoframe fit "
+                         "scatters by more than this; below it the lattice is "
+                         "shrunk in proportion instead of refused")
     ap.add_argument("--grid-safety", type=float, default=0.8,
                     help="shrink the image-space lattice by this factor, so a "
                          "scale the autoframe fit over-reads still lands every "
