@@ -5255,6 +5255,24 @@ def phase_calibgrid(a) -> int:
             return 1
         reader = ForceReader(ft, tare).start()
 
+        # NOT reference.png. Every DIGIT reference.png is 8-14 % brighter than
+        # the frames that follow it -- the probe is clear of the gel when it is
+        # taken, so nothing shadows the translucent side-lit gel (note of
+        # 2026-09-09). On this unit it is 77.0 against 68.1 for the working
+        # reference and 69.0 for the frames. Differenced against it a whole
+        # quadrant of the picture clears any threshold: the first autoframe run
+        # picked a 240349 px blob for one of the three presses -- an eighth of
+        # the frame -- put its centroid 200 px from the real imprint, and the
+        # affine that came out read 111 px/mm along one axis and 45 along the
+        # other, so the lattice collapsed to 24 % of the field.
+        ref_af = None
+        for nm in ("reference_working.png", "reference_collect.png", "reference.png"):
+            if (run / nm).exists():
+                ref_af = cv2.imread(str(run / nm)).astype(np.float32)
+                print(f"  autoframe differences against {nm} "
+                      f"(mean {ref_af.mean():.1f})")
+                break
+
         def imprint_centre(frame):
             """Centroid and area of the largest blob that moved, in pixels.
 
@@ -5267,8 +5285,7 @@ def phase_calibgrid(a) -> int:
             thirty frames varied by 1.9x instead of 200x.
             """
             d = cv2.GaussianBlur(
-                np.abs(frame.astype(np.float32) - ref_img.astype(np.float32)).max(2),
-                (0, 0), 7)
+                np.abs(frame.astype(np.float32) - ref_af).max(2), (0, 0), 7)
             m = (d > max(5.0, 0.5 * float(d.max()))).astype(np.uint8)
             nb, _, st, cen = cv2.connectedComponentsWithStats(m, 8)
             if nb < 2:
@@ -5316,16 +5333,36 @@ def phase_calibgrid(a) -> int:
         #     the seven pairs within 150 px all agreed (median dG +0.56) and
         #     the eight beyond it did not (-0.15), including a different-gel
         #     pair at +0.75 and same-gel replicates at -0.33.
-        # So press three points first, read where their imprints actually land,
-        # solve the affine mm -> px, and invert it to place a lattice that is
-        # square to the frame and centred on it. Costs three indentations.
-        d_fit = max(depths)
+        # So press a few points first, read where their imprints actually
+        # land, solve the affine mm -> px by least squares, and invert it to
+        # place a lattice that is square to the frame and centred on it.
+        #
+        # FIVE presses, not three. Three points leave no redundancy: one
+        # misread centroid goes straight into the affine, which is how the
+        # first attempt came out 111 px/mm along one axis and 45 along the
+        # other and collapsed the lattice to 24 % of the field. The imprint's
+        # difference is an ANNULUS -- the contact's flat middle barely changes
+        # colour, only its sloped rim does -- and the rim is brighter on the
+        # downhill side, so a centroid carries a bias of tens of pixels that
+        # varies over the field. Symmetric pairs cancel most of it and an
+        # over-determined fit shows what is left as a residual.
+        #
+        # Deeper than the grid's own rungs, too: the gel-plane correction is
+        # not exact, so an off-centre press lands shallower than commanded --
+        # the first attempt reached 0.164 mm where it asked for 0.30 -- and a
+        # faint imprint is exactly what a centroid cannot be trusted on.
+        d_fit = min(max(depths) + 0.15, cap)
         aff = None
         if a.grid_autoframe:
-            print(f"\n  autoframe: three presses at {d_fit:.2f} mm to find the "
-                  "frame's own axes")
-            fits = []
-            for dx, dy in ((0.0, 0.0), (a.grid_probe_mm, 0.0), (0.0, a.grid_probe_mm)):
+            q_mm = a.grid_probe_mm
+            spots = ((0.0, 0.0), (q_mm, 0.0), (-q_mm, 0.0),
+                     (0.0, q_mm), (0.0, -q_mm))
+            print(f"\n  autoframe: {len(spots)} presses at {d_fit:.2f} mm, "
+                  f"+-{q_mm:.1f} mm apart, to find the frame's own axes")
+            R_ball = float(probe.get("element_diameter_mm", 4.0)) / 2.0
+            a_hi = 4.0 * np.pi * (2.0 * R_ball * d_fit) * 120.0 ** 2
+            pts = []
+            for dx, dy in spots:
                 r = press(dx, dy, d_fit, f"autoframe_x{dx:+.2f}_y{dy:+.2f}.png")
                 if r is None:
                     return 2
@@ -5333,24 +5370,52 @@ def phase_calibgrid(a) -> int:
                 print(f"    ({dx:+.2f}, {dy:+.2f}) -> centroid "
                       f"{'-' if c is None else c.round(0)}  area {area} px  "
                       f"{r['force']:.2f} N  depth {r['depth']:.3f} mm")
-                if c is None or area < 400:
-                    print("    imprint too faint to locate; falling back to the "
-                          "robot-axis grid")
-                    fits = []
+                if r["force"] >= f_stop:
+                    print(f"    past the {f_stop:.2f} N stop; falling back to "
+                          "the robot-axis grid")
+                    pts = []
                     break
-                fits.append((c, area))
-            if len(fits) == 3:
-                c0, c1, c2 = (f[0] for f in fits)
-                M = np.column_stack([(c1 - c0) / a.grid_probe_mm,
-                                     (c2 - c0) / a.grid_probe_mm])
-                if abs(np.linalg.det(M)) < 100.0:
-                    print("    the two probe directions came out parallel; "
-                          "falling back to the robot-axis grid")
+                # The contact of a known sphere at a known depth has a known
+                # area, so a blob far off it is not the contact.
+                if c is None or area < 400 or area > a_hi:
+                    print(f"    blob of {area} px is not a "
+                          f"{2.0 * np.sqrt(2.0 * R_ball * d_fit):.2f} mm contact "
+                          f"(want 400-{a_hi:.0f} px); falling back to the "
+                          "robot-axis grid")
+                    pts = []
+                    break
+                pts.append((c, dx, dy))
+            if len(pts) == len(spots):
+                P = np.array([q[0] for q in pts])
+                A = np.column_stack([[q[1] for q in pts], [q[2] for q in pts],
+                                     np.ones(len(pts))])
+                bx = np.linalg.lstsq(A, P[:, 0], rcond=None)[0]
+                by = np.linalg.lstsq(A, P[:, 1], rcond=None)[0]
+                M = np.array([[bx[0], bx[1]], [by[0], by[1]]])
+                c0 = np.array([bx[2], by[2]])
+                res = np.hypot(A @ bx - P[:, 0], A @ by - P[:, 1])
+                sxx, syy = float(np.hypot(*M[:, 0])), float(np.hypot(*M[:, 1]))
+                ang = float(np.degrees(np.arccos(np.clip(
+                    M[:, 0] @ M[:, 1] / (sxx * syy + 1e-9), -1, 1))))
+                print(f"    fit residual {res.mean():.0f} px mean, "
+                      f"{res.max():.0f} px worst")
+                # A camera looking at a flat gel through square pixels maps mm
+                # to px as a rotation and a near-uniform scale. The first six
+                # units bear that out: 82-109 px/mm along x against 92-110 along
+                # y on the same unit, never more than 17 % apart. Further off
+                # than that means a centroid was misread, and inverting it sends
+                # the lattice somewhere arbitrary.
+                if (min(sxx, syy) < 20.0 or abs(ang - 90.0) > 15.0
+                        or max(sxx, syy) / max(min(sxx, syy), 1e-9) > 1.35):
+                    print(f"    the two axes came out {sxx:.0f} and {syy:.0f} "
+                          f"px/mm at {ang:.0f} deg apart -- that is not a "
+                          "rotation of the gel plane; falling back to the "
+                          "robot-axis grid")
                 else:
                     aff = (M, c0)
                     rot = np.degrees(np.arctan2(M[1, 0], M[0, 0]))
                     print(f"    mm -> px: rotation {rot:+.1f} deg, "
-                          f"{np.hypot(*M[:, 0]):.0f} / {np.hypot(*M[:, 1]):.0f} px/mm, "
+                          f"{sxx:.0f} / {syy:.0f} px/mm at {ang:.0f} deg, "
                           f"centre {c0.round(0)}")
         H_img, W_img = ref_img.shape[:2]
         if aff is None:
@@ -5380,20 +5445,20 @@ def phase_calibgrid(a) -> int:
             # scaled together, because the rotation makes the two axes cost
             # different amounts of travel and a uniform scale throws away the
             # cheaper one.
-            def fits(hx, hy):
+            def reachable(hx, hy):
                 for sgx in (-1, 1):
                     for sgy in (-1, 1):
                         v = Minv @ (ctr + np.array([sgx * hx, sgy * hy]) - c0)
                         if abs(v[0]) > a.grid_x or abs(v[1]) > a.grid_y:
                             return False
                 return True
-            if not fits(*half):
+            if not reachable(*half):
                 want = half.copy()
                 best = None
                 for fx in np.linspace(0.05, 1.0, 40):
                     for fy in np.linspace(0.05, 1.0, 40):
                         hx, hy = want[0] * fx, want[1] * fy
-                        if fits(hx, hy) and (best is None or hx * hy > best[0] * best[1]):
+                        if reachable(hx, hy) and (best is None or hx * hy > best[0] * best[1]):
                             best = (hx, hy)
                 if best is None:
                     print(f"    even a single point at the frame centre needs "
@@ -6005,7 +6070,7 @@ def main() -> int:
                          "to the IMAGE, not to the robot axes (default on)")
     ap.add_argument("--no-grid-autoframe", dest="grid_autoframe",
                     action="store_false")
-    ap.add_argument("--grid-probe-mm", type=float, default=3.0,
+    ap.add_argument("--grid-probe-mm", type=float, default=3.5,
                     help="offset of the two autoframe probe presses")
     ap.add_argument("--grid-margin-px", type=float, default=120.0,
                     help="clearance to keep between an imprint and the frame edge")
