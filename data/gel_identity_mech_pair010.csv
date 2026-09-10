@@ -1,0 +1,17 @@
+run,best,best_rms,best_shift,claimed_rms,second,second_rms,agrees
+hard_1mm_r1,hard_1mm_r2,0.0512,0.23,0.1209,soft_1mm_r1,0.0865,False
+hard_1mm_r2,medium_1mm_r2,0.01,-0.08,0.0482,medium_1mm_r1,0.0127,False
+hard_2mm_r1,medium_2mm_r1,0.0152,-0.05,0.0455,hard_3mm_r2,0.0155,False
+hard_2mm_r2,soft_2mm_r1,0.0116,0.03,0.0235,hard_2mm_r1,0.0156,False
+hard_3mm_r1,medium_3mm_r2,0.0135,0.07,0.0227,medium_3mm_r1,0.0135,False
+hard_3mm_r2,hard_3mm_r2,0.0055,-0.23,0.0055,medium_3mm_r1,0.0128,True
+medium_1mm_r1,medium_1mm_r2,0.0115,0.02,0.0141,medium_1mm_r1,0.0141,False
+medium_1mm_r2,medium_1mm_r1,0.0116,0.04,0.0188,hard_1mm_r1,0.012,False
+medium_2mm_r1,hard_3mm_r2,0.0087,-0.22,0.0211,soft_3mm_r2,0.0185,False
+medium_2mm_r2,medium_2mm_r2,0.0184,0.05,0.0184,hard_2mm_r2,0.0231,True
+medium_3mm_r1,hard_3mm_r2,0.0131,-0.14,0.0194,hard_3mm_r1,0.0135,False
+medium_3mm_r2,hard_3mm_r2,0.007,-0.2,0.0228,medium_3mm_r1,0.0147,False
+soft_1mm_r1,hard_1mm_r2,0.0093,0.16,0.0316,soft_1mm_r1,0.0316,False
+soft_2mm_r1,soft_2mm_r1,0.012,0.02,0.012,hard_2mm_r1,0.0159,True
+soft_3mm_r1,hard_3mm_r2,0.0133,-0.18,0.0178,soft_3mm_r2,0.0168,False
+soft_3mm_r2,hard_3mm_r2,0.016,-0.13,0.0215,soft_3mm_r1,0.0191,False
