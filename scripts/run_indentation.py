@@ -5719,8 +5719,33 @@ def phase_calibgrid(a) -> int:
             print(f"    lattice spans {min(p[0] for p in sp):+.2f}..{max(p[0] for p in sp):+.2f} x "
                   f"{min(p[1] for p in sp):+.2f}..{max(p[1] for p in sp):+.2f} mm "
                   f"to cover the frame with {marg:.0f} px to spare")
+        # What each rung SHOULD weigh, from this unit's own gel model. The grid
+        # is depth-controlled on purpose -- the slope field a photometric
+        # calibration reads is set by the geometry of the indentation, so the
+        # depth is the quantity to hold -- but the depth that arrives is not
+        # the depth commanded: the gel plane correction leaves a residual
+        # gradient, and over a lattice that now spans +-9 mm that residual eats
+        # the whole rung. Measured over the aligned grids collected so far, the
+        # 0.30 mm rung came out at 0.75 N median on the 1 mm units, 0.46 on the
+        # 2 mm and 0.20 on the 3 mm, and on BOTH 3 mm units fifteen of thirty
+        # points were under 0.10 N -- half the grid barely touching, which is
+        # no calibration datum at all. So the force is used to find the LOCAL
+        # surface: press, compare against the model, correct the depth, and
+        # carry the correction to the next point, where the tilt is nearly the
+        # same.
+        gm = (ent.get("gel_model") or {})
+        k_h = float(gm.get("hertz_a") or 0.0)
+        n_h = float(gm.get("free_exponent") or 1.5)
+        if k_h > 0:
+            print("  rung force from this unit's gel model: "
+                  + ", ".join(f"{d:.2f} mm -> {k_h * d ** n_h:.2f} N"
+                              for d in sorted(depths)))
+        else:
+            print("  no gel model for this unit; rungs run at their commanded "
+                  "depth with no local-surface correction")
+        dz_off = 0.0                 # local surface offset, carried between points
         print(f"\n  {'ix':>3} {'iy':>3} {'x':>6} {'y':>6} {'depth':>7} "
-              f"{'force':>8} {'area px':>9}")
+              f"{'force':>8} {'area px':>9}  note")
         for iy, row in enumerate(pts_rows):
             for ix, (dx, dy, tx_px, ty_px) in enumerate(row):
                 base = (p_surf + dx * R[:, 0] + dy * R[:, 1]
@@ -5739,16 +5764,35 @@ def phase_calibgrid(a) -> int:
                     return 2
                 time.sleep(a.zero_recover_s)
                 for dtgt in sorted(depths):
-                    if _move_to_point(ip, base - dtgt * n, rpy0, a,
-                                      a.max_joint_step):
-                        return 2
-                    time.sleep(a.shape_dwell)
-                    reached = surf - height()
-                    w, err = reader.read_fresh()
-                    if err:
-                        print(f"  F/T failed: {err}")
-                        return 1
-                    f = -float(w[2])
+                    f_want = k_h * dtgt ** n_h if k_h > 0 else 0.0
+                    note = ""
+                    for attempt in range(3):
+                        if _move_to_point(ip, base - (dtgt + dz_off) * n, rpy0, a,
+                                          a.max_joint_step):
+                            return 2
+                        time.sleep(a.shape_dwell)
+                        reached = surf - height()
+                        w, err = reader.read_fresh()
+                        if err:
+                            print(f"  F/T failed: {err}")
+                            return 1
+                        f = -float(w[2])
+                        if f_want <= 0 or f >= f_stop:
+                            break
+                        # Hertz again: F goes as depth^n, so the depth this
+                        # point is really at is (f/f_want)^(1/n) of what was
+                        # asked, and the difference is where its surface sits.
+                        if 0.6 * f_want <= f <= 1.6 * f_want:
+                            break
+                        d_true = dtgt * (max(f, 1e-3) / f_want) ** (1.0 / n_h)
+                        corr = float(np.clip(dtgt - d_true, -0.4, 0.4))
+                        if abs(corr) < 0.01 or attempt == 2:
+                            note = f"{f:.2f} N vs {f_want:.2f} N wanted"
+                            break
+                        # never past the unit's own depth backstop
+                        dz_off = float(np.clip(dz_off + corr, -0.6,
+                                               min(0.6, cap - dtgt)))
+                        note = f"surface {dz_off:+.3f} mm"
                     frame, t_img = cam.grab_after(time.time())
                     rg = contact_region(frame, ref_img, diff_level,
                                         colour=shadows_the_gel(getattr(a, "sensor", None)))
@@ -5760,6 +5804,8 @@ def phase_calibgrid(a) -> int:
                                  "x_mm": float(dx), "y_mm": float(dy),
                                  "img_x_px": tx_px, "img_y_px": ty_px,
                                  "target_depth_mm": dtgt, "depth_mm": reached,
+                                 "surface_offset_mm": dz_off,
+                                 "force_wanted_N": f_want,
                                  "force_N": f, "file": name, "t_img": t_img,
                                  "Fx": float(w[0]), "Fy": float(w[1]),
                                  "Fz": float(w[2]),
@@ -5769,7 +5815,7 @@ def phase_calibgrid(a) -> int:
                                  "centroid_px": str(rg["centroid_px"]),
                                  "diff_level": diff_level})
                     print(f"  {ix:>3} {iy:>3} {dx:>6.2f} {dy:>6.2f} {reached:>7.3f} "
-                          f"{f:>8.3f} {rg['area_px']:>9d}")
+                          f"{f:>8.3f} {rg['area_px']:>9d}  {note}")
                     if f >= f_stop:
                         print(f"    {f:.3f} N past the stop; deeper rungs here skipped")
                         break
