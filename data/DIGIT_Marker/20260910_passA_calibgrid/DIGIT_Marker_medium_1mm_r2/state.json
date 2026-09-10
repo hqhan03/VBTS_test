@@ -1,0 +1,166 @@
+{
+  "tare": {
+    "at": "2026-09-11T01:09:18.360716",
+    "tare_wrench": [
+      13.705068109082472,
+      4.519060708320364,
+      92.58627655790593,
+      -0.1192176516509307,
+      -0.12152810403936912,
+      -1.1096723991660453
+    ],
+    "tare_volts": [
+      0.8169498454736587,
+      1.2691147934707299,
+      1.0226437937685124,
+      0.7913347140342738,
+      0.7430023371858734,
+      1.3375957994448613
+    ]
+  },
+  "reference": {
+    "at": "2026-09-11T01:09:29.124976",
+    "file": "reference.png",
+    "wrench": [
+      0.0038830921621944015,
+      -0.003717077224912657,
+      -0.0008779728279080246,
+      -0.00012431754533677453,
+      -2.6882543767620115e-05,
+      -4.39779024272724e-05
+    ],
+    "quality": {
+      "full_mean": 63.23358265817901,
+      "centre_mean": 86.4131712962963,
+      "centre_min": 38,
+      "centre_max": 108,
+      "centre_saturated_pct": 0.0,
+      "centre_black_pct": 0.0
+    },
+    "stability": {
+      "n_frames": 8,
+      "fps": 2.6666666666666665,
+      "mean": 64.26042056487911,
+      "frame_to_frame_std": 0.009116663690086294,
+      "drift": 0.0
+    },
+    "settle_pct": 0.015054150124817037,
+    "camera_controls": {
+      "auto_exposure": 1.0,
+      "exposure": 600.0,
+      "auto_wb": 0.0,
+      "wb_temperature": 4600.0,
+      "brightness": 64.0,
+      "contrast": 4.0,
+      "gamma": 100.0,
+      "fourcc": "YUYV",
+      "width": 1920,
+      "height": 1080
+    },
+    "image_time": 1789056568.832711
+  },
+  "samples": [],
+  "zero_checks": [],
+  "searched_surface_mm": 23.83337708226352,
+  "zero": {
+    "probe": "ball4",
+    "contact_law": "hertz",
+    "searched_surface_mm": 23.705,
+    "surface_mm": 23.83337708226352,
+    "sigma_mm": 0.24609429661774274,
+    "sem_mm": 0.1740149459497395,
+    "first_surface_mm": 24.00739202821326,
+    "drift_first_to_last_mm": -0.3480298918994791,
+    "drift_per_approach_mm": -0.3480298918994791,
+    "monotone": false,
+    "n_approaches": 2,
+    "image_onset_surface_mm": 24.197891987899837,
+    "step_mm": 0.02,
+    "fit_max_force_N": 1.0,
+    "stop_force_N": 1.2,
+    "fits": [
+      {
+        "ok": true,
+        "d0_mm": 0.7633822755824324,
+        "a": 2.085938712388016,
+        "sigma_d0_mm": 0.08296606102833631,
+        "r2": 0.9252371096723528,
+        "exponent": 1.5,
+        "law": "hertz",
+        "n": 15,
+        "fit_max_force_N": 1.0,
+        "zero_drift_N": -0.03288705625750843,
+        "zero_drift_N_per_min": -0.15463287930426756,
+        "approach": 1,
+        "base_height_mm": 24.770774303795694,
+        "image_onset_depth_mm": 0.7652942909053557
+      },
+      {
+        "ok": true,
+        "d0_mm": 1.1149108790667668,
+        "a": 6.652456207302865,
+        "sigma_d0_mm": 0.0028658555730832033,
+        "r2": 0.9984340135411516,
+        "exponent": 1.5,
+        "law": "hertz",
+        "n": 16,
+        "fit_max_force_N": 1.0,
+        "zero_drift_N": -2.4264519088434966e-08,
+        "zero_drift_N_per_min": -1.2267872251176368e-07,
+        "approach": 2,
+        "base_height_mm": 24.774273015380547,
+        "image_onset_depth_mm": 0.3839690524712154
+      }
+    ],
+    "at": "2026-09-11T01:11:16.312355"
+  },
+  "step_timings_s": {
+    "newrun": 1.83,
+    "tare": 5.5,
+    "reference": 10.95,
+    "enable": 7.22,
+    "liftoff": 0.01,
+    "align": 7.71,
+    "qc": 0.0,
+    "search": 50.14,
+    "zero": 42.56
+  },
+  "total_s": 125.9,
+  "calibgrid": {
+    "ball4": {
+      "n_frames": 30,
+      "grid_n": [
+        5,
+        3
+      ],
+      "depths_mm": [
+        0.15,
+        0.3
+      ],
+      "span_mm": [
+        9.0,
+        7.5
+      ],
+      "surface_mm": 23.83337708226352,
+      "affine_mm_to_px": {
+        "M": [
+          [
+            87.62915666763647,
+            -52.06561273698449
+          ],
+          [
+            52.06561273698449,
+            87.62915666763647
+          ]
+        ],
+        "origin_px": [
+          833.782250759298,
+          556.739406613748
+        ],
+        "probe_mm": 3.5
+      },
+      "dir": "calibgrid_ball4",
+      "at": "2026-09-11T01:13:48.315416"
+    }
+  }
+}
