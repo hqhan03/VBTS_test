@@ -3384,8 +3384,28 @@ def phase_characterize(a) -> int:
         sat_hits = 0
         peak_slope = 0.0
         slopes_seen: list = []
-        while depth < depth_cap - 1e-6:
-            step = min(a.char_step, depth_cap - depth)
+        # Every unit is pressed to --min-force whatever else says stop, because
+        # a ceiling only means something against a common yardstick: the first
+        # two units saturated at 7.37 and 9.03 N, and a ramp that stops at the
+        # depth backstop on one and at saturation on another cannot be compared
+        # across thickness at all. So while the force is under it, the depth
+        # backstop, saturation and the exponent alarm are all overridden.
+        # A last line remains: `hard_cap`. The one gel ever destroyed gave out
+        # at 3.1 x its own thickness (6.19 mm on a 2 mm layer), so twice the
+        # thickness is the furthest this will go, and if the force is still
+        # short of the target there, it stops and says so.
+        floor_f = float(a.min_force)
+        hard_cap = max(depth_cap, a.min_force_depth_mult * ent["thickness_mm"])
+        if floor_f > 0:
+            print(f"  pressing to at least {floor_f:.1f} N even past the "
+                  f"{depth_cap:.2f} mm backstop, and no further than "
+                  f"{hard_cap:.2f} mm")
+        f_now = 0.0
+        while True:
+            limit = hard_cap if f_now < floor_f else depth_cap
+            if depth >= limit - 1e-6:
+                break
+            step = min(a.char_step, limit - depth)
             if step < 0.01:
                 # The measured depth trails the commanded one by a few tens of
                 # microns under load; chasing the last 5 um of the cap took six
@@ -3523,6 +3543,12 @@ def phase_characterize(a) -> int:
                   + f" {S:>6.2f} "
                   + (f"{slope:>7.2f}" if np.isfinite(slope) else f"{'—':>7}")
                   + f"  {note}")
+            f_now = float(f)
+            if f_now < floor_f and depth < hard_cap - 1e-6:
+                # Short of the common yardstick. Whatever the step decided --
+                # saturation, the exponent, the depth backstop -- it is
+                # recorded and the ramp carries on; only the STOP is held.
+                continue
             if note and not (note.startswith(("exponent", "image change low",
                                               "past saturation"))
                              or "pressing on to" in note):
@@ -3589,7 +3615,12 @@ def phase_characterize(a) -> int:
         drift = float(commanded - safe_depth)
         print(f"\n  commanded {commanded:.3f} mm, measured {safe_depth:.3f} mm, "
               f"difference {drift:+.3f} mm")
+        if floor_f > 0 and float(f[-1]) < floor_f:
+            stop = f"{hard_cap:.2f} mm hard cap, still under the floor"
         print(f"  stopped on: {stop}")
+        if floor_f > 0:
+            print(f"  reached {float(f[-1]):.2f} N against a {floor_f:.1f} N floor"
+                  + ("" if float(f[-1]) >= floor_f else "  <-- SHORT"))
         print(f"  safe envelope: {safe_depth:.3f} mm, {safe_force:.3f} N")
         if a_h:
             print(f"  gel model F = {a_h:.3f} * depth^1.5   "
@@ -6274,6 +6305,16 @@ def main() -> int:
                          "disarmed")
     ap.add_argument("--exp-hits", type=int, default=2,
                     help="consecutive windows over the threshold before stopping")
+    ap.add_argument("--min-force", type=float, default=0.0,
+                    help="characterize: press to at least this force whatever "
+                         "else would stop the ramp -- the depth backstop, "
+                         "image saturation and the exponent alarm are all "
+                         "overridden until it is reached, so every unit is "
+                         "measured against a common yardstick")
+    ap.add_argument("--min-force-depth-mult", type=float, default=2.0,
+                    help="characterize: absolute depth limit while chasing "
+                         "--min-force, as a multiple of gel thickness. The one "
+                         "gel ever destroyed gave out at 3.1x its thickness")
     ap.add_argument("--past-saturation-n", type=float, default=0.0,
                     help="characterize: after the image stops answering, keep "
                          "pressing until the force is this much past the "
