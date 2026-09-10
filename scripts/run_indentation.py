@@ -3414,16 +3414,35 @@ def phase_characterize(a) -> int:
                      else depth_cap)
             if depth >= limit - 1e-6:
                 break
+            # Aim the step at the floor instead of walking to it in fixed
+            # 0.1 mm increments. Every step is a commanded move and costs about
+            # 3.4 s of round trip whatever its size, so the ramps were running
+            # 24 steps on a plain unit and 41 on a marker one -- 84 s and 278 s
+            # -- to cover ground the local exponent already describes. From the
+            # exponent, the depth that would reach the floor is
+            # depth x (floor / f)^(1/exp); close a third of that gap at a time
+            # and the force converges geometrically while every step stays a
+            # measurement. The bounds keep it honest: never past --char-step
+            # early on, never below 0.03 mm, and always a quarter step once the
+            # floor is within reach, which is what stopped DIGIT_medium_1mm_r1
+            # jumping 9.24 -> 15.11 N in one move.
             step = min(a.char_step, limit - depth)
-            # Ease off as the floor comes into reach. The rung is a fixed
-            # 0.1 mm of DEPTH, and what that is worth in newtons depends
-            # entirely on the gel: on the 3 mm units one step is about 2 N, on
-            # a 1 mm unit it is six. DIGIT_medium_1mm_r1 went 9.24 -> 15.11 N
-            # in a single step chasing a 10 N floor, overshooting by 7.59 N and
-            # landing within sight of the 21 N that destroyed the one gel ever
-            # lost. Quarter-steps from 60 % of the floor onward cost a few
-            # seconds and land on it instead of past it.
-            if floor_f > 0 and f_now > 0.6 * floor_f and f_now < floor_f:
+            # The step size sets how precisely the ceiling can be located, so
+            # it is only coarsened where no ceiling has ever been seen. Across
+            # twenty-one units the image saturated between 5.19 and 12.25 N and
+            # never once below 4 N, so under 40 % of the floor the ramp aims at
+            # the floor instead of walking to it -- from the local exponent the
+            # depth that would reach it is depth x (floor / f)^(1/exp), and a
+            # third of that gap keeps every step a measurement while the force
+            # converges geometrically. Above 40 % it is back to --char-step,
+            # and to a quarter of it once the floor is in reach, which is what
+            # stopped DIGIT_medium_1mm_r1 jumping 9.24 -> 15.11 N in one move.
+            if (floor_f > 0 and 0 < f_now < 0.4 * floor_f
+                    and np.isfinite(exp) and exp > 1.0):
+                want = depth * (floor_f / f_now) ** (1.0 / exp) - depth
+                step = float(np.clip(want / 3.0, a.char_step, 4.0 * a.char_step))
+                step = min(step, limit - depth)
+            elif floor_f > 0 and 0.6 * floor_f < f_now < floor_f:
                 step = min(step, a.char_step * 0.25)
             if step < 0.01:
                 # The measured depth trails the commanded one by a few tens of
