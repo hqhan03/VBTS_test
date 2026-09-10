@@ -3361,34 +3361,56 @@ sensors:
     marks the backing taking load. The 0.5 mm start had no data behind it
   status: characterised
   gel_model:
-    hertz_a: 11.414367615331813
-    free_exponent: 2.345318951614369
-    surface_mm: 23.447999999999997
-  safe_force_N: 10.814951185330198
-  safe_depth_mm: 1.0741140472138788
-  stopped_on: depth backstop
+    hertz_a: 24.455060085202952
+    free_exponent: 2.468228292693747
+    surface_mm: 23.112000000000002
+  safe_force_N: 20.516453738273633
+  safe_depth_mm: 1.2727021687009383
+  stopped_on: force cap
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: '2026-09-11T00:19:06.571059'
-  commanded_depth_mm: 1.0999999999999996
-  command_vs_measured_mm: 0.025885952786120825
+  characterised_at: '2026-09-11T02:29:29.832116'
+  commanded_depth_mm: 1.2999999999999998
+  command_vs_measured_mm: 0.027297831299061492
   ladder_rungs_reached: 50
   image_response:
-    max_measurable_force_N: null
-    max_measurable_depth_mm: null
-    reached: false
+    max_measurable_force_N: 20.516453738273633
+    max_measurable_depth_mm: 1.2727021687009383
+    reached: true
     metric: mean |frame - reference| over the central half, grey levels
     threshold_frac_of_peak_slope: 0.15
     min_force_N: 0.3
     consecutive: 2
-    note: 'not reached within the limits: stopped on depth backstop at 10.81 N with
-      the image still changing at 0.30 lvl/N (19% of peak)'
-    peak_slope_levels_per_N: 1.571255950862121
-    image_change_at_stop: 17.948955535888672
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r1
+    peak_slope_levels_per_N: 1.2908239017454577
+    image_change_at_stop: 19.668333053588867
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r1__2
+  history:
+  - characterised_at: '2026-09-11T00:19:06.571059'
+    gel_model:
+      hertz_a: 11.414367615331813
+      free_exponent: 2.345318951614369
+      surface_mm: 23.447999999999997
+    safe_depth_mm: 1.0741140472138788
+    safe_force_N: 10.814951185330198
+    stopped_on: depth backstop
+    ladder_rungs_reached: 50
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: null
+      max_measurable_depth_mm: null
+      reached: false
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      note: 'not reached within the limits: stopped on depth backstop at 10.81 N with
+        the image still changing at 0.30 lvl/N (19% of peak)'
+      peak_slope_levels_per_N: 1.571255950862121
+      image_change_at_stop: 17.948955535888672
+    run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r1
 - id: DIGIT_Marker_soft_1mm_r2
   principle: DIGIT_Marker
   hardness: soft
@@ -3400,34 +3422,56 @@ sensors:
     marks the backing taking load. The 0.5 mm start had no data behind it
   status: characterised
   gel_model:
-    hertz_a: 14.060935187728285
-    free_exponent: 2.496635698437764
-    surface_mm: 23.268
-  safe_force_N: 16.634440060087037
-  safe_depth_mm: 1.4172919983432983
-  stopped_on: force cap
+    hertz_a: 14.08156808050727
+    free_exponent: 2.5780740318073185
+    surface_mm: 23.233
+  safe_force_N: 12.330521853015586
+  safe_depth_mm: 1.3164236352716507
+  stopped_on: depth backstop
   ladder_only_basis: 'ball4 ladder Hertz fit, extrapolated to ball8 at the depth backstop
     (F ~ sqrt(R), so x1.414 from ball4). NOT a characterize measurement: no saturation
     search was run and no gel was taken to its limit. Written 2026-09-08 so Pass B
     collect could start before test 4, which damages gels and is deliberately last.
     characterize will overwrite all of this.'
-  characterised_at: '2026-09-11T01:00:33.317625'
-  commanded_depth_mm: 1.4749999999999994
-  command_vs_measured_mm: 0.05770800165670109
+  characterised_at: '2026-09-11T02:36:29.497043'
+  commanded_depth_mm: 1.4249999999999992
+  command_vs_measured_mm: 0.10857636472834842
   ladder_rungs_reached: 50
   image_response:
-    max_measurable_force_N: null
-    max_measurable_depth_mm: null
-    reached: false
+    max_measurable_force_N: 12.330521853015586
+    max_measurable_depth_mm: 1.3164236352716507
+    reached: true
     metric: mean |frame - reference| over the central half, grey levels
     threshold_frac_of_peak_slope: 0.15
     min_force_N: 0.3
     consecutive: 2
-    note: 'not reached within the limits: stopped on force cap at 16.63 N with the
-      image still changing at 0.14 lvl/N (8% of peak)'
-    peak_slope_levels_per_N: 1.7854750228535348
-    image_change_at_stop: 18.499286651611328
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r2
+    peak_slope_levels_per_N: 1.6101104122414582
+    image_change_at_stop: 18.192941665649414
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r2__2
+  history:
+  - characterised_at: '2026-09-11T01:00:33.317625'
+    gel_model:
+      hertz_a: 14.060935187728285
+      free_exponent: 2.496635698437764
+      surface_mm: 23.268
+    safe_depth_mm: 1.4172919983432983
+    safe_force_N: 16.634440060087037
+    stopped_on: force cap
+    ladder_rungs_reached: 50
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: null
+      max_measurable_depth_mm: null
+      reached: false
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      note: 'not reached within the limits: stopped on force cap at 16.63 N with the
+        image still changing at 0.14 lvl/N (8% of peak)'
+      peak_slope_levels_per_N: 1.7854750228535348
+      image_change_at_stop: 18.499286651611328
+    run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r2
 - id: DIGIT_Marker_soft_2mm_r1
   principle: DIGIT_Marker
   hardness: soft
