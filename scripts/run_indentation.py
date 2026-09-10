@@ -5362,13 +5362,22 @@ def phase_calibgrid(a) -> int:
             R_ball = float(probe.get("element_diameter_mm", 4.0)) / 2.0
             a_hi = 4.0 * np.pi * (2.0 * R_ball * d_fit) * 120.0 ** 2
             pts = []
+            # Match the FORCE at every autoframe point, not the depth. What
+            # the affine needs is centroid DIFFERENCES, so a bias that is the
+            # same at all five points cancels -- but the bias is a function of
+            # how big the imprint is and which way its annulus leans, so it
+            # only stays constant if the contacts are the same size. Commanding
+            # a depth does not give that: the gel-plane correction is off by
+            # about 0.14 mm at 3.5 mm out, and on DIGIT_hard_1mm_r1 the five
+            # points landed at 0.146 to 0.426 mm. The y axis then came out
+            # 137 px/mm against a true 110, an over-estimate that pushed the
+            # lattice outward until its left column hung off the frame.
+            # Hertz gives the step: F goes as depth^1.5, so one correction of
+            # (F_target / F)^(2/3) lands within a few percent.
+            f_tgt = a.grid_probe_force or 0.5 * f_stop
+            print(f"    each press is trimmed to {f_tgt:.2f} N so all five "
+                  "contacts are the same size")
             for dx, dy in spots:
-                # Go deeper only where the imprint comes out faint. A fixed
-                # extra 0.15 mm was 1.65 N on a hard 1 mm gel -- past the stop
-                # before the first point was measured -- while an off-centre
-                # press on a soft one reached 0.164 mm of the 0.30 asked for,
-                # because the gel-plane correction is not exact. The depth that
-                # is right depends on the gel and on where in the field it is.
                 dd = d_fit
                 for attempt in range(3):
                     r = press(dx, dy, dd, f"autoframe_x{dx:+.2f}_y{dy:+.2f}.png")
@@ -5378,10 +5387,13 @@ def phase_calibgrid(a) -> int:
                     print(f"    ({dx:+.2f}, {dy:+.2f}) at {dd:.2f} mm -> centroid "
                           f"{'-' if c is None else c.round(0)}  area {area} px  "
                           f"{r['force']:.2f} N  depth {r['depth']:.3f} mm")
-                    if area >= 3000 or r["force"] >= 0.7 * f_stop or dd >= cap:
+                    f_now = max(r["force"], 1e-3)
+                    if 0.75 * f_tgt <= f_now <= 1.3 * f_tgt or attempt == 2:
                         break
-                    dd = min(dd + 0.10, cap)
-                    print(f"      faint; pressing {dd:.2f} mm")
+                    dd = float(np.clip(dd * (f_tgt / f_now) ** (2.0 / 3.0),
+                                       0.05, cap))
+                    print(f"      {f_now:.2f} N against {f_tgt:.2f} N target; "
+                          f"pressing {dd:.2f} mm")
                 if r["force"] >= f_stop:
                     print(f"    past the {f_stop:.2f} N stop at {d_fit:.2f} mm; "
                           "not running")
@@ -5395,19 +5407,34 @@ def phase_calibgrid(a) -> int:
                     return 2
                 pts.append((c, dx, dy))
             if len(pts) == len(spots):
+                # A SIMILARITY -- one rotation, one scale, one offset -- not
+                # a free affine. A camera with square pixels looking at a flat
+                # gel cannot produce anything else, so the two extra degrees of
+                # freedom an affine carries can only absorb centroid error, and
+                # they do: the free fit on DIGIT_hard_1mm_r1 came out with its
+                # axes 78 deg apart and scales 16 % different, against 92.5 deg
+                # and 1 % from the same unit's 30-point grid. Four parameters
+                # from five points, in closed form (Procrustes).
                 P = np.array([q[0] for q in pts])
-                A = np.column_stack([[q[1] for q in pts], [q[2] for q in pts],
-                                     np.ones(len(pts))])
-                bx = np.linalg.lstsq(A, P[:, 0], rcond=None)[0]
-                by = np.linalg.lstsq(A, P[:, 1], rcond=None)[0]
-                M = np.array([[bx[0], bx[1]], [by[0], by[1]]])
-                c0 = np.array([bx[2], by[2]])
-                res = np.hypot(A @ bx - P[:, 0], A @ by - P[:, 1])
+                U = np.array([[q[1], q[2]] for q in pts], float)
+                Uc, Pc = U - U.mean(0), P - P.mean(0)
+                num = float((Uc[:, 0] * Pc[:, 0] + Uc[:, 1] * Pc[:, 1]).sum())
+                den = float((Uc[:, 0] * Pc[:, 1] - Uc[:, 1] * Pc[:, 0]).sum())
+                scl = np.hypot(num, den) / max(float((Uc ** 2).sum()), 1e-9)
+                th = np.arctan2(den, num)
+                M = scl * np.array([[np.cos(th), -np.sin(th)],
+                                    [np.sin(th), np.cos(th)]])
+                c0 = P.mean(0) - M @ U.mean(0)
+                res = np.linalg.norm(U @ M.T + c0 - P, axis=1)
                 sxx, syy = float(np.hypot(*M[:, 0])), float(np.hypot(*M[:, 1]))
                 ang = float(np.degrees(np.arccos(np.clip(
                     M[:, 0] @ M[:, 1] / (sxx * syy + 1e-9), -1, 1))))
                 print(f"    fit residual {res.mean():.0f} px mean, "
                       f"{res.max():.0f} px worst")
+                if res.mean() > 80.0:
+                    print("    that is too scattered to place a lattice with; "
+                          "not running")
+                    return 2
                 # A camera looking at a flat gel through square pixels maps mm
                 # to px as a rotation and a near-uniform scale. The first six
                 # units bear that out: 82-109 px/mm along x against 92-110 along
@@ -5457,7 +5484,19 @@ def phase_calibgrid(a) -> int:
             marg = r_px + a.grid_margin_px
             print(f"    contact radius {r_mm:.2f} mm = {r_px:.0f} px; keeping "
                   f"{marg:.0f} px clear of the frame edge")
-            half = np.array([W_img / 2.0 - marg, H_img / 2.0 - marg])
+            # Pull the lattice in further than the margin alone asks. The
+            # SCALE this fit returns cannot be trusted to better than about a
+            # sixth: on DIGIT_hard_1mm_r1 the same sensor read 109 px/mm over a
+            # +-4 x +-2.5 mm grid, 127 from the five autoframe points, and 123
+            # over a -6.3..+7.1 mm grid -- while the rotation agreed to a degree
+            # across all three (29.5 / 30.7 / 30.4). The imprint centroid is
+            # simply not a good enough ruler, because where it sits depends on
+            # how deep the contact went and where in the field it is. An
+            # over-read scale pushes the lattice OUTWARD, and that is what hung
+            # its left column off the frame. So size the lattice to survive
+            # being wrong by this much rather than trying to be right.
+            half = (np.array([W_img / 2.0 - marg, H_img / 2.0 - marg])
+                    * a.grid_safety)
             # If the frame asks for more travel than the caps allow, shrink
             # the lattice as a rectangle -- clipping point by point would put
             # it back out of square with the image, which is the whole point of
@@ -5499,6 +5538,8 @@ def phase_calibgrid(a) -> int:
                                 float(ctr[0] + tx), float(ctr[1] + ty)))
                 pts_rows.append(row)
             sp = [p for row in pts_rows for p in row]
+            print(f"    lattice pulled to {a.grid_safety * 100:.0f} % of the "
+                  f"usable frame: +-{half[0]:.0f} x +-{half[1]:.0f} px")
             print(f"    lattice spans {min(p[0] for p in sp):+.2f}..{max(p[0] for p in sp):+.2f} x "
                   f"{min(p[1] for p in sp):+.2f}..{max(p[1] for p in sp):+.2f} mm "
                   f"to cover the frame with {marg:.0f} px to spare")
@@ -6095,8 +6136,16 @@ def main() -> int:
                          "to the IMAGE, not to the robot axes (default on)")
     ap.add_argument("--no-grid-autoframe", dest="grid_autoframe",
                     action="store_false")
+    ap.add_argument("--grid-probe-force", type=float, default=0.0,
+                    help="force each autoframe press is trimmed to, so all five "
+                         "contacts come out the same size; 0 means half the "
+                         "phase's force stop")
     ap.add_argument("--grid-probe-mm", type=float, default=3.5,
                     help="offset of the two autoframe probe presses")
+    ap.add_argument("--grid-safety", type=float, default=0.8,
+                    help="shrink the image-space lattice by this factor, so a "
+                         "scale the autoframe fit over-reads still lands every "
+                         "imprint inside the frame")
     ap.add_argument("--grid-margin-px", type=float, default=120.0,
                     help="clearance to keep between an imprint and the frame edge")
     ap.add_argument("--grid-depths", default="0.1,0.2,0.3",
