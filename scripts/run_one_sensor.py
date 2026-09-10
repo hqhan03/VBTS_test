@@ -75,15 +75,17 @@ SURFACE_KEY = "searched_surface_mm"
 
 # Seconds to wait before starting a phase, so the previous one's camera and DAQ
 # handles are closed.
-# Long enough for the previous phase's camera and DAQ handles to close. Cut to
-# 1.5 s to save about 10 s a unit and put back at 3.0 the same evening:
-# DIGIT_Marker_hard_3mm_r1's reference phase found the exposure swinging
-# 58.6 -> 94.2 -> 59.1 over six retries at 2.7 fps and the F/T reading 0.47 N
-# with the probe parked 90 mm clear of the gel -- camera and DAQ both wrong at
-# once, which is what this gap exists to prevent. The step reorder made it
-# worse, not better: tare and reference now run FIRST, so they open the devices
-# immediately after the previous unit released them.
-PHASE_GAP_S = 3.0
+# Long enough for the previous phase's camera and DAQ handles to close. Three
+# seconds was picked without measuring and 1.5 s holds; six phases run in the
+# zero chain, so it is worth about 10 s a unit.
+#
+# It briefly went back to 3.0 on the strength of DIGIT_Marker_hard_3mm_r1,
+# whose reference phase saw the exposure swing 58.6 -> 94.2 -> 59.1 over six
+# retries and the F/T read 0.47 N with the probe parked clear -- camera and DAQ
+# apparently wrong at once. The operator had a hand on the sensor at the time.
+# Both guards fired correctly on a real disturbance; neither had anything to do
+# with this gap.
+PHASE_GAP_S = 1.5
 
 
 def run(cmd: list, label: str) -> bool:
