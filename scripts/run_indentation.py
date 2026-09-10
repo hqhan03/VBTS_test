@@ -3406,6 +3406,16 @@ def phase_characterize(a) -> int:
             if depth >= limit - 1e-6:
                 break
             step = min(a.char_step, limit - depth)
+            # Ease off as the floor comes into reach. The rung is a fixed
+            # 0.1 mm of DEPTH, and what that is worth in newtons depends
+            # entirely on the gel: on the 3 mm units one step is about 2 N, on
+            # a 1 mm unit it is six. DIGIT_medium_1mm_r1 went 9.24 -> 15.11 N
+            # in a single step chasing a 10 N floor, overshooting by 7.59 N and
+            # landing within sight of the 21 N that destroyed the one gel ever
+            # lost. Quarter-steps from 60 % of the floor onward cost a few
+            # seconds and land on it instead of past it.
+            if floor_f > 0 and f_now > 0.6 * floor_f and f_now < floor_f:
+                step = min(step, a.char_step * 0.25)
             if step < 0.01:
                 # The measured depth trails the commanded one by a few tens of
                 # microns under load; chasing the last 5 um of the cap took six
