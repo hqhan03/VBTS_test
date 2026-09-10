@@ -5764,7 +5764,15 @@ def phase_calibgrid(a) -> int:
         # at least this much, and every other point uses the depth it settled
         # on. The rungs stay depth-controlled and stay equal across the field;
         # what changes is that a soft gel gets deeper ones than a stiff one.
-        f_floor = 0.15
+        # 0.15 N was still marginal on the softest gels -- two of fifteen
+        # points came back with no imprint at that level -- so the floor is
+        # 0.25 N, and the LIFT the centre needs to reach it is applied to every
+        # rung, not just the one that was short. Lifting a single rung on
+        # DIGIT_medium_3mm_r2 took the 0.15 mm rung to 0.30 mm, where the
+        # 0.30 mm rung already sat: the ladder collapsed to a single depth and
+        # the grid stopped sampling two indentations at all.
+        f_floor = 0.25
+        rung_lift = 0.0
         order = [(ix, iy) + tuple(pt)
                  for iy, rw in enumerate(pts_rows) for ix, pt in enumerate(rw)]
         c_ix, c_iy = nx // 2, ny // 2
@@ -5793,7 +5801,7 @@ def phase_calibgrid(a) -> int:
                 time.sleep(a.zero_recover_s)
                 for dtgt in sorted(depths):
                     f_want = f_ref.get(dtgt, 0.0)
-                    d_use = rung_d.get(dtgt, dtgt)
+                    d_use = rung_d.get(dtgt, dtgt + rung_lift)
                     is_centre = (ix, iy) == (c_ix, c_iy)
                     note = ""
                     for attempt in range(4):
@@ -5810,10 +5818,11 @@ def phase_calibgrid(a) -> int:
                         if f >= f_stop:
                             break
                         if is_centre:
-                            # the centre sets this rung's depth
+                            # the centre sets the lift the whole ladder rides on
                             if f >= f_floor or d_use >= cap - 1e-6 or attempt == 3:
                                 break
                             d_use = float(np.clip(d_use + 0.15, 0.05, cap))
+                            rung_lift = d_use - dtgt
                             note = f"{f:.3f} N is under {f_floor:.2f} N"
                             continue
                         if f_want <= 0:
@@ -5858,7 +5867,7 @@ def phase_calibgrid(a) -> int:
                         f_ref[dtgt] = f
                         rung_d[dtgt] = d_use
                         note = (f"centre: rung {dtgt:.2f} runs at {d_use:.2f} mm "
-                                f"for {f:.3f} N")
+                                f"(lift {rung_lift:+.2f}) for {f:.3f} N")
                     print(f"  {ix:>3} {iy:>3} {dx:>6.2f} {dy:>6.2f} {reached:>7.3f} "
                           f"{f:>8.3f} {rg['area_px']:>9d}  {note}")
                     if f >= f_stop:
