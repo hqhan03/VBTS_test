@@ -3602,6 +3602,14 @@ def phase_characterize(a) -> int:
                 # saturation, the exponent, the depth backstop -- it is
                 # recorded and the ramp carries on; only the STOP is held.
                 continue
+            # The force cap ends the ramp, whatever else the step decided.
+            # Moving the saturation test ahead of the cap left its note in
+            # front, and the note-based break skips anything beginning "image
+            # change low" -- so DIGIT_Marker_soft_1mm_r1 crossed a 20 N cap at
+            # 20.52 N and took another step. The gel came through it, but a
+            # safety limit that can be talked past is not one.
+            if stop == "force cap":
+                break
             if note and not (note.startswith(("exponent", "image change low",
                                               "past saturation"))
                              or "pressing on to" in note):
