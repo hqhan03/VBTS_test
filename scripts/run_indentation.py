@@ -3444,6 +3444,12 @@ def phase_characterize(a) -> int:
                 step = min(step, limit - depth)
             elif floor_f > 0 and 0.6 * floor_f < f_now < floor_f:
                 step = min(step, a.char_step * 0.25)
+            if f_now > 0.6 * a.max_force:
+                # Past the floor the ramp goes back to full steps, and on a
+                # stiff 1 mm gel one of those is six newtons: DIGIT_Marker_
+                # soft_1mm_r2 crossed a 15 N cap and landed at 16.63. The cap
+                # is a safety limit, so approach it the same way as the floor.
+                step = min(step, a.char_step * 0.25)
             if step < 0.01:
                 # The measured depth trails the commanded one by a few tens of
                 # microns under load; chasing the last 5 um of the cap took six
@@ -3520,9 +3526,14 @@ def phase_characterize(a) -> int:
             note = ""
             sat_armed = (f >= a.sat_min_force and peak_slope > 0
                          and np.isfinite(slope))
-            if f >= a.max_force:
-                stop, note = "force cap", "force cap"
-            elif sat_armed and slope < a.sat_frac * peak_slope:
+            # Saturation is judged FIRST. Put the force cap ahead of it and the
+            # cap swallows the very call it was waiting for:
+            # DIGIT_Marker_soft_1mm_r2's response was down to 0.14 lvl/N, 8 % of
+            # its peak, on the same step that crossed the cap, and the run
+            # recorded no ceiling at all -- only "not reached" and the last
+            # step's 16.63 N, which then went into the registry as though it
+            # were a measurement.
+            if sat_armed and slope < a.sat_frac * peak_slope:
                 sat_hits += 1
                 if sat_hits >= a.sat_hits and sat_force is None:
                     note = (f"image change {slope:.2f} lvl/N is under "
@@ -3550,6 +3561,10 @@ def phase_characterize(a) -> int:
                         stop = "image saturation (+ margin)"
                 else:
                     note = f"image change low ({sat_hits}/{a.sat_hits})"
+                if f >= a.max_force:
+                    stop, note = "force cap", note + "; force cap"
+            elif f >= a.max_force:
+                stop, note = "force cap", "force cap"
             elif armed and np.isfinite(exp) and exp > a.exp_alarm:
                 exp_hits += 1
                 if exp_hits >= a.exp_hits:
