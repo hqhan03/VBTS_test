@@ -1,0 +1,87 @@
+timestamp: '2026-09-08T19:19:01.216676'
+robot_ip: 192.168.58.2
+kind: stage-2 free-space test move along base +Z
+requested_mm: -0.3
+vel: 15.0
+ovl: 10.0
+blendR: -1.0
+config: -1
+tool: 1
+plan:
+  ok: true
+  why: ready
+  cur_pose:
+  - 37.59945678710937
+  - 363.522003173828
+  - 36.6646156311035
+  - -179.512008666992
+  - -0.897126317024231
+  - -94.7730941772461
+  cur_joints:
+  - 100.3449876237624
+  - -124.3684976407797
+  - -112.6155196086015
+  - -214.0095384050123
+  - -89.76286935334159
+  - -74.88346515315594
+  target_pose:
+  - 37.59902572631836
+  - 363.521484375
+  - 36.3632843017578
+  - -179.5121612548828
+  - -0.8973912000656128
+  - -94.7733154296875
+  target_joints:
+  - 100.344985961914
+  - -124.4052810668945
+  - -112.6176300048828
+  - -213.9706420898437
+  - -89.7630844116211
+  - -74.88346099853516
+  joint_delta:
+  - -1.661848401113275e-06
+  - -0.036783426114809004
+  - -0.0021103962812958343
+  - 0.03889631516861414
+  - -0.00021505827950818457
+  - 4.1546207825149395e-06
+  max_joint_delta: 0.03889631516861414
+  cartesian_delta_mm:
+  - -0.00043106079100851957
+  - -0.0005187988280113132
+  - -0.3013313293457003
+  distance_mm: 0.3013320842706206
+  active_tool:
+  - 0
+  - 1
+  height_above_sensor_before_mm: 24.366135226013277
+  height_above_sensor_after_mm: 24.064844480598598
+  approaching_sensor: true
+return_code: 0
+motion_done: true
+seconds: 0.0019545555114746094
+achieved_delta_mm:
+- -0.0034065246581960196
+- 0.015777587890681843
+- -0.2239532470702983
+error_mm: 0.07913149323707355
+state_before:
+  robot_state: 1
+  robot_state_name: stopped
+  robot_mode: 0
+  main_code: 0
+  sub_code: 0
+  emergency_stop: 0
+  collision_state: 0
+  safety_stop0: 0
+  safety_stop1: 0
+state_after:
+  robot_state: 1
+  robot_state_name: stopped
+  robot_mode: 0
+  main_code: 0
+  sub_code: 0
+  emergency_stop: 0
+  collision_state: 0
+  safety_stop0: 0
+  safety_stop1: 0
