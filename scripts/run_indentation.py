@@ -3298,6 +3298,34 @@ def phase_characterize(a) -> int:
         if _move_along_normal(ip, clearance, a, a.approach_joint_step, vel=a.vel_free):
             return 2
 
+    # Ramp at the sensor's CENTRE, wherever the previous phase left the probe.
+    # This phase takes its lateral position from the current pose, and running
+    # it straight after calibgrid put it on the grid's last point -- 8.20 mm
+    # off centre on DIGIT_hard_2mm_r2, out at the lattice corner. Two things
+    # went wrong there and both are silent (2026-09-10): the contact sat
+    # OUTSIDE the central half of the frame that `mean_abs_diff_centre` covers,
+    # so the image metric barely moved (1.08 levels over the whole ramp against
+    # 13.12 for the same unit's replicate) and the saturation test could never
+    # fire; and the gel is far stiffer near its shell, so the ramp reached
+    # 19.24 N at 1.85 mm where the centre of the replicate saturated at 9.04 N
+    # and 1.66 mm. The ceiling that came out was not this unit's ceiling.
+    pose_now = q("GetActualTCPPose", 0)[1:]
+    p_now = np.array([float(v) for v in pose_now[:3]])
+    o_base = np.array(
+        meta["sensor_to_base_transform"]["origin_base_mm"])
+    dx0 = float((p_now - o_base) @ R[:, 0])
+    dy0 = float((p_now - o_base) @ R[:, 1])
+    if max(abs(dx0), abs(dy0)) > 0.5:
+        tilt = _grid_gel_tilt(a.sensor)
+        sx, sy = tilt if tilt else (0.0, 0.0)
+        print(f"  the probe is {dx0:+.2f} / {dy0:+.2f} mm off the sensor centre; "
+              "moving back before the ramp")
+        target = (p_now - dx0 * R[:, 0] - dy0 * R[:, 1]
+                  - (dx0 * sx + dy0 * sy) * n)
+        if _move_to_point(ip, target, [float(v) for v in pose_now[3:]], a,
+                          a.approach_joint_step, vel=a.vel_free):
+            return 2
+
     # The image is part of the envelope. A gel can keep carrying force after
     # its picture has stopped changing -- the layer is against its backing and
     # the optics see the same thing at 3 N as at 2 -- and past that point the
@@ -3351,6 +3379,7 @@ def phase_characterize(a) -> int:
         commanded = 0.0
         exp_hits = 0
         exp_first_over_mm = None
+        sat_force = None                 # force at which the picture gave up
         sat_hits = 0
         peak_slope = 0.0
         slopes_seen: list = []
@@ -3436,13 +3465,29 @@ def phase_characterize(a) -> int:
                 stop, note = "force cap", "force cap"
             elif sat_armed and slope < a.sat_frac * peak_slope:
                 sat_hits += 1
-                if sat_hits >= a.sat_hits:
-                    stop = "image saturation"
+                if sat_hits >= a.sat_hits and sat_force is None:
                     note = (f"image change {slope:.2f} lvl/N is under "
                             f"{a.sat_frac:.0%} of its peak {peak_slope:.2f}")
                     sat["reached"] = True
                     # the force where the response first fell under threshold
-                    sat["max_measurable_force_N"] = float(f_hist[-sat_hits])
+                    sat_force = float(f_hist[-sat_hits])
+                    sat["max_measurable_force_N"] = sat_force
+                    if a.past_saturation_n > 0:
+                        # Carry on a little past the ceiling rather than
+                        # stopping on it. Saturation is declared from a slope
+                        # measured over a window, so the steps just past it are
+                        # what show whether the picture has really stopped
+                        # answering or only paused -- and they cost nothing:
+                        # this unit's ceiling was 9.04 N where the one gel ever
+                        # damaged held 19 N with its imprint still intact.
+                        note += (f"; pressing on to "
+                                 f"{sat_force + a.past_saturation_n:.2f} N")
+                    else:
+                        stop = "image saturation"
+                elif sat_hits >= a.sat_hits:
+                    note = f"past saturation, {f - sat_force:+.2f} N beyond it"
+                    if f >= sat_force + a.past_saturation_n:
+                        stop = "image saturation (+ margin)"
                 else:
                     note = f"image change low ({sat_hits}/{a.sat_hits})"
             elif armed and np.isfinite(exp) and exp > a.exp_alarm:
@@ -3476,7 +3521,11 @@ def phase_characterize(a) -> int:
                   + f" {S:>6.2f} "
                   + (f"{slope:>7.2f}" if np.isfinite(slope) else f"{'—':>7}")
                   + f"  {note}")
-            if note and not note.startswith(("exponent", "image change low")):
+            if note and not (note.startswith(("exponent", "image change low",
+                                              "past saturation"))
+                             or "pressing on to" in note):
+                break
+            if stop.startswith("image saturation ("):
                 break
             if (note.startswith("exponent") and exp_hits >= a.exp_hits
                     and a.exp_alarm_stops):
@@ -6211,6 +6260,11 @@ def main() -> int:
                          "disarmed")
     ap.add_argument("--exp-hits", type=int, default=2,
                     help="consecutive windows over the threshold before stopping")
+    ap.add_argument("--past-saturation-n", type=float, default=0.0,
+                    help="characterize: after the image stops answering, keep "
+                         "pressing until the force is this much past the "
+                         "ceiling. 0 stops at the ceiling. The depth and force "
+                         "backstops still bind.")
     ap.add_argument("--exp-alarm-stops", action="store_true",
                     help="characterize: END the ramp when the local exponent "
                          "stays above --exp-alarm. Off since 2026-09-07: the "
