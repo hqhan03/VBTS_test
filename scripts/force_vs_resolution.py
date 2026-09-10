@@ -92,6 +92,90 @@ REP_SCALE = 3          # sensor.py: scale = 3
 AXES = ("Fx", "Fy", "Fz", "Tx", "Ty", "Tz")
 
 
+# ---------------------------------------------------------- marker handling --
+# What the literature does with a MARKER sensor, and why this file now offers it.
+#
+# Marker Displacement Methods are the standard reading of a marker gel: track
+# the dots between the resting frame and the loaded one, and the local
+# displacement gives the force, because the dot field measures the elastomer's
+# deformation directly rather than through its shading. GelSlim goes further and
+# runs inverse FEM on those displacements. The known cost, stated in the same
+# literature, is that opaque dots OCCLUDE the geometry the shading would show.
+#
+# Both of those are testable here, and this campaign has a reason to doubt the
+# first: cross_principle.md 3.5 measured 1.24 dots inside a 2 N contact, so the
+# displacement "field" is about one vector. So two representations:
+#
+#   inpaint  the dots are masked out of the difference image and filled from
+#            their surroundings, which is the occlusion cost removed and
+#            nothing else added.
+#   flow     dense optical flow from the reference to the frame, which is the
+#            displacement method in the form a CNN can eat, plus the difference
+#            magnitude as the third channel.
+#
+# Both return the same uint8 HxWx3 contract as the other representations, so
+# the sweep, the shrink and the training are untouched.
+DOT_AREA = (1500, 60000)          # px^2 at full resolution; a dot is ~9500
+
+
+def dot_mask(ref_bgr, grow=9):
+    """Where the opaque dots are, from the resting frame."""
+    from scipy import ndimage
+    g = (cv2.cvtColor(ref_bgr, cv2.COLOR_BGR2GRAY) if ref_bgr.ndim == 3
+         else ref_bgr).astype(np.float32)
+    hp = cv2.GaussianBlur(g, (0, 0), 25) - g
+    thr = hp > max(4.0, np.percentile(hp, 99.0) * 0.35)
+    lab, n = ndimage.label(thr)
+    if n == 0:
+        return np.zeros(g.shape, bool)
+    areas = ndimage.sum(thr, lab, range(1, n + 1))
+    keep = [i + 1 for i, a in enumerate(areas) if DOT_AREA[0] <= a <= DOT_AREA[1]]
+    m = np.isin(lab, keep).astype(np.uint8)
+    if grow:
+        m = cv2.dilate(m, np.ones((grow, grow), np.uint8))
+    return m.astype(bool)
+
+
+def _fill_masked(d, m, k=61):
+    """Normalised box filter: each masked pixel takes the mean of the unmasked
+    ones around it. cv2.inpaint would be nicer and is 20x too slow for 18000
+    frames a unit."""
+    keep = (~m).astype(np.float32)
+    num = cv2.blur(d * keep, (k, k))
+    den = cv2.blur(keep, (k, k)) + 1e-6
+    out = d.copy()
+    out[m] = (num / den)[m]
+    return out
+
+
+def marker_representation(ref_bgr, img_bgr, mask, mode):
+    """`inpaint` or `flow`, both uint8 HxWx3."""
+    r = cv2.cvtColor(ref_bgr, cv2.COLOR_BGR2GRAY).astype(np.float32) if ref_bgr.ndim == 3 else ref_bgr.astype(np.float32)
+    g = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY).astype(np.float32) if img_bgr.ndim == 3 else img_bgr.astype(np.float32)
+    if mode == "inpaint":
+        d = g - r
+        if mask is not None and mask.any():
+            d = _fill_masked(d, mask)
+        out = np.zeros(r.shape + (3,), np.uint8)
+        out[:, :, 0] = np.clip(r, 0, 255).astype(np.uint8)
+        out[:, :, 1] = np.clip(np.clip(d, 0, None) * REP_SCALE, 0, 255).astype(np.uint8)
+        out[:, :, 2] = np.clip(np.clip(-d, 0, None) * REP_SCALE, 0, 255).astype(np.uint8)
+        return out
+    # flow: Farneback at half resolution, then back up. Half resolution because
+    # the dots are ~100 px across and their motion is a few px -- resolving that
+    # does not need every pixel, and full resolution costs 4x for nothing.
+    h, w = r.shape
+    rs = cv2.resize(r, (w // 2, h // 2)).astype(np.uint8)
+    gs = cv2.resize(g, (w // 2, h // 2)).astype(np.uint8)
+    fl = cv2.calcOpticalFlowFarneback(rs, gs, None, 0.5, 3, 21, 3, 5, 1.2, 0)
+    fl = cv2.resize(fl, (w, h)) * 2.0          # px at full resolution
+    out = np.zeros(r.shape + (3,), np.uint8)
+    out[:, :, 0] = np.clip(128.0 + fl[:, :, 0] * 12.0, 0, 255).astype(np.uint8)
+    out[:, :, 1] = np.clip(128.0 + fl[:, :, 1] * 12.0, 0, 255).astype(np.uint8)
+    out[:, :, 2] = np.clip(np.abs(g - r) * REP_SCALE, 0, 255).astype(np.uint8)
+    return out
+
+
 def representation(ref_gray, img_gray, norm="none"):
     """9DTact's `raw_image_2_representation`, channel for channel.
 
@@ -186,7 +270,13 @@ def load_unit(run: Path, max_frames: int | None = None, norm: str = "none",
     for name in ("reference_collect.png", "reference_working.png", "reference.png"):
         if (run / name).exists():
             ref_bgr = cv2.imread(str(run / name)); break
-    ref = ref_bgr if rep == "colour" else cv2.cvtColor(ref_bgr, cv2.COLOR_BGR2GRAY)
+    marker_mode = rep if rep in ("inpaint", "flow") else None
+    raw_mode = rep == "raw"
+    mask = dot_mask(ref_bgr) if marker_mode == "inpaint" else None
+    if marker_mode:
+        ref = ref_bgr
+    else:
+        ref = ref_bgr if rep == "colour" else cv2.cvtColor(ref_bgr, cv2.COLOR_BGR2GRAY)
     h, w = ref.shape[:2]
     X = np.zeros((len(rows), h, w, 3), dtype=np.uint8)
     y = np.zeros((len(rows), 6), dtype=np.float32)
@@ -195,11 +285,20 @@ def load_unit(run: Path, max_frames: int | None = None, norm: str = "none",
     blk = np.zeros(len(rows), dtype=np.int32)      # 0 normal, 1 shear
     for i, r in enumerate(rows):
         img = cv2.imread(str(run / "stream" / r["file"]),
-                         cv2.IMREAD_COLOR if rep == "colour" else cv2.IMREAD_GRAYSCALE)
+                         cv2.IMREAD_COLOR if rep in ("colour", "inpaint", "flow", "raw")
+                         else cv2.IMREAD_GRAYSCALE)
         if img is None or r.get("missing") == "True":
             keep[i] = False
             continue
-        X[i] = representation(ref, img, norm if norm != "anti" else "none")
+        if raw_mode:
+            # PyTouch's DIGIT recipe feeds the RAW frame -- no reference
+            # subtraction at all -- and normalises it like an ImageNet photo.
+            # cv2 reads BGR; torchvision's pretrained weights expect RGB.
+            X[i] = img[:, :, ::-1]
+        elif marker_mode:
+            X[i] = marker_representation(ref, img, mask, marker_mode)
+        else:
+            X[i] = representation(ref, img, norm if norm != "anti" else "none")
         # drift-corrected labels where present, raw otherwise
         y[i] = [float(r.get(f"{ax}_s_corr") or r[f"{ax}_s"]) for ax in AXES]
         y[i, 2] = -y[i, 2]                          # +Fz = pressing
@@ -377,8 +476,30 @@ def micro_batch_for(size, base=64):
     return int(max(2, min(base, base * ref / max(px, 1))))
 
 
+def _to_input(xb, mode):
+    """uint8 NCHW on the device -> the float tensor the network sees.
+
+    'raw' is the historical behaviour: 0-255 floats, as 9DTact's dataset does.
+    'imagenet' is what PyTouch's DigitSensor does -- ToTensor (which divides by
+    255) then Normalize with the ImageNet statistics the pretrained ResNet-18
+    weights were fitted under.
+    """
+    import torch
+    x = xb.float()
+    if mode != "imagenet":
+        return x
+    m = torch.tensor(IMAGENET_MEAN, device=x.device).view(1, 3, 1, 1)
+    s = torch.tensor(IMAGENET_STD, device=x.device).view(1, 3, 1, 1)
+    return (x / 255.0 - m) / s
+
+
+IMAGENET_MEAN = (0.485, 0.456, 0.406)
+IMAGENET_STD = (0.229, 0.224, 0.225)
+
+
 def train_eval(X, y, tr, va, te, epochs=30, batch=64, seed=0, device="cuda",
-               size=(460, 345), wd=1e-4, patience=0, blk_te=None):
+               size=(460, 345), wd=1e-4, patience=0, blk_te=None,
+               input_norm="raw"):
     """Train on `tr`, choose the epoch on `va`, report on `te`.
 
     Three departures from the 2026-09-08 first pass, all asked for after that
@@ -438,7 +559,7 @@ def train_eval(X, y, tr, va, te, epochs=30, batch=64, seed=0, device="cuda",
         out, loss = [], 0.0
         with torch.no_grad():
             for i in range(0, len(Xs), max(2, micro)):
-                xb = Xs[i:i + max(2, micro)].to(device).float()
+                xb = _to_input(Xs[i:i + max(2, micro)].to(device), input_norm)
                 pb = net(xb).float()
                 if ys is not None:
                     loss += float(lossf(pb, ys[i:i + max(2, micro)].to(device)))
@@ -454,7 +575,7 @@ def train_eval(X, y, tr, va, te, epochs=30, batch=64, seed=0, device="cuda",
         tot, k = 0.0, 0
         for i in range(0, n, micro):
             idx = perm[i:i + micro]
-            xb = Xtr[idx].to(device, non_blocking=True).float()
+            xb = _to_input(Xtr[idx].to(device, non_blocking=True), input_norm)
             yb = ytr[idx].to(device, non_blocking=True)
             loss = lossf(net(xb), yb)
             loss.backward()
@@ -544,10 +665,26 @@ def main():
                          "The principle prefix is taken from its parent folder name.")
     ap.add_argument("--canonical", default=None,
                     help="CANONICAL.yaml naming one run per unit (skips __N re-runs)")
-    ap.add_argument("--rep", choices=["grey", "colour"], default="grey",
-                    help="input representation: 'grey' = 9DTact recipe (comparable "
+    ap.add_argument("--rep", choices=["grey", "colour", "inpaint", "flow", "raw"],
+                    default="grey",
+                    help="input representation. 'grey' = 9DTact recipe (comparable "
                          "across principles); 'colour' = signed per-channel difference, "
-                         "the fair input for a DIGIT (see representation)")
+                         "the fair input for a DIGIT; 'inpaint' = the marker dots "
+                         "masked out of the difference and filled from their "
+                         "surroundings, which removes the occlusion the literature "
+                         "names as the cost of markers; 'flow' = dense optical flow "
+                         "from the reference, which is the Marker Displacement "
+                         "Method in a form a CNN can take (see marker_representation); "
+                         "'raw' = the frame itself, RGB, no reference subtraction, "
+                         "which is what PyTouch's DigitSensor feeds (pair it with "
+                         "--input-norm imagenet for DIGIT's own recipe)")
+    ap.add_argument("--input-norm", choices=["raw", "imagenet"], default="raw",
+                    help="what the network's input scale is. 'raw' keeps 0-255 "
+                         "levels, as 9DTact's dtact_dataset.py does and as every "
+                         "sweep before 2026-09-10 did. 'imagenet' divides by 255 "
+                         "and applies the ImageNet mean/std, which is what "
+                         "PyTouch's DigitSensor does (ToTensor + Normalize) and "
+                         "what the pretrained ResNet-18 weights were trained for.")
     ap.add_argument("--fz-max", type=float, default=None,
                     help="drop frames with |Fz| above this (N); 2.0 = the fixed range")
     ap.add_argument("--out", default=str(ROOT / "data" / "9DTact" / "force_vs_resolution_v2.csv"))
@@ -601,11 +738,12 @@ def main():
             cut = split_by_cycle(cyc, blk)
             tr, va, te = cut if sp == "cycle" else split_random(cyc, blk, seed, like=cut)
             r = train_eval(Xs, y, tr, va, te, epochs=a.epochs, batch=a.batch,
+                           input_norm=a.input_norm,
                            seed=seed, size=size, wd=a.weight_decay,
                            patience=a.patience, blk_te=blk[te])
             r.update(sensor=sensor, width_px=size[0], height_px=size[1], seed=seed,
                      split=sp, epochs=a.epochs, seconds=round(time.time() - t1, 1),
-                     norm=a.norm, rep=a.rep)
+                     norm=a.norm, rep=a.rep, input_norm=a.input_norm)
             rows.append(r)
             print(f"  {size[0]:5d}x{size[1]:<4d} {sp:6} s{seed} "
                   f"Fz MAE {r['fz_mae']:.4f} R2 {r['fz_r2']:+.3f}  "

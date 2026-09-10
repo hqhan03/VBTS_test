@@ -59,23 +59,54 @@ if __name__ == "__main__":
     units = sys.argv[1:] or ["data/9DTact/20260907_passB_ball8/9DTact_hard_1mm_r1",
                              "data/9DTact/20260907_passB_ball8/9DTact_soft_3mm_r2",
                              "data/DIGIT_Marker/20260908_passB_ball8/DIGIT_Marker_medium_2mm_r1"]
-    size = (320, 180); rows = []
+    # Two sizes: one above the knee and one below it. If the label window is what
+    # sets the floor, the gap between windows is a property of the labels and
+    # should survive the drop in resolution; if it were an image effect it would
+    # shrink once the picture is the limit.
+    SIZES = [(320, 180), (48, 27)]
+    SEEDS = [0, 1, 2]                    # one seed cannot separate two windows
+    rows = []
     out = os.path.join(ROOT, "data", "label_window_ablation.csv")
+    if os.path.exists(out):
+        rows = pd.read_csv(out).to_dict("records")
+    done = {(r["unit"], r.get("size"), r["window"], int(r.get("seed", 0)))
+            for r in rows}
     for run in units:
         run = os.path.join(ROOT, run) if not os.path.isabs(run) else run
+        name = os.path.basename(run)
+        want = [(s, w, sd) for s in SIZES for w in WINDOWS for sd in SEEDS
+                if (name, f"{s[0]}x{s[1]}", w, sd) not in done]
+        if not want:
+            print(f"  {name}: already done"); continue
         res = F.load_unit(Path(run), None, "none", "grey", 2.0)
         X, y0, cyc, blk = res[0], res[1], res[2], res[3]
-        Xs = F.shrink(X, size); tr, va, te = F.split_by_cycle(cyc, blk)
-        for name, win in WINDOWS.items():
+        shrunk = {s: F.shrink(X, s) for s in SIZES}
+        del X, res                       # the full-resolution stack is 6 GB
+        tr, va, te = F.split_by_cycle(cyc, blk)
+        labels = {}
+        for w_name, win in WINDOWS.items():
             y = relabel(run, win)
             assert len(y) == len(y0), (len(y), len(y0))
             y[:, 2] = -y[:, 2]
-            if name == "exposure":
-                print(f"  sanity: relabelled-vs-stored |dFz| max {np.abs(y[:, 2] - y0[:, 2]).max():.4f} N", flush=True)
-            t1 = time.time()
-            r = F.train_eval(Xs, y, tr, va, te, epochs=30, batch=64, seed=0, size=size, blk_te=blk[te])
-            r.update(unit=os.path.basename(run), window=name, seconds=round(time.time() - t1, 1))
-            rows.append(r)
-            print(f"  {os.path.basename(run):28s} {name:9s} Fz {r['fz_mae_normal']:.4f}  shear {r['lat_mae_shear']:.4f}  ({r['seconds']}s)", flush=True)
-            pd.DataFrame(rows).to_csv(out, index=False)
+            labels[w_name] = y
+            if w_name == "exposure":
+                print(f"  {name}: relabelled-vs-stored |dFz| max "
+                      f"{np.abs(y[:, 2] - y0[:, 2]).max():.4f} N", flush=True)
+        for size in SIZES:
+            for w_name in WINDOWS:
+                for sd in SEEDS:
+                    if (name, f"{size[0]}x{size[1]}", w_name, sd) in done:
+                        continue
+                    t1 = time.time()
+                    r = F.train_eval(shrunk[size], labels[w_name], tr, va, te,
+                                     epochs=30, batch=64, seed=sd, size=size,
+                                     blk_te=blk[te])
+                    r.update(unit=name, size=f"{size[0]}x{size[1]}", window=w_name,
+                             seed=sd, seconds=round(time.time() - t1, 1))
+                    rows.append(r)
+                    print(f"  {name:28s} {size[0]:4d}x{size[1]:<3d} {w_name:9s} "
+                          f"s{sd} Fz {r['fz_mae_normal']:.4f}  "
+                          f"shear {r['lat_mae_shear']:.4f}  ({r['seconds']}s)", flush=True)
+                    pd.DataFrame(rows).to_csv(out, index=False)
+        del shrunk, labels
     print("  ->", out)

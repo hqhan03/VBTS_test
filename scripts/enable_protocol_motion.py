@@ -4,7 +4,8 @@ Put the FR5 into the state protocol motion needs. Sends NO motion command.
 
     enable_protocol_motion.py --dry-run
     enable_protocol_motion.py --confirm ENABLE-MOTION --speed 5
-    enable_protocol_motion.py --restore            # back to manual, servos off
+    enable_protocol_motion.py --restore            # back to manual (servos stay on)
+    enable_protocol_motion.py --restore --servos-off   # ... and de-energise
 
 THE SEQUENCE, AND WHY IT IS NOT THE JOG ONE
 -------------------------------------------
@@ -93,8 +94,13 @@ def main() -> int:
     ap.add_argument("--speed", type=int, default=5,
                     help="global speed percent; low for a first bring-up")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--servos-off", action="store_true",
+                    help="with --restore, also de-energise the servos. Off by "
+                         "default since 2026-09-10: the operator swaps gels "
+                         "with the arm parked and wants the mode changed only.")
     ap.add_argument("--restore", action="store_true",
-                    help="return to manual mode with the servos off")
+                    help="return to manual mode; add --servos-off to also "
+                         "de-energise")
     ap.add_argument("--confirm", default=None)
     a = ap.parse_args()
 
@@ -102,7 +108,12 @@ def main() -> int:
     ip = a.ip or rc["robot"]["ip"]
 
     if a.restore:
-        seq = [("RobotEnable", (0,)), ("Mode", (1,))]
+        # Mode only, servos left energised (operator, 2026-09-10). Dropping
+        # RobotEnable(0) between runs was not wanted: the gel swap does not need
+        # the servos off, and re-energising them is one more thing to go wrong.
+        seq = [("Mode", (1,))]
+        if a.servos_off:
+            seq = [("RobotEnable", (0,))] + seq
         token, what = "RESTORE-MANUAL", "return to manual, servos off"
     else:
         seq = [("ResetAllError", ()), ("Mode", (0,)),
