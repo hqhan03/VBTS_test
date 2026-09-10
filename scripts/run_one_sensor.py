@@ -53,7 +53,15 @@ chk = _load("chk", ROOT / "scripts" / "robot_readonly_check.py")
 mv = _load("mv", ROOT / "scripts" / "move_probe.py")
 
 PY = "/usr/bin/python3"
-STEPS = ["enable", "liftoff", "align", "newrun", "tare", "reference", "qc",
+# newrun, tare and reference come FIRST because none of them needs the robot:
+# they make the folder, average the F/T, and take the unloaded frame. Run after
+# `enable`, as they were, they left the controller in auto with the servos
+# energised and the arm standing still for 23.2 s of every unit -- measured on
+# DIGIT_hard_2mm_r2 (newrun 3.3 + tare 7.1 + reference 12.8) -- against 8.8 s
+# of actual motion before the search begins. The reference phase refuses to
+# save if anything is touching, which is the guard that makes this safe when a
+# previous run left the probe near the gel instead of parked.
+STEPS = ["newrun", "tare", "reference", "enable", "liftoff", "align", "qc",
          "search", "touchcheck", "zero", "shape", "scale", "characterize",
          "contactmap", "collect", "retract", "zerocheck", "summary", "park"]
 
@@ -65,14 +73,48 @@ STEPS = ["enable", "liftoff", "align", "newrun", "tare", "reference", "qc",
 SURFACE_KEY = "searched_surface_mm"
 
 
+# Seconds to wait before starting a phase, so the previous one's camera and DAQ
+# handles are closed.
+# Long enough for the previous phase's camera and DAQ handles to close. Three
+# seconds was picked without measuring; six phases run in the zero chain, so it
+# was costing about 18 s a unit. 1.5 s has held across the calibration grid
+# campaign -- raise it again if a phase ever opens onto a busy device.
+PHASE_GAP_S = 1.5
+
+
 def run(cmd: list, label: str) -> bool:
     print(f"\n{'=' * 62}\n  {label}\n{'=' * 62}")
     print("  $ " + " ".join(str(c) for c in cmd) + "\n")
     env = {**os.environ, 'PYTHONUNBUFFERED': '1'}
-    r = subprocess.run(cmd, env=env)
-    if r.returncode != 0:
-        print(f"\n  !! {label} exited {r.returncode}")
-    return r.returncode == 0
+    # Let the previous phase's device handles go. Phases are separate processes
+    # and each opens the camera and the DAQ; since the per-phase park was turned
+    # off (2026-09-10) the next phase starts within a second of the last one
+    # exiting, and phases began dying with exit 1 and no output at all -- before
+    # their own banner, which is where a device that is still held would fail.
+    time.sleep(PHASE_GAP_S)
+    # Tee rather than inherit. Phases have been dying with exit 1 and nothing in
+    # the log -- not even their own banner -- and an inherited stream gave no way
+    # to tell whether they printed and it was lost or they never printed at all.
+    # This keeps the live output and repeats the tail on failure, where it is
+    # visible next to the error instead of scrolled past.
+    tail = []
+    proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT, text=True, bufsize=1)
+    for line in proc.stdout:
+        print(line, end="")
+        tail.append(line)
+        if len(tail) > 40:
+            tail.pop(0)
+    rc = proc.wait()
+    if rc != 0:
+        print(f"\n  !! {label} exited {rc}")
+        if tail:
+            print("  --- its last output ---")
+            for line in tail:
+                print("  | " + line.rstrip())
+        else:
+            print("  --- it printed NOTHING at all ---")
+    return rc == 0
 
 
 def _probe_offsets(probe: str, reg_all: dict, skip: str | None = None):
@@ -535,7 +577,7 @@ def main() -> int:
                     help="probe id from config/probes.yaml, required by the "
                          "zero and shape steps")
     ap.add_argument("--ip", default=None)
-    ap.add_argument("--from", dest="start", default="enable", choices=STEPS)
+    ap.add_argument("--from", dest="start", default=STEPS[0], choices=STEPS)
     ap.add_argument("--to", dest="stop", default="park", choices=STEPS)
     # The controller's global SetSpeed multiplies every commanded velocity, so
     # it is not the harmless preamble the old comment here called it: measured
