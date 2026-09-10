@@ -760,7 +760,6 @@ def phase_series(a) -> int:
     try:
         tare = np.array(s["tare"]["tare_wrench"], dtype=float)
         reader = ForceReader(ft, tare).start()
-        _cal_ref = {"done": (run / "reference_calibgrid.png").exists()}
 
         print(f"\n--- retracting {a.retract} mm to start above the gel ---")
         rv = _move_along_normal(ip, +a.retract, a, a.approach_joint_step, vel=a.vel_free)
@@ -5255,6 +5254,7 @@ def phase_calibgrid(a) -> int:
             print("  not clear of the gel.")
             return 1
         reader = ForceReader(ft, tare).start()
+        _cal_ref = {"done": (run / "reference_calibgrid.png").exists()}
 
         # NOT reference.png. Every DIGIT reference.png is 8-14 % brighter than
         # the frames that follow it -- the probe is clear of the gel when it is
