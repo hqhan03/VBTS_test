@@ -3402,7 +3402,16 @@ def phase_characterize(a) -> int:
                   f"{hard_cap:.2f} mm")
         f_now = 0.0
         while True:
-            limit = hard_cap if f_now < floor_f else depth_cap
+            # Keep going past the depth backstop while the ceiling is still
+            # unfound, not merely while the force floor is unmet. The marker
+            # gels need it: DIGIT_Marker_soft_1mm_r1's image response never fell
+            # below 15 % of its peak -- it ended at 19 %, still answering at
+            # 0.30 lvl/N -- because the dots keep moving after the background
+            # colour has stopped changing, so the ramp stopped on the backstop
+            # at 10.81 N with no ceiling measured, only a floor. The force cap
+            # is what bounds this, and for that reason it matters what it is.
+            limit = (hard_cap if (f_now < floor_f or not sat["reached"])
+                     else depth_cap)
             if depth >= limit - 1e-6:
                 break
             step = min(a.char_step, limit - depth)
