@@ -48,7 +48,8 @@ def response_map(run: Path, unit: str):
         return None
     k, n = km
     ref = None
-    for nm in ("reference_working.png", "reference.png"):
+    for nm in ("reference_calibgrid.png", "reference_working.png",
+               "reference.png"):
         if (run / nm).exists():
             ref = cv2.imread(str(run / nm)).astype(np.float32); break
     if ref is None:
@@ -96,9 +97,20 @@ if __name__ == "__main__":
             r = response_map(run, unit)
             if r is None or len(r) < 8:
                 print(f"  {run.name}: 격자 없음/부족"); continue
-            maps[unit] = r          # a later run replaces an earlier one
+            # Several runs of one unit exist -- code was being fixed between
+            # them -- and the last one on disk is not the best one. Keep the
+            # grid that covers the most of the frame with the most points: a
+            # run whose autoframe misfired collapsed its lattice to 24 % of the
+            # field, and that grid answers a different question from one that
+            # spans it.
+            score = len(r) * float(r.cx.std() * r.cy.std())
+            if unit in maps and maps[unit][1] >= score:
+                print(f"    (keeping the earlier {unit} grid, it covers more)")
+                continue
+            maps[unit] = (r, score)
             print(f"  {unit:26s} {len(r):3d} 점  dG {r.dG.mean():+7.1f} lvl/mm  "
                   f"dB {r.dB.mean():+7.1f}  dR {r.dR.mean():+6.1f}")
+    maps = {u: v[0] for u, v in maps.items()}
     if len(maps) < 2:
         print("\n  비교하려면 유닛이 둘 이상 필요합니다."); sys.exit(0)
     print(f"\n=== 유닛 쌍 비교 ({len(maps)} 유닛) ===")

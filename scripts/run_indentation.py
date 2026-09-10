@@ -760,6 +760,7 @@ def phase_series(a) -> int:
     try:
         tare = np.array(s["tare"]["tare_wrench"], dtype=float)
         reader = ForceReader(ft, tare).start()
+        _cal_ref = {"done": (run / "reference_calibgrid.png").exists()}
 
         print(f"\n--- retracting {a.retract} mm to start above the gel ---")
         rv = _move_along_normal(ip, +a.retract, a, a.approach_joint_step, vel=a.vel_free)
@@ -5265,13 +5266,21 @@ def phase_calibgrid(a) -> int:
         # the frame -- put its centroid 200 px from the real imprint, and the
         # affine that came out read 111 px/mm along one axis and 45 along the
         # other, so the lattice collapsed to 24 % of the field.
-        ref_af = None
-        for nm in ("reference_working.png", "reference_collect.png", "reference.png"):
-            if (run / nm).exists():
-                ref_af = cv2.imread(str(run / nm)).astype(np.float32)
-                print(f"  autoframe differences against {nm} "
-                      f"(mean {ref_af.mean():.1f})")
-                break
+        # Resolved on FIRST USE, not here: the best reference for this phase is
+        # the one the first press writes a moment from now, so reading the
+        # directory before that would always miss it.
+        _ref_af = {}
+
+        def ref_for_diff():
+            if "img" not in _ref_af:
+                for nm in ("reference_calibgrid.png", "reference_working.png",
+                           "reference_collect.png", "reference.png"):
+                    if (run / nm).exists():
+                        _ref_af["img"] = cv2.imread(str(run / nm)).astype(np.float32)
+                        print(f"  imprints are differenced against {nm} "
+                              f"(mean {_ref_af['img'].mean():.1f})")
+                        break
+            return _ref_af.get("img")
 
         def imprint_centre(frame):
             """Centroid and area of the largest blob that moved, in pixels.
@@ -5284,8 +5293,11 @@ def phase_calibgrid(a) -> int:
             threshold relative to that frame's own peak, which on the same
             thirty frames varied by 1.9x instead of 200x.
             """
+            rf = ref_for_diff()
+            if rf is None:
+                return None, 0
             d = cv2.GaussianBlur(
-                np.abs(frame.astype(np.float32) - ref_af).max(2), (0, 0), 7)
+                np.abs(frame.astype(np.float32) - rf).max(2), (0, 0), 7)
             m = (d > max(5.0, 0.5 * float(d.max()))).astype(np.uint8)
             nb, _, st, cen = cv2.connectedComponentsWithStats(m, 8)
             if nb < 2:
@@ -5301,6 +5313,26 @@ def phase_calibgrid(a) -> int:
                               a.approach_joint_step, vel=a.vel_free):
                 return None
             time.sleep(a.zero_recover_s)
+            # The phase's own working reference, taken from right here: clear
+            # of the gel but still a millimetre off it, so the probe's shadow
+            # is in the frame the way it is in every measured frame. It exists
+            # because reference.png does NOT have that shadow -- on a DIGIT it
+            # runs 8-14 % brighter than everything that follows -- and
+            # differencing against it is what made the first autoframe pick a
+            # 240349 px blob. run_one_sensor writes reference_working.png at
+            # its own 0.30 mm standoff inside the touchcheck step, so taking
+            # one here is what lets that step be skipped: it costs no move, the
+            # probe is already lifted and waiting out zero_recover_s.
+            if not _cal_ref["done"]:
+                _cal_ref["done"] = True
+                try:
+                    fr, _ = cam.grab_after(time.time())
+                    cv2.imwrite(str(run / "reference_calibgrid.png"), fr,
+                                [cv2.IMWRITE_PNG_COMPRESSION, 1])
+                    print(f"  reference_calibgrid.png at {a.zero_margin:.2f} mm "
+                          f"standoff (mean {float(fr.mean()):.1f})")
+                except Exception as e:                       # noqa: BLE001
+                    print(f"  (reference_calibgrid.png not saved: {e})")
             if _move_to_point(ip, base - dtgt * n, rpy0, a, a.max_joint_step):
                 return None
             time.sleep(a.shape_dwell)

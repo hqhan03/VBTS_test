@@ -173,6 +173,21 @@
 
 이 두 유닛(`DIGIT_hard_1mm_r2`, `DIGIT_medium_2mm_r1`)의 격자는 **다시 재야 한다.**
 
+### 2.6 이 단계는 자기 기준 영상을 직접 찍는다
+
+자국을 차분할 기준은 `reference.png` 가 아니라 **프로브 그림자가 들어간** 프레임이어야
+한다(§2.3). 그것은 `run_one_sensor` 의 **touchcheck** 단계가 0.30 mm 들린 자리에서
+`reference_working.png` 로 찍어 왔다. 그런데 touchcheck 는 이 pass 에서 20 초를 쓰면서
+새로 알려주는 것이 없다 — 접촉을 저울질하는데, 바로 뒤 autoframe 이 다섯 번 눌러 같은
+것을 확인한다.
+
+그래서 calibgrid 가 **자기 기준을 직접 찍는다**. 첫 압입 직전 프로브는 이미
+`--zero-margin` 만큼 들린 채 `zero_recover_s` 를 기다리고 있으므로 **이동이 0 회** 추가된다.
+`reference_calibgrid.png` 로 저장하고, 읽는 우선순위는
+`reference_calibgrid > reference_working > reference_collect > reference` 다. 기준은 파일을
+읽는 시점이 아니라 **처음 쓰는 시점**에 정해진다 — 아니면 방금 찍은 것을 놓친다.
+이제 `--skip touchcheck` 로 zero 체인이 2.7 분에서 2.4 분이 된다.
+
 ---
 
 ## 3. 전이 — 한 유닛의 보정을 다른 유닛에 쓸 수 있는가
