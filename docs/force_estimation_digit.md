@@ -93,6 +93,35 @@ DIGIT 전단 14 % 개선). DIGIT 은 R/G/B LED 로 겔을 옆에서 비추므로
 
 그림: `figures/saturation_DIGIT_3seed.png`, `figures/saturation_DIGIT_Marker_3seed.png`.
 
+## 4b. 유닛별 — 18 개 패널
+
+중앙값은 유닛 안의 요동을 감춘다. 아래는 **유닛 하나에 패널 하나**, 두 채널을 겹쳐 그린 것이다.
+열은 soft / medium / hard, 행은 1 mm r1, r2, 2 mm r1, r2, 3 mm r1, r2. 축은 공유,
+y 는 선형, x 는 범주형(크기는 선형 척도가 아니므로 선형으로 그리면 오해를 부른다).
+띠는 세 시드의 폭이다.
+
+![DIGIT per unit](figures/per_unit_DIGIT.png)
+
+![DIGIT_Marker per unit](figures/per_unit_DIGIT_Marker.png)
+
+**패널에서 읽히는 것.**
+
+1. **두 채널의 모양이 유닛마다 일관되게 다르다.** 거의 모든 DIGIT 패널에서 전단(빨강)이
+   Fz(검정) **아래**에 있고 더 평평하다. 중앙값 표에서 본 "Fz 평평, 전단 U 자" 는 몇몇
+   유닛이 만든 평균이 아니라 18 개 중 대부분에서 같은 모양으로 나타난다.
+2. **예외가 있고, 예외가 정보다.** `medium_1mm_r2` 와 `hard_1mm_r2` 는 전단이 Fz 위에 있고
+   큰 크기로 갈수록 **올라간다** — 과적합 팔이 전단에서만 뚜렷한 경우다. 두 유닛 모두 1 mm
+   이고, 1 mm 겔은 전단 무릎이 가장 큰(120 px) 집단이다(§4).
+3. **8×5 의 붕괴는 보편적이다.** 18 개 패널 전부에서 마지막 칸이 솟는다. 두 채널 모두.
+4. **시드 폭이 큰 곳은 큰 크기 쪽이 아니라 작은 크기 쪽이다.** 8×5–32×18 에서 띠가 가장
+   넓다 — 화소가 적을 때 최적화가 어디에 안착하느냐가 더 많이 갈린다.
+
+비교를 위해 9DTact 도 같은 형식으로 그렸다(17 유닛, 고친 분할 v3):
+
+![9DTact per unit](figures/per_unit_9DTact.png)
+
+`scripts/per_unit_figures.py <csv> <label> <out.png>`.
+
 ## 5. 한계
 
 1. **1280·1920 px 는 1 시드**다. 그 두 점의 상승(과적합 팔)은 시드 잡음과 구분되지 않는다.
