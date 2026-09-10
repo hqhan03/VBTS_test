@@ -5743,21 +5743,28 @@ def phase_calibgrid(a) -> int:
         # surface: press, compare against the model, correct the depth, and
         # carry the correction to the next point, where the tilt is nearly the
         # same.
-        gm = (ent.get("gel_model") or {})
-        k_h = float(gm.get("hertz_a") or 0.0)
-        n_h = float(gm.get("free_exponent") or 1.5)
-        if k_h > 0:
-            print("  rung force from this unit's gel model: "
-                  + ", ".join(f"{d:.2f} mm -> {k_h * d ** n_h:.2f} N"
-                              for d in sorted(depths)))
-        else:
-            print("  no gel model for this unit; rungs run at their commanded "
-                  "depth with no local-surface correction")
+        # The reference is the grid's OWN CENTRE, pressed first, not the gel
+        # model in the registry. The model came from a shallow ladder and
+        # extrapolates badly: DIGIT_medium_3mm_r1's says 0.171 N at 0.30 mm
+        # where 0.036 mm of real indentation already weighs 0.055 N, so holding
+        # the force to it walked the probe UP -- to -0.226 mm, above the
+        # surface -- and eight of its thirty points came back with no imprint
+        # at all. A centre press needs no model and answers the question the
+        # correction is actually asking, which is whether this point is as deep
+        # as the middle of the grid.
+        n_h = float((ent.get("gel_model") or {}).get("free_exponent") or 2.0)
+        f_ref = {}                    # rung -> force the centre point returned
+        order = [(ix, iy) + tuple(pt)
+                 for iy, rw in enumerate(pts_rows) for ix, pt in enumerate(rw)]
+        c_ix, c_iy = nx // 2, ny // 2
+        order.sort(key=lambda o: (o[0] != c_ix or o[1] != c_iy))
+        print(f"  the centre point ({c_ix}, {c_iy}) is pressed first; its force "
+              "at each rung is what the others are held to")
         dz_off = 0.0                 # local surface offset, carried between points
         print(f"\n  {'ix':>3} {'iy':>3} {'x':>6} {'y':>6} {'depth':>7} "
               f"{'force':>8} {'area px':>9}  note")
-        for iy, row in enumerate(pts_rows):
-            for ix, (dx, dy, tx_px, ty_px) in enumerate(row):
+        if True:
+            for ix, iy, dx, dy, tx_px, ty_px in order:
                 base = (p_surf + dx * R[:, 0] + dy * R[:, 1]
                         + (dx * sx + dy * sy) * n)
                 # Lift and cross to the new position ONCE, then walk the depths
@@ -5774,7 +5781,7 @@ def phase_calibgrid(a) -> int:
                     return 2
                 time.sleep(a.zero_recover_s)
                 for dtgt in sorted(depths):
-                    f_want = k_h * dtgt ** n_h if k_h > 0 else 0.0
+                    f_want = f_ref.get(dtgt, 0.0)
                     note = ""
                     for attempt in range(3):
                         if _move_to_point(ip, base - (dtgt + dz_off) * n, rpy0, a,
@@ -5824,6 +5831,9 @@ def phase_calibgrid(a) -> int:
                                  "radius_px": rg["radius_px"],
                                  "centroid_px": str(rg["centroid_px"]),
                                  "diff_level": diff_level})
+                    if (ix, iy) == (c_ix, c_iy):
+                        f_ref[dtgt] = f
+                        note = "centre: the reference for this rung"
                     print(f"  {ix:>3} {iy:>3} {dx:>6.2f} {dy:>6.2f} {reached:>7.3f} "
                           f"{f:>8.3f} {rg['area_px']:>9d}  {note}")
                     if f >= f_stop:
