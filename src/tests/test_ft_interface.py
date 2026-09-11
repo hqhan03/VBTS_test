@@ -44,7 +44,7 @@ from vbts_platform.ft_interface import (  # noqa: E402
     load_ft_config,
 )
 
-REAL_CAL = PROJECT_ROOT / "FT29831.cal"
+REAL_CAL = PROJECT_ROOT / "src" / "config" / "FT29831.cal"
 
 
 def write_cal(body: str | None = None, *, serial: str = "FT00001", num_gages: str = "6",

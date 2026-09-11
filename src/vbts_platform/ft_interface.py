@@ -582,7 +582,11 @@ def load_calibration(cfg: dict, config_path: Path) -> ATICalibration:
 
     candidate = Path(name)
     if not candidate.is_absolute():
-        for base in (PROJECT_ROOT / "calibration", PROJECT_ROOT, config_path.parent):
+        # src/config/ 가 이 파일의 자리다 (2026-09-11 전에는 저장소 루트였다).
+        # config_path.parent 를 맨 앞에 두면 안 된다 -- 설정을 다른 곳으로 복사해
+        # 부르는 쪽이 cal 을 못 찾고, 그러면 채널 설정 오류가 cal 오류로 둔갑한다.
+        for base in (PROJECT_ROOT / "src" / "config", PROJECT_ROOT / "calibration",
+                     PROJECT_ROOT, config_path.parent):
             trial = base / name
             if trial.is_file():
                 candidate = trial
@@ -590,6 +594,7 @@ def load_calibration(cfg: dict, config_path: Path) -> ATICalibration:
     if not candidate.is_file():
         raise CalibrationError(
             f"calibration file {name!r} not found (searched "
-            f"{PROJECT_ROOT/'calibration'}, {PROJECT_ROOT}, {config_path.parent})"
+            f"{PROJECT_ROOT/'src'/'config'}, {PROJECT_ROOT/'calibration'}, "
+            f"{PROJECT_ROOT}, {config_path.parent})"
         )
     return ATICalibration.from_file(candidate, expected_serial=sensor.get("serial_number"))
