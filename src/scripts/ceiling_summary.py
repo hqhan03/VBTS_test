@@ -29,10 +29,16 @@ SOURCES = [("DIGIT", "20260910_passA_calibgrid"),
            ("DIGIT_Marker", "20260910_passA_calibgrid"),
            ("9DTact", "20260911_passC_ceiling")]
 SAT_FRAC, SAT_HITS, SAT_MIN_F, FIT_FLOOR = 0.15, 2, 0.3, 0.10
+# 램프를 어느 프로브로 돌았나 -> 구 접촉이 유지되는 최대 깊이(= 지름).
+# 그보다 깊은 곳에서 응답이 떨어지는 것은 자루가 겔에 들어간 결과이므로 천장이
+# 아니다. run_indentation.py 의 같은 가드와 짝이고, docs/force_ceiling.md 6.3.
+SPHERE_LIMIT_MM = {"20260910_passA_calibgrid": 4.0,        # ball4
+                   "20260911_passC_ceiling": 4.0,          # ball4
+                   "20260911_passC_ceiling_ball8": 8.0}    # ball8
 EXP_WINDOW, EXP_MIN_F, EXP_MIN_DEPTH_FRAC, EXP_ALARM = 4, 0.5, 0.25, 2.0
 
 
-def ceiling(S, thickness_mm, strict=False):
+def ceiling(S, thickness_mm, strict=False, sphere_limit_mm=None):
     """(천장 N, 깊이 mm, 최대 응답 lvl/N, 두 단이 붙어 있었나) — 런과 같은 규칙.
 
     `strict=False` 는 런이 실제로 한 대로다. 런의 판정은 if/elif 사슬이고 연속
@@ -60,6 +66,11 @@ def ceiling(S, thickness_mm, strict=False):
                 # 현재 단에서 두 칸 뒤를 집는다. 붙어 있지 않았으면 그 칸은 첫
                 # 적중과 무관한 단이 된다(아래 two_steps_adjacent 가 그것을 표시).
                 j = i - SAT_HITS + 1
+                if sphere_limit_mm is not None and d[j] > sphere_limit_mm:
+                    # 구가 지름만큼 잠긴 뒤다 — 겔에 닿는 것이 자루이므로 응답
+                    # 저하가 광학이 아니라 형상에서 온다. 천장이 아니다.
+                    # run_indentation.py 의 같은 가드와 짝이다.
+                    return np.nan, float(d[j]), peak, True
                 return float(f[j]), float(d[j]), peak, (i - first == SAT_HITS - 1)
         else:
             # 런이 카운터를 되돌리는 조건: 지수 경보 창이 무장되지 않은 단
@@ -97,8 +108,14 @@ def main():
             unit = run.name
             g = re.search(r"(soft|medium|hard)_(\d)mm_r(\d)", unit)
             th = int(g.group(2))
-            ceil, depth, peak, adjacent = ceiling(S, th)
-            s_ceil, _, _, _ = ceiling(S, th, strict=True)
+            lim = SPHERE_LIMIT_MM.get(DS)
+            ceil, depth, peak, adjacent = ceiling(S, th, sphere_limit_mm=lim)
+            s_ceil, _, _, _ = ceiling(S, th, strict=True, sphere_limit_mm=lim)
+            raw_ceil = ceiling(S, th)[0]      # 가드 없이 — 무엇이 거부됐는지 보이게
+            refused = bool(np.isfinite(raw_ceil) and not np.isfinite(ceil))
+            if refused:
+                bad.append(f"{unit}: {raw_ceil:.2f} N 선언이 깊이 {depth:.2f} mm 로 "
+                           f"{lim:.1f} mm 구 한계 밖 — 자루 구간, 천장 아님")
             # `peak` 는 포화를 선언한 순간까지 본 최대다 — 판정이 쓴 값. 램프 전체를 다 본
             # 최대는 그보다 크거나 같고, 그쪽이 **유닛의 성질**로서의 응답이다 (등록부의
             # peak_slope_levels_per_N 과 같은 값). 4.1 의 교란 분석은 이쪽을 쓴다.
@@ -116,6 +133,7 @@ def main():
                 fmax=float(S.force_N.max()), dmax=float(S.depth_mm.max()),
                 img0=float(S.img_mean_abs_diff.iloc[0]), img1=float(S.img_mean_abs_diff.iloc[-1]),
                 d_over_t=depth / th, two_steps_adjacent=adjacent, ceil_strict=s_ceil,
+                sphere_limit_mm=lim, ceil_unguarded=raw_ceil, refused_shank=refused,
                 registry_ceil=r_ceil, match_err=err,
                 ramp_from=(yaml.safe_load(prov.open()).get("moved_from") if prov.exists() else ""),
             ))

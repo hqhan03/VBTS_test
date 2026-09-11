@@ -3358,11 +3358,29 @@ def phase_characterize(a) -> int:
     ft.connect()
     reader = None
     img_rows = []
+    # How deep the contact is still a SPHERE. A ball buried by one full
+    # diameter has gone pole to pole; past that what touches the gel is the
+    # shank, the contact area grows fast, the force climbs with it, and the
+    # change per newton -- which is exactly what saturation is judged on --
+    # falls for a reason that has nothing to do with the optics. Five 9DTact
+    # ceilings were declared that way on 2026-09-11 with ball4 (diameter
+    # 4 mm) at depths of 5.14-7.20 mm, and all five had to be retracted.
+    # See docs/force_ceiling.md 6.3.
+    sphere_limit_mm = None
+    if getattr(a, "probe", None):
+        try:
+            _pr = load_probe(a.probe)[1]
+            if _pr.get("tip") == "sphere" and _pr.get("diameter_mm"):
+                sphere_limit_mm = float(_pr["diameter_mm"])
+        except SystemExit:
+            pass
     sat = {"max_measurable_force_N": None, "max_measurable_depth_mm": None,
            "reached": False,
            "metric": "mean |frame - reference| over the central half, grey levels",
            "threshold_frac_of_peak_slope": a.sat_frac,
-           "min_force_N": a.sat_min_force, "consecutive": a.sat_hits}
+           "min_force_N": a.sat_min_force, "consecutive": a.sat_hits,
+           "sphere_contact_limit_mm": sphere_limit_mm,
+           "refused_in_shank_regime": False}
     try:
         tare = ft.tare(duration_s=2.0)
         res = ft.read_wrench_mean(duration_s=1.0, tared=True)
@@ -3547,7 +3565,19 @@ def phase_characterize(a) -> int:
             # were a measurement.
             if sat_armed and slope < a.sat_frac * peak_slope:
                 sat_hits += 1
-                if sat_hits >= a.sat_hits and sat_force is None:
+                d_at_call = float(d_hist[-min(sat_hits, len(d_hist))])
+                in_shank = (sphere_limit_mm is not None
+                            and d_at_call > sphere_limit_mm)
+                if sat_hits >= a.sat_hits and sat_force is None and in_shank:
+                    # The response really did fall, but not for an optical
+                    # reason we can name. Record it and keep ramping.
+                    sat["refused_in_shank_regime"] = True
+                    note = (f"response {slope:.2f} lvl/N is under "
+                            f"{a.sat_frac:.0%} of peak, but depth "
+                            f"{d_at_call:.2f} mm is past {a.probe}'s "
+                            f"{sphere_limit_mm:.1f} mm sphere limit -- shank in "
+                            f"the gel, NOT a ceiling")
+                elif sat_hits >= a.sat_hits and sat_force is None:
                     note = (f"image change {slope:.2f} lvl/N is under "
                             f"{a.sat_frac:.0%} of its peak {peak_slope:.2f}")
                     sat["reached"] = True
@@ -3708,6 +3738,15 @@ def phase_characterize(a) -> int:
             sat["note"] = (f"not reached within the limits: stopped on {stop} at "
                            f"{f_hist[-1]:.2f} N with the image still changing at "
                            f"{last_slope:.2f} lvl/N ({(last_slope / peak_slope) if peak_slope else float('nan'):.0%} of peak)")
+            if sat["refused_in_shank_regime"]:
+                sat["note"] += (
+                    f"; the response DID fall under {a.sat_frac:.0%} of peak, but "
+                    f"only past {a.probe}'s {sphere_limit_mm:.1f} mm sphere limit, "
+                    f"where the shank is in the gel and the contact is no longer a "
+                    f"sphere -- refused as a ceiling. Re-run with a larger ball.")
+                print(f"\n  !! saturation refused: it fell under threshold only "
+                      f"past the {sphere_limit_mm:.1f} mm sphere limit of "
+                      f"{a.probe}. Use a larger ball.")
         sat["peak_slope_levels_per_N"] = float(peak_slope)
         sat["image_change_at_stop"] = float(s_hist[-1]) if s_hist else None
         print(f"\n  image response: " + (
