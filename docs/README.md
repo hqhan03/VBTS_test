@@ -30,6 +30,7 @@ Added since (this table was written when only 9DTact had been measured):
 | test 1 on DIGIT and DIGIT_Marker — all 36 units, and which input representation wins | `force_estimation_digit.md` |
 | how the DIGIT photometric calibration grid works and whether it transfers between units | `photometric_calibration.md` |
 | how this campaign's preprocessing and training differ from the DIGIT/GelSight literature | `method_vs_literature.md` |
+| **test 4, maximum measurable force — method, all 36 units, and why it cannot compare sensors** | **`force_ceiling.md`** |
 | what is still missing and what it would cost to collect | `data_wishlist.md` |
 
 **Where the campaign stands (2026-09-11).** All 53 units have force-estimation
