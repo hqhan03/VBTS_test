@@ -25,11 +25,18 @@ import analyse_resolution as A  # noqa: E402
 UNITS = [f"9DTact_{h}_{t}mm_r{i}"
          for h in ("soft", "medium", "hard") for t in (1, 2, 3) for i in (1, 2)
          if not (h == "medium" and t == 2 and i == 1)]
-PROBES = ["pair100", "pair075", "pair050", "pair025"]
+# 프로브마다 pass 가 다른 날 돌았다. pair010 은 2026-09-11 에 9DTact 로 넘어왔고,
+# 1.25 mm 를 이미 분해해 한계가 미결인 유닛에만 의미가 있으므로 일부 유닛에만 있다.
+PROBES = ["pair100", "pair075", "pair050", "pair025", "pair010"]
+DATASET = {"pair100": "20260905_passA_pair100", "pair075": "20260905_passA_pair075",
+           "pair050": "20260905_passA_pair050", "pair025": "20260905_passA_pair025",
+           "pair010": "20260911_passA_pair010"}
 
 
 def rows_for(sensor, probe, gaps):
-    ds = ROOT / "data" / "20260911_VBTSresolution_dataset" / "9DTact" / f"20260905_passA_{probe}"
+    ds = ROOT / "data" / "20260911_VBTSresolution_dataset" / "9DTact" / DATASET[probe]
+    if not ds.is_dir():
+        return []
     reject = A.SET_ASIDE + A.WRONG_UNIT
     cands = []
     for c in ds.glob(f"{sensor}*"):
@@ -98,7 +105,9 @@ def main() -> int:
             got += rows_for(sensor, probe, gaps)
         rows += got
         n = sum(1 for r in got if r["ok"])
-        print(f"{sensor:24} {len(got):3d} rungs, {n:2d} resolved")
+        probes = sorted({r["gap"] for r in got})
+        print(f"{sensor:24} {len(got):3d} rungs, {n:2d} resolved, "
+              f"간격 {['%.2f' % x for x in probes]}")
     df = pd.DataFrame(rows)
     out = ROOT / "data" / "20260911_VBTSresolution_dataset" / "9DTact" / "resolution_measurements.csv"
     df.to_csv(out, index=False)

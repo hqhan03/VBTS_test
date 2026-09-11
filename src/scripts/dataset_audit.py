@@ -35,6 +35,18 @@ PROBE = {
     "passA_pair100":  ("두 기둥, 간격 1.00 mm",  ["shape_pair100/ladder.csv"]),
     "passA_calibgrid": ("구 ⌀4 mm 격자 + 램프",  ["calibgrid_ball4/grid.csv", "characterize/steps.csv"]),
     "passB_ball8":    ("구 ⌀8 mm",              ["stream/frames.csv"]),
+    "passC_ceiling":  ("구 ⌀4 mm 램프",          ["characterize/steps.csv"]),
+}
+
+# 일부러 일부 유닛만 잰 pass. 재지 않은 유닛은 결함이 아니므로 "빈 유닛" 으로 세지
+# 않고 이유와 함께 따로 적는다.
+PARTIAL = {
+    ("9DTact", "passA_pair010"):
+        "1.25 mm 를 이미 분해해 한계가 미결이던 유닛에만 의미가 있다. 나머지는 "
+        "1.25 도 분해하지 못하므로 더 좁은 간격은 결과가 정해져 있다.",
+    ("9DTact", "passC_ceiling"):
+        "되돌릴 수 없는 측정이고, 네 번째 램프에서 9DTact_soft_3mm_r1 이 영구 "
+        "변형돼 중단했다. docs/methods.md 10.6.",
 }
 
 
@@ -162,8 +174,19 @@ else:
     W("없다.\n")
 
 # --------------------------------------------------- 있는 pass 안의 빈 유닛 --
+if PARTIAL:
+    W("## 일부러 일부만 잰 pass\n")
+    W("| pass | 원리 | 채운 유닛 | 기대 | 왜 |")
+    W("|---|---|---:|---:|---|")
+    for (pr, k), why in PARTIAL.items():
+        g = D[(D.principle == pr) & (D.pass_key == k)]
+        if len(g):
+            W(f"| `{k}` | {pr} | {int(g.ok.sum())} | {len(g)} | {why} |")
+    W("")
+
 W("## 있는 pass 안에서 비어 있는 유닛\n")
-started_keys = {(k, pr) for k, pr, _, _ in started}
+started_keys = ({(k, pr) for k, pr, _, _ in started}
+                | {(k, pr) for (pr, k) in PARTIAL})
 holes = D[(~D.ok) & ~D.apply(lambda r: (r.pass_key, r.principle) in started_keys, axis=1)]
 if len(holes):
     W("| 원리 | pass | 유닛 | 폴더 | 무엇이 없나 |")
@@ -249,4 +272,4 @@ Path(a.out).write_text("\n".join(L), encoding="utf-8")
 D.to_csv(ROOT / "data" / "analysis" / "dataset_audit.csv", index=False)
 print(f"  {len(D)} 칸, 채움 {int(D.ok.sum())}, 빈 칸 {int((~D.ok).sum())}")
 print(f"  -> {a.out}")
-print(f"  -> {ROOT / 'data' / 'dataset_audit.csv'}")
+print(f"  -> {ROOT / 'data' / 'analysis' / 'dataset_audit.csv'}")
