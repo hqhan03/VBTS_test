@@ -124,6 +124,6 @@ for pr in 9DTact DIGIT DIGIT_Marker; do
   done
 done
 # 천장이 등록부와 맞는가
-python3 scripts/ceiling_summary.py --check
+python3 src/scripts/ceiling_summary.py --check
 # 등록부의 run 경로가 다 존재하는가 (run_missing 표시된 것 제외)
 ```

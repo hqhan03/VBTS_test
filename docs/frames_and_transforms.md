@@ -166,12 +166,12 @@ Two things still worth doing when the VBTS is mounted:
 ## Reproducing
 
 ```bash
-/usr/bin/python3 scripts/measure_sensor_base_transform.py --self-test
-/usr/bin/python3 scripts/measure_sensor_base_transform.py --phase tare       # nothing touching
-/usr/bin/python3 scripts/measure_sensor_base_transform.py --phase gravity    # mass on
-/usr/bin/python3 scripts/measure_sensor_base_transform.py --phase press      # repeat, 5-6x
-/usr/bin/python3 scripts/measure_sensor_base_transform.py --phase zerocheck  # between presses
-/usr/bin/python3 scripts/measure_sensor_base_transform.py --phase solve
+/usr/bin/python3 src/scripts/measure_sensor_base_transform.py --self-test
+/usr/bin/python3 src/scripts/measure_sensor_base_transform.py --phase tare       # nothing touching
+/usr/bin/python3 src/scripts/measure_sensor_base_transform.py --phase gravity    # mass on
+/usr/bin/python3 src/scripts/measure_sensor_base_transform.py --phase press      # repeat, 5-6x
+/usr/bin/python3 src/scripts/measure_sensor_base_transform.py --phase zerocheck  # between presses
+/usr/bin/python3 src/scripts/measure_sensor_base_transform.py --phase solve
 ```
 
 `live_force_monitor.py` gives the operator a live readout while jogging. The DAQ

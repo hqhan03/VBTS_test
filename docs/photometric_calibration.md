@@ -343,12 +343,12 @@ p 가 0.008 에서 0.33 까지 움직인다. 18 쌍 대 612 쌍이라 이 정도
 
 ```bash
 # 유닛 하나 (ball4 장착, DIGIT 계열)
-python3 scripts/run_indentation.py --phase zero      --sensor <unit> --probe ball4 \
+python3 src/scripts/run_indentation.py --phase zero      --sensor <unit> --probe ball4 \
         --search-from 0.4 --no-exit-park
-python3 scripts/run_indentation.py --phase calibgrid --sensor <unit> --probe ball4 \
+python3 src/scripts/run_indentation.py --phase calibgrid --sensor <unit> --probe ball4 \
         --grid-n 5,3 --grid-depths 0.15,0.3
 
-python3 scripts/calibgrid_transfer.py                # 유닛 쌍 상관, data/analysis/calibgrid_transfer.csv
+python3 src/scripts/calibgrid_transfer.py                # 유닛 쌍 상관, data/analysis/calibgrid_transfer.csv
 ```
 
 기본값: `--grid-x 9 --grid-y 7.5`(이동 한계, 뒷막이일 뿐 격자 크기는 프레임이 정한다),

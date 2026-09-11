@@ -146,7 +146,7 @@
 ### A-1. 설정 + 첫 프로브 (약 8분)
 
 ```
-/usr/bin/python3 scripts/run_one_sensor.py \
+/usr/bin/python3 src/scripts/run_one_sensor.py \
     --sensor <sensor_id> --probe cyl4 --to scale --confirm RUN
 ```
 
@@ -174,7 +174,7 @@
 프로브를 손으로 교체한 뒤:
 
 ```
-/usr/bin/python3 scripts/run_one_sensor.py \
+/usr/bin/python3 src/scripts/run_one_sensor.py \
     --sensor <sensor_id> --probe <probe_id> --from zero --to shape --confirm RUN
 ```
 
@@ -185,7 +185,7 @@
 ### A-3. 종료
 
 ```
-/usr/bin/python3 scripts/run_one_sensor.py \
+/usr/bin/python3 src/scripts/run_one_sensor.py \
     --sensor <sensor_id> --from park --to park --confirm RUN
 ```
 
@@ -785,9 +785,9 @@ DIGIT_Marker 1.8 % (수정 전 두 유닛 제외 시; 그 둘은 13.8 / 26.1 %).
 ### B-1. 설정 + 영점 + 평면/축척
 
 ```
-/usr/bin/python3 scripts/run_one_sensor.py \
+/usr/bin/python3 src/scripts/run_one_sensor.py \
     --sensor <sensor_id> --probe ball8 --to zero --confirm RUN
-/usr/bin/python3 scripts/run_indentation.py \
+/usr/bin/python3 src/scripts/run_indentation.py \
     --phase scale --sensor <sensor_id> --probe ball8
 ```
 
@@ -808,7 +808,7 @@ DIGIT_Marker 1.8 % (수정 전 두 유닛 제외 시; 그 둘은 13.8 / 26.1 %).
 ### B-2. 시험 1 — force estimation
 
 ```
-/usr/bin/python3 scripts/run_one_sensor.py \
+/usr/bin/python3 src/scripts/run_one_sensor.py \
     --sensor <sensor_id> --from collect --to collect --confirm RUN
 ```
 
@@ -823,7 +823,7 @@ DIGIT_Marker 1.8 % (수정 전 두 유닛 제외 시; 그 둘은 13.8 / 26.1 %).
 ### B-3. 시험 4 — maximum force (**마지막, 되돌릴 수 없음**)
 
 ```
-/usr/bin/python3 scripts/run_one_sensor.py \
+/usr/bin/python3 src/scripts/run_one_sensor.py \
     --sensor <sensor_id> --from characterize --to characterize --confirm RUN
 ```
 

@@ -157,25 +157,25 @@ h3{border-top:1px solid var(--line2);padding-top:18px}
 <p><strong>이미지 축척은 고정값이 아니다 — 센서마다 잰다.</strong> §4 참조.</p>
 </section>
 <section><h2><span class="num">§2</span>준비 (캠페인 시작 전 1회)</h2><hr class="rule">
-<ol><li>프로브 9종이 모두 인쇄되어 있는지 확인. Pass A는 8종, Pass B는 <code>ball8</code> 하나. <strong><code>ball8</code>은 아직 출력 확인 안 됨</strong> — Pass B 시작 전까지만 있으면 된다.</li><li><code>/usr/bin/python3</code>로 실행할 것. anaconda 파이썬에는 <code>nidaqmx</code>가 없다. <code>run_one_sensor.py</code>가 시작 시 확인하고 <strong>로봇이 움직이기 전에</strong> 거부한다.</li><li><code>config/probes.yaml</code>의 <code>tcp_status</code>가 전부 <code>common endpoint by design</code>인지 확인.</li></ol>
+<ol><li>프로브 9종이 모두 인쇄되어 있는지 확인. Pass A는 8종, Pass B는 <code>ball8</code> 하나. <strong><code>ball8</code>은 아직 출력 확인 안 됨</strong> — Pass B 시작 전까지만 있으면 된다.</li><li><code>/usr/bin/python3</code>로 실행할 것. anaconda 파이썬에는 <code>nidaqmx</code>가 없다. <code>run_one_sensor.py</code>가 시작 시 확인하고 <strong>로봇이 움직이기 전에</strong> 거부한다.</li><li><code>src/config/probes.yaml</code>의 <code>tcp_status</code>가 전부 <code>common endpoint by design</code>인지 확인.</li></ol>
 </section>
 <section><h2><span class="num">§3</span>Pass A — 센서 1개당 절차</h2><hr class="rule">
 <p><strong>센서를 장착한 뒤 Pass A가 끝날 때까지 센서를 건드리지 않는다.</strong> 여덟 프로브의 비교가 하나의 장착 안에서 이루어져야 한다.</p>
 <h3>A-0. 센서 장착, <code>cyl4</code> 장착</h3>
 <p>대 ±0.014 mm), 지름 4.00 mm가 알려져 있어 축척 측정의 기준이 된다.</p>
 <h3>A-1. 설정 + 첫 프로브 (약 8분)</h3>
-<pre class="cmd-block">/usr/bin/python3 scripts/run_one_sensor.py \
+<pre class="cmd-block">/usr/bin/python3 src/scripts/run_one_sensor.py \
     --sensor &lt;sensor_id&gt; --probe cyl4 --to scale --confirm RUN</pre>
 <p>단계별로 무엇이 일어나는지:</p>
 <div class="tw"><table><thead><tr><th class="">단계</th><th class="num">초</th><th class="">하는 일</th></tr></thead><tbody><tr><td class=""><code>enable</code></td><td class="num">6</td><td class="">manual → auto, 서보 on</td></tr><tr><td class=""><code>liftoff</code></td><td class="num">0</td><td class="">기록된 표면 대비 여유 확인, 부족하면 상승</td></tr><tr><td class=""><code>align</code></td><td class="num">7</td><td class="">프로브를 센서 축에 정렬</td></tr><tr><td class=""><code>newrun</code></td><td class="num">0</td><td class=""><code>data/20260905_passA/&lt;sensor_id&gt;/</code> 생성</td></tr><tr><td class=""><code>tare</code></td><td class="num">2</td><td class="">젤에서 떨어진 상태로 F/T 영점</td></tr><tr><td class=""><code>reference</code></td><td class="num">12</td><td class="">무부하 reference 이미지</td></tr><tr><td class=""><code>qc</code></td><td class="num">0</td><td class="">밝기·안정도 확인</td></tr><tr><td class=""><code>search</code></td><td class="num">22</td><td class="">3단계 하강(1 / 0.2 / 0.05 mm)으로 첫 접촉</td></tr><tr><td class=""><code>touchcheck</code></td><td class="num">8</td><td class="">접촉 하중 확인, 모자라면 미세 압입</td></tr><tr><td class=""><code>zero</code></td><td class="num">100</td><td class=""><strong>적합 영점</strong> — §3.1</td></tr><tr><td class=""><code>shape</code></td><td class="num">133</td><td class=""><strong>깊이 사다리</strong> — §3.2</td></tr><tr><td class=""><code>scale</code></td><td class="num">80</td><td class=""><strong>mm/px + 젤 평면</strong> — §4</td></tr></tbody></table></div>
 <h3>A-2. 나머지 프로브 7종 (프로브당 약 4분)</h3>
 <p>순서: <code>ball4</code> → <code>cube4</code> → <code>star10</code> → <code>pair100</code> → <code>pair075</code> → <code>pair050</code> → <code>pair025</code></p>
 <p>프로브를 손으로 교체한 뒤:</p>
-<pre class="cmd-block">/usr/bin/python3 scripts/run_one_sensor.py \
+<pre class="cmd-block">/usr/bin/python3 src/scripts/run_one_sensor.py \
     --sensor &lt;sensor_id&gt; --probe &lt;probe_id&gt; --from zero --to shape --confirm RUN</pre>
 <p>재사용된다 — 프로브마다 젤로 다시 내려갈 필요가 없고, 이미 측정을 마친 젤을 더 누를 기회도 그만큼 줄어든다.</p>
 <h3>A-3. 종료</h3>
-<pre class="cmd-block">/usr/bin/python3 scripts/run_one_sensor.py \
+<pre class="cmd-block">/usr/bin/python3 src/scripts/run_one_sensor.py \
     --sensor &lt;sensor_id&gt; --from park --to park --confirm RUN</pre>
 <p>프로브를 50 mm 올린다(센서 교체용).</p>
 <p><strong>산출물: 센서당 144장</strong> (8 프로브 × 6 깊이 × 3 반복), 캠페인 전체 7,776장. 전부 <strong>명령된 깊이가 아니라 측정된 깊이</strong>에 묶인다.</p>
@@ -216,19 +216,19 @@ h3{border-top:1px solid var(--line2);padding-top:18px}
 <p><strong>8 mm 볼을 쓰는 이유.</strong> 5 N에서 4 mm 볼은 9개 설계 <strong>전부</strong>에서 적도 아래까지 파묻힌다(최악 반지름의 2.18배). Hertz가 성립하지 않고 섕크가 젤에 닿으며,</p>
 <p>압력이 <strong>37 % 낮다</strong>.</p>
 <h3>B-1. 설정 + 영점 + 평면/축척</h3>
-<pre class="cmd-block">/usr/bin/python3 scripts/run_one_sensor.py \
+<pre class="cmd-block">/usr/bin/python3 src/scripts/run_one_sensor.py \
     --sensor &lt;sensor_id&gt; --probe ball8 --to zero --confirm RUN
-/usr/bin/python3 scripts/run_indentation.py \
+/usr/bin/python3 src/scripts/run_indentation.py \
     --phase scale --sensor &lt;sensor_id&gt; --probe ball8</pre>
 <p>축척은 Pass A에서 이미 쟀지만 <strong>평면은 재장착으로 바뀌므로</strong> 다시 잰다(80초). 같은 phase가 둘 다 내므로 축척은 교차검증이 된다.</p>
 <p><strong>첫 센서에서 한 번만: 공통 끝점 검증.</strong> <code>ball8</code>의 적합 영점이 같은 장착의</p>
 <p>것이고, 그 차이가 곧 적용할 보정값이다.</p>
 <h3>B-2. 시험 1 — force estimation</h3>
-<pre class="cmd-block">/usr/bin/python3 scripts/run_one_sensor.py \
+<pre class="cmd-block">/usr/bin/python3 src/scripts/run_one_sensor.py \
     --sensor &lt;sensor_id&gt; --from collect --to collect --confirm RUN</pre>
 <div class="tw"><table><thead><tr><th class="">항목</th><th class="">값</th><th class="">근거</th></tr></thead><tbody><tr><td class="">수직력</td><td class=""><strong>0 – 4 N</strong></td><td class="">모든 센서 동일 고정. 그래야 오차가 비교 가능하고, 센서별 상한과 무관하다</td></tr><tr><td class="">전단력</td><td class=""><strong>0 – 1 N</strong></td><td class="">비율 0.25로 9DTact(3/12) 및 Deep-DA(0.75/3)와 일치. 전단은 명령이 아니라 마찰이 결정한다</td></tr><tr><td class="">프레임</td><td class=""><strong>센서당 1000장</strong></td><td class="">9DTact 방식 ResNet-18이 800장에서 포화: MAE 0.072 N, 범위의 1.5 %, R² 0.992 <strong>(실측)</strong></td></tr><tr><td class="">분포</td><td class="">힘 구간 균등</td><td class="">한 패스 안에서 0.02 N 이내 중복 거부, 릴리스 시 버퍼 초기화 — 9DTact와 동일</td></tr><tr><td class="">접촉 위치</td><td class="">1점</td><td class=""></td></tr></tbody></table></div>
 <h3>B-3. 시험 4 — maximum force (<strong>마지막, 되돌릴 수 없음</strong>)</h3>
-<pre class="cmd-block">/usr/bin/python3 scripts/run_one_sensor.py \
+<pre class="cmd-block">/usr/bin/python3 src/scripts/run_one_sensor.py \
     --sensor &lt;sensor_id&gt; --from characterize --to characterize --confirm RUN</pre>
 <p><strong>상한을 정하는 것은 로드셀이 아니라 이미지다.</strong> 젤은 사진이 더 이상 변하지 않게 된 뒤에도 힘을 계속 받을 수 있고, 그 지점을 넘으면 VBTS가 가진 유일한 수단으로는 힘을 측정할 수 없다. 뉴턴당 밝기 변화율이 최댓값의 <strong>15 %</strong> 아래로 떨어지면 정지. 최댓값은 상위 3개 구간 기울기의 <strong>중앙값</strong>이다 — 잡음 낀 구간 하나가 실제 초기 기울기 2.76에 대해 4.65 lvl/N을 읽어 15 % 기준이 사실상 25 %에서 발동한 적이 있다.</p>
 <p>깊이 백스톱(두께 × 0.9)이 항상 함께 걸린다.</p>
@@ -255,5 +255,5 @@ h3{border-top:1px solid var(--line2);padding-top:18px}
 <p><strong>압력중심 공식에 이득 0.82의 계통 오차가 있다.</strong> 지렛대·전단·단위 어느 변형도 1.0을 주지 않았다. 캠페인에 필요한 값은 아니라 상대 비교로만 쓴다.</p>
 <p><strong><code>ball8</code> 출력 미확인.</strong> Pass B에서만 필요.</p>
 <p><strong>DIGIT / DIGIT_Marker 복원 파이프라인 미구현.</strong> 수집은 막지 않지만 결과를 막는다.</p>
-<p>기계가 읽는 원본: <code>config/probes.yaml</code>, <code>config/sensor_registry.yaml</code>,</p>
-</section><footer>scripts/run_indentation.py · scripts/run_one_sensor.py · config/probes.yaml · config/sensor_registry.yaml<br>"실측"으로 표시된 값은 이 장비에서 실제로 측정한 값입니다.</footer></div>
+<p>기계가 읽는 원본: <code>src/config/probes.yaml</code>, <code>src/config/sensor_registry.yaml</code>,</p>
+</section><footer>src/scripts/run_indentation.py · src/scripts/run_one_sensor.py · src/config/probes.yaml · src/config/sensor_registry.yaml<br>"실측"으로 표시된 값은 이 장비에서 실제로 측정한 값입니다.</footer></div>

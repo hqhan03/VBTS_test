@@ -280,7 +280,7 @@ medium_1mm_r1 의 ○ × ○ ○ 등). 물리적으로 넓은 간격이 더 어�
 ## 8. 재현
 
 ```bash
-/usr/bin/python3 scripts/analyse_resolution.py 20260905_passA_pair050 9DTact_hard_3mm_r2
+/usr/bin/python3 src/scripts/analyse_resolution.py 20260905_passA_pair050 9DTact_hard_3mm_r2
 ```
 
 문턱값은 스크립트 머리의 `RAYLEIGH`, `MTF_MIN`, `MIN_PEAK`, `NOISE_K`. 런 선택 규칙과

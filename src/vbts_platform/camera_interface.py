@@ -17,7 +17,7 @@ import cv2
 import numpy as np
 import yaml
 
-DEFAULT_CONFIG = Path(__file__).resolve().parent.parent.parent / "config" / "camera_config.yaml"
+DEFAULT_CONFIG = Path(__file__).resolve().parent.parent.parent / "src" / "config" / "camera_config.yaml"
 
 # OpenCV property ids for the controls this camera actually honours.
 _PROPS = {

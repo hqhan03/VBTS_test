@@ -264,8 +264,8 @@ x 축 경도, y 축 두께, z 축 지표의 3차원 막대로 그렸다(칸마�
 ## 5. 재현
 
 ```bash
-/usr/bin/python3 scripts/analyse_shape.py                      # 17 유닛, CSV 두 개 갱신
-/usr/bin/python3 scripts/analyse_shape.py 9DTact_soft_2mm_r1   # 한 유닛, 단별 표 출력
+/usr/bin/python3 src/scripts/analyse_shape.py                      # 17 유닛, CSV 두 개 갱신
+/usr/bin/python3 src/scripts/analyse_shape.py 9DTact_soft_2mm_r1   # 한 유닛, 단별 표 출력
 ```
 
 상수는 스크립트 머리: 조명 문턱 2, 커널 7×7×2 (모두 9DTact 의 값), 공 반경 2.0,

@@ -229,7 +229,7 @@ run_grid_char.sh <unit> <dataset>
 정의하지 않고 런과 같은 기본값(`--sat-frac 0.15 --sat-hits 2 --sat-min-force 0.3
 --fit-floor 0.10`)과 같은 "최대는 상위 세 창 기울기의 중앙값" 을 쓴다. 그래서 받아들임
 조건이 분명하다: **36 유닛 전부 등록부의 천장과 0.000000 N 으로 일치**해야 한다. 일치한다
-(`python3 scripts/ceiling_summary.py --check`).
+(`python3 src/scripts/ceiling_summary.py --check`).
 
 재생을 맞추는 과정에서 규칙이 글과 다른 데가 나왔다. §1 은 "두 단 **연속**" 이라고 적었는데,
 런의 판정은 if/elif 사슬이고 연속 카운터를 0 으로 되돌리는 것은 **마지막 else** 뿐이다

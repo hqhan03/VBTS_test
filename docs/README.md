@@ -35,6 +35,7 @@ Added since (this table was written when only 9DTact had been measured):
 | **how much of a unit's number is the gel and how much is how it was mounted** | `campaign_protocol.md` §4.15 (`scripts/repeat_spread.py`) |
 | which run of a re-measured unit the analyses read, and what the split was hiding | `../data/analysis/DATASET_CLEANUP.md` |
 | **where anything under `data/` lives** | `../data/README.md` |
+| what the code is: the library, the scripts, the config, the tests | `../src/README.md` |
 | **what data exists per principle, probe and gel unit — and what is missing** | `../data/20260911_VBTSresolution_dataset/DATA_INVENTORY.md` (`scripts/dataset_audit.py`) |
 
 **Where the campaign stands (2026-09-11).** All 53 units have force-estimation
@@ -112,16 +113,16 @@ TCP and must not be changed without asking the operator.
 
 ```bash
 # Pass B (force estimation), one sensor, end to end — about 15 minutes
-scripts/pass_b_sensor.sh 9DTact_soft_1mm_r1
+src/scripts/pass_b_sensor.sh 9DTact_soft_1mm_r1
 
 # Pass A (shape + resolution), one sensor for one probe
-scripts/pass_a_sensor.sh 9DTact_soft_1mm_r1 pair050
+src/scripts/pass_a_sensor.sh 9DTact_soft_1mm_r1 pair050
 
 # read-only: where is the arm, is it ready to move
-/usr/bin/python3 scripts/move_probe.py --status
+/usr/bin/python3 src/scripts/move_probe.py --status
 
 # lift clear of the gel, whatever state a run left things in
-/usr/bin/python3 scripts/run_one_sensor.py --sensor <id> --from park --to park --confirm RUN
+/usr/bin/python3 src/scripts/run_one_sensor.py --sensor <id> --from park --to park --confirm RUN
 ```
 
 Both pass scripts leave the probe **78 mm above the gel** on every exit path,
@@ -132,13 +133,13 @@ wrong — check with `--status` before touching anything.
 
 ```bash
 # spatial resolution for one pass and one sensor
-/usr/bin/python3 scripts/analyse_resolution.py 20260905_passA_pair050 9DTact_hard_3mm_r2
+/usr/bin/python3 src/scripts/analyse_resolution.py 20260905_passA_pair050 9DTact_hard_3mm_r2
 
 # shape reconstruction, every unit (writes data/20260911_VBTSresolution_dataset/9DTact/shape_reconstruction*.csv)
-/usr/bin/python3 scripts/analyse_shape.py
+/usr/bin/python3 src/scripts/analyse_shape.py
 
 # the gel-normal correction for a unit (commands no motion)
-/usr/bin/python3 scripts/gel_normal.py --sensor 9DTact_hard_3mm_r1
+/usr/bin/python3 src/scripts/gel_normal.py --sensor 9DTact_hard_3mm_r1
 ```
 
 ---

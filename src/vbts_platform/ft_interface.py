@@ -51,7 +51,7 @@ from .ati_calibration import (
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-DEFAULT_CONFIG_PATH = PROJECT_ROOT / "config" / "ft_config.yaml"
+DEFAULT_CONFIG_PATH = PROJECT_ROOT / "src" / "config" / "ft_config.yaml"
 
 
 class FTError(RuntimeError):
@@ -480,7 +480,7 @@ class FTInterface:
 
     @classmethod
     def from_config(cls, config_path: str | Path | None = None) -> "FTInterface":
-        """Build from config/ft_config.yaml. Opens no hardware; call connect()."""
+        """Build from src/config/ft_config.yaml. Opens no hardware; call connect()."""
         cfg, cfg_path = load_ft_config(config_path)
         cal = load_calibration(cfg, cfg_path)
         daq = cfg.get("daq") or {}
