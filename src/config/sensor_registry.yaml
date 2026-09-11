@@ -2581,15 +2581,15 @@ sensors:
   depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
   status: characterised
   gel_model:
-    hertz_a: 3.161509479229082
-    free_exponent: 1.7795651445214413
-    surface_mm: 27.596999999999998
-  safe_force_N: 30.13237839037156
-  safe_depth_mm: 4.754794995949293
+    hertz_a: 3.3573534734843884
+    free_exponent: 1.7430307469614992
+    surface_mm: 27.486
+  safe_force_N: 40.06142137139085
+  safe_depth_mm: 5.5493749571492295
   stopped_on: force cap
   ladder_rungs_reached: 50
-  characterised_at: '2026-09-11T22:12:57.908846'
-  run: data/20260911_VBTSresolution_dataset/9DTact/20260911_passC_ceiling_ball8/9DTact_hard_3mm_r1__2
+  characterised_at: '2026-09-11T23:30:05.353767'
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260911_passC_ceiling_ball8/9DTact_hard_3mm_r1__3
   history:
   - characterised_at: '2026-09-01T18:10:34.761369'
     gel_model:
@@ -2766,8 +2766,31 @@ sensors:
       peak_slope_levels_per_N: 4.345852700538451
       image_change_at_stop: 48.953102111816406
     run: data/20260911_VBTSresolution_dataset/9DTact/20260911_passC_ceiling_ball8/9DTact_hard_3mm_r1
-  commanded_depth_mm: 4.975000000000015
-  command_vs_measured_mm: 0.22020500405072152
+  - characterised_at: '2026-09-11T22:12:57.908846'
+    gel_model:
+      hertz_a: 3.161509479229082
+      free_exponent: 1.7795651445214413
+      surface_mm: 27.596999999999998
+    safe_depth_mm: 4.754794995949293
+    safe_force_N: 30.13237839037156
+    stopped_on: force cap
+    ladder_rungs_reached: 50
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: null
+      max_measurable_depth_mm: null
+      reached: false
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      note: 'not reached within the limits: stopped on force cap at 30.13 N with the
+        image still changing at 2.45 lvl/N (49% of peak)'
+      peak_slope_levels_per_N: 5.003834201515503
+      image_change_at_stop: 78.92127227783203
+    run: data/20260911_VBTSresolution_dataset/9DTact/20260911_passC_ceiling_ball8/9DTact_hard_3mm_r1__2
+  commanded_depth_mm: 5.775000000000022
+  command_vs_measured_mm: 0.2256250428507922
   run_timestamp: '20260901_180351'
   ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_hard_3mm_r1
   image_response:
@@ -2778,10 +2801,12 @@ sensors:
     threshold_frac_of_peak_slope: 0.15
     min_force_N: 0.3
     consecutive: 2
-    note: 'not reached within the limits: stopped on force cap at 30.13 N with the
-      image still changing at 2.45 lvl/N (49% of peak)'
-    peak_slope_levels_per_N: 5.003834201515503
-    image_change_at_stop: 78.92127227783203
+    sphere_contact_limit_mm: 8.0
+    refused_in_shank_regime: false
+    note: 'not reached within the limits: stopped on force cap at 40.06 N with the
+      image still changing at 3.94 lvl/N (85% of peak)'
+    peak_slope_levels_per_N: 4.622758921195912
+    image_change_at_stop: 101.51536560058594
   contact_map:
     at_depth:
       target_depth_mm: 0.5
