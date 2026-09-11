@@ -24,7 +24,9 @@ touching; the sensor must be characterised before anything drives to a force.
 from __future__ import annotations
 
 import argparse
+import glob
 import json
+import re
 import os
 import subprocess
 import sys
@@ -229,6 +231,17 @@ def check_surface_plausible(run_dir: Path, sensor: str, probe: str,
     print(f"\n  surface check: {surf:.3f} mm, {off:+.3f} mm above this unit's "
           f"record; {probe} has averaged {med:+.3f} mm over {len(others)} "
           f"other units ({scope})")
+
+    # Does some OTHER unit's record fit this surface distinctly better?
+    #
+    # The tolerance test above only asks "is this consistent with the named
+    # unit"; it passed both of 2026-09-11's mix-ups. hard_1mm_r2 was run as
+    # hard_2mm_r2 and came in 0.407 mm off -- inside the 0.5 mm tolerance --
+    # so the ramp went ahead and pressed a 1 mm gel to 3.75x its thickness on
+    # a depth stop computed for 2 mm. Its own record would have matched within
+    # 0.196 mm. Ranking the candidates catches what the tolerance cannot.
+    if not _better_match(surf, med, sensor, pr, reg_all, probe=probe):
+        return False
     if abs(off - med) <= use_tol:
         return True
     tol = use_tol
@@ -238,6 +251,111 @@ def check_surface_plausible(run_dir: Path, sensor: str, probe: str,
           f"{sensor}.")
     print(f"     Stopping before the ladder is collected under the wrong name.")
     return False
+
+
+def _pairwise_probe_offset(probe: str, principle, ref: str = "ball4"):
+    """median(this probe's zero - the reference probe's zero) over units with both.
+
+    The offset must NOT be measured against the registry. `gel_model.surface_mm`
+    is rewritten by every characterize fit, so it drifts as ramps run: on the
+    night of 2026-09-11 the record-based estimate for ball8 climbed
+    +0.148 -> +0.348 mm on 9DTact and reached +0.583 mm on DIGIT, while the
+    pairwise value stayed at +0.18 and +0.22. That inflation made the thickness
+    guard below reject DIGIT_hard_3mm_r2, which was correctly mounted: with
+    +0.583 removed its surface landed among the 2 mm gels, with the measured
+    +0.222 it lands among the 3 mm ones where it belongs.
+
+    Comparing zero to zero on the same unit cancels the unit entirely, so the
+    only thing left is the probe.
+    """
+    zs: dict = {}
+    for f in glob.glob(str(ROOT / "data" / "**" / "zero" / "zero.yaml"),
+                       recursive=True):
+        fp = Path(f)
+        unit = fp.parent.parent.name.split("__")[0]
+        if principle and _principle_of(unit) != principle:
+            continue
+        try:
+            z = yaml.safe_load(open(f))
+        except Exception:
+            continue
+        pb, surf = z.get("probe"), z.get("surface_mm")
+        if pb not in (probe, ref) or surf is None:
+            continue
+        prev = zs.setdefault(unit, {}).get(pb)
+        if prev is None or z.get("at", "") > prev[1]:
+            zs[unit][pb] = (float(surf), z.get("at", ""))
+    d = [v[probe][0] - v[ref][0] for v in zs.values()
+         if probe in v and ref in v]
+    if len(d) < 3:
+        return None
+    return sorted(d)[len(d) // 2]
+
+
+def _better_match(surf: float, med: float, sensor: str, principle,
+                  reg_all: dict, margin: float = 0.25, probe: str = None) -> bool:
+    """Warn (always returns True) when the surface says a different THICKNESS.
+
+    This was a hard stop for one evening and had to be downgraded. It is kept
+    because the message is worth reading -- it caught a real 3 mm-for-2 mm
+    mix-up -- but it is not decisive enough to halt a run.
+
+    Identity cannot be checked this way and the attempt backfires: units of
+    the same nominal thickness sit within a few hundredths of each other, so
+    ranking individual units stopped 3 of the 15 real ceiling zeros for
+    naming the wrong replicate of the right thickness -- a warning nobody
+    would keep reading.
+
+    Thickness is both separable and the thing that actually does damage. The
+    depth stop is computed from it, and on 2026-09-11 a 1 mm gel run under the
+    name of a 2 mm one got a 5.60 mm stop and was pressed to 3.75x its
+    thickness. 9DTact's thickness classes sit about 0.8-1.0 mm apart, far
+    outside re-seating, so this test is decisive where the other was not.
+
+    `med` is the probe's measured offset against the records (ball8 reads
+    about 0.22 mm high on 9DTact, probes.yaml), removed before comparing.
+    """
+    want = (reg_all.get(sensor) is not None)
+    if not want:
+        return True
+    by_th: dict = {}
+    for uid, rec in reg_all.items():
+        if rec is None or _principle_of(uid) != principle:
+            continue
+        m = re.search(r"_(\d)mm_", uid)
+        if m:
+            by_th.setdefault(int(m.group(1)), []).append(float(rec))
+    m = re.search(r"_(\d)mm_", sensor)
+    if not m or len(by_th) < 2:
+        return True
+    mine_th = int(m.group(1))
+    if mine_th not in by_th:
+        return True
+    # 기록 기준 `med` 는 드리프트한다 — 쌍대 측정이 있으면 그쪽을 쓴다.
+    pw = _pairwise_probe_offset(probe, principle) if probe else None
+    off = pw if pw is not None else med
+    level = surf - off                    # 기록과 같은 자로 환산한 높이
+    ranked = sorted(
+        ((abs(level - sorted(v)[len(v) // 2]), th) for th, v in by_th.items()))
+    best_d, best_th = ranked[0]
+    mine_d = next(d for d, th in ranked if th == mine_th)
+    if best_th == mine_th or mine_d - best_d <= margin:
+        return True
+    print(f"  !! {surf:.3f} mm ({level:.3f} mm once {med:+.3f} is removed) sits "
+          f"with the {best_th} mm gels, {best_d:.3f} mm from their median, "
+          f"not the {mine_th} mm ones ({mine_d:.3f} mm).")
+    print("     thickness medians: " + ", ".join(
+        f"{th} mm {sorted(v)[len(v) // 2]:.3f}" for th, v in sorted(by_th.items())))
+    print(f"     The depth stop is computed from thickness, so this is the "
+          f"error that does damage: on 2026-09-11 a 1 mm gel run under a 2 mm "
+          f"name got a 5.60 mm stop and was pressed to 3.75x its thickness.")
+    print(f"     WARNING ONLY -- the run continues. Height cannot identify a")
+    print(f"     thickness reliably enough to stop on: across 40 real ceiling")
+    print(f"     zeros this test raised one false alarm on a correctly mounted")
+    print(f"     unit (9DTact_medium_1mm_r2, whose own record sits with the")
+    print(f"     2 mm gels) and, tuned to avoid that, missed one true mix-up.")
+    print(f"     Check the holder if the depth stop matters for this run.")
+    return True
 
 
 def _measured_gel_tilt(sensor: str):

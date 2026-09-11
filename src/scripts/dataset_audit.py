@@ -36,6 +36,8 @@ PROBE = {
     "passA_calibgrid": ("구 ⌀4 mm 격자 + 램프",  ["calibgrid_ball4/grid.csv", "characterize/steps.csv"]),
     "passB_ball8":    ("구 ⌀8 mm",              ["stream/frames.csv"]),
     "passC_ceiling":  ("구 ⌀4 mm 램프",          ["characterize/steps.csv"]),
+    "passC_ceiling_ball8": ("구 ⌀8 mm 램프",     ["characterize/steps.csv"]),
+    "passC_surfacecheck":  ("표면 재측정 (zero 만)", ["zero/zero.yaml"]),
 }
 
 # 일부러 일부 유닛만 잰 pass. 재지 않은 유닛은 결함이 아니므로 "빈 유닛" 으로 세지
@@ -45,8 +47,18 @@ PARTIAL = {
         "1.25 mm 를 이미 분해해 한계가 미결이던 유닛에만 의미가 있다. 나머지는 "
         "1.25 도 분해하지 못하므로 더 좁은 간격은 결과가 정해져 있다.",
     ("9DTact", "passC_ceiling"):
-        "되돌릴 수 없는 측정이고, 네 번째 램프에서 9DTact_soft_3mm_r1 이 영구 "
-        "변형돼 중단했다. docs/methods.md 10.6.",
+        "ball4 로 돈 첫 시도다. 선언된 천장 다섯 개가 전부 자루 구간(깊이 4.0 mm "
+        "밖)에서 나와 무효이고, passC_ceiling_ball8 이 대체한다. "
+        "docs/force_ceiling.md 6.3.",
+    ("9DTact", "passC_ceiling_ball8"):
+        "9DTact_medium_2mm_r1 은 2026-09-04 의 초기 램프가 파괴해 잴 수 없다. "
+        "나머지 17 유닛은 모두 포화까지 갔다. docs/force_ceiling.md 6.5c.",
+    ("9DTact", "passC_surfacecheck"):
+        "깊은 램프를 돌린 유닛만 손상 확인용으로 잰다. 램프 전후의 zero 가 같은 "
+        "역할을 하므로 별도 실행은 필요할 때만 한다.",
+    ("DIGIT", "passC_ceiling_ball8"):
+        "18 / 18 전수. 9DTact 와 같은 프로브로 놓기 위한 pass 다 — 두 프로브의 힘 "
+        "비가 1.50 ~ 3.26 으로 흩어져 환산이 불가능하다. docs/force_ceiling.md 6.7.",
 }
 
 
@@ -242,8 +254,15 @@ if ch:
     W("|---|---|---:|")
     L.extend(ch)
     W("")
-    W("9DTact 는 Pass B 안에서 돌렸고 **이미지 포화에 닿지 못해 천장이 하한으로만 남았다**;")
-    W("DIGIT 계열은 격자 pass 뒤에 따로 돌려 36 / 36 실측했다 (`docs/force_ceiling.md` §6).\n")
+    W("`20260907_passB_ball8` 과 `20260910_passA_calibgrid` 의 램프는 힘 상한에 잘려")
+    W("**천장이 아니라 하한**이다. 실측 천장은 `passC_ceiling_ball8` 두 개뿐이다 —")
+    W("9DTact 17 / 17, DIGIT 18 / 18 (`docs/force_ceiling.md` §6.8).")
+    W("`20260911_passC_ceiling` 은 `ball4` 로 돈 첫 시도인데, 선언된 다섯 개가 전부")
+    W("자루 구간에서 나와 **무효**다 (§6.3).\n")
+    W("`passC_ceiling_ball8` 의 9DTact 가 **분모보다 큰** 것은 결함이 아니다. 힘 상한을")
+    W("20 → 30 → 40 → 60 → 80 N 으로 올려 가며 같은 유닛을 여러 번 돌렸고, **\"그 상한에서는")
+    W("포화하지 않았다\" 는 것 자체가 결과**이므로 짧은 램프도 버리지 않는다. 분석은 유닛당")
+    W("가장 멀리 간 램프를 쓴다 (`absolute_ceiling.py` 가 `__N` 접미사를 떼어 묶는다).\n")
 
 # ---------------------------------------------------------------- 반복 측정 --
 W("## 같은 유닛을 두 번 이상 잰 것\n")

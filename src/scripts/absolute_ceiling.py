@@ -32,7 +32,10 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 from ceiling_summary import SOURCES, SPHERE_LIMIT_MM, SAT_HITS, SAT_MIN_F   # noqa: E402
 
-DS_ALL = SOURCES + [("9DTact", "20260911_passC_ceiling_ball8")]
+# ball8 로 두 원리를 같은 자에 놓는다. ball4 램프는 프로브가 달라 비교에 못 쓴다
+# (같은 유닛에서 ball8/ball4 힘 비가 1.50 ~ 3.26 으로 흩어진다, force_ceiling.md 6.7).
+DS_ALL = [("9DTact", "20260911_passC_ceiling_ball8"),
+          ("DIGIT", "20260912_passC_ceiling_ball8")]
 
 
 def absolute_ceiling(S, thresh, sphere_limit_mm=None):
@@ -92,7 +95,11 @@ def main():
             if not g:
                 continue
             lim = SPHERE_LIMIT_MM.get(DS)
-            rec = dict(unit=run.name, pr=pr, dataset=DS, hard=g.group(1),
+            # 한 유닛을 여러 번 돌린 재실행은 `__2`, `__3` 으로 남는다. 접미사를
+            # 떼지 않으면 별개 유닛으로 세어져, 얕게 끝난 초기 램프가 "잘림" 으로
+            # 집계되고 잘림 비율이 실제보다 훨씬 높게 나온다.
+            rec = dict(unit=run.name.split("__")[0], run=run.name, pr=pr,
+                       dataset=DS, hard=g.group(1),
                        th=int(g.group(2)), fmax=float(S.force_N.max()))
             for t in TH:
                 F, Dp, censored = absolute_ceiling(S, t, lim)

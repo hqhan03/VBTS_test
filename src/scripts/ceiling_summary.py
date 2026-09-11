@@ -34,7 +34,8 @@ SAT_FRAC, SAT_HITS, SAT_MIN_F, FIT_FLOOR = 0.15, 2, 0.3, 0.10
 # 아니다. run_indentation.py 의 같은 가드와 짝이고, docs/force_ceiling.md 6.3.
 SPHERE_LIMIT_MM = {"20260910_passA_calibgrid": 4.0,        # ball4
                    "20260911_passC_ceiling": 4.0,          # ball4
-                   "20260911_passC_ceiling_ball8": 8.0}    # ball8
+                   "20260911_passC_ceiling_ball8": 8.0,    # ball8
+                   "20260912_passC_ceiling_ball8": 8.0}    # ball8 (DIGIT)
 EXP_WINDOW, EXP_MIN_F, EXP_MIN_DEPTH_FRAC, EXP_ALARM = 4, 0.5, 0.25, 2.0
 
 
