@@ -2,5 +2,5 @@
 
 중단된 런 — 사다리도 스트림도 없다
 
-분석이 쓰는 런: `DIGIT_medium_3mm_r2__3` (같은 데이터셋).
+분석이 쓰는 런: `DIGIT_medium_3mm_r2` — `data/_discarded/DIGIT/20260910_passA_cube4` 안에 있다. 이 글을 쓸 때 그 폴더의 이름은 `DIGIT_medium_3mm_r2__3` 이었고, 정리에서 접미사를 떼 `DIGIT_medium_3mm_r2` 로 고쳤다.
 옮긴 날: 2026-09-11

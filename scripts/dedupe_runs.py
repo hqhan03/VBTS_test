@@ -105,8 +105,13 @@ if DRY:
     print("\n(모의 실행. --apply 로 실제 이동)")
     sys.exit()
 
+# 이름 바꾸기를 **먼저** 한다. 안내문에 승자 폴더 이름을 적으므로, 옮기고 나서 승자
+# 이름을 바꾸면 70 개 안내문이 없는 폴더를 가리킨다 (한 번 그렇게 했다).
+plan.sort(key=lambda x: 0 if x["kind"] == "rename" else 1)
+renamed = {(x["pr"], x["ds"], x["run"]): x["win"] for x in plan if x["kind"] == "rename"}
 moved = []
 for p in plan:
+    p["win_now"] = renamed.get((p["pr"], p["ds"], p["win"]), p["win"])
     ds = ROOT / p["pr"] / p["ds"]
     src = ds / p["run"]
     if p["kind"] == "rename":
@@ -125,7 +130,8 @@ for p in plan:
         shutil.move(str(src), str(dst))
         (dst / ("WHY_DISCARDED.md" if p["kind"] == "discard" else "WHY_REPEAT.md")
          ).write_text(f"# {p['run']}\n\n{p['why']}\n\n"
-                      f"분석이 쓰는 런: `{p['win']}` (같은 데이터셋).\n"
+                      f"분석이 쓰는 런: `{p['win_now']}` — "
+                      f"`data/{p['pr']}/{p['ds']}` 안에 있다.\n"
                       f"옮긴 날: {TODAY}\n")
     moved.append(p)
 print(f"\n{len(moved)} 폴더 처리")
