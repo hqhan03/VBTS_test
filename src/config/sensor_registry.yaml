@@ -2581,15 +2581,15 @@ sensors:
   depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
   status: characterised
   gel_model:
-    hertz_a: 3.3573534734843884
-    free_exponent: 1.7430307469614992
-    surface_mm: 27.486
-  safe_force_N: 40.06142137139085
-  safe_depth_mm: 5.5493749571492295
-  stopped_on: force cap
+    hertz_a: 3.738916925492835
+    free_exponent: 1.7642483980733306
+    surface_mm: 27.418
+  safe_force_N: 63.159778301454004
+  safe_depth_mm: 6.788935798770929
+  stopped_on: image saturation (+ margin)
   ladder_rungs_reached: 50
-  characterised_at: '2026-09-11T23:30:05.353767'
-  run: data/20260911_VBTSresolution_dataset/9DTact/20260911_passC_ceiling_ball8/9DTact_hard_3mm_r1__3
+  characterised_at: '2026-09-11T23:55:29.574732'
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260911_passC_ceiling_ball8/9DTact_hard_3mm_r1__5
   history:
   - characterised_at: '2026-09-01T18:10:34.761369'
     gel_model:
@@ -2789,24 +2789,72 @@ sensors:
       peak_slope_levels_per_N: 5.003834201515503
       image_change_at_stop: 78.92127227783203
     run: data/20260911_VBTSresolution_dataset/9DTact/20260911_passC_ceiling_ball8/9DTact_hard_3mm_r1__2
-  commanded_depth_mm: 5.775000000000022
-  command_vs_measured_mm: 0.2256250428507922
+  - characterised_at: '2026-09-11T23:30:05.353767'
+    gel_model:
+      hertz_a: 3.3573534734843884
+      free_exponent: 1.7430307469614992
+      surface_mm: 27.486
+    safe_depth_mm: 5.5493749571492295
+    safe_force_N: 40.06142137139085
+    stopped_on: force cap
+    ladder_rungs_reached: 50
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: null
+      max_measurable_depth_mm: null
+      reached: false
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      sphere_contact_limit_mm: 8.0
+      refused_in_shank_regime: false
+      note: 'not reached within the limits: stopped on force cap at 40.06 N with the
+        image still changing at 3.94 lvl/N (85% of peak)'
+      peak_slope_levels_per_N: 4.622758921195912
+      image_change_at_stop: 101.51536560058594
+    run: data/20260911_VBTSresolution_dataset/9DTact/20260911_passC_ceiling_ball8/9DTact_hard_3mm_r1__3
+  - characterised_at: '2026-09-11T23:43:48.715349'
+    gel_model:
+      hertz_a: 3.664096244887832
+      free_exponent: 1.7526695303893787
+      surface_mm: 27.387999999999998
+    safe_depth_mm: 6.63928460229042
+    safe_force_N: 60.43116144658702
+    stopped_on: force cap
+    ladder_rungs_reached: 50
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: null
+      max_measurable_depth_mm: null
+      reached: false
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      sphere_contact_limit_mm: 8.0
+      refused_in_shank_regime: false
+      note: 'not reached within the limits: stopped on force cap at 60.43 N with the
+        image still changing at 0.59 lvl/N (19% of peak)'
+      peak_slope_levels_per_N: 3.1256843936961234
+      image_change_at_stop: 125.61154174804688
+    run: data/20260911_VBTSresolution_dataset/9DTact/20260911_passC_ceiling_ball8/9DTact_hard_3mm_r1__4
+  commanded_depth_mm: 7.225000000000007
+  command_vs_measured_mm: 0.43606420122907785
   run_timestamp: '20260901_180351'
   ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_hard_3mm_r1
   image_response:
-    max_measurable_force_N: null
-    max_measurable_depth_mm: null
-    reached: false
+    max_measurable_force_N: 63.159778301454004
+    max_measurable_depth_mm: 6.788935798770929
+    reached: true
     metric: mean |frame - reference| over the central half, grey levels
     threshold_frac_of_peak_slope: 0.15
     min_force_N: 0.3
     consecutive: 2
     sphere_contact_limit_mm: 8.0
     refused_in_shank_regime: false
-    note: 'not reached within the limits: stopped on force cap at 40.06 N with the
-      image still changing at 3.94 lvl/N (85% of peak)'
-    peak_slope_levels_per_N: 4.622758921195912
-    image_change_at_stop: 101.51536560058594
+    peak_slope_levels_per_N: 3.2253074740578067
+    image_change_at_stop: 130.93777465820312
   contact_map:
     at_depth:
       target_depth_mm: 0.5
