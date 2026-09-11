@@ -173,12 +173,21 @@ probes:
     tcp_z_mm: 36.794
     tcp_status: NOT a common endpoint -- measured 0.23 mm short (2026-09-11)
     centre_above_tcp_mm: 2.0
-    surface_offset_vs_ball4_mm: 0.227
+    surface_offset_vs_ball4_mm: 0.178
     surface_offset_basis: >-
       17 9DTact units, each zeroed with both probes. ball8 reports the gel
-      surface HIGHER than ball4 by a median +0.227 mm (mean +0.212 +- 0.139,
-      range -0.095 to +0.421) in the Hertz force fit, and by +0.238 mm in the
-      model-free image-onset estimate (n = 16). The two estimators agree, which
+      surface HIGHER than ball4 by a median +0.178 mm (mean +0.171 +- 0.131,
+      range -0.095 to +0.421) in the Hertz force fit, and by +0.219 mm in the
+      model-free image-onset estimate (n = 16).
+      MEASURE IT PAIRWISE, zero against zero on the same unit -- not against
+      the registry. `gel_model.surface_mm` is rewritten by every characterize
+      fit, so it drifts as ramps run: on 2026-09-11 night the runtime guard,
+      which compares a ball8 zero to the record, reported the offset climbing
+      +0.148 -> +0.224 -> +0.348 mm over one session while the pairwise value
+      stayed near +0.18. The guard subtracts that inflated number before
+      judging damage, which costs it sensitivity -- a gel that really sank
+      0.2 mm would be absorbed as "probe difference". Comparing zeros taken
+      with the two probes avoids this entirely. The two estimators agree, which
       rules out a radius-dependent fit bias and leaves the geometry: the ball8
       tip endpoint protrudes about 0.23 mm LESS than the inherited tcp_z_mm
       assumes, so a reported tip height with ball8 mounted is 0.23 mm too high.
