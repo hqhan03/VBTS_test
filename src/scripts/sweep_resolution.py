@@ -27,8 +27,9 @@ UNITS = [f"9DTact_{h}_{t}mm_r{i}"
          if not (h == "medium" and t == 2 and i == 1)]
 # 프로브마다 pass 가 다른 날 돌았다. pair010 은 2026-09-11 에 9DTact 로 넘어왔고,
 # 1.25 mm 를 이미 분해해 한계가 미결인 유닛에만 의미가 있으므로 일부 유닛에만 있다.
-PROBES = ["pair100", "pair075", "pair050", "pair025", "pair010"]
-DATASET = {"pair100": "20260905_passA_pair100", "pair075": "20260905_passA_pair075",
+PROBES = ["pair150", "pair100", "pair075", "pair050", "pair025", "pair010"]
+DATASET = {"pair150": "20260911_passA_pair150",
+           "pair100": "20260905_passA_pair100", "pair075": "20260905_passA_pair075",
            "pair050": "20260905_passA_pair050", "pair025": "20260905_passA_pair025",
            "pair010": "20260911_passA_pair010"}
 
