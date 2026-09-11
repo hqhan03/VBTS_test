@@ -42,7 +42,8 @@ FAIRINO FR5 로봇 팔과 ATI Mini45 6축 F/T 셀로, 세 가지 촉각 센서 �
 | 알고 싶은 것 | |
 |---|---|
 | 세 원리가 어떻게 다른가, 그리고 **이 캠페인이 무엇을 틀렸는가** | `docs/cross_principle.md` (§5 가 자기비판) |
-| 어떻게 측정했나 — 프로토콜, 안전, 실패에서 배운 것 | `docs/campaign_protocol.md` |
+| **논문 Method 에 들어갈 측정 방법 전부** | **`docs/methods.md`** |
+| 그 방법이 어떻게 그렇게 됐나 — 날짜순 기록, 사고와 수정 | `docs/campaign_protocol.md` · `docs/measurement_protocol.md` |
 | 센서가 **어느 힘까지 읽을 수 있나** (이미지 포화) | `docs/force_ceiling.md` |
 | 어떤 데이터가 있고 **무엇이 없나** | `data/20260911_VBTSresolution_dataset/DATA_INVENTORY.md` (이 기계) — 만드는 것은 `src/scripts/dataset_audit.py` |
 | 무엇을 더 모아야 하나 | `docs/data_wishlist.md` |
