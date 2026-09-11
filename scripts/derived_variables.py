@@ -50,13 +50,21 @@ def canonical_runs(pr):
 
 
 def passa_run(pr, unit):
+    """Pass A 런 하나. 2026-09-11 정리 뒤 유닛당 폴더가 하나이므로 보통 그것이다.
+
+    접미사만 보고 고르면 틀린다: `9DTact_hard_1mm_r2__3` 은 사다리는 있지만 `scale_ball4`
+    가 아무것도 남기지 않은 런이고, 그것을 집으면 이 유닛의 px_per_mm / tilt 가 조용히
+    사라진다 (data/DATASET_CLEANUP.md). 사다리와 축척을 **둘 다** 가진 런을 먼저 본다.
+    """
     base = os.path.join(ROOT, PASSA[pr])
-    cands = sorted(glob.glob(os.path.join(base, unit + "*")),
-                   key=lambda p: int((re.search(r"__(\d+)$", p) or [0, 0])[1]))
-    for d in reversed(cands):
-        if os.path.exists(os.path.join(d, "shape_ball4", "ladder.csv")):
-            return d
-    return None
+    cands = [d for d in glob.glob(os.path.join(base, unit + "*"))
+             if os.path.isdir(d) and re.sub(r"__\d+$", "", os.path.basename(d)) == unit
+             and os.path.exists(os.path.join(d, "shape_ball4", "ladder.csv"))]
+    if not cands:
+        return None
+    return max(cands, key=lambda d: (
+        os.path.exists(os.path.join(d, "scale_ball4", "scale.yaml")),
+        int((re.search(r"__(\d+)$", d) or [0, "1"])[1])))
 
 
 def ref_image(D, pr):

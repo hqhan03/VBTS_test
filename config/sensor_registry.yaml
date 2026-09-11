@@ -668,7 +668,9 @@ sensors:
         N with the image still changing at 1.71 lvl/N (100% of peak)'
       peak_slope_levels_per_N: 1.70760008081925
       image_change_at_stop: 5.768233299255371
-    run: data/9DTact/20260907_passB_ball8/9DTact_soft_1mm_r2__2
+    run: data/_discarded/9DTact/20260907_passB_ball8/9DTact_soft_1mm_r2__2__refused_exp_alarm_2
+    run_folder_was: 9DTact_soft_1mm_r2__2
+    run_folder_note: 지수 경보로 거부된 런이다. 이 유닛의 두 시도가 모두 거부돼 _discarded 로 갔고, 지금 데이터셋에 있는 같은 이름의 폴더는 그 뒤에 다시 잰 다른 런이다 — 이 이력 항목과 무관하다.
   image_response:
     max_measurable_force_N: null
     reached: false
@@ -1200,6 +1202,8 @@ sensors:
     safe_force_N: 0.5106448354830633
     safe_depth_mm: 0.7005855538154186
     run: data/20260903_raw_dataset/9DTact_medium_1mm_r1
+    run_missing: true
+    run_note: 이 런 폴더는 2026-09-11 이전에 지워졌다. 남은 것은 이 항목의 숫자뿐이다.
   - characterised_at: '2026-09-03T16:03:50.311470'
     gel_model:
       hertz_a: 1.034825727797358
@@ -1430,6 +1434,9 @@ sensors:
   ladder_rungs_reached: 50
   characterised_at: '2026-09-04T19:05:11.170677'
   run: data/20260903_raw_dataset/9DTact_medium_2mm_r1
+  run_missing: true
+  run_evidence: data/20260904_probe_tests/9DTact_medium_2mm_r1/characterize_to30N_nosub
+  run_note: 이 런 폴더는 지워졌다. 남아 있는 증거는 data/20260904_probe_tests/9DTact_medium_2mm_r1/characterize_to30N_nosub — 62 단, 23.11 N, 6.19 mm (2 mm 겔의 세 배 깊이), 2026-09-04 18:49. 그 겔이 영구변형된 유일한 기록이다 (docs/force_ceiling.md 7).
   ladder_run: data/20260903_ladder_protocol/9DTact_medium_2mm_r1
   history:
   - characterised_at: '2026-09-03T15:56:31.279723'
@@ -1462,6 +1469,9 @@ sensors:
       peak_slope_levels_per_N: 6.061415215530732
       image_change_at_stop: 57.435279846191406
     run: data/20260903_raw_dataset/9DTact_medium_2mm_r1
+    run_missing: true
+    run_evidence: data/20260904_probe_tests/9DTact_medium_2mm_r1/characterize_to30N_nosub
+    run_note: 이 런 폴더는 지워졌다. 남아 있는 증거는 data/20260904_probe_tests/9DTact_medium_2mm_r1/characterize_to30N_nosub — 62 단, 23.11 N, 6.19 mm (2 mm 겔의 세 배 깊이), 2026-09-04 18:49. 그 겔이 영구변형된 유일한 기록이다 (docs/force_ceiling.md 7).
   image_response:
     reached: true
     max_measurable_force_N: 21.238
@@ -1902,6 +1912,8 @@ sensors:
     safe_force_N: 0.6523991851905464
     safe_depth_mm: 0.7023950305967404
     run: data/20260903_raw_dataset/9DTact_hard_1mm_r1
+    run_missing: true
+    run_note: 이 런 폴더는 2026-09-11 이전에 지워졌다. 남은 것은 이 항목의 숫자뿐이다.
   - characterised_at: '2026-09-03T15:37:06.397706'
     gel_model:
       hertz_a: 0.9510943174203241
@@ -2826,7 +2838,9 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 4.922459403698687
     image_change_at_stop: 15.923470497131348
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_soft_3mm_r1__2
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_soft_3mm_r1
+  run_folder_was: DIGIT_soft_3mm_r1__2
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_soft_3mm_r2
   principle: DIGIT
   hardness: soft
@@ -2861,7 +2875,9 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 4.6909016302858895
     image_change_at_stop: 17.66773223876953
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_soft_3mm_r2__2
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_soft_3mm_r2
+  run_folder_was: DIGIT_soft_3mm_r2__2
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_medium_1mm_r1
   principle: DIGIT
   hardness: medium
@@ -2971,7 +2987,9 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 7.306718786208827
     image_change_at_stop: 21.933725357055664
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_medium_2mm_r1__2
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_medium_2mm_r1
+  run_folder_was: DIGIT_medium_2mm_r1__2
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_medium_2mm_r2
   principle: DIGIT
   hardness: medium
@@ -3007,7 +3025,9 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 4.211086468297673
     image_change_at_stop: 20.036579132080078
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_medium_2mm_r2__2
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_medium_2mm_r2
+  run_folder_was: DIGIT_medium_2mm_r2__2
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_medium_3mm_r1
   principle: DIGIT
   hardness: medium
@@ -3114,7 +3134,9 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 3.306146132971909
     image_change_at_stop: 16.807416915893555
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_1mm_r1__5
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_1mm_r1
+  run_folder_was: DIGIT_hard_1mm_r1__5
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_hard_1mm_r2
   principle: DIGIT
   hardness: hard
@@ -3151,7 +3173,9 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 6.474547373225153
     image_change_at_stop: 17.22289276123047
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_1mm_r2__7
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_1mm_r2
+  run_folder_was: DIGIT_hard_1mm_r2__7
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_hard_2mm_r1
   principle: DIGIT
   hardness: hard
@@ -3186,7 +3210,9 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 4.806645506424797
     image_change_at_stop: 19.61933135986328
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_2mm_r1__3
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_2mm_r1
+  run_folder_was: DIGIT_hard_2mm_r1__3
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
   history:
   - characterised_at: '2026-09-10T21:07:01.463756'
     gel_model:
@@ -3209,7 +3235,9 @@ sensors:
         the image still changing at 0.22 lvl/N (82% of peak)'
       peak_slope_levels_per_N: 0.2680908752876831
       image_change_at_stop: 7.733381271362305
-    run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_2mm_r1__2
+    run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_2mm_r1
+    run_folder_was: DIGIT_hard_2mm_r1__2
+    run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_hard_2mm_r2
   principle: DIGIT
   hardness: hard
@@ -3244,7 +3272,9 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 4.300627740900884
     image_change_at_stop: 21.231826782226562
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_2mm_r2__2
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_2mm_r2
+  run_folder_was: DIGIT_hard_2mm_r2__2
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
   history:
   - characterised_at: '2026-09-10T21:23:57.119270'
     gel_model:
@@ -3314,7 +3344,9 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 2.8896851003685065
     image_change_at_stop: 14.869571685791016
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_3mm_r1__2
+  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_3mm_r1
+  run_folder_was: DIGIT_hard_3mm_r1__2
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_hard_3mm_r2
   principle: DIGIT
   hardness: hard
@@ -3386,7 +3418,9 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 1.2908239017454577
     image_change_at_stop: 19.668333053588867
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r1__2
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r1
+  run_folder_was: DIGIT_Marker_soft_1mm_r1__2
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
   history:
   - characterised_at: '2026-09-11T00:19:06.571059'
     gel_model:
@@ -3447,7 +3481,9 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 1.6101104122414582
     image_change_at_stop: 18.192941665649414
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r2__2
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r2
+  run_folder_was: DIGIT_Marker_soft_1mm_r2__2
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
   history:
   - characterised_at: '2026-09-11T01:00:33.317625'
     gel_model:
@@ -3794,7 +3830,9 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 3.170588672130032
     image_change_at_stop: 18.485111236572266
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_medium_3mm_r1__2
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_medium_3mm_r1
+  run_folder_was: DIGIT_Marker_medium_3mm_r1__2
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_Marker_medium_3mm_r2
   principle: DIGIT_Marker
   hardness: medium
@@ -4010,7 +4048,9 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 2.408065276961918
     image_change_at_stop: 24.10885238647461
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_hard_3mm_r1__2
+  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_hard_3mm_r1
+  run_folder_was: DIGIT_Marker_hard_3mm_r1__2
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_Marker_hard_3mm_r2
   principle: DIGIT_Marker
   hardness: hard

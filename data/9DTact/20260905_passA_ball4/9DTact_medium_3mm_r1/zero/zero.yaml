@@ -1,73 +1,31 @@
 probe: ball4
 contact_law: hertz
-searched_surface_mm: 27.423
-surface_mm: 27.818564343120332
-sigma_mm: 0.03878255922318622
-sem_mm: 0.01939127961159311
-first_surface_mm: 27.820237803984497
-drift_first_to_last_mm: -0.031194923045060108
-drift_per_approach_mm: -0.010398307681686703
+searched_surface_mm: 27.751
+surface_mm: 27.720909224779952
+sigma_mm: .nan
+sem_mm: .nan
+first_surface_mm: 27.720909224779952
+drift_first_to_last_mm: 0.0
+drift_per_approach_mm: 0.0
 monotone: false
-n_approaches: 4
-image_onset_surface_mm: 27.260998263601145
+n_approaches: 1
+image_onset_surface_mm: 27.102280697908217
 step_mm: 0.02
 fit_max_force_N: 1.0
 stop_force_N: 1.2
 fits:
 - ok: true
-  d0_mm: 0.6760237578792303
-  a: 0.4606978924642475
-  sigma_d0_mm: 0.024795366289134903
-  r2: 0.9833381620292239
+  d0_mm: 1.0052778370312727
+  a: 0.4952443438457741
+  sigma_d0_mm: 0.03651155253362495
+  r2: 0.98555094563707
   exponent: 1.5
   law: hertz
-  n: 21
+  n: 19
   fit_max_force_N: 1.0
-  zero_drift_N: 0.0029050478888312213
-  zero_drift_N_per_min: 0.0062358986838475135
+  zero_drift_N: 0.009894124737621461
+  zero_drift_N_per_min: 0.058055416832537426
   approach: 1
-  base_height_mm: 28.49626156186373
-  image_onset_depth_mm: 1.2436547685212815
-- ok: true
-  d0_mm: 0.7028503528720013
-  a: 0.5495421060915054
-  sigma_d0_mm: 0.023335423813705892
-  r2: 0.9834515669228557
-  exponent: 1.5
-  law: hertz
-  n: 21
-  fit_max_force_N: 1.0
-  zero_drift_N: -0.0060111321150789
-  zero_drift_N_per_min: -0.01303068663866414
-  approach: 2
-  base_height_mm: 28.49502624255479
-  image_onset_depth_mm: 1.2285464352489868
-- ok: true
-  d0_mm: 0.6201162540170495
-  a: 0.4211520192959726
-  sigma_d0_mm: 0.04081021573139136
-  r2: 0.9664977199368183
-  exponent: 1.5
-  law: hertz
-  n: 22
-  fit_max_force_N: 1.0
-  zero_drift_N: 0.029704339326545426
-  zero_drift_N_per_min: 0.062339380799199415
-  approach: 3
-  base_height_mm: 28.492917051891656
-  image_onset_depth_mm: 1.2239936132148195
-- ok: true
-  d0_mm: 0.7033122286536724
-  a: 0.5667472416404605
-  sigma_d0_mm: 0.03206914505817846
-  r2: 0.9706606347143266
-  exponent: 1.5
-  law: hertz
-  n: 21
-  fit_max_force_N: 1.0
-  zero_drift_N: -0.006064234068059768
-  zero_drift_N_per_min: -0.013215732692730369
-  approach: 4
-  base_height_mm: 28.49235510959311
-  image_onset_depth_mm: 1.2363720945136087
-at: '2026-09-06T13:57:05.926885'
+  base_height_mm: 28.726187061811224
+  image_onset_depth_mm: 1.6239063639030071
+at: '2026-09-08T03:04:07.272918'

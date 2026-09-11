@@ -1,4 +1,6 @@
 run: 9DTact_soft_1mm_r1__2
+run_folder_now: 9DTact_soft_1mm_r1
+run_folder_note: 폴더는 뒤에 이 이름으로 고쳤다. 위 run 은 기록할 때의 폴더 이름이다.
 sensor_id: 9DTact_soft_1mm_r1
 note: 9DTact_soft_1mm_r1
 n_samples: 153

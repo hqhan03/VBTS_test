@@ -1,0 +1,6 @@
+# DIGIT_Marker_medium_2mm_r1
+
+중단된 런 — 사다리도 스트림도 없다
+
+분석이 쓰는 런: `DIGIT_Marker_medium_2mm_r1__3` (같은 데이터셋).
+옮긴 날: 2026-09-11

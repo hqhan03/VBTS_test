@@ -1,59 +1,31 @@
 probe: ball4
 contact_law: hertz
-searched_surface_mm: 25.507
-surface_mm: 25.561636357163167
-sigma_mm: 0.1473641253097436
-sem_mm: 0.10420217231014384
-first_surface_mm: 25.457434184853025
-drift_first_to_last_mm: 0.20840434462028767
-drift_per_approach_mm: 0.20840434462028767
+searched_surface_mm: 25.525
+surface_mm: 25.360312264411196
+sigma_mm: .nan
+sem_mm: .nan
+first_surface_mm: 25.360312264411196
+drift_first_to_last_mm: 0.0
+drift_per_approach_mm: 0.0
 monotone: false
-n_approaches: 2
-image_onset_surface_mm: 25.433984056260783
+n_approaches: 1
+image_onset_surface_mm: 24.942275432764223
 step_mm: 0.02
 fit_max_force_N: 1.0
 stop_force_N: 1.2
 fits:
 - ok: true
-  d0_mm: 1.1370973954810897
-  a: 0.8952309254749722
-  sigma_d0_mm: 0.13979317697311486
-  r2: 0.9214052129035593
+  d0_mm: 1.1286962694316183
+  a: 0.9204527399088345
+  sigma_d0_mm: 0.01644141708001467
+  r2: 0.9962021871412963
   exponent: 1.5
   law: hertz
-  n: 7
+  n: 19
   fit_max_force_N: 1.0
-  zero_drift_N: -0.006297180849329079
-  zero_drift_N_per_min: -0.03506017753530147
+  zero_drift_N: -0.01739681189180854
+  zero_drift_N_per_min: -0.09827885742269256
   approach: 1
-  base_height_mm: 26.576406353070812
-  image_onset_depth_mm: 1.144866108658384
-- ok: true
-  d0_mm: 1.1173930828683838
-  a: 0.9534849511291473
-  sigma_d0_mm: 0.06671263427121378
-  r2: 0.9597287647068342
-  exponent: 1.5
-  law: hertz
-  n: 7
-  fit_max_force_N: 1.0
-  zero_drift_N: 0.03769542782951356
-  zero_drift_N_per_min: 0.20992795370216477
-  approach: 2
-  base_height_mm: 26.574827267721407
-  image_onset_depth_mm: 1.1434883539697438
-- ok: true
-  d0_mm: 0.9124273318193578
-  a: 0.436281965336993
-  sigma_d0_mm: 0.052763574298472775
-  r2: 0.9629308099610041
-  exponent: 1.5
-  law: hertz
-  n: 7
-  fit_max_force_N: 1.0
-  zero_drift_N: -0.004927692130147872
-  zero_drift_N_per_min: -0.02838126794643627
-  approach: 3
-  base_height_mm: 26.57826586129267
-  image_onset_depth_mm: 1.1416366625227674
-at: '2026-09-06T15:08:59.648329'
+  base_height_mm: 26.489008533842814
+  image_onset_depth_mm: 1.5467331010785905
+at: '2026-09-08T02:30:24.610888'

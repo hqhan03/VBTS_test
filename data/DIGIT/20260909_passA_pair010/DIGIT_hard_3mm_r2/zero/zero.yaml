@@ -1,31 +1,31 @@
 probe: pair010
 contact_law: punch
-searched_surface_mm: 25.881
-surface_mm: 26.157899597691635
+searched_surface_mm: 25.852
+surface_mm: 26.120504152425866
 sigma_mm: .nan
 sem_mm: .nan
-first_surface_mm: 26.157899597691635
+first_surface_mm: 26.120504152425866
 drift_first_to_last_mm: 0.0
 drift_per_approach_mm: 0.0
 monotone: false
 n_approaches: 1
-image_onset_surface_mm: 26.102924361555647
+image_onset_surface_mm: 26.15642519940085
 step_mm: 0.02
 fit_max_force_N: 1.0
 stop_force_N: 1.2
 fits:
 - ok: true
-  d0_mm: 0.7182953704101105
-  a: 0.957123803394779
-  sigma_d0_mm: 0.006465402392686059
-  r2: 0.9899042199331609
+  d0_mm: 0.7989258103182454
+  a: 1.0021030153162735
+  sigma_d0_mm: 0.01875450039184323
+  r2: 0.9954139684093104
   exponent: 1.0
   law: punch
-  n: 17
+  n: 18
   fit_max_force_N: 1.0
-  zero_drift_N: -0.00851610605712329
-  zero_drift_N_per_min: -0.04928995321731853
+  zero_drift_N: -0.02601597506621183
+  zero_drift_N_per_min: -0.09823211477870611
   approach: 1
-  base_height_mm: 26.876194968101746
-  image_onset_depth_mm: 0.7732706065460988
-at: '2026-09-10T00:36:39.662866'
+  base_height_mm: 26.91942996274411
+  image_onset_depth_mm: 0.7630047633432611
+at: '2026-09-10T00:54:41.802526'

@@ -5,8 +5,7 @@ dataset,run,claimed,best,best_score,claimed_score,runner_up,margin,reference,agr
 20260908_passB_ball8,DIGIT_hard_2mm_r2,hard_2mm_r2,hard_2mm_r2,0.153,0.153,0.107,0.047,reference_working.png,True
 20260908_passB_ball8,DIGIT_hard_3mm_r1,hard_3mm_r1,hard_3mm_r1,0.169,0.169,0.095,0.074,reference_working.png,True
 20260908_passB_ball8,DIGIT_hard_3mm_r2,hard_3mm_r2,hard_3mm_r2,0.107,0.107,0.081,0.026,reference_working.png,True
-20260908_passB_ball8,DIGIT_medium_1mm_r1,medium_1mm_r1,medium_1mm_r1,0.109,0.109,0.108,0.002,reference.png,True
-20260908_passB_ball8,DIGIT_medium_1mm_r1__2,medium_1mm_r1,medium_1mm_r1,0.107,0.107,0.101,0.007,reference.png,True
+20260908_passB_ball8,DIGIT_medium_1mm_r1,medium_1mm_r1,medium_1mm_r1,0.107,0.107,0.101,0.007,reference.png,True
 20260908_passB_ball8,DIGIT_medium_1mm_r2,medium_1mm_r2,medium_3mm_r2,0.108,0.093,0.103,0.005,reference.png,False
 20260908_passB_ball8,DIGIT_medium_2mm_r1,medium_2mm_r1,medium_2mm_r1,0.116,0.116,0.11,0.006,reference.png,True
 20260908_passB_ball8,DIGIT_medium_2mm_r2,medium_2mm_r2,medium_2mm_r2,0.115,0.115,0.107,0.008,reference.png,True

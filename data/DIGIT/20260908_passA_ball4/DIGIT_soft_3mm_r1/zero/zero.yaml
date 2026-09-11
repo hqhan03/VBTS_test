@@ -1,31 +1,31 @@
 probe: ball4
 contact_law: hertz
-searched_surface_mm: 24.813
-surface_mm: 25.028877564062054
+searched_surface_mm: 24.673
+surface_mm: 24.963160380697015
 sigma_mm: .nan
 sem_mm: .nan
-first_surface_mm: 25.028877564062054
+first_surface_mm: 24.963160380697015
 drift_first_to_last_mm: 0.0
 drift_per_approach_mm: 0.0
 monotone: false
 n_approaches: 1
-image_onset_surface_mm: 24.72530620594755
+image_onset_surface_mm: 24.5881905382781
 step_mm: 0.02
 fit_max_force_N: 1.0
 stop_force_N: 1.2
 fits:
 - ok: true
-  d0_mm: 0.8682742781520878
-  a: 1.4395706581889862
-  sigma_d0_mm: 0.011448455560683543
-  r2: 0.9962041508127663
+  d0_mm: 0.7873823898285085
+  a: 1.7716707267419036
+  sigma_d0_mm: 0.009531240567551192
+  r2: 0.9983127113572227
   exponent: 1.5
   law: hertz
   n: 18
   fit_max_force_N: 1.0
-  zero_drift_N: 0.012838375220333625
-  zero_drift_N_per_min: 0.06114575576506091
+  zero_drift_N: -0.017290432552490836
+  zero_drift_N_per_min: -0.05397618208205174
   approach: 1
-  base_height_mm: 25.897151842214143
-  image_onset_depth_mm: 1.1718456362665925
-at: '2026-09-08T18:27:58.473304'
+  base_height_mm: 25.750542770525524
+  image_onset_depth_mm: 1.1623522322474251
+at: '2026-09-08T18:33:50.373023'

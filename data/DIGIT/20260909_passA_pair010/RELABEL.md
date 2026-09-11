@@ -28,9 +28,13 @@
 |---|---|---|
 | DIGIT_hard_3mm_r2 | soft_3mm_r2 | `DIGIT_soft_3mm_r2` |
 | DIGIT_soft_3mm_r2 | hard_3mm_r2 | `DIGIT_hard_3mm_r2` |
-| (재장착, 입력도 hard_3mm_r2) | hard_3mm_r2 | `DIGIT_hard_3mm_r2__2` |
+| (재장착, 입력도 hard_3mm_r2) | hard_3mm_r2 | `DIGIT_hard_3mm_r2` |
 
-hard_3mm_r2 는 이렇게 **같은 프로브로 두 번** 측정됐다 — 재장착·재영점이 만드는 측정 산포를 재는 데 쓸 수 있다.
+hard_3mm_r2 는 이렇게 **같은 프로브로 두 번** 측정됐다 — 재장착·재영점이 만드는 측정 산포를
+재는 데 쓸 수 있다. **그렇게 했다** (2026-09-11): 재장착 런을 분석이 쓰는 `DIGIT_hard_3mm_r2` 로
+두고, 먼저 잰 런은 `../20260909_passA_pair010_repeats/DIGIT_hard_3mm_r2` 로 옮겼다.
+`scripts/repeat_spread.py` 가 둘을 겹쳐 읽는다 — 공통 깊이에서 힘의 cv 0.097, sd 0.041 N 이고,
+같은 데이터셋 18 유닛 사이의 cv 0.507 이므로 유닛 차이가 재장착 산포의 5.2 배다.
 
 세 런 모두 라이브러리의 3 mm r2 항목과는 확신 있게 맞지 않는다(최적 medium_3mm_r2, 여유 1.3 배). 같은 겔의
 두 런이 0.0005 로 일치하므로 방법의 정밀도 문제는 아니고, **Pass B 쪽 3 mm r2 라벨이 의심된다.**

@@ -1,8 +1,8 @@
-started: '2026-09-10T00:35:09.878860'
-run_timestamp: '20260910_003509'
+started: '2026-09-10T00:53:07.430046'
+run_timestamp: '20260910_005307'
 dataset: 20260909_passA_pair010
 sensor_id: DIGIT_hard_3mm_r2
-note: DIGIT_soft_3mm_r2
+note: DIGIT_hard_3mm_r2
 camera_config:
   device: 0
   format:
@@ -144,7 +144,3 @@ frames:
   pose: robot_base
   image: VBTS internal camera
 robot_commanded: false
-sensor_id_as_typed: DIGIT_soft_3mm_r2
-relabelled: '2026-09-10: soft/hard were swapped as typed throughout this pass. The
-  3 mm r2 pair was settled by re-mounting hard_3mm_r2: its colour matched the run
-  typed soft_3mm_r2 to 0.0005 and the run typed hard_3mm_r2 only to 0.0189.'

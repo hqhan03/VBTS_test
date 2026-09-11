@@ -23,9 +23,7 @@ canonical:
     run: DIGIT_hard_3mm_r2
     reference: reference_collect.png
   DIGIT_medium_1mm_r1:
-    run: DIGIT_medium_1mm_r1__2
-    not_data:
-    - DIGIT_medium_1mm_r1 (0 frames)
+    run: DIGIT_medium_1mm_r1
     reference: reference_collect.png
   DIGIT_medium_1mm_r2:
     run: DIGIT_medium_1mm_r2

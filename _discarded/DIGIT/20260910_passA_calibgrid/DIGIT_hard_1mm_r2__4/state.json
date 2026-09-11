@@ -1,0 +1,101 @@
+{
+  "tare": {
+    "at": "2026-09-10T20:49:01.256975",
+    "tare_wrench": [
+      13.79564121698651,
+      4.623123983148105,
+      92.51278832051325,
+      -0.1192463629503753,
+      -0.12024944750997049,
+      -1.1086955218803143
+    ],
+    "tare_volts": [
+      0.8181819807129366,
+      1.270870290965055,
+      1.0217606209184664,
+      0.7872359248539865,
+      0.7405531890979306,
+      1.337157089416652
+    ]
+  },
+  "reference": {
+    "at": "2026-09-10T20:49:13.353223",
+    "file": "reference.png",
+    "wrench": [
+      0.0005341472036448636,
+      -0.003091021470403632,
+      -0.027336715302368475,
+      1.3607825511130489e-05,
+      6.204320384967099e-05,
+      0.00021261797936467097
+    ],
+    "quality": {
+      "full_mean": 75.59477719907407,
+      "centre_mean": 107.73344135802469,
+      "centre_min": 87,
+      "centre_max": 122,
+      "centre_saturated_pct": 0.0,
+      "centre_black_pct": 0.0
+    },
+    "stability": {
+      "n_frames": 8,
+      "fps": 2.6666666666666665,
+      "mean": 77.06640004099151,
+      "frame_to_frame_std": 0.015590749273173558,
+      "drift": 0.0
+    },
+    "settle_pct": 0.042245141729384816,
+    "camera_controls": {
+      "auto_exposure": 1.0,
+      "exposure": 600.0,
+      "auto_wb": 0.0,
+      "wb_temperature": 4600.0,
+      "brightness": 64.0,
+      "contrast": 4.0,
+      "gamma": 100.0,
+      "fourcc": "YUYV",
+      "width": 1920,
+      "height": 1080
+    },
+    "image_time": 1789040953.0483732
+  },
+  "samples": [],
+  "zero_checks": [],
+  "searched_surface_mm": 23.27026605985205,
+  "zero": {
+    "probe": "ball4",
+    "contact_law": "hertz",
+    "searched_surface_mm": 23.27,
+    "surface_mm": 24.22346502658795,
+    "sigma_mm": NaN,
+    "sem_mm": NaN,
+    "first_surface_mm": 24.22346502658795,
+    "drift_first_to_last_mm": 0.0,
+    "drift_per_approach_mm": 0.0,
+    "monotone": false,
+    "n_approaches": 1,
+    "image_onset_surface_mm": 23.966072733819317,
+    "step_mm": 0.02,
+    "fit_max_force_N": 1.0,
+    "stop_force_N": 1.2,
+    "fits": [
+      {
+        "ok": true,
+        "d0_mm": 0.12073271001014414,
+        "a": 2.4639622544752626,
+        "sigma_d0_mm": 0.01179817404017544,
+        "r2": 0.9907880241641094,
+        "exponent": 1.5,
+        "law": "hertz",
+        "n": 14,
+        "fit_max_force_N": 1.0,
+        "zero_drift_N": -0.012560239415875626,
+        "zero_drift_N_per_min": -0.018799496377910726,
+        "approach": 1,
+        "base_height_mm": 24.344197736598094,
+        "image_onset_depth_mm": 0.37812500277877703
+      }
+    ],
+    "at": "2026-09-10T20:51:03.731428"
+  }
+}

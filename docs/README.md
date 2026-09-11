@@ -32,10 +32,14 @@ Added since (this table was written when only 9DTact had been measured):
 | how this campaign's preprocessing and training differ from the DIGIT/GelSight literature | `method_vs_literature.md` |
 | **test 4, maximum measurable force — method, all 36 units, and why it cannot compare sensors** | **`force_ceiling.md`** |
 | what is still missing and what it would cost to collect | `data_wishlist.md` |
+| **how much of a unit's number is the gel and how much is how it was mounted** | `campaign_protocol.md` §4.15 (`scripts/repeat_spread.py`) |
+| which run of a re-measured unit the analyses read, and what the split was hiding | `../data/DATASET_CLEANUP.md` |
 
 **Where the campaign stands (2026-09-11).** All 53 units have force-estimation
 sweeps; all 36 DIGIT-family units have a photometric calibration grid and a
-measured force ceiling. The headline question — whether the resolution at which
+measured force ceiling, and every dataset now holds exactly one folder per
+unit (`data/DATASET_CLEANUP.md`) — the split folders had been costing one unit's
+scale and double-counting another. The headline question — whether the resolution at which
 error saturates depends on the gel — is answered **no**: on a root-2 ladder
 both DIGIT principles give a flat knee against thickness (p 0.85 and p 0.66),
 and the one significant result from the doubling ladder was an artefact of an
