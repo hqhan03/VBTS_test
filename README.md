@@ -21,7 +21,7 @@ FAIRINO FR5 로봇 팔과 ATI Mini45 6축 F/T 셀로, 세 가지 촉각 센서 �
 │   ├── config/         장비 설정, 프로브 치수, 센서 등록부, ATI 보정 파일
 │   └── tests/          127 개 — 대부분 로봇이 움직이지 않는지를 검사한다
 ├── docs/               방법과 결과 (docs/README.md 가 색인)
-└── data/               측정 (data/README.md)
+└── data/               측정 — **깃헙에 없다.** 이 기계에만 있다 (data/README.md)
     ├── 20260911_VBTSresolution_dataset/   최종 데이터셋
     ├── analysis/       분석이 낸 표
     ├── earlier_datasets/  프로토콜 확정 전의 측정
@@ -29,8 +29,13 @@ FAIRINO FR5 로봇 팔과 ATI Mini45 6축 F/T 셀로, 세 가지 촉각 센서 �
     └── _discarded/     버린 런 (이유와 함께)
 ```
 
-**깃헙에는 측정 데이터가 없다.** 이 기계에 93497 개 파일이 있고 깃이 추적하는 것은
-216 개다 — 코드, 문서, 그리고 분석이 낸 표. 규칙은 `.gitignore` 맨 아래.
+**`data/` 는 깃헙에 올리지 않는다.** 측정도, 분석이 낸 표도, 그 안의 문서도 전부
+이 기계(와 그 백업)에만 있다 — 93,000 개 파일, 196 GB. 저장소에 올라가는 것은
+`src/` 와 `docs/` 뿐이다. 규칙은 `.gitignore` 맨 아래.
+
+그래서 아래 표에서 `data/` 로 시작하는 항목과 문서가 인용하는 표
+(`data/analysis/*.csv`)는 **이 기계에서만** 열린다. 문서의 숫자는 그 표에서 읽어
+넣은 것이고, 다시 만드는 명령은 아래 "돌리는 법" 에 있다.
 
 ## 어디부터 읽나
 
@@ -39,7 +44,7 @@ FAIRINO FR5 로봇 팔과 ATI Mini45 6축 F/T 셀로, 세 가지 촉각 센서 �
 | 세 원리가 어떻게 다른가, 그리고 **이 캠페인이 무엇을 틀렸는가** | `docs/cross_principle.md` (§5 가 자기비판) |
 | 어떻게 측정했나 — 프로토콜, 안전, 실패에서 배운 것 | `docs/campaign_protocol.md` |
 | 센서가 **어느 힘까지 읽을 수 있나** (이미지 포화) | `docs/force_ceiling.md` |
-| 어떤 데이터가 있고 **무엇이 없나** | `data/20260911_VBTSresolution_dataset/DATA_INVENTORY.md` |
+| 어떤 데이터가 있고 **무엇이 없나** | `data/20260911_VBTSresolution_dataset/DATA_INVENTORY.md` (이 기계) — 만드는 것은 `src/scripts/dataset_audit.py` |
 | 무엇을 더 모아야 하나 | `docs/data_wishlist.md` |
 | 문서 전체 색인 | `docs/README.md` |
 

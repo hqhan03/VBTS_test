@@ -21,17 +21,7 @@ __pycache__/
 *.swp
 nohup.out
 
-# --- 측정 데이터는 깃헙에 올리지 않는다 (2026-09-11, 운전자 지정) ---
-# 데이터는 이 기계(와 그 백업)에 있다. 깃헙에 남기는 것은 **읽는 것**뿐이다:
-# 분석이 낸 표(data/analysis/), 문서(*.md), Pass B 의 CANONICAL.yaml, 그리고
-# 로봇이 매 런마다 읽는 좌표 변환(data/rig/frame_transform/).
-# `_discarded` 는 예외 없이 전부 뺀다 — 그 안의 md 도.
-data/**
-!data/**/
-!data/README.md
-!data/analysis/**
-!data/**/*.md
-!data/**/CANONICAL.yaml
-!data/rig/frame_transform/**
-data/_discarded/**
-data/_active_run.txt
+# --- data/ 는 깃헙에 올리지 않는다 (2026-09-11, 운전자 지정) ---
+# 측정도, 분석이 낸 표도, 그 안의 문서도 전부. 데이터는 이 기계(와 그 백업)에 있다.
+# 저장소에 올라가는 것은 코드(src/)와 문서(docs/)뿐이다.
+data/

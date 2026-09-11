@@ -49,6 +49,11 @@ and the one significant result from the doubling ladder was an artefact of an
 unstable knee estimate (`cross_principle.md` §3.10). The direction survives in
 two training-free measurements; the trained knee cannot show it.
 
+**`data/` is not on GitHub.** The measurements, the result tables the sections
+below cite (`data/analysis/*.csv`), and the documents inside them live on the
+measurement machine only. Every number quoted here was read out of those tables,
+and the script that regenerates each one is named beside it.
+
 **The machine-readable truth is in `config/`, not here.**
 `sensor_registry.yaml` (per-sensor limits, gel models, capture policy),
 `probes.yaml` (probe geometry, TCP, contact laws), `ft_config.yaml` (wiring,
