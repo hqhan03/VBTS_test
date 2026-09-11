@@ -37,17 +37,44 @@ image_scale:
   fov_mm: {width: 25.51, height: 11.97}
   frame_px: {width: 1920, height: 1080}
   um_per_px: {horizontal: 13.286, vertical: 11.083}
-  UNRESOLVED: >-
-    The FOV aspect ratio is 2.131 but the frame is 1920x1080 = 1.778, a 20 %
-    mismatch. Either the two FOV figures are not both the imaged rectangle, or
-    the scale really is anisotropic. Square pixels with the horizontal figure
-    would make the visible height 14.35 mm, not 11.97; with the vertical figure
-    the width would be 21.28 mm, not 25.51. This is settled in one frame by
-    the cyl4 imprint, which is a known 4.00 mm circle: it images round if the
-    pixels are square and elliptical with a 1.199 axis ratio if the design
-    figures are right. Nothing that converts pixels to millimetres -- shape
-    reconstruction included -- should be trusted until that frame exists,
-    because a 20 % anisotropy distorts every reconstructed shape.
+  RESOLVED: '2026-09-11'
+  resolution: >-
+    The design figures are wrong and the pixels are square to within a few per
+    cent. Settled two independent ways, both already in the data.
+
+    (1) Displacement. Every `scale` phase fits a full 2x2 Jacobian from robot
+    x/y to pixel x/y and writes px_per_mm_image_x and px_per_mm_image_y, so the
+    per-axis scale had been measured 44 times and never compared. Their ratio is
+    1.009 median over all 44 trusted fits, which rejects the design figures'
+    1.199 at p 2.3e-13. Per principle: 9DTact 1.064 (n 19), DIGIT 1.006 (n 20),
+    DIGIT_Marker 0.950 (n 5).
+
+    (2) The cyl4 imprint, as this note proposed. Fitting an ellipse to the
+    4.00 mm flat punch's imprint on all 17 9DTact units gives an axis ratio of
+    1.069 -- the same number the displacement fit gives for that body (1.064),
+    from completely different evidence. The ratio does not grow with depth
+    (per-unit Spearman median -0.08, 7 up / 10 down), so it is not gel or probe
+    tilt. `src/scripts/image_anisotropy.py`, `data/analysis/image_anisotropy.csv`,
+    `data/analysis/scale_axes.csv`.
+
+    So there IS a small anisotropy on the 9DTact body, about 6 %, and DIGIT is
+    square to under 1 %. Neither is the 20 % that would have distorted every
+    reconstructed shape. Measured fields of view, from the median per-axis
+    scale: 9DTact 21.9 x 13.4 mm, DIGIT 18.5 x 10.5 mm, DIGIT_Marker
+    18.5 x 9.8 mm -- against the supplied design figure of 25.51 x 11.97 mm,
+    which matches none of them.
+  use: >-
+    Take mm per pixel from the unit's own scale.yaml (px_per_mm_image_x and
+    px_per_mm_image_y), never from the design FOV above. A unit whose
+    scale_trusted is false has no scale of its own and borrows the median of the
+    trusted ones; analyses that do this say so.
+  caveat: >-
+    The cyl4 imprint is NOT 4.00 mm across at depth. Its minor axis reads
+    83 px/mm at the shallowest rung (median depth 0.178 mm) and 110 px/mm at
+    0.58 mm, because the gel spreads under a flat punch. Only the shallow rung
+    is comparable to the displacement scale (83 against 88 px/mm, 6 %). The
+    RATIO is robust to this -- spreading is isotropic -- which is why the axis
+    ratio, not the absolute size, is what the imprint settles.
 
 zero_policy:
   step_mm: 0.02
