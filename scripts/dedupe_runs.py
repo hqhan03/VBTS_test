@@ -5,7 +5,8 @@ A unit that had to be re-run exists as <unit>, <unit>__2, ... . This picks the
 run the analyses should use, renames it to the bare unit name, and moves the
 rest out of the dataset folder so no glob can reach them again:
 
-  _repeats/    the run is as complete as the winner -- a second measurement of
+  repeated_data/<dataset>/   the run is as complete as the winner -- a second
+               measurement of
                the same unit, which is the only same-unit repeatability data the
                campaign has. Never delete these.
   _discarded/  aborted: no ladder, no stream, or a step that produced nothing.
@@ -66,8 +67,11 @@ def reason(run, win):
 plan = []
 for pr in ("9DTact", "DIGIT", "DIGIT_Marker"):
     for ds in sorted((ROOT / pr).glob("2026*")):
-        if ds.name.endswith("_repeats"):
-            continue        # 여기 있는 `__N` 은 몇 번째 시도였는지다 — 고치면 안 된다
+        # `<원리>/repeated_data/<데이터셋>/` 에 있는 `__N` 은 몇 번째 시도였는지다 —
+        # 고치면 안 된다. glob 이 2026* 이라 그쪽은 애초에 걸리지 않지만, 이름이 바뀌어도
+        # 걸리지 않도록 여기서도 막는다.
+        if ds.parent.name == "repeated_data":
+            continue
         canon = None
         cy = ds / "CANONICAL.yaml"
         if cy.exists():
@@ -124,7 +128,7 @@ for p in plan:
             allow_unicode=True, sort_keys=False))
     else:
         out = (ROOT / "_discarded" / p["pr"] / p["ds"] if p["kind"] == "discard"
-               else ROOT / p["pr"] / (p["ds"] + "_repeats"))
+               else ROOT / p["pr"] / "repeated_data" / p["ds"])
         out.mkdir(parents=True, exist_ok=True)
         dst = out / p["run"]
         shutil.move(str(src), str(dst))

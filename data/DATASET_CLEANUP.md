@@ -21,7 +21,7 @@
 | 어디로 | 무엇 | 수 |
 |---|---|---|
 | `_discarded/<원리>/<데이터셋>/` | 중단된 런 — 사다리도 스트림도 없거나, 한 단계가 결과를 남기지 않았거나, 스트림이 짧다. 각 폴더에 `WHY_DISCARDED.md` | 54 |
-| `<데이터셋>_repeats/` | **승자와 같은 정도로 완결된 두 번째 측정.** 버리지 말 것 — 같은 유닛을 다시 잰 데이터는 이것뿐이다. 각 폴더에 `WHY_REPEAT.md`, 데이터셋마다 `README.md` | 18 |
+| `<원리>/repeated_data/<데이터셋>/` | **승자와 같은 정도로 완결된 두 번째 측정.** 버리지 말 것 — 같은 유닛을 다시 잰 데이터는 이것뿐이다. 각 폴더에 `WHY_REPEAT.md`, 원리마다 `repeated_data/README.md` | 18 |
 
 이름을 고친 30 폴더에는 `PROVENANCE.yaml` 을 두어 원래 이름과 왜 갈렸는지를 적었다.
 
@@ -48,40 +48,48 @@
 
 ## 정리 뒤 폴더 수
 
+데이터셋마다 유닛당 폴더 하나:
+
 | 원리 | 데이터셋 | 폴더 |
 |---|---|---|
 | 9DTact | `20260905_passA_ball4` | 17 |
-| 9DTact | `20260905_passA_ball4_repeats` | 11 |
 | 9DTact | `20260905_passA_cube4` | 17 |
 | 9DTact | `20260905_passA_cyl4` | 17 |
 | 9DTact | `20260905_passA_pair025` | 17 |
 | 9DTact | `20260905_passA_pair050` | 17 |
 | 9DTact | `20260905_passA_pair075` | 17 |
 | 9DTact | `20260905_passA_pair100` | 17 |
-| 9DTact | `20260905_passA_pair100_repeats` | 2 |
 | 9DTact | `20260907_passB_ball8` | 17 |
 | DIGIT | `20260908_passA_ball4` | 18 |
 | DIGIT | `20260908_passA_pair100` | 1 |
 | DIGIT | `20260908_passB_ball8` | 18 |
 | DIGIT | `20260909_passA_pair010` | 18 |
-| DIGIT | `20260909_passA_pair010_repeats` | 1 |
 | DIGIT | `20260909_passA_pair025` | 18 |
 | DIGIT | `20260910_passA_calibgrid` | 18 |
 | DIGIT | `20260910_passA_cube4` | 18 |
-| DIGIT | `20260910_passA_cube4_repeats` | 1 |
 | DIGIT | `20260910_passA_cyl4` | 18 |
 | DIGIT_Marker | `20260908_passA_ball4` | 18 |
 | DIGIT_Marker | `20260908_passB_ball8` | 18 |
-| DIGIT_Marker | `20260908_passB_ball8_repeats` | 3 |
 | DIGIT_Marker | `20260910_passA_calibgrid` | 18 |
 | DIGIT_Marker | `20260910_passA_cube4` | 18 |
 | DIGIT_Marker | `20260910_passA_cyl4` | 18 |
 
 9DTact 는 17 유닛(`medium_2mm_r1` 은 파괴됨), DIGIT / DIGIT_Marker 는 18 유닛이다.
-`_repeats` 폴더의 이름에 남은 `__N` 은 그날의 몇 번째 시도였는지이고, 데이터셋 폴더 밖에
-있으므로 어떤 glob 도 그것을 유닛으로 집지 않는다.
+`DIGIT/20260908_passA_pair100` 의 1 은 그 pass 에서 한 유닛만 측정했기 때문이다
+(`data_wishlist.md` #0).
 
-격자 pass 만의 정리 기록은 `CALIBGRID_CLEANUP.md` 에 따로 있다.
+반복 측정은 원리마다 `repeated_data/<데이터셋>/` 한 곳에 모았다(운전자 지정, 2026-09-11):
+
+| 원리 | 데이터셋 | 유닛 | 반복 런 |
+|---|---|---:|---:|
+| 9DTact | `20260905_passA_ball4` | 5 | 11 |
+| 9DTact | `20260905_passA_pair100` | 2 | 2 |
+| DIGIT | `20260909_passA_pair010` | 1 | 1 |
+| DIGIT | `20260910_passA_cube4` | 1 | 1 |
+| DIGIT_Marker | `20260908_passB_ball8` | 1 | 3 |
+
+폴더 이름에 남은 `__N` 은 그날의 몇 번째 시도였는지이고, 데이터셋 폴더 밖에 있으므로 어떤
+glob 도 그것을 유닛으로 집지 않는다. 원리마다 `repeated_data/README.md` 가 읽는 법을 적는다.
 
 ## 다시 확인하는 법
 

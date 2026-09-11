@@ -2,7 +2,7 @@
 """재현성의 바닥 — 같은 유닛을 다시 앉히고 다시 재면 숫자가 얼마나 달라지는가.
 
 캠페인은 유닛마다 한 번씩 쟀으므로, 두 유닛의 차이가 겔의 차이인지 그날 겔을
-앉힌 방식의 차이인지 가릴 잣대가 없었다. `<데이터셋>_repeats/` 에 있는 런들이
+앉힌 방식의 차이인지 가릴 잣대가 없었다. `<원리>/repeated_data/<데이터셋>/` 에 있는 런들이
 그 잣대다: 같은 유닛, 같은 프로토콜, 다시 앉히고 다시 영점 잡고 다시 잰 것.
 
 각 유닛의 모든 런에서 사다리를 읽어 **공통 깊이**(가장 얕은 최대 ~ 가장 깊은 최소,
@@ -57,8 +57,8 @@ def unit_of(name):
 
 
 rows, notes = [], []
-for rep in sorted(ROOT.glob("data/*/2026*_repeats")):
-    ds = rep.parent / rep.name.replace("_repeats", "")
+for rep in sorted(ROOT.glob("data/*/repeated_data/2026*")):
+    ds = rep.parent.parent / rep.name
     groups = {}
     for r in sorted(p for p in rep.iterdir() if p.is_dir()):
         groups.setdefault(unit_of(r.name), []).append(r)
@@ -76,7 +76,7 @@ for rep in sorted(ROOT.glob("data/*/2026*_repeats")):
             continue
         for d in np.linspace(lo, hi, N_AT):
             f = np.array([at(x, d) for _, x in L])
-            rows.append(dict(principle=rep.parent.name, dataset=ds.name,
+            rows.append(dict(principle=rep.parent.parent.name, dataset=ds.name,
                              unit=unit.split("_", 1)[1] if "_" in unit else unit,
                              n_runs=len(L), depth_mm=round(float(d), 3),
                              mean_N=round(float(f.mean()), 4),
