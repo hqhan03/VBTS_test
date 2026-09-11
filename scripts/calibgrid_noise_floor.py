@@ -4,9 +4,10 @@ import numpy as np, pandas as pd
 from pathlib import Path
 from calibgrid_transfer import response_map, CH, MATCH_PX
 B=Path("data/DIGIT/20260910_passA_calibgrid")
-PAIRS=[("DIGIT_hard_1mm_r1","DIGIT_hard_1mm_r1__3","DIGIT_hard_1mm_r1__4"),
-       ("DIGIT_hard_1mm_r2","DIGIT_hard_1mm_r2__2","DIGIT_hard_1mm_r2__7"),
-       ("DIGIT_hard_2mm_r1","DIGIT_hard_2mm_r1","DIGIT_hard_2mm_r1__2")]
+# 2026-09-11 폴더 정리 뒤: 같은 유닛의 두 번째 격자는 _discarded/ 로 갔다.
+# 잡음 바닥을 다시 세우려면 깨끗한 유닛 몇을 일부러 두 번 재야 한다
+# (photometric_calibration.md 3.1).
+PAIRS=[]
 def match(a,b,tol=MATCH_PX):
     out=[]
     for dep,ga in a.groupby("dep"):

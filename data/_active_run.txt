@@ -1,1 +1,1 @@
-DIGIT_Marker/20260908_passA_ball4/DIGIT_Marker_hard_3mm_r1
+DIGIT/20260910_passA_calibgrid/DIGIT_medium_2mm_r2
