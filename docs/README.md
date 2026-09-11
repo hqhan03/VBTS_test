@@ -27,6 +27,7 @@ Added since (this table was written when only 9DTact had been measured):
 | I want to know… | read |
 |---|---|
 | **the Method section: apparatus, specimens, probes, procedure, definitions, statistics** | **`methods.md`** |
+| can a different analysis, or a different threshold, resolve two points deeper than 0.3 mm | `spatial_resolution_sensitivity.md` |
 | **how the three principles compare, and what this campaign got wrong** | **`cross_principle.md`** ← the results, and section 5 is the self-criticism |
 | test 1 on DIGIT and DIGIT_Marker — all 36 units, and which input representation wins | `force_estimation_digit.md` |
 | how the DIGIT photometric calibration grid works and whether it transfers between units | `photometric_calibration.md` |

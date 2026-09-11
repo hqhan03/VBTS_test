@@ -271,6 +271,26 @@ probes:
     tcp_z_mm: 36.794
     tcp_status: common endpoint by design
 
+  - id: pair150
+    tip: cylinder_pair
+    element_diameter_mm: 1.0
+    gap_mm: 1.50
+    contact_law: punch
+    tests: [resolution]
+    tcp_z_mm: 36.794
+    tcp_status: common endpoint by design
+    note: |
+      Added 2026-09-11. Centres are 2.50 mm apart -- WIDER than anything tested
+      so far, which is the point. Five 9DTact units resolve nothing even at
+      2.00 mm, and the reason is not blur: their dips are the deepest in the
+      campaign (0.44-0.76) and what fails is the imprint, which never reaches
+      the 2.5 grey-level floor. Two of the five have since been confirmed by
+      eye to leak light. So this probe asks the question directly -- if a unit
+      cannot separate two posts 2.50 mm apart, where the imprints cannot
+      overlap, then its failure is contrast and not spatial resolution.
+      It also gives those five a measured bracket instead of "> 2.00 mm".
+      spatial_resolution.md 4.6, spatial_resolution_sensitivity.md.
+
   - id: pair010
     tip: cylinder_pair
     element_diameter_mm: 1.0
