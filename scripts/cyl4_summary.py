@@ -36,7 +36,7 @@ def interp(x, y, at):
 
 
 def rows_for(principle):
-    base = ROOT / "data" / principle / DS
+    base = ROOT / "data" / "20260911_VBTSresolution_dataset" / principle / DS
     out = []
     if not base.exists():
         return out

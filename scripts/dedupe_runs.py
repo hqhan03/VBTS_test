@@ -20,7 +20,8 @@ import re, sys, shutil, datetime, json
 from pathlib import Path
 import yaml
 
-ROOT = Path(__file__).resolve().parent.parent / "data"
+ROOT = Path(__file__).resolve().parent.parent / "data" / "20260911_VBTSresolution_dataset"
+DISCARD = Path(__file__).resolve().parent.parent / "data" / "_discarded"
 DRY = "--apply" not in sys.argv
 TODAY = datetime.date.today().isoformat()
 
@@ -127,7 +128,7 @@ for p in plan:
              "note": "state.json / zero 의 영점 표면은 이 런 자신의 것이다."},
             allow_unicode=True, sort_keys=False))
     else:
-        out = (ROOT / "_discarded" / p["pr"] / p["ds"] if p["kind"] == "discard"
+        out = (DISCARD / p["pr"] / p["ds"] if p["kind"] == "discard"
                else ROOT / p["pr"] / "repeated_data" / p["ds"])
         out.mkdir(parents=True, exist_ok=True)
         dst = out / p["run"]
@@ -135,7 +136,7 @@ for p in plan:
         (dst / ("WHY_DISCARDED.md" if p["kind"] == "discard" else "WHY_REPEAT.md")
          ).write_text(f"# {p['run']}\n\n{p['why']}\n\n"
                       f"분석이 쓰는 런: `{p['win_now']}` — "
-                      f"`data/{p['pr']}/{p['ds']}` 안에 있다.\n"
+                      f"`{ROOT.name}/{p['pr']}/{p['ds']}` 안에 있다.\n"
                       f"옮긴 날: {TODAY}\n")
     moved.append(p)
 print(f"\n{len(moved)} 폴더 처리")

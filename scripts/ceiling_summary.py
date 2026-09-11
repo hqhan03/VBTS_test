@@ -80,7 +80,7 @@ reg = yaml.safe_load((ROOT / "config" / "sensor_registry.yaml").open())
 BY_ID = {e["id"]: e for e in reg["sensors"]}
 rows, bad = [], []
 for pr in ("DIGIT", "DIGIT_Marker"):
-    base = ROOT / "data" / pr / DS
+    base = ROOT / "data" / "20260911_VBTSresolution_dataset" / pr / DS
     if not base.exists():
         continue
     for run in sorted(p for p in base.iterdir() if p.is_dir()):

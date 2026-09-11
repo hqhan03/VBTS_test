@@ -89,7 +89,7 @@ if __name__ == "__main__":
     ds = sys.argv[1] if len(sys.argv) > 1 else "20260910_passA_calibgrid"
     maps = {}
     for principle in ("DIGIT", "DIGIT_Marker"):
-        base = ROOT / "data" / principle / ds
+        base = ROOT / "data" / "20260911_VBTSresolution_dataset" / principle / ds
         if not base.exists():
             continue
         for run in sorted(base.glob(f"{principle}_*")):

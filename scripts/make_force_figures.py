@@ -19,7 +19,7 @@ import pandas as pd                      # noqa: E402
 from mpl_toolkits.mplot3d import Axes3D   # noqa: F401,E402
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA = ROOT / "data" / "9DTact"
+DATA = ROOT / "data" / "20260911_VBTSresolution_dataset" / "9DTact"
 FIGS = ROOT / "docs" / "figures"
 HARDS = ["soft", "medium", "hard"]
 THICK = [1, 2, 3]

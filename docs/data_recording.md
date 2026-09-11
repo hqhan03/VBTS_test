@@ -2,7 +2,7 @@
 
 Everything for one run lives in
 `data/<principle>/<date>_<pass>_<probe>/<sensor_id>/`, e.g.
-`data/9DTact/20260907_passB_ball8/9DTact_hard_3mm_r1/`. Three levels: the
+`data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_hard_3mm_r1/`. Three levels: the
 sensor PRINCIPLE (9DTact, DIGIT, DIGIT_Marker), then one folder per pass and
 probe, then one per sensor. No timestamps in folder names — the run's start
 time is `run_timestamp` in `meta.yaml`, and every record below carries its own

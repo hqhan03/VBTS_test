@@ -22,7 +22,7 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA = ROOT / "data" / "9DTact"
+DATA = ROOT / "data" / "20260911_VBTSresolution_dataset" / "9DTact"
 PASSB = DATA / "20260907_passB_ball8"
 FORCES = (0.5, 1.0, 2.0)
 

@@ -280,7 +280,7 @@ def validate() -> int:
     rows = []
     for probe, gap in GAPS.items():
         S = gap
-        ds = ROOT / "data" / "9DTact" / f"20260905_passA_{probe}"
+        ds = ROOT / "data" / "20260911_VBTSresolution_dataset" / "9DTact" / f"20260905_passA_{probe}"
         if not ds.exists():
             continue
         for run in sorted(ds.iterdir()):
@@ -315,7 +315,7 @@ def validate() -> int:
     if df.empty:
         print("no pair presses with a trusted scale")
         return 1
-    out = ROOT / "data" / "9DTact" / "scale_from_pair_validation.csv"
+    out = ROOT / "data" / "20260911_VBTSresolution_dataset" / "9DTact" / "scale_from_pair_validation.csv"
     df.to_csv(out, index=False)
     print(f"{len(df)} presses over {df.sensor.nunique()} units and "
           f"{df.probe.nunique()} probes -> {out.name}\n")

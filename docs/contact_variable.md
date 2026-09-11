@@ -3,7 +3,7 @@
 2026-09-07. 운용자 제안: **프로브를 같은 힘(또는 같은 깊이)만큼 눌렀을 때 이미지에서
 밝기가 변한 원의 반지름**을 경도·두께가 함께 만드는 하나의 변수로 두고, 그 반지름과
 힘 추정 정확도 / 형상 추정 정확도 / 분해능의 관계를 2차원으로 그리자는 것.
-데이터: `data/9DTact/contact_radius.csv` (17 유닛), 그림: `figures/`.
+데이터: `data/20260911_VBTSresolution_dataset/9DTact/contact_radius.csv` (17 유닛), 그림: `figures/`.
 표와 그림은 `scripts/make_derived.py` 로 다시 만든다.
 
 > **2026-09-08 개정.** 이 문서의 원래 핵심 결론 — "같은 깊이의 접촉 반지름은 두께를
@@ -172,7 +172,7 @@ Pass A 의 ball4 깊이 사다리(0.1–0.6 mm, 6 프레임)에서 기준 이미
 올라가며 단마다 `radius_px` 를 기록하므로, 자국이 충분히 발달한 힘에서 **17 유닛 모두**
 읽을 수 있다. ball8 은 ball4 보다 접촉이 넓으니 §6 의 ball4 값과 직접 비교하지 말 것.
 
-데이터: `data/9DTact/contact_radius_ball8.csv`, 스크립트:
+데이터: `data/20260911_VBTSresolution_dataset/9DTact/contact_radius_ball8.csv`, 스크립트:
 `scripts/contact_radius_ball8.py`.
 
 | 유닛 | 두께 | 경도 | r @ 0.5 N | r @ 1.0 N | r @ 2.0 N | 분해 수 | µm/단계 | 힘 MAE N |

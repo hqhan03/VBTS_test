@@ -26,12 +26,12 @@ import os, re, glob, csv, yaml, math
 import numpy as np, pandas as pd, cv2
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PASSB = {"9DTact": "data/9DTact/20260907_passB_ball8",
-         "DIGIT": "data/DIGIT/20260908_passB_ball8",
-         "DIGIT_Marker": "data/DIGIT_Marker/20260908_passB_ball8"}
-PASSA = {"9DTact": "data/9DTact/20260905_passA_ball4",
-         "DIGIT": "data/DIGIT/20260908_passA_ball4",
-         "DIGIT_Marker": "data/DIGIT_Marker/20260908_passA_ball4"}
+PASSB = {"9DTact": "data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8",
+         "DIGIT": "data/20260911_VBTSresolution_dataset/DIGIT/20260908_passB_ball8",
+         "DIGIT_Marker": "data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260908_passB_ball8"}
+PASSA = {"9DTact": "data/20260911_VBTSresolution_dataset/9DTact/20260905_passA_ball4",
+         "DIGIT": "data/20260911_VBTSresolution_dataset/DIGIT/20260908_passA_ball4",
+         "DIGIT_Marker": "data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260908_passA_ball4"}
 HARD = {"soft": 0, "medium": 1, "hard": 2}
 R8 = 4.0
 

@@ -56,9 +56,9 @@ def relabel(run, window):
 
 
 if __name__ == "__main__":
-    units = sys.argv[1:] or ["data/9DTact/20260907_passB_ball8/9DTact_hard_1mm_r1",
-                             "data/9DTact/20260907_passB_ball8/9DTact_soft_3mm_r2",
-                             "data/DIGIT_Marker/20260908_passB_ball8/DIGIT_Marker_medium_2mm_r1"]
+    units = sys.argv[1:] or ["data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_hard_1mm_r1",
+                             "data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_soft_3mm_r2",
+                             "data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260908_passB_ball8/DIGIT_Marker_medium_2mm_r1"]
     # Two sizes: one above the knee and one below it. If the label window is what
     # sets the floor, the gap between windows is a property of the labels and
     # should survive the drop in resolution; if it were an image effect it would

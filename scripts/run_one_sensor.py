@@ -135,7 +135,8 @@ def _probe_offsets(probe: str, reg_all: dict, skip: str | None = None):
     import glob
     out = []
     for p in (glob.glob(str(ROOT / "data" / "*" / "*" / "state.json"))
-              + glob.glob(str(ROOT / "data" / "*" / "*" / "*" / "state.json"))):
+              + glob.glob(str(ROOT / "data" / "*" / "*" / "*" / "state.json"))
+              + glob.glob(str(ROOT / "data" / "*" / "*" / "*" / "*" / "state.json"))):
         run = Path(p).parent
         base = run.name
         for suf in ("__2", "__3", "__4", "__5", "__6", "__7"):
@@ -217,7 +218,8 @@ def _measured_gel_tilt(sensor: str):
     import glob
     sx, sy = [], []
     for p in (glob.glob(str(ROOT / "data" / "*" / "*" / "state.json"))
-              + glob.glob(str(ROOT / "data" / "*" / "*" / "*" / "state.json"))):
+              + glob.glob(str(ROOT / "data" / "*" / "*" / "*" / "state.json"))
+              + glob.glob(str(ROOT / "data" / "*" / "*" / "*" / "*" / "state.json"))):
         name = Path(p).parent.name
         for suf in ("__2", "__3", "__badzero", "__settle015",
                     "__failed1", "__failed2"):

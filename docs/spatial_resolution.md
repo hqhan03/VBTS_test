@@ -1,8 +1,8 @@
 # 시험 3 — 공간 분해능 (spatial resolution)
 
 2026-09-05 ~ 09-07 측정, 09-07 정리. 9DTact 17 유닛 × 4 간격 × 3 깊이 = **204 측정점**.
-데이터: `data/9DTact/20260905_passA_pair{100,075,050,025}/<sensor>/`,
-판정: `scripts/analyse_resolution.py`, 결과표: `data/9DTact/resolution_measurements.csv`.
+데이터: `data/20260911_VBTSresolution_dataset/9DTact/20260905_passA_pair{100,075,050,025}/<sensor>/`,
+판정: `scripts/analyse_resolution.py`, 결과표: `data/20260911_VBTSresolution_dataset/9DTact/resolution_measurements.csv`.
 
 ---
 

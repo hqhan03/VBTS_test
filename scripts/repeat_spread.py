@@ -57,7 +57,7 @@ def unit_of(name):
 
 
 rows, notes = [], []
-for rep in sorted(ROOT.glob("data/*/repeated_data/2026*")):
+for rep in sorted(ROOT.glob("data/20260911_VBTSresolution_dataset/*/repeated_data/2026*")):
     ds = rep.parent.parent / rep.name
     groups = {}
     for r in sorted(p for p in rep.iterdir() if p.is_dir()):
@@ -98,7 +98,8 @@ for (pr, ds), g in D.groupby(["principle", "dataset"]):
               f"cv 중앙 {u.cv.median():.3f}  sd {u.sd_N.median():.4f} N  "
               f"범위 {u.range_N.median():.4f} N")
     # 유닛 사이의 차이와 비교: 같은 데이터셋의 모든 유닛을 공통 깊이에서
-    cands = sorted((ds_p for ds_p in (ROOT / "data" / pr / ds).iterdir() if ds_p.is_dir()))
+    cands = sorted((ds_p for ds_p in (ROOT / "data" / "20260911_VBTSresolution_dataset" / pr / ds).iterdir()
+                    if ds_p.is_dir()))
     ll = [(p.name, ladder(p)) for p in cands]
     ll = [(n, x) for n, x in ll if x is not None]
     if len(ll) >= 3:

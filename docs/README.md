@@ -34,6 +34,7 @@ Added since (this table was written when only 9DTact had been measured):
 | what is still missing and what it would cost to collect | `data_wishlist.md` |
 | **how much of a unit's number is the gel and how much is how it was mounted** | `campaign_protocol.md` §4.15 (`scripts/repeat_spread.py`) |
 | which run of a re-measured unit the analyses read, and what the split was hiding | `../data/DATASET_CLEANUP.md` |
+| **what data exists per principle, probe and gel unit — and what is missing** | `../data/20260911_VBTSresolution_dataset/DATA_INVENTORY.md` (`scripts/dataset_audit.py`) |
 
 **Where the campaign stands (2026-09-11).** All 53 units have force-estimation
 sweeps; all 36 DIGIT-family units have a photometric calibration grid and a
@@ -132,7 +133,7 @@ wrong — check with `--status` before touching anything.
 # spatial resolution for one pass and one sensor
 /usr/bin/python3 scripts/analyse_resolution.py 20260905_passA_pair050 9DTact_hard_3mm_r2
 
-# shape reconstruction, every unit (writes data/9DTact/shape_reconstruction*.csv)
+# shape reconstruction, every unit (writes data/20260911_VBTSresolution_dataset/9DTact/shape_reconstruction*.csv)
 /usr/bin/python3 scripts/analyse_shape.py
 
 # the gel-normal correction for a unit (commands no motion)

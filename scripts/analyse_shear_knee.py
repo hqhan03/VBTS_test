@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Per-unit shear resolution requirement, from the 3-seed shear-knee sweeps.
 
-Reads data/9DTact/shear_knee_{none,anti}.csv (17 units x 10 sizes x 3 seeds,
+Reads data/20260911_VBTSresolution_dataset/9DTact/shear_knee_{none,anti}.csv (17 units x 10 sizes x 3 seeds,
 cycle split, block-separated metrics) and answers one question per unit: how
 much shear accuracy is lost when the picture shrinks, and where the loss
 starts. Two numbers per unit and per preprocessing:
@@ -29,7 +29,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / "data" / "9DTact"
+DATA = ROOT / "data" / "20260911_VBTSresolution_dataset" / "9DTact"
 FIGS = ROOT / "docs" / "figures"
 HARD = {"soft": 0, "medium": 1, "hard": 2}
 

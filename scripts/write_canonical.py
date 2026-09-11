@@ -6,7 +6,7 @@ run is the highest-suffixed one with a complete stream (1000 frames). Runs
 that are not canonical are listed with their frame count so nobody analyses
 them by accident. Hand-written notes in an existing CANONICAL.yaml are kept.
 
-    python3 scripts/write_canonical.py data/DIGIT/20260908_passB_ball8
+    python3 scripts/write_canonical.py data/20260911_VBTSresolution_dataset/DIGIT/20260908_passB_ball8
 """
 import re, sys, glob, os, yaml, csv
 

@@ -18,7 +18,7 @@ import numpy as np, cv2, pandas as pd
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-LIB = ROOT / "data" / "DIGIT" / "20260908_passB_ball8"
+LIB = ROOT / "data" / "20260911_VBTSresolution_dataset" / "DIGIT" / "20260908_passB_ball8"
 
 
 def sig(path):
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     lib = library()
     rows = []
     for ds in sys.argv[1:]:
-        base = ROOT / "data" / "DIGIT" / ds
+        base = ROOT / "data" / "20260911_VBTSresolution_dataset" / "DIGIT" / ds
         for run in sorted(base.glob("DIGIT_*")):
             claimed = re.sub(r"__\d+$", "", run.name).replace("DIGIT_", "")
             q = None

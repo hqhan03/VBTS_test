@@ -27,7 +27,7 @@ ROOT = Path(__file__).resolve().parent.parent
 def curves(ds):
     probe = ds.split("_")[-1]
     out = {}
-    for run in sorted((ROOT / "data" / "DIGIT" / ds).glob("DIGIT_*")):
+    for run in sorted((ROOT / "data" / "20260911_VBTSresolution_dataset" / "DIGIT" / ds).glob("DIGIT_*")):
         f = run / f"shape_{probe}" / "ladder.csv"
         if not f.exists():
             continue

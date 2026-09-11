@@ -219,7 +219,7 @@ run_grid_char.sh <unit> <dataset>
 ```
 
 요약 표는 `data/ceiling_summary.csv`, 단별 기록은
-`data/DIGIT*/20260910_passA_calibgrid/<유닛>/characterize/steps.csv` 다 — 2026-09-11
+`data/20260911_VBTSresolution_dataset/DIGIT*/20260910_passA_calibgrid/<유닛>/characterize/steps.csv` 다 — 2026-09-11
 정리 뒤 유닛당 폴더가 하나이고, 격자와 램프가 다른 런에서 나온 12 유닛은 램프 옆
 `PROVENANCE.yaml` 이 출처와 그 런의 영점 표면을 담는다(`data/CALIBGRID_CLEANUP.md`).
 

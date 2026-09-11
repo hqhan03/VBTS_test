@@ -23,7 +23,7 @@ from pathlib import Path
 from scipy import ndimage, spatial, signal
 
 ROOT = Path(__file__).resolve().parent.parent
-DS = ROOT / "data" / "DIGIT_Marker" / "20260908_passB_ball8"
+DS = ROOT / "data" / "20260911_VBTSresolution_dataset" / "DIGIT_Marker" / "20260908_passB_ball8"
 
 
 def dots_in(img_bgr):

@@ -93,10 +93,15 @@ def _state_files():
     trees are scanned and the result is the same either way.
     """
     import glob
-    return sorted(glob.glob(str(ROOT / "data" / "*" / "*" / "state.json"))
-                  + glob.glob(str(ROOT / "data" / "*" / "*" / "*" / "state.json"))
-                  + glob.glob(str(ROOT / "data" / "_discarded" / "*" / "*" / "*"
-                                  / "state.json")))
+    # 옛 평면 배치(data/<데이터셋>/<런>)와 원리 배치, 그리고 2026-09-11 에 원리
+    # 폴더를 data/20260911_VBTSresolution_dataset/ 로 옮겨 한 단 깊어진 배치까지.
+    live = [g for g in (glob.glob(str(ROOT / "data" / "*" / "*" / "state.json"))
+                        + glob.glob(str(ROOT / "data" / "*" / "*" / "*" / "state.json"))
+                        + glob.glob(str(ROOT / "data" / "*" / "*" / "*" / "*"
+                                        / "state.json")))
+            if "/_discarded/" not in g]
+    return sorted(live + glob.glob(str(ROOT / "data" / "_discarded" / "*" / "*" / "*"
+                                      / "state.json")))
 
 
 # A re-run lands in `<sensor>__2`, `__3`, ... and the list used to be
@@ -342,7 +347,12 @@ def main():
         cands = []
         droot = ROOT / "data" / dataset
         if not droot.exists():
-            hits = [d for d in (ROOT / "data").glob(f"*/{dataset}") if d.is_dir()]
+            # `_discarded` 안에 같은 이름의 데이터셋이 있다. 그쪽을 집으면 버린
+            # 런을 분석한다 — 2026-09-11 에 한 번 그렇게 돼서 pair_resolution.csv 의
+            # 두 행이 바뀌었다. 살아 있는 것만 본다.
+            hits = [d for d in list((ROOT / "data").glob(f"*/{dataset}"))
+                    + list((ROOT / "data").glob(f"*/*/{dataset}"))
+                    if d.is_dir() and "_discarded" not in d.parts]
             if hits:
                 droot = hits[0]
         for c in droot.glob(f"{sensor}*"):

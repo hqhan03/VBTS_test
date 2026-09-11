@@ -1,7 +1,7 @@
 # 형상 재구성에 카메라 해상도가 얼마나 필요한가
 
 2026-09-07. 17 유닛 × 12 크기, **1920×1080 에서 8×5 까지, 16:9 유지**. 데이터
-`data/9DTact/shape_vs_resolution.csv` (크기·유닛당 1 행), 크기별 중앙값 `shape_vs_resolution_by_size.csv`,
+`data/20260911_VBTSresolution_dataset/9DTact/shape_vs_resolution.csv` (크기·유닛당 1 행), 크기별 중앙값 `shape_vs_resolution_by_size.csv`,
 유닛별 요약 `shape_vs_resolution_summary.csv`, 스크립트 `scripts/analyse_shape_resolution.py`.
 
 ## 1. 방법

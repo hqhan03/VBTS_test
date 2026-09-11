@@ -25,7 +25,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 import force_vs_resolution as F  # noqa: E402
 
-OUT = ROOT / "data" / "9DTact" / "force_scalar_baseline.csv"
+OUT = ROOT / "data" / "20260911_VBTSresolution_dataset" / "9DTact" / "force_scalar_baseline.csv"
 
 
 def features(X):

@@ -4,7 +4,7 @@ import re, yaml, numpy as np, pandas as pd, cv2
 from pathlib import Path
 from scipy import ndimage
 ROOT=Path("/home/nrel/Desktop/KDC-tactile-testing-platform")
-DS=ROOT/"data/DIGIT_Marker/20260908_passB_ball8"
+DS=ROOT/"data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260908_passB_ball8"
 can=yaml.safe_load((DS/"CANONICAL.yaml").read_text())["canonical"]
 geo=pd.read_csv(ROOT/"data/marker_geometry.csv").set_index("unit")
 rows=[]

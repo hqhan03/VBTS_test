@@ -3,7 +3,7 @@
 
 `analyse_resolution.py` judges one sensor against one probe and prints it.
 This walks all seventeen units and all four pairs through exactly that code and
-writes `data/9DTact/resolution_measurements.csv`, so the table can be rebuilt
+writes `data/20260911_VBTSresolution_dataset/9DTact/resolution_measurements.csv`, so the table can be rebuilt
 whenever anything upstream of it changes -- as it did on 2026-09-08, when the
 scale phase learned to notice a collapsed correlation and every unit gained a
 trusted scale of its own, which is the mm axis this whole analysis is measured
@@ -29,7 +29,7 @@ PROBES = ["pair100", "pair075", "pair050", "pair025"]
 
 
 def rows_for(sensor, probe, gaps):
-    ds = ROOT / "data" / "9DTact" / f"20260905_passA_{probe}"
+    ds = ROOT / "data" / "20260911_VBTSresolution_dataset" / "9DTact" / f"20260905_passA_{probe}"
     reject = A.SET_ASIDE + A.WRONG_UNIT
     cands = []
     for c in ds.glob(f"{sensor}*"):
@@ -100,7 +100,7 @@ def main() -> int:
         n = sum(1 for r in got if r["ok"])
         print(f"{sensor:24} {len(got):3d} rungs, {n:2d} resolved")
     df = pd.DataFrame(rows)
-    out = ROOT / "data" / "9DTact" / "resolution_measurements.csv"
+    out = ROOT / "data" / "20260911_VBTSresolution_dataset" / "9DTact" / "resolution_measurements.csv"
     df.to_csv(out, index=False)
     print(f"\n{len(df)} rows -> {out}")
     return 0

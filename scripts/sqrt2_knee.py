@@ -49,7 +49,7 @@ def knees(path, col):
 
 if __name__ == "__main__":
     for pr in ("DIGIT", "DIGIT_Marker"):
-        f = f"data/{pr}/force_vs_resolution_sqrt2.csv"
+        f = f"data/20260911_VBTSresolution_dataset/{pr}/force_vs_resolution_sqrt2.csv"
         try:
             for col, lab in (("sh", "shear"), ("fz", "Fz")):
                 r = knees(f, col)

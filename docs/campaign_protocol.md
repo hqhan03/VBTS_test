@@ -18,7 +18,7 @@
 `9DTact_medium_2mm_r1`은 2026-09-04 영구 변형되어 **제외**한다(접촉 높이가
 26.234 → 25.964 mm 로 내려가 돌아오지 않음). 그래서 17개다.
 
-**Pass A 주요 결과** — `data/9DTact/resolution_measurements.csv` 204행:
+**Pass A 주요 결과** — `data/20260911_VBTSresolution_dataset/9DTact/resolution_measurements.csv` 204행:
 
 | 중심간격 | 분해된 센서 |
 |---|---|
@@ -32,13 +32,13 @@
 기준으로는 사실상 어느 측정도 통과하지 못하며, Rayleigh 와 MTF 가 정반대의
 헤드라인을 준다는 점을 그대로 보고해야 한다.
 
-**Pass A 시험 2 (형상 재구성) 결과** — `data/9DTact/shape_reconstruction.csv`, 17 유닛:
+**Pass A 시험 2 (형상 재구성) 결과** — `data/20260911_VBTSresolution_dataset/9DTact/shape_reconstruction.csv`, 17 유닛:
 깊이 분해능 중앙값 **46 µm/회색조 단계**(31–64; 2 mm 젤 38, 1 mm 54), 영점 보정 뒤 cyl4
 깊이 편향 -0.021 mm, 유닛당 선형 보정 하나 뒤 RMS 잔차 **0.031 mm**. 자체 축척 유닛에서
 4.00 mm 원판은 4.13 mm 로, 정사각형은 변 비 0.93 로 되찾힌다. 상세는
 `shape_reconstruction.md`.
 
-**Pass B 시험 1 (힘 추정) 결과** — `data/9DTact/force_vs_resolution.csv`, 17 유닛 ×
+**Pass B 시험 1 (힘 추정) 결과** — `data/20260911_VBTSresolution_dataset/9DTact/force_vs_resolution.csv`, 17 유닛 ×
 12 입력 크기: **Fz MAE 중앙값 0.052 N**(R² 0.969), lateral MAE 0.031 N.
 **해상도는 1920×1080 부터 48×27 까지 성능을 바꾸지 않는다** — 있더라도 0.007 N 이하로
 학습 시드 산포(±0.022 N)에 묻힌다. 오차의 바닥은 카메라가 아니라 **F/T 라벨 자신의
@@ -766,14 +766,14 @@ Pass A 에는 올바른 기준이 이미 있다: `touchcheck.png` 은 0 N 에서
 ### 4.8 Pass B 진행 (2026-09-09 02:00 기준)
 
 **DIGIT_Marker 18 / 18 완료**, 유닛당 1000 프레임, 유닛당 8.5–10.5 분. 어느 런이
-그 유닛의 데이터인지는 `data/DIGIT_Marker/20260908_passB_ball8/CANONICAL.yaml` 이 정한다 —
+그 유닛의 데이터인지는 `data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260908_passB_ball8/CANONICAL.yaml` 이 정한다 —
 `soft_2mm_r1` 은 결함 수정 과정에서 아홉 번 돌아 `__9` 만 유효하고, `hard_1mm_r1` 은
 `__2` 다. **처음 두 유닛(`soft_1mm_r2`, `soft_1mm_r1`)은 수정 3–6 이전에 수집**돼 정규
 블록 프레임의 13.8 % / 26.1 % 가 2 N 위에 있다. 분석에서 Fz ≤ 2 N 으로 거르거나 재수집한다
 — 아직 재수집하지 않았다. 나머지 16 유닛은 2 N 초과가 0.4–3.4 % 로 9DTact 와 같은 수준이다.
 
 **비마커 DIGIT 18 / 18 완료 (2026-09-09 05:41).** Pass B 는 이제 **54 / 54** 다. 유닛당
-8.5–11.6 분, 전부 1000 프레임. `data/DIGIT/20260908_passB_ball8/CANONICAL.yaml`
+8.5–11.6 분, 전부 1000 프레임. `data/20260911_VBTSresolution_dataset/DIGIT/20260908_passB_ball8/CANONICAL.yaml`
 (`medium_1mm_r1` 은 `__2`). 정규 블록의 2 N 초과: DIGIT 중앙값 1.4 % (최대 4.6 %),
 DIGIT_Marker 1.8 % (수정 전 두 유닛 제외 시; 그 둘은 13.8 / 26.1 %). 전단 중 Fz 최대의
 중앙값 2.14 / 2.60 N (홀드 1.20) — 9DTact 의 1.45 보다 높다. 단단한 DIGIT 젤에서 홀드

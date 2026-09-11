@@ -419,13 +419,24 @@ def principle_of(sensor: str | None) -> str | None:
     return None
 
 
+DSROOT = "20260911_VBTSresolution_dataset"   # 원리 폴더를 모아 둔 곳 (2026-09-11)
+
+
 def dataset_dir(dataset: str, sensor: str | None) -> Path:
-    """data/<principle>/<dataset>, falling back to the old flat layout."""
+    """data/<DSROOT>/<principle>/<dataset>.
+
+    2026-09-11 에 세 원리 폴더를 `data/20260911_VBTSresolution_dataset/` 안으로
+    모았다. 옛 자리(`data/<principle>/`)와 그보다 더 옛 평면 배치
+    (`data/<dataset>/`)에 있는 런도 계속 읽을 수 있어야 하므로, 있는 것을 먼저
+    찾고 새로 만들 때만 새 자리를 쓴다.
+    """
     pr = principle_of(sensor)
     if pr:
-        d = OUT / pr / dataset
-        if d.exists() or not (OUT / dataset).exists():
-            return d
+        for base in (OUT / DSROOT / pr, OUT / pr):
+            if (base / dataset).exists():
+                return base / dataset
+        if not (OUT / dataset).exists():
+            return OUT / DSROOT / pr / dataset
     return OUT / dataset
 
 
@@ -928,7 +939,8 @@ def phase_shear(a) -> int:
     surf = a.surface
     if surf is None:
         prev = sorted(list((ROOT / "data").glob("*/*/summary.yaml"))
-                      + list((ROOT / "data").glob("*/*/*/summary.yaml")))
+                      + list((ROOT / "data").glob("*/*/*/summary.yaml"))
+                      + list((ROOT / "data").glob("*/*/*/*/summary.yaml")))
         for f in reversed(prev):
             y = yaml.safe_load(open(f))
             fit = (y or {}).get("force_depth_fit") or {}
@@ -3966,7 +3978,8 @@ def _gel_model(a):
         return (a.surface if a.surface is not None else float(gm["surface_mm"]),
                 a.hertz_a if a.hertz_a is not None else float(gm["hertz_a"]))
     for f in sorted(list((ROOT / "data").glob("*/*/summary.yaml"))
-                    + list((ROOT / "data").glob("*/*/*/summary.yaml")),
+                    + list((ROOT / "data").glob("*/*/*/summary.yaml"))
+                      + list((ROOT / "data").glob("*/*/*/*/summary.yaml")),
                     reverse=True):
         y = yaml.safe_load(open(f)) or {}
         fit = y.get("force_depth_fit") or {}
@@ -5246,7 +5259,8 @@ def _grid_gel_tilt(sensor: str):
     import glob, json
     sx, sy = [], []
     for p in (glob.glob(str(ROOT / "data" / "*" / "*" / "state.json"))
-              + glob.glob(str(ROOT / "data" / "*" / "*" / "*" / "state.json"))):
+              + glob.glob(str(ROOT / "data" / "*" / "*" / "*" / "state.json"))
+              + glob.glob(str(ROOT / "data" / "*" / "*" / "*" / "*" / "state.json"))):
         name = re.sub(r"__\w+$", "", Path(p).parent.name)
         if name != sensor:
             continue

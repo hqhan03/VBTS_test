@@ -23,9 +23,9 @@ from pathlib import Path
 from scipy import ndimage
 
 ROOT = Path(__file__).resolve().parent.parent
-DS = {"9DTact": "data/9DTact/20260907_passB_ball8",
-      "DIGIT_Marker": "data/DIGIT_Marker/20260908_passB_ball8",
-      "DIGIT": "data/DIGIT/20260908_passB_ball8"}
+DS = {"9DTact": "data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8",
+      "DIGIT_Marker": "data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260908_passB_ball8",
+      "DIGIT": "data/20260911_VBTSresolution_dataset/DIGIT/20260908_passB_ball8"}
 
 
 def runs_for(principle, ds):

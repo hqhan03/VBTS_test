@@ -132,7 +132,7 @@ def main() -> int:
     ap.add_argument("--verbose", action="store_true")
     a = ap.parse_args()
 
-    base = ROOT / "data" / "9DTact" / a.dataset
+    base = ROOT / "data" / "20260911_VBTSresolution_dataset" / "9DTact" / a.dataset
     runs = sorted(d for d in base.iterdir() if d.is_dir()
                   and (a.unit is None or d.name == a.unit
                        or d.name.startswith(a.unit + "__")))

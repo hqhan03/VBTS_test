@@ -18,7 +18,7 @@ else `lat_mae`. Groups by hardness and thickness with Spearman tests, and
 draws a 2 x 2 figure: rows Fz / shear, columns median-by-hardness /
 median-by-thickness, thin lines per unit, linear y, evenly spaced x.
 
-    python3 scripts/analyse_saturation.py data/DIGIT_Marker/force_vs_resolution_grey.csv \
+    python3 scripts/analyse_saturation.py data/20260911_VBTSresolution_dataset/DIGIT_Marker/force_vs_resolution_grey.csv \
         --label DIGIT_Marker --fig docs/figures/saturation_DIGIT_Marker_grey.png
 """
 import argparse

@@ -46,5 +46,5 @@ for s in sorted(units):
               f"size {o.get('cyl4_corrected_size_err', float('nan')):+.2f}  "
               f"sq {o.get('cube4_corrected_squareness', float('nan')):.2f}  {o.get('error','')}", flush=True)
 D = pd.DataFrame(rows)
-D.to_csv(ROOT / "data" / "9DTact" / "shape_vs_resolution.csv", index=False)
+D.to_csv(ROOT / "data" / "20260911_VBTSresolution_dataset" / "9DTact" / "shape_vs_resolution.csv", index=False)
 print(f"-> {ROOT/'data'/'9DTact'/'shape_vs_resolution.csv'} ({len(D)} rows)")

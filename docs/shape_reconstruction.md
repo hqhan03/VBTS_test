@@ -2,8 +2,8 @@
 
 2026-09-05 ~ 09-06 측정, 09-07 전 유닛 분석. 9DTact 17 유닛, 유닛당 ball4 로 교정하고
 cyl4 (18 프레임) 와 cube4 (6 프레임) 로 채점 — **17 × 24 = 408 평가 프레임**.
-데이터: `data/9DTact/20260905_passA_{ball4,cube4,cyl4}/<sensor>/`,
-분석: `scripts/analyse_shape.py`, 결과: `data/9DTact/shape_reconstruction.csv`
+데이터: `data/20260911_VBTSresolution_dataset/9DTact/20260905_passA_{ball4,cube4,cyl4}/<sensor>/`,
+분석: `scripts/analyse_shape.py`, 결과: `data/20260911_VBTSresolution_dataset/9DTact/shape_reconstruction.csv`
 (유닛당 1 행) 와 `shape_reconstruction_rungs.csv` (프레임당 1 행).
 2026-09-05 의 단일 유닛 파일럿은 `shape_reconstruction_pilot.html` 에 그대로 있다.
 

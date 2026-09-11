@@ -434,7 +434,7 @@ sensors:
         N with the image still changing at 1.71 lvl/N (89% of peak)'
       peak_slope_levels_per_N: 1.9172446920800432
       image_change_at_stop: 5.462317943572998
-    run: data/9DTact/20260907_passB_ball8/9DTact_soft_1mm_r1
+    run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_soft_1mm_r1
   run_timestamp: '20260901_193153'
   gel_model:
     hertz_a: 2.1004793845941045
@@ -447,7 +447,7 @@ sensors:
   stopped_on: force cap
   ladder_rungs_reached: 35
   characterised_at: '2026-09-07T20:00:30.349434'
-  run: data/9DTact/20260907_passB_ball8/9DTact_soft_1mm_r1
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_soft_1mm_r1
   ladder_run: data/20260903_ladder_protocol/9DTact_soft_1mm_r1
   image_response:
     max_measurable_force_N: null
@@ -544,7 +544,7 @@ sensors:
   stopped_on: force cap
   ladder_rungs_reached: 29
   characterised_at: '2026-09-07T20:45:42.987586'
-  run: data/9DTact/20260907_passB_ball8/9DTact_soft_1mm_r2
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_soft_1mm_r2
   ladder_run: data/20260903_ladder_protocol/9DTact_soft_1mm_r2
   history:
   - characterised_at: '2026-09-03T23:38:41.779164'
@@ -646,7 +646,7 @@ sensors:
         N with the image still changing at 1.85 lvl/N (107% of peak)'
       peak_slope_levels_per_N: 1.730649901185581
       image_change_at_stop: 5.257141590118408
-    run: data/9DTact/20260907_passB_ball8/9DTact_soft_1mm_r2
+    run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_soft_1mm_r2
   - characterised_at: '2026-09-07T20:29:41.871390'
     gel_model:
       hertz_a: 1.8797552422423651
@@ -765,7 +765,7 @@ sensors:
   stopped_on: force cap
   ladder_rungs_reached: 29
   characterised_at: '2026-09-07T19:23:18.914585'
-  run: data/9DTact/20260907_passB_ball8/9DTact_soft_2mm_r1
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_soft_2mm_r1
   run_timestamp: '20260902_123138'
   ladder_run: data/20260903_ladder_protocol/9DTact_soft_2mm_r1
   history:
@@ -875,7 +875,7 @@ sensors:
   stopped_on: force cap
   ladder_rungs_reached: 31
   characterised_at: '2026-09-07T19:40:48.967167'
-  run: data/9DTact/20260907_passB_ball8/9DTact_soft_2mm_r2
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_soft_2mm_r2
   ladder_run: data/20260903_ladder_protocol/9DTact_soft_2mm_r2
   history:
   - characterised_at: '2026-09-03T16:40:20.026428'
@@ -983,7 +983,7 @@ sensors:
   stopped_on: force cap
   ladder_rungs_reached: 29
   characterised_at: '2026-09-07T21:12:07.650371'
-  run: data/9DTact/20260907_passB_ball8/9DTact_soft_3mm_r1
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_soft_3mm_r1
   run_timestamp: '20260902_124057'
   ladder_run: data/20260903_ladder_protocol/9DTact_soft_3mm_r1
   history:
@@ -1092,7 +1092,7 @@ sensors:
   stopped_on: force cap
   ladder_rungs_reached: 30
   characterised_at: '2026-09-07T21:31:52.875492'
-  run: data/9DTact/20260907_passB_ball8/9DTact_soft_3mm_r2
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_soft_3mm_r2
   ladder_run: data/20260903_ladder_protocol/9DTact_soft_3mm_r2
   history:
   - characterised_at: '2026-09-03T16:30:43.070700'
@@ -1227,7 +1227,7 @@ sensors:
   stopped_on: force cap
   ladder_rungs_reached: 33
   characterised_at: '2026-09-07T21:50:25.693374'
-  run: data/9DTact/20260907_passB_ball8/9DTact_medium_1mm_r1
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_medium_1mm_r1
   ladder_run: data/20260903_ladder_protocol/9DTact_medium_1mm_r1
   image_response:
     max_measurable_force_N: null
@@ -1324,7 +1324,7 @@ sensors:
   stopped_on: force cap
   ladder_rungs_reached: 33
   characterised_at: '2026-09-07T22:09:59.668962'
-  run: data/9DTact/20260907_passB_ball8/9DTact_medium_1mm_r2
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_medium_1mm_r2
   ladder_run: data/20260903_ladder_protocol/9DTact_medium_1mm_r2
   history:
   - characterised_at: '2026-09-03T17:07:43.584567'
@@ -1575,7 +1575,7 @@ sensors:
   stopped_on: force cap
   ladder_rungs_reached: 30
   characterised_at: '2026-09-07T22:25:04.071654'
-  run: data/9DTact/20260907_passB_ball8/9DTact_medium_2mm_r2
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_medium_2mm_r2
   ladder_run: data/20260903_ladder_protocol/9DTact_medium_2mm_r2
   history:
   - characterised_at: '2026-09-03T16:48:17.356011'
@@ -1683,7 +1683,7 @@ sensors:
   stopped_on: force cap
   ladder_rungs_reached: 31
   characterised_at: '2026-09-07T22:49:19.182438'
-  run: data/9DTact/20260907_passB_ball8/9DTact_medium_3mm_r1
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_medium_3mm_r1
   ladder_run: data/20260903_ladder_protocol/9DTact_medium_3mm_r1
   history:
   - characterised_at: '2026-09-03T15:44:46.269461'
@@ -1791,7 +1791,7 @@ sensors:
   stopped_on: force cap
   ladder_rungs_reached: 28
   characterised_at: '2026-09-07T23:05:35.719606'
-  run: data/9DTact/20260907_passB_ball8/9DTact_medium_3mm_r2
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_medium_3mm_r2
   ladder_run: data/20260903_ladder_protocol/9DTact_medium_3mm_r2
   history:
   - characterised_at: '2026-09-03T23:13:26.216455'
@@ -1947,7 +1947,7 @@ sensors:
         image still changing at 1.94 lvl/N (80% of peak)'
       peak_slope_levels_per_N: 2.41230522864505
       image_change_at_stop: 9.413373947143555
-    run: data/9DTact/20260907_passB_ball8/9DTact_hard_1mm_r1
+    run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_hard_1mm_r1
   run_timestamp: '20260901_194153'
   gel_model:
     hertz_a: 2.1454485790662847
@@ -1960,7 +1960,7 @@ sensors:
   stopped_on: force cap
   ladder_rungs_reached: 34
   characterised_at: '2026-09-07T23:37:14.141914'
-  run: data/9DTact/20260907_passB_ball8/9DTact_hard_1mm_r1
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_hard_1mm_r1
   ladder_run: data/20260903_ladder_protocol/9DTact_hard_1mm_r1
   image_response:
     max_measurable_force_N: null
@@ -2057,7 +2057,7 @@ sensors:
   stopped_on: force cap
   ladder_rungs_reached: 29
   characterised_at: '2026-09-07T23:54:43.721447'
-  run: data/9DTact/20260907_passB_ball8/9DTact_hard_1mm_r2
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_hard_1mm_r2
   ladder_run: data/20260903_ladder_protocol/9DTact_hard_1mm_r2
   history:
   - characterised_at: '2026-09-03T16:54:19.159659'
@@ -2166,7 +2166,7 @@ sensors:
   stopped_on: force cap
   ladder_rungs_reached: 29
   characterised_at: '2026-09-08T00:05:45.860542'
-  run: data/9DTact/20260907_passB_ball8/9DTact_hard_2mm_r1
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_hard_2mm_r1
   run_timestamp: '20260903_140215'
   ladder_run: data/20260903_ladder_protocol/9DTact_hard_2mm_r1
   history:
@@ -2278,7 +2278,7 @@ sensors:
   stopped_on: force cap
   ladder_rungs_reached: 31
   characterised_at: '2026-09-08T00:16:00.631190'
-  run: data/9DTact/20260907_passB_ball8/9DTact_hard_2mm_r2
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_hard_2mm_r2
   ladder_run: data/20260903_ladder_protocol/9DTact_hard_2mm_r2
   history:
   - characterised_at: '2026-09-03T23:32:01.721954'
@@ -2388,7 +2388,7 @@ sensors:
   stopped_on: force cap
   ladder_rungs_reached: 31
   characterised_at: '2026-09-07T18:51:36.839310'
-  run: data/9DTact/20260907_passB_ball8/9DTact_hard_3mm_r1
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_hard_3mm_r1
   history:
   - characterised_at: '2026-09-01T18:10:34.761369'
     gel_model:
@@ -2473,7 +2473,7 @@ sensors:
         image still changing at 2.15 lvl/N (78% of peak)'
       peak_slope_levels_per_N: 2.7589398248482406
       image_change_at_stop: 9.416977882385254
-    run: data/9DTact/20260907_passB_ball8/9DTact_hard_3mm_r1
+    run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_hard_3mm_r1
   commanded_depth_mm: 1.2
   command_vs_measured_mm: 0.03035002826925104
   run_timestamp: '20260901_180351'
@@ -2571,7 +2571,7 @@ sensors:
   stopped_on: force cap
   ladder_rungs_reached: 32
   characterised_at: '2026-09-08T00:26:09.207596'
-  run: data/9DTact/20260907_passB_ball8/9DTact_hard_3mm_r2
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_hard_3mm_r2
   ladder_run: data/20260903_ladder_protocol/9DTact_hard_3mm_r2
   history:
   - characterised_at: '2026-09-03T16:21:24.255570'
@@ -2694,7 +2694,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 2.1754269225370595
     image_change_at_stop: 14.94471263885498
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_soft_1mm_r1
+  run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_soft_1mm_r1
 - id: DIGIT_soft_1mm_r2
   principle: DIGIT
   hardness: soft
@@ -2731,7 +2731,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 2.954280317610225
     image_change_at_stop: 15.351424217224121
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_soft_1mm_r2
+  run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_soft_1mm_r2
 - id: DIGIT_soft_2mm_r1
   principle: DIGIT
   hardness: soft
@@ -2767,7 +2767,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 4.45200923732341
     image_change_at_stop: 17.24268341064453
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_soft_2mm_r1
+  run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_soft_2mm_r1
 - id: DIGIT_soft_2mm_r2
   principle: DIGIT
   hardness: soft
@@ -2803,7 +2803,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 5.724294413738537
     image_change_at_stop: 18.678537368774414
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_soft_2mm_r2
+  run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_soft_2mm_r2
 - id: DIGIT_soft_3mm_r1
   principle: DIGIT
   hardness: soft
@@ -2838,7 +2838,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 4.922459403698687
     image_change_at_stop: 15.923470497131348
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_soft_3mm_r1
+  run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_soft_3mm_r1
   run_folder_was: DIGIT_soft_3mm_r1__2
   run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_soft_3mm_r2
@@ -2875,7 +2875,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 4.6909016302858895
     image_change_at_stop: 17.66773223876953
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_soft_3mm_r2
+  run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_soft_3mm_r2
   run_folder_was: DIGIT_soft_3mm_r2__2
   run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_medium_1mm_r1
@@ -2914,7 +2914,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 3.5249677693771098
     image_change_at_stop: 17.60466766357422
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_medium_1mm_r1
+  run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_medium_1mm_r1
 - id: DIGIT_medium_1mm_r2
   principle: DIGIT
   hardness: medium
@@ -2951,7 +2951,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 2.995382433902099
     image_change_at_stop: 16.841480255126953
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_medium_1mm_r2
+  run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_medium_1mm_r2
 - id: DIGIT_medium_2mm_r1
   principle: DIGIT
   hardness: medium
@@ -2987,7 +2987,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 7.306718786208827
     image_change_at_stop: 21.933725357055664
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_medium_2mm_r1
+  run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_medium_2mm_r1
   run_folder_was: DIGIT_medium_2mm_r1__2
   run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_medium_2mm_r2
@@ -3025,7 +3025,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 4.211086468297673
     image_change_at_stop: 20.036579132080078
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_medium_2mm_r2
+  run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_medium_2mm_r2
   run_folder_was: DIGIT_medium_2mm_r2__2
   run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_medium_3mm_r1
@@ -3062,7 +3062,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 3.209953144876458
     image_change_at_stop: 17.591135025024414
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_medium_3mm_r1
+  run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_medium_3mm_r1
 - id: DIGIT_medium_3mm_r2
   principle: DIGIT
   hardness: medium
@@ -3097,7 +3097,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 3.9445235509661876
     image_change_at_stop: 20.21245765686035
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_medium_3mm_r2
+  run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_medium_3mm_r2
 - id: DIGIT_hard_1mm_r1
   principle: DIGIT
   hardness: hard
@@ -3134,7 +3134,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 3.306146132971909
     image_change_at_stop: 16.807416915893555
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_1mm_r1
+  run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_hard_1mm_r1
   run_folder_was: DIGIT_hard_1mm_r1__5
   run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_hard_1mm_r2
@@ -3173,7 +3173,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 6.474547373225153
     image_change_at_stop: 17.22289276123047
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_1mm_r2
+  run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_hard_1mm_r2
   run_folder_was: DIGIT_hard_1mm_r2__7
   run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_hard_2mm_r1
@@ -3210,7 +3210,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 4.806645506424797
     image_change_at_stop: 19.61933135986328
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_2mm_r1
+  run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_hard_2mm_r1
   run_folder_was: DIGIT_hard_2mm_r1__3
   run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
   history:
@@ -3235,7 +3235,7 @@ sensors:
         the image still changing at 0.22 lvl/N (82% of peak)'
       peak_slope_levels_per_N: 0.2680908752876831
       image_change_at_stop: 7.733381271362305
-    run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_2mm_r1
+    run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_hard_2mm_r1
     run_folder_was: DIGIT_hard_2mm_r1__2
     run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_hard_2mm_r2
@@ -3272,7 +3272,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 4.300627740900884
     image_change_at_stop: 21.231826782226562
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_2mm_r2
+  run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_hard_2mm_r2
   run_folder_was: DIGIT_hard_2mm_r2__2
   run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
   history:
@@ -3297,7 +3297,7 @@ sensors:
         the image still changing at 0.03 lvl/N (25% of peak)'
       peak_slope_levels_per_N: 0.1065267700928766
       image_change_at_stop: 7.927051544189453
-    run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_2mm_r2
+    run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_hard_2mm_r2
 - id: DIGIT_hard_3mm_r1
   principle: DIGIT
   hardness: hard
@@ -3344,7 +3344,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 2.8896851003685065
     image_change_at_stop: 14.869571685791016
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_3mm_r1
+  run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_hard_3mm_r1
   run_folder_was: DIGIT_hard_3mm_r1__2
   run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_hard_3mm_r2
@@ -3381,7 +3381,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 4.043757018536492
     image_change_at_stop: 18.891855239868164
-  run: data/DIGIT/20260910_passA_calibgrid/DIGIT_hard_3mm_r2
+  run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_hard_3mm_r2
 - id: DIGIT_Marker_soft_1mm_r1
   principle: DIGIT_Marker
   hardness: soft
@@ -3418,7 +3418,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 1.2908239017454577
     image_change_at_stop: 19.668333053588867
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r1
+  run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r1
   run_folder_was: DIGIT_Marker_soft_1mm_r1__2
   run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
   history:
@@ -3444,7 +3444,7 @@ sensors:
         the image still changing at 0.30 lvl/N (19% of peak)'
       peak_slope_levels_per_N: 1.571255950862121
       image_change_at_stop: 17.948955535888672
-    run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r1
+    run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r1
 - id: DIGIT_Marker_soft_1mm_r2
   principle: DIGIT_Marker
   hardness: soft
@@ -3481,7 +3481,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 1.6101104122414582
     image_change_at_stop: 18.192941665649414
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r2
+  run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r2
   run_folder_was: DIGIT_Marker_soft_1mm_r2__2
   run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
   history:
@@ -3507,7 +3507,7 @@ sensors:
         image still changing at 0.14 lvl/N (8% of peak)'
       peak_slope_levels_per_N: 1.7854750228535348
       image_change_at_stop: 18.499286651611328
-    run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r2
+    run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r2
 - id: DIGIT_Marker_soft_2mm_r1
   principle: DIGIT_Marker
   hardness: soft
@@ -3543,7 +3543,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 1.9036521924249954
     image_change_at_stop: 23.921714782714844
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_2mm_r1
+  run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_2mm_r1
 - id: DIGIT_Marker_soft_2mm_r2
   principle: DIGIT_Marker
   hardness: soft
@@ -3579,7 +3579,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 2.1009131365418394
     image_change_at_stop: 22.893983840942383
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_2mm_r2
+  run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_2mm_r2
 - id: DIGIT_Marker_soft_3mm_r1
   principle: DIGIT_Marker
   hardness: soft
@@ -3614,7 +3614,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 2.9731313065239
     image_change_at_stop: 24.136445999145508
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_3mm_r1
+  run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_3mm_r1
 - id: DIGIT_Marker_soft_3mm_r2
   principle: DIGIT_Marker
   hardness: soft
@@ -3649,7 +3649,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 3.1694091614877795
     image_change_at_stop: 25.118934631347656
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_3mm_r2
+  run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_3mm_r2
 - id: DIGIT_Marker_medium_1mm_r1
   principle: DIGIT_Marker
   hardness: medium
@@ -3686,7 +3686,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 2.121192348684651
     image_change_at_stop: 20.406761169433594
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_medium_1mm_r1
+  run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_medium_1mm_r1
 - id: DIGIT_Marker_medium_1mm_r2
   principle: DIGIT_Marker
   hardness: medium
@@ -3723,7 +3723,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 1.7613579534543184
     image_change_at_stop: 26.054712295532227
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_medium_1mm_r2
+  run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_medium_1mm_r2
 - id: DIGIT_Marker_medium_2mm_r1
   principle: DIGIT_Marker
   hardness: medium
@@ -3759,7 +3759,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 2.4427120600360985
     image_change_at_stop: 24.822025299072266
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_medium_2mm_r1
+  run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_medium_2mm_r1
 - id: DIGIT_Marker_medium_2mm_r2
   principle: DIGIT_Marker
   hardness: medium
@@ -3795,7 +3795,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 2.5816980784372143
     image_change_at_stop: 24.57159423828125
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_medium_2mm_r2
+  run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_medium_2mm_r2
 - id: DIGIT_Marker_medium_3mm_r1
   principle: DIGIT_Marker
   hardness: medium
@@ -3830,7 +3830,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 3.170588672130032
     image_change_at_stop: 18.485111236572266
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_medium_3mm_r1
+  run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_medium_3mm_r1
   run_folder_was: DIGIT_Marker_medium_3mm_r1__2
   run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_Marker_medium_3mm_r2
@@ -3867,7 +3867,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 1.7902929176851035
     image_change_at_stop: 18.252901077270508
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_medium_3mm_r2
+  run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_medium_3mm_r2
 - id: DIGIT_Marker_hard_1mm_r1
   principle: DIGIT_Marker
   hardness: hard
@@ -3904,7 +3904,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 1.3022864432502201
     image_change_at_stop: 19.171714782714844
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_hard_1mm_r1
+  run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_hard_1mm_r1
 - id: DIGIT_Marker_hard_1mm_r2
   principle: DIGIT_Marker
   hardness: hard
@@ -3941,7 +3941,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 0.8737046468031284
     image_change_at_stop: 13.838066101074219
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_hard_1mm_r2
+  run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_hard_1mm_r2
 - id: DIGIT_Marker_hard_2mm_r1
   principle: DIGIT_Marker
   hardness: hard
@@ -3977,7 +3977,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 2.268507543360011
     image_change_at_stop: 22.781639099121094
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_hard_2mm_r1
+  run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_hard_2mm_r1
 - id: DIGIT_Marker_hard_2mm_r2
   principle: DIGIT_Marker
   hardness: hard
@@ -4013,7 +4013,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 3.1719928690044568
     image_change_at_stop: 24.998178482055664
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_hard_2mm_r2
+  run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_hard_2mm_r2
 - id: DIGIT_Marker_hard_3mm_r1
   principle: DIGIT_Marker
   hardness: hard
@@ -4048,7 +4048,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 2.408065276961918
     image_change_at_stop: 24.10885238647461
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_hard_3mm_r1
+  run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_hard_3mm_r1
   run_folder_was: DIGIT_Marker_hard_3mm_r1__2
   run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_Marker_hard_3mm_r2
@@ -4085,7 +4085,7 @@ sensors:
     consecutive: 2
     peak_slope_levels_per_N: 1.5273798255256767
     image_change_at_stop: 21.95709991455078
-  run: data/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_hard_3mm_r2
+  run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_hard_3mm_r2
 campaign:
   created: '2026-09-02T12:09:13.725510'
   seed: 20260902

@@ -170,7 +170,7 @@ def _shrink(g):
 
 
 def load_run(probe, sensor):
-    run = ROOT / "data" / "9DTact" / DATASETS[probe] / sensor
+    run = ROOT / "data" / "20260911_VBTSresolution_dataset" / "9DTact" / DATASETS[probe] / sensor
     st = json.loads((run / "state.json").read_text())
     lad = pd.read_csv(run / f"shape_{probe}" / "ladder.csv")
     ref = cv2.cvtColor(cv2.imread(str(run / "reference.png")), cv2.COLOR_BGR2GRAY)
@@ -441,7 +441,7 @@ def main():
         if "error" in o:
             print(f"  {o['sensor']}: {o['error']}")
     S = pd.DataFrame(summ); R = pd.DataFrame(rungs)
-    outdir = ROOT / "data" / "9DTact"
+    outdir = ROOT / "data" / "20260911_VBTSresolution_dataset" / "9DTact"
     S.to_csv(outdir / "shape_reconstruction.csv", index=False)
     R.to_csv(outdir / "shape_reconstruction_rungs.csv", index=False)
     cols = ["sensor", "scale_source", "mm_per_grey_level", "grey_levels_used",

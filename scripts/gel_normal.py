@@ -23,7 +23,8 @@ chk, cal = R.chk, R.cal
 def plane_of(sensor):
     """Mean measured slope of that unit's gel, over every pass that fitted one."""
     sx, sy, n = [], [], 0
-    for p in glob.glob(str(ROOT / "data" / "*" / "20260905_passA_*" / "*" / "state.json")):
+    for p in glob.glob(str(ROOT / "data" / "**" / "20260905_passA_*" / "*" / "state.json"),
+                       recursive=True):
         name = Path(p).parent.name
         for s in ("__2", "__3", "__badzero", "__settle015", "__failed1", "__failed2"):
             name = name.replace(s, "")
@@ -45,7 +46,8 @@ def main():
 
     run = R.active_run() if hasattr(R, "active_run") else None
     meta = None
-    for c in sorted(glob.glob(str(ROOT / "data" / "*" / "20260905_passA_*" / a.sensor / "meta.yaml"))):
+    for c in sorted(glob.glob(str(ROOT / "data" / "**" / "20260905_passA_*"
+                                  / a.sensor / "meta.yaml"), recursive=True)):
         meta = yaml.safe_load(open(c))
     if meta is None:
         raise SystemExit(f"no meta.yaml for {a.sensor}")

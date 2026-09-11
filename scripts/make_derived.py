@@ -27,7 +27,7 @@ import yaml
 from scipy.stats import spearmanr
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA = ROOT / "data" / "9DTact"
+DATA = ROOT / "data" / "20260911_VBTSresolution_dataset" / "9DTact"
 FIGS = ROOT / "docs" / "figures"
 DIFF_LEVEL = 7          # grey levels above the reference that count as contact
 HARDS = ["soft", "medium", "hard"]

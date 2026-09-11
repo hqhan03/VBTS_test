@@ -28,7 +28,7 @@ import pandas as pd
 from scipy.stats import spearmanr
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEFAULT_RUNS = os.path.join(ROOT, "data", "9DTact", "20260907_passB_ball8")
+DEFAULT_RUNS = os.path.join(ROOT, "data", "20260911_VBTSresolution_dataset", "9DTact", "20260907_passB_ball8")
 # px/mm at full resolution. 9DTact ran with a fixed 100 (scale.yaml gives
 # 96-104); DIGIT and DIGIT_Marker differ enough per unit (83-117) that the
 # per-unit value from derived_variables.csv is used when it is there, since

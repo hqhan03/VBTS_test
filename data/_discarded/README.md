@@ -18,7 +18,7 @@
 `scripts/analyse_resolution.py` 가 쓰는 규칙과 **글자 그대로 같다**: 격리 표식이 붙지 않고,
 접미사를 뗀 이름이 센서 id 와 같으며, 실제 데이터가 있는 폴더 중 **가장 최근 것**.
 119개 조합을 대조해 불일치 0건임을 확인한 뒤 옮겼으므로,
-`data/9DTact/resolution_measurements.csv` 의 210행은 그대로 재현된다.
+`data/20260911_VBTSresolution_dataset/9DTact/resolution_measurements.csv` 의 210행은 그대로 재현된다.
 
 ## 깊이에 대한 주의
 

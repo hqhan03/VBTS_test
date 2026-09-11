@@ -82,7 +82,7 @@ import cv2
 import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent
-DATASET = ROOT / "data" / "9DTact" / "20260907_passB_ball8"
+DATASET = ROOT / "data" / "20260911_VBTSresolution_dataset" / "9DTact" / "20260907_passB_ball8"
 SIZES = [(1920, 1080), (1280, 720), (854, 480), (640, 360), (426, 240),
          (320, 180), (160, 90), (80, 45), (48, 27), (32, 18), (16, 9), (8, 5)]
 
@@ -661,7 +661,7 @@ def main():
                          "AND the amplitude, leaving only the imprint's shape "
                          "and extent. See representation().")
     ap.add_argument("--dataset-dir", default=None,
-                    help="Pass B dataset folder; default data/9DTact/20260907_passB_ball8. "
+                    help="Pass B dataset folder; default data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8. "
                          "The principle prefix is taken from its parent folder name.")
     ap.add_argument("--canonical", default=None,
                     help="CANONICAL.yaml naming one run per unit (skips __N re-runs)")
@@ -687,7 +687,7 @@ def main():
                          "what the pretrained ResNet-18 weights were trained for.")
     ap.add_argument("--fz-max", type=float, default=None,
                     help="drop frames with |Fz| above this (N); 2.0 = the fixed range")
-    ap.add_argument("--out", default=str(ROOT / "data" / "9DTact" / "force_vs_resolution_v2.csv"))
+    ap.add_argument("--out", default=str(ROOT / "data" / "20260911_VBTSresolution_dataset" / "9DTact" / "force_vs_resolution_v2.csv"))
     a = ap.parse_args()
     sizes = SIZES if not a.sizes else [tuple(int(v) for v in s.split("x"))
                                        for s in a.sizes.split(",")]

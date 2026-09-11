@@ -5,7 +5,7 @@
 실제로 쓰이는지** 물었다. `shape_vs_resolution.md` 와 같은 12 개 16:9 크기를 써서 두
 곡선을 나란히 놓을 수 있다.
 
-데이터: `data/9DTact/force_vs_resolution_v2.csv` (408 행 = 17 유닛 × 12 크기 × 2 분할),
+데이터: `data/20260911_VBTSresolution_dataset/9DTact/force_vs_resolution_v2.csv` (408 행 = 17 유닛 × 12 크기 × 2 분할),
 `force_scalar_baseline.csv` (17 행). 스크립트: `scripts/force_vs_resolution.py`,
 `scripts/force_scalar_baseline.py`, `scripts/make_force_figures.py`.
 
@@ -62,7 +62,7 @@ patience 8 을 시험했더니 320×180 이 epoch 14 에서 잘려 0.050 대신 
 
 ![force vs resolution](figures/force_vs_resolution.png)
 
-유닛 17 개의 중앙값, **고친 사이클 분할**(v3, `data/9DTact/force_vs_resolution_v3.csv`).
+유닛 17 개의 중앙값, **고친 사이클 분할**(v3, `data/20260911_VBTSresolution_dataset/9DTact/force_vs_resolution_v3.csv`).
 `Fz(법선)` 과 `전단(전단블록)` 은 블록을 나눠 잰 값이고, 그 옆 두 열은 모든 프레임을 섞어
 잰 예전 방식이다 — 전단을 법선 프레임까지 포함해 평균내면 낮아 보인다(§2.3b).
 
@@ -104,7 +104,7 @@ patience 8 을 시험했더니 320×180 이 epoch 14 에서 잘려 0.050 대신 
 
 크기 사이의 차이가 해상도인지 학습의 산포인지 가르려면, **아무것도 바꾸지 않고 시드만
 바꿨을 때** 얼마나 움직이는지를 알아야 한다. 3 유닛 × 3 크기 × 5 시드, 같은 v2 레시피
-(`data/9DTact/force_seed_study_v2.csv`, 45 행).
+(`data/20260911_VBTSresolution_dataset/9DTact/force_seed_study_v2.csv`, 45 행).
 
 | 유닛 | 크기 | 평균 Fz MAE | sd | 최대/최소 |
 |---|---|---|---|---|
@@ -180,7 +180,7 @@ R² 도 0.936 → 0.872 로 이 칸에서만 떨어진다. 첫 판에서는 8×5
 지표, (iii) 칸당 시드 하나 위에 서 있었다. 새 스윕은 17 유닛 × 10 크기(8×5 – 854×480)
 × **3 시드**, 사이클 경계를 목표 비율에 가장 가깝게 공동 선택한 분할(전단 테스트
 58–119 프레임), **전단 블록 테스트 프레임만으로** 잰 `lat_mae_shear` 다.
-`data/9DTact/shear_knee_none.csv`, `shear_knee_anti.csv`, `scripts/analyse_shear_knee.py`.
+`data/20260911_VBTSresolution_dataset/9DTact/shear_knee_none.csv`, `shear_knee_anti.csv`, `scripts/analyse_shear_knee.py`.
 
 유닛마다 두 수를 읽는다. **해상도 손실** = 8×5 에서의 오차 − 그 유닛의 최소(그림을 줄여서
 잃는 양). **무릎** = 최소에서 왼쪽으로 가다 3 시드 평균이 처음 `max(2 × 시드 sd, 최소의

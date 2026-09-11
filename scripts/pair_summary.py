@@ -64,7 +64,7 @@ if __name__ == "__main__":
     rows = []
     for ds in datasets:
         probe = ds.split("_")[-1]
-        base = ROOT / "data" / "DIGIT" / ds
+        base = ROOT / "data" / "20260911_VBTSresolution_dataset" / "DIGIT" / ds
         if not base.exists():
             print(f"  {ds}: 없음"); continue
         for run in sorted(base.glob("DIGIT_*")):

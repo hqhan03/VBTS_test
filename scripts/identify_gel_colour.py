@@ -24,7 +24,7 @@ import numpy as np, cv2, pandas as pd
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-LIB = ROOT / "data" / "DIGIT" / "20260908_passB_ball8"
+LIB = ROOT / "data" / "20260911_VBTSresolution_dataset" / "DIGIT" / "20260908_passB_ball8"
 
 
 def ratio(path):
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     lib = library()
     rows = []
     for ds in sys.argv[1:]:
-        base = ROOT / "data" / "DIGIT" / ds
+        base = ROOT / "data" / "20260911_VBTSresolution_dataset" / "DIGIT" / ds
         if not base.exists():
             print(f"  {ds}: 없음"); continue
         print(f"\n=== {ds} ===")
