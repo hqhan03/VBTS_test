@@ -171,8 +171,26 @@ probes:
     contact_law: hertz
     tests: [force_estimation, max_force]
     tcp_z_mm: 36.794
-    tcp_status: common endpoint by design
+    tcp_status: NOT a common endpoint -- measured 0.23 mm short (2026-09-11)
     centre_above_tcp_mm: 2.0
+    surface_offset_vs_ball4_mm: 0.227
+    surface_offset_basis: >-
+      17 9DTact units, each zeroed with both probes. ball8 reports the gel
+      surface HIGHER than ball4 by a median +0.227 mm (mean +0.212 +- 0.139,
+      range -0.095 to +0.421) in the Hertz force fit, and by +0.238 mm in the
+      model-free image-onset estimate (n = 16). The two estimators agree, which
+      rules out a radius-dependent fit bias and leaves the geometry: the ball8
+      tip endpoint protrudes about 0.23 mm LESS than the inherited tcp_z_mm
+      assumes, so a reported tip height with ball8 mounted is 0.23 mm too high.
+      Reproduce with src/scripts/probe_surface_offsets.py 9DTact.
+      WHAT THIS DOES NOT AFFECT: depths inside one run. Every run re-measures
+      the surface with its own probe and depth = that surface - the current tip
+      height, so the offset cancels. Pass B depths and the ball8 ceiling ramps
+      stand. WHAT IT DOES AFFECT: comparing a surface height recorded with one
+      probe against a reading taken with the other -- the damage guard does
+      exactly this, and subtracts the per-probe mean before judging.
+      tcp_z_mm is deliberately left at 36.794: correcting it would silently
+      change the meaning of every surface height already recorded with ball8.
     note: >-
       Pass B probe. Chosen over the 4 mm ball because at 5 N the 4 mm ball
       buries past its equator on all nine designs (2.18x radius worst case),
