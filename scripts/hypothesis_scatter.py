@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Scatter panels for the pre-registered hypotheses in docs/cross_principle.md 2.
 
-Reads data/derived_with_performance.csv (written by correlations.py). One panel
+Reads data/analysis/derived_with_performance.csv (written by correlations.py). One panel
 per hypothesis, one marker shape per principle, Spearman within each principle
 printed in the legend, plus the rank-partial rho controlling for principle.
 Nothing pooled across principles is drawn as a fit line.
@@ -11,7 +11,7 @@ from scipy.stats import spearmanr
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-df = pd.read_csv(os.path.join(ROOT, "data", "derived_with_performance.csv"))
+df = pd.read_csv(os.path.join(ROOT, "data", "analysis", "derived_with_performance.csv"))
 COL = {"9DTact": "#4c72b0", "DIGIT_Marker": "#55a868", "DIGIT": "#dd8452"}
 MK = {"9DTact": "o", "DIGIT_Marker": "s", "DIGIT": "^"}
 H = [("H1", "img_slope_lvl_per_N", "fz_best", "image response (lvl / N)", "Fz best MAE (N)"),

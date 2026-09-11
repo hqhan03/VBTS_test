@@ -25,7 +25,7 @@ data/20260911_VBTSresolution_dataset/
 ```
 
 버린 런은 여기 없다 — `data/_discarded/<원리>/<pass>/` 에 이유와 함께 있다.
-유닛당 폴더를 하나로 줄인 기록은 `data/DATASET_CLEANUP.md` 다.
+유닛당 폴더를 하나로 줄인 기록은 `data/analysis/DATASET_CLEANUP.md` 다.
 
 ## 프로브 격자
 
@@ -132,4 +132,4 @@ DIGIT 계열은 격자 pass 뒤에 따로 돌려 36 / 36 실측했다 (`docs/for
 
 ---
 
-유닛-pass 칸 370 개 중 353 개가 채워져 있다 (95.4 %). 표 데이터는 `data/dataset_audit.csv`.
+유닛-pass 칸 370 개 중 353 개가 채워져 있다 (95.4 %). 표 데이터는 `data/analysis/dataset_audit.csv`.

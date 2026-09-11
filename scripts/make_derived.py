@@ -45,7 +45,7 @@ def ladder_radii(sensor: str):
     # mtime 으로 고르던 자리다. 정리 전 이 데이터셋의 다섯 그룹은 mtime 이 분 단위까지
     # 같아서 사실상 임의로 골랐고, derived_variables.py 는 같은 유닛에서 다른 런을
     # 집고 있었다. 지금은 유닛당 폴더가 하나이고, 규칙도 그쪽과 맞춘다
-    # (data/DATASET_CLEANUP.md).
+    # (data/analysis/DATASET_CLEANUP.md).
     run = max(cands, key=lambda c: ((c / "scale_ball4" / "scale.yaml").exists(),
                                     int(c.name.split("__")[1]) if "__" in c.name else 1))
     ref = cv2.cvtColor(cv2.imread(str(run / "reference.png")), cv2.COLOR_BGR2GRAY)

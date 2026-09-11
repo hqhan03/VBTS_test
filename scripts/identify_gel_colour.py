@@ -74,6 +74,6 @@ if __name__ == "__main__":
                   f"d {d[best]:.4f}  (라벨 {d.get(claimed, np.nan):.4f}, 2위 {d[second]:.4f}, "
                   f"여유 {d[second]/max(d[best],1e-9):.1f}x)")
     df = pd.DataFrame(rows)
-    out = ROOT / "data" / "gel_identity_colour.csv"
+    out = ROOT / "data" / "analysis" / "gel_identity_colour.csv"
     df.to_csv(out, index=False)
     print(f"\n  일치 {df.agrees.sum()}/{len(df)}  ->", out)

@@ -132,7 +132,7 @@ if __name__ == "__main__":
                 for D in sorted(glob.glob(os.path.join(a.runs, principle + "_*")))
                 if not re.search(r"__\d+$", D)]
     scale = {}
-    dv = os.path.join(ROOT, "data", "derived_variables.csv")
+    dv = os.path.join(ROOT, "data", "analysis", "derived_variables.csv")
     if os.path.exists(dv):
         d = pd.read_csv(dv)
         d = d[d.principle == principle]

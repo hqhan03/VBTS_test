@@ -33,7 +33,7 @@ candidate's channels in a single task, so all candidates are scored against the
 same physical load and one weight placement settles it. Nothing is applied
 automatically: the operator edits ft_config.yaml after seeing which one passes.
 
-Results go to data/weight_validation/YYYYMMDD_HHMMSS/.
+Results go to data/rig/weight_validation/YYYYMMDD_HHMMSS/.
 """
 
 from __future__ import annotations
@@ -65,7 +65,7 @@ NO ROBOT MOTION
 NO DAQ OUTPUT
 ========================================="""
 
-OUTPUT_ROOT = PROJECT_ROOT / "data" / "weight_validation"
+OUTPUT_ROOT = PROJECT_ROOT / "data" / "rig" / "weight_validation"
 
 # Candidate SG->ai mappings scored by --compare-mappings. All are plausible from
 # the wiring evidence; the known mass decides between them.

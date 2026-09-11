@@ -40,7 +40,7 @@ Application candidates, none applied:
 | | |
 |---|---|
 | Date | 2026-08-31 |
-| Data | `data/tcp_calibration/20260831_130959/` |
+| Data | `data/rig/tcp_calibration/20260831_130959/` |
 | Purpose | same-indenter repeatability against Run 2 |
 | **TCP (flange frame)** | **`[0.055, 0.274, 36.757]` mm** |
 | Orientation | **not calibrated** — flange-aligned assumption |
@@ -57,7 +57,7 @@ Application candidates, none applied:
 | | |
 |---|---|
 | Date | 2026-08-31 |
-| Data | `data/tcp_calibration/20260831_125056/` |
+| Data | `data/rig/tcp_calibration/20260831_125056/` |
 | Indenter | monolithic Form 4 printed part, spherical tip printed as one piece |
 | **TCP (flange frame)** | **`[-0.049, 0.370, 36.831]` mm** |
 | Orientation | **not calibrated** — flange-aligned assumption |
@@ -73,7 +73,7 @@ Application candidates, none applied:
 | | |
 |---|---|
 | Date | 2026-08-26 |
-| Data | `data/tcp_calibration/20260826_234919/` |
+| Data | `data/rig/tcp_calibration/20260826_234919/` |
 | Indenter | printed body with a **Ø4 mm steel ball bonded on** with instant adhesive |
 | TCP | `[0.127, 0.427, 36.847]` mm |
 | rms | 0.454 mm, condition number 6.9 |

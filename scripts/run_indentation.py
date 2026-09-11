@@ -84,7 +84,7 @@ from vbts_platform.camera_interface import Camera  # noqa: E402
 DATASET = "20260905_passA"
 OUT = ROOT / "data"
 ACTIVE = OUT / "_active_run.txt"
-TRANSFORMS = ROOT / "data" / "frame_transform"
+TRANSFORMS = ROOT / "data" / "rig" / "frame_transform"
 
 
 def latest_transform() -> tuple[dict, Path]:

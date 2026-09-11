@@ -67,7 +67,7 @@ NO SERVO ENABLE
 NO TCP WRITE
 ==========================================="""
 
-OUT = PROJECT_ROOT / "data" / "tcp_calibration"
+OUT = PROJECT_ROOT / "data" / "rig" / "tcp_calibration"
 ROBOT_CFG = PROJECT_ROOT / "config" / "robot_config.yaml"
 POSES = OUT / "_recorded_poses.json"
 MARKER = OUT / "_active_run.txt"

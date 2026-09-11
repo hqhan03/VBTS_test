@@ -169,6 +169,6 @@ if __name__ == "__main__":
         for c in CH:
             print(f"    {c} 상관 중앙 {sub[c].median():+.3f}  범위 "
                   f"{sub[c].min():+.3f}..{sub[c].max():+.3f}")
-    out = ROOT / "data" / "calibgrid_transfer.csv"
+    out = ROOT / "data" / "analysis" / "calibgrid_transfer.csv"
     d.to_csv(out, index=False)
     print(f"\n  -> {out}")

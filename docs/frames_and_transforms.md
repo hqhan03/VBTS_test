@@ -10,7 +10,7 @@ superseded originals are in `docs/archive/`.
 
 ---
 
-Measured 2026-08-31. Data: `data/frame_transform/20260831_205135/transform.yaml`
+Measured 2026-08-31. Data: `data/rig/frame_transform/20260831_205135/transform.yaml`
 
 The sensor is bolted to the table and the robot base does not move, so this is a
 constant — six numbers measured once, not a per-pose calculation.
@@ -185,7 +185,7 @@ back.
 ## Wrench sign convention
 
 Established by manual 6-axis excitation with a healthy sensor
-(`data/manual_ft_excitation_final/20260826_091843`, Task 17):
+(`data/rig/manual_ft_excitation_final/20260826_091843`, Task 17):
 
 | Axis | Positive direction | Evidence |
 |---|---|---|

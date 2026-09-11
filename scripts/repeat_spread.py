@@ -85,7 +85,7 @@ for rep in sorted(ROOT.glob("data/20260911_VBTSresolution_dataset/*/repeated_dat
                              cv=round(float(f.std(ddof=1) / max(f.mean(), 1e-9)), 4)))
 
 D = pd.DataFrame(rows)
-out = ROOT / "data" / "repeat_spread.csv"
+out = ROOT / "data" / "analysis" / "repeat_spread.csv"
 D.to_csv(out, index=False)
 for n in notes:
     print("  " + n)

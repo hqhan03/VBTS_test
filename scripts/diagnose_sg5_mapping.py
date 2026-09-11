@@ -63,7 +63,7 @@ NO ROBOT ACCESS
 NO DAQ OUTPUT
 ===================================="""
 
-OUT = PROJECT_ROOT / "data" / "sg5_mapping"
+OUT = PROJECT_ROOT / "data" / "rig" / "sg5_mapping"
 STATE = OUT / "_state.json"
 
 RSE_CHANNELS = [f"Dev1/ai{i}" for i in range(32)]

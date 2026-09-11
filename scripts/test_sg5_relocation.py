@@ -55,7 +55,7 @@ NO ROBOT ACCESS
 NO DAQ OUTPUT
 ===================================="""
 
-OUT = PROJECT_ROOT / "data" / "sg5_relocation"
+OUT = PROJECT_ROOT / "data" / "rig" / "sg5_relocation"
 STATE = OUT / "_state.json"
 
 CHANNELS = [f"Dev1/ai{i}" for i in range(8)]

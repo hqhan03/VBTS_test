@@ -1057,7 +1057,7 @@ newrun -> tare -> reference -> enable -> liftoff -> align -> qc -> search -> ...
 있는 것을 찾았다: 같은 유닛을 같은 프로토콜로 두 번 이상 잰 런이 **10 유닛 18 런**.
 분석이 쓰는 런 하나만 데이터셋에 남기고, 나머지는 원리마다 한 곳 —
 `data/<원리>/repeated_data/<데이터셋>/` — 으로 모았다
-(`scripts/repeat_spread.py`, `data/repeat_spread.csv`).
+(`scripts/repeat_spread.py`, `data/analysis/repeat_spread.csv`).
 
 공통 깊이에서 힘의 변동계수 — 같은 유닛을 다시 앉혔을 때 대 다른 유닛으로 바꿨을 때:
 

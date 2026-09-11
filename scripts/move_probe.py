@@ -77,8 +77,8 @@ cal = _load("cal", ROOT / "scripts" / "prepare_tcp_calibration.py")
 chk = _load("chk", ROOT / "scripts" / "robot_readonly_check.py")
 from vbts_platform.robot_interface import RobotInterface  # noqa: E402
 
-OUT = ROOT / "data" / "motion"
-TRANSFORMS = ROOT / "data" / "frame_transform"
+OUT = ROOT / "data" / "rig" / "motion"
+TRANSFORMS = ROOT / "data" / "rig" / "frame_transform"
 STATE_NAMES = {1: "stopped", 2: "running", 3: "paused", 4: "drag-teach"}
 
 

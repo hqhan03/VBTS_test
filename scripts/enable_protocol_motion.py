@@ -56,7 +56,7 @@ def _load(name: str, path: Path):
 cal = _load("cal", ROOT / "scripts" / "prepare_tcp_calibration.py")
 from vbts_platform.robot_interface import RobotInterface  # noqa: E402
 
-OUT = ROOT / "data" / "motion_enable"
+OUT = ROOT / "data" / "rig" / "motion_enable"
 STATE_NAMES = {1: "stopped", 2: "running", 3: "paused", 4: "drag-teach"}
 
 # Only these may be sent. Every one changes controller state; none is a motion.

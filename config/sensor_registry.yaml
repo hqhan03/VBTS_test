@@ -253,7 +253,7 @@ sensors:
     stopped_on: depth backstop
     ladder_rungs_reached: 3
     depth_cap_used_mm: null
-    run: data/20260901_protocol_development/9DTact_soft_1mm_r1__1
+    run: data/earlier_datasets/20260901_protocol_development/9DTact_soft_1mm_r1__1
     valid: false
     note: 'superseded protocol: 0.5 mm depth limit with the surface held at the search
       contact point plus a guessed 0.3 mm. Mixing these with current runs inflated
@@ -270,7 +270,7 @@ sensors:
     stopped_on: depth backstop
     ladder_rungs_reached: 2
     depth_cap_used_mm: null
-    run: data/20260901_protocol_development/9DTact_soft_1mm_r1__2
+    run: data/earlier_datasets/20260901_protocol_development/9DTact_soft_1mm_r1__2
     valid: false
     note: 'superseded protocol: 0.5 mm depth limit with the surface held at the search
       contact point plus a guessed 0.3 mm. Mixing these with current runs inflated
@@ -302,7 +302,7 @@ sensors:
     stopped_on: depth backstop
     ladder_rungs_reached: 3
     depth_cap_used_mm: null
-    run: data/20260901_protocol_development/9DTact_soft_1mm_r1__4
+    run: data/earlier_datasets/20260901_protocol_development/9DTact_soft_1mm_r1__4
     run_timestamp: '20260901_192519'
   - discarded: true
     reason: incomplete run deleted; shear ladder missing
@@ -312,7 +312,7 @@ sensors:
       surface_mm: 25.673000000000002
     safe_force_N: 0.5061475736477519
     safe_depth_mm: 0.7048564306587437
-    run: data/20260903_raw_dataset/9DTact_soft_1mm_r1
+    run: data/earlier_datasets/20260903_raw_dataset/9DTact_soft_1mm_r1
   - characterised_at: '2026-09-03T15:30:11.911737'
     gel_model:
       hertz_a: 0.8955145315849309
@@ -346,7 +346,7 @@ sensors:
         image still changing at 1.61 lvl/N (60% of peak)'
       peak_slope_levels_per_N: 2.692400716980644
       image_change_at_stop: 12.686229705810547
-    run: data/20260903_raw_dataset/9DTact_soft_1mm_r1
+    run: data/earlier_datasets/20260903_raw_dataset/9DTact_soft_1mm_r1
   - characterised_at: '2026-09-04T16:24:03.472608'
     gel_model:
       hertz_a: 1.1123877325739757
@@ -368,7 +368,7 @@ sensors:
         image still changing at 2.06 lvl/N (77% of peak)'
       peak_slope_levels_per_N: 2.6711026026492637
       image_change_at_stop: 12.833208084106445
-    run: data/20260903_raw_dataset/9DTact_soft_1mm_r1
+    run: data/earlier_datasets/20260903_raw_dataset/9DTact_soft_1mm_r1
   - characterised_at: '2026-09-04T16:49:24.604152'
     gel_model:
       hertz_a: 1.1295023595458085
@@ -390,7 +390,7 @@ sensors:
         image still changing at 1.53 lvl/N (53% of peak)'
       peak_slope_levels_per_N: 2.895464681135531
       image_change_at_stop: 13.241625785827637
-    run: data/20260903_raw_dataset/9DTact_soft_1mm_r1
+    run: data/earlier_datasets/20260903_raw_dataset/9DTact_soft_1mm_r1
   - characterised_at: '2026-09-04T17:13:20.747018'
     gel_model:
       hertz_a: 1.1389294043927438
@@ -412,7 +412,7 @@ sensors:
         image still changing at 1.54 lvl/N (56% of peak)'
       peak_slope_levels_per_N: 2.7324136552906517
       image_change_at_stop: 13.279708862304688
-    run: data/20260903_raw_dataset/9DTact_soft_1mm_r1
+    run: data/earlier_datasets/20260903_raw_dataset/9DTact_soft_1mm_r1
   - characterised_at: '2026-09-07T19:58:03.515230'
     gel_model:
       hertz_a: 1.804369359441545
@@ -448,7 +448,7 @@ sensors:
   ladder_rungs_reached: 35
   characterised_at: '2026-09-07T20:00:30.349434'
   run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_soft_1mm_r1
-  ladder_run: data/20260903_ladder_protocol/9DTact_soft_1mm_r1
+  ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_soft_1mm_r1
   image_response:
     max_measurable_force_N: null
     reached: false
@@ -545,7 +545,7 @@ sensors:
   ladder_rungs_reached: 29
   characterised_at: '2026-09-07T20:45:42.987586'
   run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_soft_1mm_r2
-  ladder_run: data/20260903_ladder_protocol/9DTact_soft_1mm_r2
+  ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_soft_1mm_r2
   history:
   - characterised_at: '2026-09-03T23:38:41.779164'
     gel_model:
@@ -580,7 +580,7 @@ sensors:
         the image still changing at 0.16 lvl/N (3% of peak)'
       peak_slope_levels_per_N: 4.634774724159238
       image_change_at_stop: 2.8305611610412598
-    run: data/20260903_raw_dataset/9DTact_soft_1mm_r2
+    run: data/earlier_datasets/20260903_raw_dataset/9DTact_soft_1mm_r2
   - characterised_at: '2026-09-04T00:52:58.545692'
     gel_model:
       hertz_a: 0.7454976887854421
@@ -602,7 +602,7 @@ sensors:
         the image still changing at 4.06 lvl/N (100% of peak)'
       peak_slope_levels_per_N: 4.057358060464493
       image_change_at_stop: 2.6152970790863037
-    run: data/20260903_raw_dataset/9DTact_soft_1mm_r2
+    run: data/earlier_datasets/20260903_raw_dataset/9DTact_soft_1mm_r2
   - characterised_at: '2026-09-04T01:40:25.435023'
     gel_model:
       hertz_a: 1.0577549483802344
@@ -624,7 +624,7 @@ sensors:
         image still changing at 1.89 lvl/N (49% of peak)'
       peak_slope_levels_per_N: 3.8779666321400974
       image_change_at_stop: 14.028670310974121
-    run: data/20260903_raw_dataset/9DTact_soft_1mm_r2
+    run: data/earlier_datasets/20260903_raw_dataset/9DTact_soft_1mm_r2
   - characterised_at: '2026-09-07T20:27:20.331717'
     gel_model:
       hertz_a: 1.8172041630770908
@@ -767,7 +767,7 @@ sensors:
   characterised_at: '2026-09-07T19:23:18.914585'
   run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_soft_2mm_r1
   run_timestamp: '20260902_123138'
-  ladder_run: data/20260903_ladder_protocol/9DTact_soft_2mm_r1
+  ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_soft_2mm_r1
   history:
   - characterised_at: '2026-09-02T12:33:19.213881'
     gel_model:
@@ -876,7 +876,7 @@ sensors:
   ladder_rungs_reached: 31
   characterised_at: '2026-09-07T19:40:48.967167'
   run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_soft_2mm_r2
-  ladder_run: data/20260903_ladder_protocol/9DTact_soft_2mm_r2
+  ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_soft_2mm_r2
   history:
   - characterised_at: '2026-09-03T16:40:20.026428'
     gel_model:
@@ -985,7 +985,7 @@ sensors:
   characterised_at: '2026-09-07T21:12:07.650371'
   run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_soft_3mm_r1
   run_timestamp: '20260902_124057'
-  ladder_run: data/20260903_ladder_protocol/9DTact_soft_3mm_r1
+  ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_soft_3mm_r1
   history:
   - characterised_at: '2026-09-02T12:43:01.431847'
     gel_model:
@@ -1093,7 +1093,7 @@ sensors:
   ladder_rungs_reached: 30
   characterised_at: '2026-09-07T21:31:52.875492'
   run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_soft_3mm_r2
-  ladder_run: data/20260903_ladder_protocol/9DTact_soft_3mm_r2
+  ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_soft_3mm_r2
   history:
   - characterised_at: '2026-09-03T16:30:43.070700'
     gel_model:
@@ -1201,7 +1201,7 @@ sensors:
       surface_mm: 25.546
     safe_force_N: 0.5106448354830633
     safe_depth_mm: 0.7005855538154186
-    run: data/20260903_raw_dataset/9DTact_medium_1mm_r1
+    run: data/earlier_datasets/20260903_raw_dataset/9DTact_medium_1mm_r1
     run_missing: true
     run_note: 이 런 폴더는 2026-09-11 이전에 지워졌다. 남은 것은 이 항목의 숫자뿐이다.
   - characterised_at: '2026-09-03T16:03:50.311470'
@@ -1228,7 +1228,7 @@ sensors:
   ladder_rungs_reached: 33
   characterised_at: '2026-09-07T21:50:25.693374'
   run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_medium_1mm_r1
-  ladder_run: data/20260903_ladder_protocol/9DTact_medium_1mm_r1
+  ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_medium_1mm_r1
   image_response:
     max_measurable_force_N: null
     reached: false
@@ -1325,7 +1325,7 @@ sensors:
   ladder_rungs_reached: 33
   characterised_at: '2026-09-07T22:09:59.668962'
   run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_medium_1mm_r2
-  ladder_run: data/20260903_ladder_protocol/9DTact_medium_1mm_r2
+  ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_medium_1mm_r2
   history:
   - characterised_at: '2026-09-03T17:07:43.584567'
     gel_model:
@@ -1433,11 +1433,11 @@ sensors:
   stopped_on: substrate stiffening
   ladder_rungs_reached: 50
   characterised_at: '2026-09-04T19:05:11.170677'
-  run: data/20260903_raw_dataset/9DTact_medium_2mm_r1
+  run: data/earlier_datasets/20260903_raw_dataset/9DTact_medium_2mm_r1
   run_missing: true
-  run_evidence: data/20260904_probe_tests/9DTact_medium_2mm_r1/characterize_to30N_nosub
-  run_note: 이 런 폴더는 지워졌다. 남아 있는 증거는 data/20260904_probe_tests/9DTact_medium_2mm_r1/characterize_to30N_nosub — 62 단, 23.11 N, 6.19 mm (2 mm 겔의 세 배 깊이), 2026-09-04 18:49. 그 겔이 영구변형된 유일한 기록이다 (docs/force_ceiling.md 7).
-  ladder_run: data/20260903_ladder_protocol/9DTact_medium_2mm_r1
+  run_evidence: data/earlier_datasets/20260904_probe_tests/9DTact_medium_2mm_r1/characterize_to30N_nosub
+  run_note: 이 런 폴더는 지워졌다. 남아 있는 증거는 data/earlier_datasets/20260904_probe_tests/9DTact_medium_2mm_r1/characterize_to30N_nosub — 62 단, 23.11 N, 6.19 mm (2 mm 겔의 세 배 깊이), 2026-09-04 18:49. 그 겔이 영구변형된 유일한 기록이다 (docs/force_ceiling.md 7).
+  ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_medium_2mm_r1
   history:
   - characterised_at: '2026-09-03T15:56:31.279723'
     gel_model:
@@ -1468,10 +1468,10 @@ sensors:
       consecutive: 2
       peak_slope_levels_per_N: 6.061415215530732
       image_change_at_stop: 57.435279846191406
-    run: data/20260903_raw_dataset/9DTact_medium_2mm_r1
+    run: data/earlier_datasets/20260903_raw_dataset/9DTact_medium_2mm_r1
     run_missing: true
-    run_evidence: data/20260904_probe_tests/9DTact_medium_2mm_r1/characterize_to30N_nosub
-    run_note: 이 런 폴더는 지워졌다. 남아 있는 증거는 data/20260904_probe_tests/9DTact_medium_2mm_r1/characterize_to30N_nosub — 62 단, 23.11 N, 6.19 mm (2 mm 겔의 세 배 깊이), 2026-09-04 18:49. 그 겔이 영구변형된 유일한 기록이다 (docs/force_ceiling.md 7).
+    run_evidence: data/earlier_datasets/20260904_probe_tests/9DTact_medium_2mm_r1/characterize_to30N_nosub
+    run_note: 이 런 폴더는 지워졌다. 남아 있는 증거는 data/earlier_datasets/20260904_probe_tests/9DTact_medium_2mm_r1/characterize_to30N_nosub — 62 단, 23.11 N, 6.19 mm (2 mm 겔의 세 배 깊이), 2026-09-04 18:49. 그 겔이 영구변형된 유일한 기록이다 (docs/force_ceiling.md 7).
   image_response:
     reached: true
     max_measurable_force_N: 21.238
@@ -1576,7 +1576,7 @@ sensors:
   ladder_rungs_reached: 30
   characterised_at: '2026-09-07T22:25:04.071654'
   run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_medium_2mm_r2
-  ladder_run: data/20260903_ladder_protocol/9DTact_medium_2mm_r2
+  ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_medium_2mm_r2
   history:
   - characterised_at: '2026-09-03T16:48:17.356011'
     gel_model:
@@ -1684,7 +1684,7 @@ sensors:
   ladder_rungs_reached: 31
   characterised_at: '2026-09-07T22:49:19.182438'
   run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_medium_3mm_r1
-  ladder_run: data/20260903_ladder_protocol/9DTact_medium_3mm_r1
+  ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_medium_3mm_r1
   history:
   - characterised_at: '2026-09-03T15:44:46.269461'
     gel_model:
@@ -1792,7 +1792,7 @@ sensors:
   ladder_rungs_reached: 28
   characterised_at: '2026-09-07T23:05:35.719606'
   run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_medium_3mm_r2
-  ladder_run: data/20260903_ladder_protocol/9DTact_medium_3mm_r2
+  ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_medium_3mm_r2
   history:
   - characterised_at: '2026-09-03T23:13:26.216455'
     gel_model:
@@ -1901,7 +1901,7 @@ sensors:
     stopped_on: depth backstop
     ladder_rungs_reached: 5
     depth_cap_used_mm: null
-    run: data/20260901_protocol_development/9DTact_hard_1mm_r1__2
+    run: data/earlier_datasets/20260901_protocol_development/9DTact_hard_1mm_r1__2
     run_timestamp: '20260901_193738'
   - discarded: true
     reason: incomplete run deleted; shear ladder missing
@@ -1911,7 +1911,7 @@ sensors:
       surface_mm: 25.54
     safe_force_N: 0.6523991851905464
     safe_depth_mm: 0.7023950305967404
-    run: data/20260903_raw_dataset/9DTact_hard_1mm_r1
+    run: data/earlier_datasets/20260903_raw_dataset/9DTact_hard_1mm_r1
     run_missing: true
     run_note: 이 런 폴더는 2026-09-11 이전에 지워졌다. 남은 것은 이 항목의 숫자뿐이다.
   - characterised_at: '2026-09-03T15:37:06.397706'
@@ -1961,7 +1961,7 @@ sensors:
   ladder_rungs_reached: 34
   characterised_at: '2026-09-07T23:37:14.141914'
   run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_hard_1mm_r1
-  ladder_run: data/20260903_ladder_protocol/9DTact_hard_1mm_r1
+  ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_hard_1mm_r1
   image_response:
     max_measurable_force_N: null
     reached: false
@@ -2058,7 +2058,7 @@ sensors:
   ladder_rungs_reached: 29
   characterised_at: '2026-09-07T23:54:43.721447'
   run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_hard_1mm_r2
-  ladder_run: data/20260903_ladder_protocol/9DTact_hard_1mm_r2
+  ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_hard_1mm_r2
   history:
   - characterised_at: '2026-09-03T16:54:19.159659'
     gel_model:
@@ -2168,7 +2168,7 @@ sensors:
   characterised_at: '2026-09-08T00:05:45.860542'
   run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_hard_2mm_r1
   run_timestamp: '20260903_140215'
-  ladder_run: data/20260903_ladder_protocol/9DTact_hard_2mm_r1
+  ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_hard_2mm_r1
   history:
   - characterised_at: '2026-09-03T14:04:06.305940'
     gel_model:
@@ -2279,7 +2279,7 @@ sensors:
   ladder_rungs_reached: 31
   characterised_at: '2026-09-08T00:16:00.631190'
   run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_hard_2mm_r2
-  ladder_run: data/20260903_ladder_protocol/9DTact_hard_2mm_r2
+  ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_hard_2mm_r2
   history:
   - characterised_at: '2026-09-03T23:32:01.721954'
     gel_model:
@@ -2400,7 +2400,7 @@ sensors:
     stopped_on: force cap
     ladder_rungs_reached: 12
     depth_cap_used_mm: null
-    run: data/20260903_raw_dataset/9DTact_hard_3mm_r1
+    run: data/earlier_datasets/20260903_raw_dataset/9DTact_hard_3mm_r1
     note: after ~1.5 h rest following 164 samples of loading
     run_timestamp: '20260901_180351'
   - characterised_at: '2026-09-01T18:15:49.033070'
@@ -2427,7 +2427,7 @@ sensors:
     stopped_on: force cap
     ladder_rungs_reached: 12
     depth_cap_used_mm: null
-    run: data/20260903_raw_dataset/9DTact_hard_3mm_r1
+    run: data/earlier_datasets/20260903_raw_dataset/9DTact_hard_3mm_r1
     run_timestamp: '20260901_180351'
   - characterised_at: '2026-09-01T18:28:10.598739'
     gel_model:
@@ -2439,7 +2439,7 @@ sensors:
     stopped_on: force cap
     ladder_rungs_reached: 12
     depth_cap_used_mm: null
-    run: data/20260901_protocol_development/9DTact_hard_3mm_r1__6
+    run: data/earlier_datasets/20260901_protocol_development/9DTact_hard_3mm_r1__6
   - characterised_at: '2026-09-03T15:15:07.136580'
     gel_model:
       hertz_a: 1.5194703370969103
@@ -2477,7 +2477,7 @@ sensors:
   commanded_depth_mm: 1.2
   command_vs_measured_mm: 0.03035002826925104
   run_timestamp: '20260901_180351'
-  ladder_run: data/20260903_ladder_protocol/9DTact_hard_3mm_r1
+  ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_hard_3mm_r1
   image_response:
     max_measurable_force_N: null
     reached: false
@@ -2572,7 +2572,7 @@ sensors:
   ladder_rungs_reached: 32
   characterised_at: '2026-09-08T00:26:09.207596'
   run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_hard_3mm_r2
-  ladder_run: data/20260903_ladder_protocol/9DTact_hard_3mm_r2
+  ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_hard_3mm_r2
   history:
   - characterised_at: '2026-09-03T16:21:24.255570'
     gel_model:

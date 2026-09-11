@@ -177,7 +177,7 @@ p < 0.0001). 최대 응답을 통제하면:
 ## 7. 안전 — 겔이 무너질 때 무엇이 보이나
 
 유일한 파괴 사례(`9DTact_medium_2mm_r1`, 2 mm 겔, 62 단). 기록은
-`data/20260904_probe_tests/9DTact_medium_2mm_r1/characterize_to30N_nosub/steps.csv`
+`data/earlier_datasets/20260904_probe_tests/9DTact_medium_2mm_r1/characterize_to30N_nosub/steps.csv`
 — 등록부의 그 이력 항목이 가리키던 폴더(`20260903_raw_dataset/…`)는 지워졌고, 지금은
 항목에 `run_evidence` 로 이 경로를 적어 두었다. 이 캠페인에서 겔이 영구변형된 유일한
 기록이므로 지우지 말 것:
@@ -218,10 +218,10 @@ run_grid_char.sh <unit> <dataset>
 --past-saturation-n 1.5          포화 뒤 더 눌러 확인
 ```
 
-요약 표는 `data/ceiling_summary.csv`, 단별 기록은
+요약 표는 `data/analysis/ceiling_summary.csv`, 단별 기록은
 `data/20260911_VBTSresolution_dataset/DIGIT*/20260910_passA_calibgrid/<유닛>/characterize/steps.csv` 다 — 2026-09-11
 정리 뒤 유닛당 폴더가 하나이고, 격자와 램프가 다른 런에서 나온 12 유닛은 램프 옆
-`PROVENANCE.yaml` 이 출처와 그 런의 영점 표면을 담는다(`data/CALIBGRID_CLEANUP.md`).
+`PROVENANCE.yaml` 이 출처와 그 런의 영점 표면을 담는다(`data/analysis/CALIBGRID_CLEANUP.md`).
 
 ## 8.1 표를 다시 만들 수 있다 — 그리고 다시 만들어 보니 여섯 유닛이 규칙 밖이었다
 

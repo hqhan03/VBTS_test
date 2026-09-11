@@ -58,7 +58,7 @@ NO IO
 NO PARAMETER WRITE
 =========================================="""
 
-OUT = PROJECT_ROOT / "data" / "robot_readonly_check"
+OUT = PROJECT_ROOT / "data" / "rig" / "robot_readonly_check"
 ROBOT_CFG = PROJECT_ROOT / "config" / "robot_config.yaml"
 
 # Only these may be called. Everything else raises before reaching the wire.

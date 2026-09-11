@@ -5,8 +5,8 @@
 직접 검증**하라. 이 문서는 그 기록이다. 가설은 결과를 보기 **전에** 적었다(§2). 결과가
 가설을 기각하면 그대로 남긴다.
 
-스크립트: `derived_variables.py` → `data/derived_variables.csv`; `correlations.py` →
-`data/correlations.csv`, `figures/correlations_pooled.png`; `cross_principle.py` →
+스크립트: `derived_variables.py` → `data/analysis/derived_variables.csv`; `correlations.py` →
+`data/analysis/correlations.csv`, `figures/correlations_pooled.png`; `cross_principle.py` →
 `figures/cross_principle_fz.png`; `analyse_saturation.py` → 원리별 `figures/saturation_*.png`.
 
 ## 0. 비교의 규칙
@@ -162,7 +162,7 @@ p 0.0003, 53 유닛). 즉 Fz 바닥도 라벨로 설명되기는 하는데, 그�
 저장 간격이 9DTact 412 ms 대 DIGIT 계열 196 ms 이고 한 프레임의 라벨을 만드는 평균 창
 (`t_exposure_start`→`t_img`)은 205 ms 대 60 ms 다. 즉 "프레임당" 은 원리 간 같은 양이 아니다. 그래서
 라벨을 실제로 모호하게 만드는 양 — **그 창 안에서 힘이 움직인 폭** — 을 50 Hz F/T 스트림에서 직접 재고
-(`scripts/label_blur.py` → `data/label_blur.csv`), 글라이드 페이싱 자체는 초당 값으로 비교한다.
+(`scripts/label_blur.py` → `data/analysis/label_blur.csv`), 글라이드 페이싱 자체는 초당 값으로 비교한다.
 
 | 셀 | 이미지 응답 @2 N (레벨) | 마커/9DTact | 창 안 Fz 이동 (N) | 창 안 전단 이동 (N) | Fz 속도 (N/s) |
 |---|---|---|---|---|---|
@@ -257,7 +257,7 @@ DIGIT 계열은 3 표본). 나머지를 제곱합 분해로 잔차로 돌린 값
 ### 3.5 마커 격자가 접촉보다 굵다: H9 의 전제가 이 프로브에서는 성립하지 않는다
 
 H9 은 "마커가 전단의 해상도 이득을 키운다" 고 예측했다. 그 전제는 마커 변위장이 전단을 읽을 만큼
-표본화된다는 것이다. 격자와 접촉을 같은 자로 재보면(`scripts/marker_geometry.py` → `data/marker_geometry.csv`,
+표본화된다는 것이다. 격자와 접촉을 같은 자로 재보면(`scripts/marker_geometry.py` → `data/analysis/marker_geometry.csv`,
 18 유닛, 각 유닛 자기 기준 이미지에서):
 
 | 양 | 중앙값 | 범위 |
@@ -277,7 +277,7 @@ Fz 무릎이 9DTact 보다 높게 나오면(잠정 80 대 32 px) 그 원인으�
 **공이 어디에 떨어졌나 (가림의 크기).** 프로브는 매 유닛 같은 자리(≈ 화면 (900, 700))에 내려오지만 겔을 다시
 장착할 때마다 격자의 위상이 달라진다. 접촉 중심에서 가장 가까운 점까지 50–142 px
 (간격의 0.19–0.46 배)이고, **접촉 원의 8–16 %가 불투명한 점 아래에
-들어간다**(`data/marker_occlusion.csv`). 접촉 반지름이 175 px 인데 가장 가까운 점이 그보다 가까우니
+들어간다**(`data/analysis/marker_occlusion.csv`). 접촉 반지름이 175 px 인데 가장 가까운 점이 그보다 가까우니
 **모든 유닛에서 접촉이 점과 겹친다** — 겹치지 않게 놓인 유닛이 하나도 없어서, 가림의 유무를 대조할 수는 없고
 정도(8–16 %)만 비교할 수 있다. 마커 스윕이 끝나면 이 값과 유닛별 바닥의 관계를 §4 에서 확인한다.
 
@@ -389,7 +389,7 @@ Wilcoxon):
 `data_wishlist.md` #0 의 수집을 끝냈다. **DIGIT 18 유닛 × pair025(중심간 1.25 mm) + 18 유닛 ×
 pair010(1.10 mm)**, 깊이 사다리 0.1–0.9 mm(1 mm 겔은 백스톱 때문에 0.6 까지), 판정은
 `scripts/analyse_resolution.py` 의 **미리 고정된** 두 기준(Rayleigh dip ≥ 0.265, Digit 360 의 MTF ≥ 0.5).
-집계는 `scripts/pair_summary.py` → `data/pair_resolution.csv`.
+집계는 `scripts/pair_summary.py` → `data/analysis/pair_resolution.csv`.
 
 **결과 1 — 36 런 전부가 분해한다.** pair025 18/18, pair010 18/18. 어느 유닛도 두 간격을 못 가르지 않았다.
 같은 칸의 9DTact 는 네 간격(1.25–2.00 mm) 중 **하나도** 분해하지 못한 유닛이 17 중 6 이었고 두께별
@@ -431,7 +431,7 @@ pair010 에서 1.10–1.12 mm(설계 1.10)로 나온다. pair 프로브는 **간
 ### 3.9 겔의 광학: 두께는 크게 바꾸고 경도는 전혀 바꾸지 않는다 (53 유닛, 학습 불필요)
 
 경도가 다른 겔은 다른 실리콘이거나 배합비가 다르므로 광학도 달라질 수 있다. 그것을 수집된 프레임만으로
-쟀다(`scripts/gel_optics.py` → `data/gel_optics.csv`). **먼저 교란 확인**: 노출·밝기·감마·대비·화이트밸런스가
+쟀다(`scripts/gel_optics.py` → `data/analysis/gel_optics.csv`). **먼저 교란 확인**: 노출·밝기·감마·대비·화이트밸런스가
 53 유닛 전부 동일하다(exposure 2047, brightness 64, gamma 100, contrast 4, wb 4600). 한 원리의 유닛들은 같은
 바디에 겔만 갈아 끼운 것이므로 **원리 안에서의 비교는 겔 비교**다. 원리 사이는 조명도 물리도 달라 비교하지
 않는다. 값은 카메라 레벨이며 방사 측정이 아니다.
@@ -590,7 +590,7 @@ seed 산포를 재지 않은 p 값이었다. 무릎은 2 배 간격 사다리에
 
 cyl4 는 ⌀4 mm 평면 원기둥이다. 구와 달리 접촉 면적이 깊이에 따라 자라지 않으므로 **힘–깊이 기울기가 곧
 겔의 강성**이고, Hertz 기하가 끼어들지 않는다. 이 캠페인에서 강성을 가장 깨끗하게 재는 도구다
-(`scripts/cyl4_summary.py` → `data/cyl4_summary.csv`, DIGIT 18 + DIGIT_Marker 17).
+(`scripts/cyl4_summary.py` → `data/analysis/cyl4_summary.csv`, DIGIT 18 + DIGIT_Marker 17).
 
 **펀치 강성 k (N/mm), 두께별 중앙값**
 

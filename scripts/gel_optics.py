@@ -32,7 +32,7 @@ config -- so comparisons WITHIN a principle are gel comparisons, and comparisons
 ACROSS principles are not (different bodies, different illumination, different
 physics). Nothing here is calibrated radiometry: levels are camera levels.
 
-Writes data/gel_optics.csv.
+Writes data/analysis/gel_optics.csv.
 """
 import re, yaml
 import numpy as np, pandas as pd, cv2
@@ -117,7 +117,7 @@ def scatter(run, ref_bgr, a_px):
 
 
 if __name__ == "__main__":
-    dv = pd.read_csv(ROOT / "data" / "derived_variables.csv")
+    dv = pd.read_csv(ROOT / "data" / "analysis" / "derived_variables.csv")
     rows = []
     for principle, ds in DS.items():
         for unit, run in runs_for(principle, ds):
@@ -144,6 +144,6 @@ if __name__ == "__main__":
                   f"(B{row['ref_b']:5.1f} G{row['ref_g']:5.1f} R{row['ref_r']:5.1f}) "
                   f"중심/가장자리 {row['centre_edge']:.3f}  산란 "
                   f"{row.get('scatter_mm', float('nan')):.2f} mm", flush=True)
-    out = ROOT / "data" / "gel_optics.csv"
+    out = ROOT / "data" / "analysis" / "gel_optics.csv"
     pd.DataFrame(rows).to_csv(out, index=False)
     print("  ->", out, len(rows), "units")

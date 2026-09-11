@@ -4,7 +4,7 @@ Report what is known, and what is still missing, to express ATI wrench data in
 the robot's frame.
 
 Read-only in every sense: opens no DAQ task, opens no robot connection, moves
-nothing, and writes nothing outside data/frame_analysis/. It applies NO
+nothing, and writes nothing outside data/rig/frame_analysis/. It applies NO
 transformation — the point is to establish what a transformation would need
 before any is written.
 
@@ -54,9 +54,9 @@ NO ROBOT MOTION
 NO DAQ ACQUISITION
 =========================================="""
 
-OUT = PROJECT_ROOT / "data" / "frame_analysis"
+OUT = PROJECT_ROOT / "data" / "rig" / "frame_analysis"
 ROBOT_CFG = PROJECT_ROOT / "config" / "robot_config.yaml"
-DEFAULT_EXCITATION = PROJECT_ROOT / "data" / "manual_ft_excitation_final"
+DEFAULT_EXCITATION = PROJECT_ROOT / "data" / "rig" / "manual_ft_excitation_final"
 
 
 def latest_excitation(root: Path) -> Path | None:

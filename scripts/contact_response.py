@@ -15,7 +15,7 @@ masked out so their edges do not stand in for the imprint.
   contact_r_px      the radius used, from the unit's Hertz a(2 N) and px_per_mm
   dot_frac          fraction of the contact disc masked as dot (markers only)
 
-Writes data/contact_response.csv.
+Writes data/analysis/contact_response.csv.
 """
 import re, glob, yaml
 import numpy as np, pandas as pd, cv2
@@ -51,7 +51,7 @@ def dot_mask(refg):
 
 
 if __name__ == "__main__":
-    dv = pd.read_csv(ROOT / "data" / "derived_variables.csv")
+    dv = pd.read_csv(ROOT / "data" / "analysis" / "derived_variables.csv")
     rows = []
     for principle, ds in DS.items():
         for unit, run in runs_for(principle, ds):
@@ -101,6 +101,6 @@ if __name__ == "__main__":
                              n_frames=len(vals)))
             print(f"  {principle}_{unit:16s} r {a_px:5.0f} px  접촉 {np.mean(vals):6.2f} "
                   f"고리 {np.mean(rings):5.2f} lvl  점비율 {dfrac:.2f}", flush=True)
-    out = ROOT / "data" / "contact_response.csv"
+    out = ROOT / "data" / "analysis" / "contact_response.csv"
     pd.DataFrame(rows).to_csv(out, index=False)
     print("  ->", out, len(rows), "units")

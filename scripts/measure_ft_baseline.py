@@ -8,7 +8,7 @@ no robot access.
     /usr/bin/python3 scripts/measure_ft_baseline.py
     /usr/bin/python3 scripts/measure_ft_baseline.py --seconds 10 --yes
 
-Writes data/ft_baseline/YYYYMMDD_HHMMSS/:
+Writes data/rig/ft_baseline/YYYYMMDD_HHMMSS/:
     raw.csv        per-sample gauge voltages, with hardware-clock timestamps
     wrench.csv     per-sample Fx..Tz in N and N*m
     summary.yaml   mean / std / min / max / p2p per gauge and per axis,
@@ -50,7 +50,7 @@ NO ROBOT MOTION
 NO DAQ OUTPUT
 ========================================="""
 
-OUTPUT_ROOT = PROJECT_ROOT / "data" / "ft_baseline"
+OUTPUT_ROOT = PROJECT_ROOT / "data" / "rig" / "ft_baseline"
 
 
 def confirm(skip: bool) -> bool:

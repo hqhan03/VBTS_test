@@ -74,7 +74,7 @@ chk = _load("chk", ROOT / "scripts" / "robot_readonly_check.py")
 
 from vbts_platform.ft_interface import FTInterface  # noqa: E402
 
-OUT = ROOT / "data" / "frame_transform"
+OUT = ROOT / "data" / "rig" / "frame_transform"
 STATE = OUT / "_measurements.json"
 
 # The press must be a real contact, mostly vertical, and gentle. A Mini45 takes

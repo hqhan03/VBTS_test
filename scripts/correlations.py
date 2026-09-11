@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """What predicts a unit's force-estimation performance, and its resolution need?
 
-Joins data/derived_variables.csv (one row per unit, every measurable property)
+Joins data/analysis/derived_variables.csv (one row per unit, every measurable property)
 with the performance each unit reached:
 
   9DTact        Fz / shear best, knee, resolution loss from the 3-seed shear-knee

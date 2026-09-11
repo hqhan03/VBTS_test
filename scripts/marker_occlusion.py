@@ -6,7 +6,7 @@ from scipy import ndimage
 ROOT=Path("/home/nrel/Desktop/KDC-tactile-testing-platform")
 DS=ROOT/"data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260908_passB_ball8"
 can=yaml.safe_load((DS/"CANONICAL.yaml").read_text())["canonical"]
-geo=pd.read_csv(ROOT/"data/marker_geometry.csv").set_index("unit")
+geo=pd.read_csv(ROOT/"data/analysis/marker_geometry.csv").set_index("unit")
 rows=[]
 for unit,info in can.items():
     run=DS/info["run"]
@@ -41,5 +41,5 @@ for unit,info in can.items():
                      dot_dist_px=round(dist,1),phase=round(dist/g.pitch_px,3),
                      covered_frac=round(covered,3),max_fz=round(float(abs(row.get("Fz_s_corr",row.get("Fz_s")))),2)))
     print(f"  {unit:30s} 접촉중심({cx:4.0f},{cy:4.0f}) 최근접점 {dist:5.0f} px  위상 {dist/g.pitch_px:.2f}  가려진 비율 {covered*100:4.1f} %",flush=True)
-pd.DataFrame(rows).to_csv(ROOT/"data/marker_occlusion.csv",index=False)
-print("  -> data/marker_occlusion.csv")
+pd.DataFrame(rows).to_csv(ROOT/"data/analysis/marker_occlusion.csv",index=False)
+print("  -> data/analysis/marker_occlusion.csv")

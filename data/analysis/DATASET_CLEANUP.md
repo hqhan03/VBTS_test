@@ -2,7 +2,8 @@
 
 > **세 원리 폴더는 `data/20260911_VBTSresolution_dataset/` 안에 있다** (운전자 지정,
 > 2026-09-11). 재고는 그 폴더의 `DATA_INVENTORY.md`, 만드는 것은
-> `scripts/dataset_audit.py` 다.
+> `scripts/dataset_audit.py` 다. 같은 날 `data/` 최상위도 다섯 항목으로 줄였다 —
+> 어디에 무엇이 있는지는 `data/README.md`.
 
 재측정한 유닛은 디스크에 `<유닛>`, `<유닛>__2`, … 로 남는다. 폴더 이름은 분석이 어떤 런을
 읽을지 정하는 값이므로, 같은 유닛이 여러 폴더로 갈려 있으면 스크립트마다 다른 런을 집는다.
@@ -31,16 +32,16 @@
 
 ## 정리가 고친 것
 
-1. **`data/pair_resolution.csv` 가 `hard_3mm_r2` 를 두 번 세고 있었다.** `pair_summary.py`
+1. **`data/analysis/pair_resolution.csv` 가 `hard_3mm_r2` 를 두 번 세고 있었다.** `pair_summary.py`
    는 폴더를 전부 훑고 이름에서 `__N` 만 떼므로, 갈린 두 폴더가 같은 유닛의 두 행이 됐다.
    37 행 → 36 행.
-2. **`data/derived_variables.csv` 의 `9DTact_hard_1mm_r2` 에 축척이 없었다.** 위의 이유로
+2. **`data/analysis/derived_variables.csv` 의 `9DTact_hard_1mm_r2` 에 축척이 없었다.** 위의 이유로
    `px_per_mm` 가 비어 있었다(지금 88.30, `scale_trusted` 참). `hertz_k` 0.955 → 1.331,
    `hertz_n` 1.259 → 2.042 로 함께 고쳐졌다. 그 결과 `correlations.csv` 에서
    `hertz_n → fz_best` 가 ρ +0.350 q 0.032 에서 ρ +0.272 q 0.118 로 **유의하지 않게**
    되었다 — 어느 문서도 이 관계를 주장하지 않았으므로 철회할 것은 없지만, 표를 읽는 사람이
    알아야 한다.
-3. **`data/gel_identity.csv` 가 중단된 런을 한 행으로 세고 있었다**(0 프레임인데
+3. **`data/analysis/gel_identity.csv` 가 중단된 런을 한 행으로 세고 있었다**(0 프레임인데
    `reference.png` 이 있었다). 19 행 → 18 행.
 4. **등록부의 없는 경로 15 개.** `config/sensor_registry.yaml` 의 `run:` 이 지워지거나
    이름이 바뀐 폴더를 가리키고 있었다. 지금은 살아 있는 폴더를 가리키고 `run_folder_was`
@@ -55,7 +56,7 @@
 
 ## 폴더를 옮기면서 바뀐 숫자 하나
 
-`data/pair_resolution.csv` 의 두 행(`hard_3mm_r1` 의 pair025·pair010)이 달라졌다. 원인은
+`data/analysis/pair_resolution.csv` 의 두 행(`hard_3mm_r1` 의 pair025·pair010)이 달라졌다. 원인은
 **빌려 쓰는 축척의 중앙값**이다: 자기 축척이 자기 검사를 통과하지 못한 유닛은
 `analyse_resolution.py` 가 "믿을 수 있는 축척 전부의 중앙값" 을 빌려 쓰는데, 그 "전부" 를
 `state.json` 글롭으로 모은다. 반복 측정 18 런이 데이터셋 옆(`<데이터셋>_repeats/`)에 있던

@@ -18,7 +18,7 @@ Per unit, from data/<principle>/20260910_passA_cyl4/*/shape_cyl4/ladder.csv:
   px_per_mm_disc   r_disc_px / 2 mm, an independent scale estimate, valid only
                    once the gel has closed around the punch
 
-Writes data/cyl4_summary.csv.
+Writes data/analysis/cyl4_summary.csv.
 """
 import re
 import numpy as np, pandas as pd
@@ -74,6 +74,6 @@ if __name__ == "__main__":
         print(f"  {p}: {len(r)} 유닛")
         rows += r
     d = pd.DataFrame(rows)
-    out = ROOT / "data" / "cyl4_summary.csv"
+    out = ROOT / "data" / "analysis" / "cyl4_summary.csv"
     d.to_csv(out, index=False)
     print("  ->", out, len(d), "rows")

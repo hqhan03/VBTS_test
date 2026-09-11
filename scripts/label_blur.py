@@ -16,7 +16,7 @@ from the 50 Hz F/T stream:
                   glide pacing itself is comparable across principles
   win_ms, dt_ms   the two time scales above, per unit
 
-Writes data/label_blur.csv (one row per unit, all three principles).
+Writes data/analysis/label_blur.csv (one row per unit, all three principles).
 """
 import re, glob, yaml
 import numpy as np, pandas as pd
@@ -85,6 +85,6 @@ if __name__ == "__main__":
             rows.append(r)
             print(f"  {unit:30s} win {r['win_ms']:3.0f} ms  blur Fz {r['blur_fz_N']:.4f}  "
                   f"lat {r['blur_lat_N']:.4f}  rate Fz {r['rate_fz_N_per_s']:.3f} N/s", flush=True)
-    out = ROOT / "data" / "label_blur.csv"
+    out = ROOT / "data" / "analysis" / "label_blur.csv"
     pd.DataFrame(rows).to_csv(out, index=False)
     print("  ->", out, len(rows), "units")

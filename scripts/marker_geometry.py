@@ -13,7 +13,7 @@ image and turn them into a predicted width.
   w_pitch_2px          width at which the pitch is 2 px        = 2 * 1920 / pitch_px
   n_dots               dots found (sanity)
 
-Writes data/marker_geometry.csv. 9DTact and plain DIGIT have no dots, so the
+Writes data/analysis/marker_geometry.csv. 9DTact and plain DIGIT have no dots, so the
 prediction applies to the marker units only -- but the same file records the
 imprint width for all three from derived_variables.csv for comparison.
 """
@@ -104,6 +104,6 @@ if __name__ == "__main__":
         print(f"  {unit:30s} {len(cen):4d} dots  d {dd:5.1f} px  pitch(ac) {pitch:5.1f} px"
               f" (nn {pitch_nn:5.1f}, peak {ac_peak:.2f})"
               f"  -> dot=2px at {2*1920/dd:6.1f}, pitch=2px at {2*1920/pitch:5.1f}", flush=True)
-    out = ROOT / "data" / "marker_geometry.csv"
+    out = ROOT / "data" / "analysis" / "marker_geometry.csv"
     pd.DataFrame(rows).to_csv(out, index=False)
     print("  ->", out, len(rows), "units")

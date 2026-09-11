@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""data/ceiling_summary.csv — 유닛마다 이미지 포화로 잰 최대 측정 가능 힘.
+"""data/analysis/ceiling_summary.csv — 유닛마다 이미지 포화로 잰 최대 측정 가능 힘.
 
 `--phase characterize` 가 램프를 돌면서 이미 판정한 것을 `characterize/steps.csv`
 에서 **다시 재생**한다. 새로 정의하지 않는다: 같은 규칙, 같은 기본값
@@ -121,7 +121,7 @@ print(f"  {len(D)} 유닛, 천장 잡힌 것 {D.ceil.notna().sum()}, "
 for b in bad:
     print("  ! " + b)
 if not a.check:
-    out = ROOT / "data" / "ceiling_summary.csv"
+    out = ROOT / "data" / "analysis" / "ceiling_summary.csv"
     D.to_csv(out, index=False)
     print(f"  -> {out}")
     print(D.groupby(["pr", "hard"]).ceil.median().round(2).to_string())

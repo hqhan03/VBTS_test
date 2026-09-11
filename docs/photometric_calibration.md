@@ -348,7 +348,7 @@ python3 scripts/run_indentation.py --phase zero      --sensor <unit> --probe bal
 python3 scripts/run_indentation.py --phase calibgrid --sensor <unit> --probe ball4 \
         --grid-n 5,3 --grid-depths 0.15,0.3
 
-python3 scripts/calibgrid_transfer.py                # 유닛 쌍 상관, data/calibgrid_transfer.csv
+python3 scripts/calibgrid_transfer.py                # 유닛 쌍 상관, data/analysis/calibgrid_transfer.csv
 ```
 
 기본값: `--grid-x 9 --grid-y 7.5`(이동 한계, 뒷막이일 뿐 격자 크기는 프레임이 정한다),

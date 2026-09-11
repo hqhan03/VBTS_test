@@ -58,7 +58,7 @@ NO ROBOT ACCESS
 NO DAQ OUTPUT
 ===================================="""
 
-STATE = PROJECT_ROOT / "data" / "daq_mapping" / "_scan_state.json"
+STATE = PROJECT_ROOT / "data" / "rig" / "daq_mapping" / "_scan_state.json"
 
 # Differential channels on a 68-pin X Series device: aiN pairs with ai(N+8).
 # Connector 0 serves ai0-ai15, connector 1 serves ai16-ai31.
@@ -160,7 +160,7 @@ def phase_load(args) -> int:
               f"{best.split('/')[-1]:>13} {bd:>14.3f} {bd - tgt:>10.3f}")
     print()
 
-    out = PROJECT_ROOT / "data" / "daq_mapping"
+    out = PROJECT_ROOT / "data" / "rig" / "daq_mapping"
     out.mkdir(parents=True, exist_ok=True)
     import csv
     with open(out / "channel_delta_scan.csv", "w", newline="") as fh:

@@ -48,7 +48,7 @@ NO ROBOT ACCESS
 NO DAQ OUTPUT
 ===================================="""
 
-WEIGHT_RUN = PROJECT_ROOT / "data" / "weight_validation" / "20260825_152816"
+WEIGHT_RUN = PROJECT_ROOT / "data" / "rig" / "weight_validation" / "20260825_152816"
 
 
 def device_info(dev_name: str) -> None:

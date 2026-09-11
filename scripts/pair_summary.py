@@ -95,6 +95,6 @@ if __name__ == "__main__":
             rows.append(r)
             print(f"  {probe} {r['unit']:16s} dip@0.3N {r['dip_at_0.3N']:.3f}  "
                   f"dip@60kpx {r['dip_at_60kpx']:.3f}  F_Rayleigh {r['F_rayleigh']:.3f} N", flush=True)
-    out = ROOT / "data" / "pair_resolution.csv"
+    out = ROOT / "data" / "analysis" / "pair_resolution.csv"
     pd.DataFrame(rows).to_csv(out, index=False)
     print("  ->", out, len(rows), "runs")

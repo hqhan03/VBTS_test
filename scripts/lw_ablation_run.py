@@ -16,7 +16,7 @@ the same network at one size on each, same split/seed:
   sym250       mean over [t_img - 0.25, t_img + 0.25]
   sym500       mean over [t_img - 0.50, t_img + 0.50]
 
-Output: data/label_window_ablation.csv (unit, window, fz_mae_normal,
+Output: data/analysis/label_window_ablation.csv (unit, window, fz_mae_normal,
 lat_mae_shear, ...). One size (320x180), 1 seed, so ~15 s per cell on a shared GPU.
 """
 import os, sys, csv, time, numpy as np, pandas as pd
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     SIZES = [(320, 180), (48, 27)]
     SEEDS = [0, 1, 2]                    # one seed cannot separate two windows
     rows = []
-    out = os.path.join(ROOT, "data", "label_window_ablation.csv")
+    out = os.path.join(ROOT, "data", "analysis", "label_window_ablation.csv")
     if os.path.exists(out):
         rows = pd.read_csv(out).to_dict("records")
     done = {(r["unit"], r.get("size"), r["window"], int(r.get("seed", 0)))

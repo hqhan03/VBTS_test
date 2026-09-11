@@ -26,7 +26,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from vbts_platform.ft_interface import FTInterface  # noqa: E402
 
-STATE = ROOT / "data" / "frame_transform" / "_measurements.json"
+STATE = ROOT / "data" / "rig" / "frame_transform" / "_measurements.json"
 
 MIN_FORCE_N = 3.0
 MAX_FORCE_N = 40.0

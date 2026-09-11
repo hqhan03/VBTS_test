@@ -73,7 +73,7 @@ if __name__ == "__main__":
                   f"최적 {best:16s} {sc[best]:.3f} (라벨 {sc.get(claimed, float('nan')):.3f}, "
                   f"2위 {others[0]:.3f})", flush=True)
     df = pd.DataFrame(rows)
-    out = ROOT / "data" / "gel_identity.csv"
+    out = ROOT / "data" / "analysis" / "gel_identity.csv"
     df.to_csv(out, index=False)
     if len(df):
         print(f"\n  일치 {df.agrees.sum()}/{len(df)}  ->", out)

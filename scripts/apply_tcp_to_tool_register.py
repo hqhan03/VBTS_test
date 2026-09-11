@@ -70,7 +70,7 @@ chk = _load("chk", ROOT / "scripts" / "robot_readonly_check.py")
 
 from vbts_platform.robot_interface import RobotInterface  # noqa: E402
 
-OUT = ROOT / "data" / "tcp_application"
+OUT = ROOT / "data" / "rig" / "tcp_application"
 
 # The value being written, and where each part of it came from. The rotation is
 # a definition, not a measurement: a sphere in a cone constrains position only.

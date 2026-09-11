@@ -153,7 +153,7 @@ def main() -> int:
         print(f"  a {a.step} mm step sits close to that repeatability; the same "
               "test at 0.1 or 0.2 mm separates a scale error from quantisation")
 
-    out = ROOT / "data" / "diagnostics" / datetime.now().strftime("%Y%m%d_%H%M%S")
+    out = ROOT / "data" / "rig" / "diagnostics" / datetime.now().strftime("%Y%m%d_%H%M%S")
     out.mkdir(parents=True, exist_ok=True)
     (out / "step_accuracy.yaml").write_text(yaml.safe_dump(json.loads(json.dumps({
         "timestamp": datetime.now().isoformat(),

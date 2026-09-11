@@ -12,10 +12,10 @@
 
 **버리지 말 것.** 이 캠페인에서 같은 유닛을 다시 잰 데이터는 이것뿐이다. 겔을 다시 앉히고
 다시 영점을 잡았을 때 같은 숫자가 나오는가 — **재현성의 바닥** — 은 여기서만 나온다.
-`scripts/repeat_spread.py` 가 이 폴더를 읽어 `data/repeat_spread.csv` 를 쓰고, 읽는 법은
+`scripts/repeat_spread.py` 가 이 폴더를 읽어 `data/analysis/repeat_spread.csv` 를 쓰고, 읽는 법은
 `docs/campaign_protocol.md` §4.15 에 있다.
 
 폴더 이름의 `__N` 은 그날의 몇 번째 시도였는지다. 데이터셋 폴더 밖에 있으므로 어떤 glob 도
 이것을 유닛으로 집지 않는다 — 그게 여기 있는 이유의 절반이다. 나머지 절반은 위의 표다.
 
-정리·이동: 2026-09-11 (`data/DATASET_CLEANUP.md`)
+정리·이동: 2026-09-11 (`data/analysis/DATASET_CLEANUP.md`)

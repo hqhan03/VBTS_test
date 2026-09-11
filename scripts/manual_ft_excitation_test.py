@@ -64,7 +64,7 @@ NO ROBOT MOTION
 NO DAQ OUTPUT
 ================================="""
 
-OUTPUT_ROOT = PROJECT_ROOT / "data" / "manual_ft_excitation"
+OUTPUT_ROOT = PROJECT_ROOT / "data" / "rig" / "manual_ft_excitation"
 
 # (key, instruction, the axis a correct rig should move most)
 STEPS = [
@@ -251,7 +251,7 @@ def main() -> int:
     ap.add_argument("--baseline-seconds", type=float, default=3.0,
                     help="continuous mode: untouched interval at the start")
     ap.add_argument("--output-root", default=None,
-                    help="directory to write the run into (default data/manual_ft_excitation)")
+                    help="directory to write the run into (default data/rig/manual_ft_excitation)")
     ap.add_argument("--config", default=None)
     args = ap.parse_args()
 

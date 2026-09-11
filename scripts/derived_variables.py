@@ -20,7 +20,7 @@ ladder + scale, the Pass B ball8 collect, and the registry:
              F/T label, gaussian MAE)
   bookkeeping n_frames, n_frames_le2N, canonical run
 
-Output: data/derived_variables.csv. Pure CPU; a few minutes.
+Output: data/analysis/derived_variables.csv. Pure CPU; a few minutes.
 """
 import os, re, glob, csv, yaml, math
 import numpy as np, pandas as pd, cv2
@@ -54,7 +54,7 @@ def passa_run(pr, unit):
 
     접미사만 보고 고르면 틀린다: `9DTact_hard_1mm_r2__3` 은 사다리는 있지만 `scale_ball4`
     가 아무것도 남기지 않은 런이고, 그것을 집으면 이 유닛의 px_per_mm / tilt 가 조용히
-    사라진다 (data/DATASET_CLEANUP.md). 사다리와 축척을 **둘 다** 가진 런을 먼저 본다.
+    사라진다 (data/analysis/DATASET_CLEANUP.md). 사다리와 축척을 **둘 다** 가진 런을 먼저 본다.
     """
     base = os.path.join(ROOT, PASSA[pr])
     cands = [d for d in glob.glob(os.path.join(base, unit + "*"))
@@ -225,5 +225,5 @@ if __name__ == "__main__":
             except Exception as e:      # noqa: BLE001
                 print(f"  {pr:13s} {unit:24s} FAILED: {e}", flush=True)
     df = pd.DataFrame(rows)
-    out = os.path.join(ROOT, "data", "derived_variables.csv"); df.to_csv(out, index=False)
+    out = os.path.join(ROOT, "data", "analysis", "derived_variables.csv"); df.to_csv(out, index=False)
     print(f"\n  -> {out}: {len(df)} units, {df.shape[1]} columns")

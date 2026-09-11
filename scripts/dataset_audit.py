@@ -115,7 +115,7 @@ W("└── DATA_INVENTORY.md               이 문서")
 W("```")
 W("")
 W("버린 런은 여기 없다 — `data/_discarded/<원리>/<pass>/` 에 이유와 함께 있다.")
-W("유닛당 폴더를 하나로 줄인 기록은 `data/DATASET_CLEANUP.md` 다.\n")
+W("유닛당 폴더를 하나로 줄인 기록은 `data/analysis/DATASET_CLEANUP.md` 다.\n")
 W("## 프로브 격자\n")
 W("| pass | 프로브 | 9DTact | DIGIT | DIGIT_Marker |")
 W("|---|---|---|---|---|")
@@ -243,10 +243,10 @@ if rep_rows:
 
 W("---\n")
 W(f"유닛-pass 칸 {len(D)} 개 중 {int(D.ok.sum())} 개가 채워져 있다 "
-  f"({100 * D.ok.mean():.1f} %). 표 데이터는 `data/dataset_audit.csv`.")
+  f"({100 * D.ok.mean():.1f} %). 표 데이터는 `data/analysis/dataset_audit.csv`.")
 
 Path(a.out).write_text("\n".join(L), encoding="utf-8")
-D.to_csv(ROOT / "data" / "dataset_audit.csv", index=False)
+D.to_csv(ROOT / "data" / "analysis" / "dataset_audit.csv", index=False)
 print(f"  {len(D)} 칸, 채움 {int(D.ok.sum())}, 빈 칸 {int((~D.ok).sum())}")
 print(f"  -> {a.out}")
 print(f"  -> {ROOT / 'data' / 'dataset_audit.csv'}")
