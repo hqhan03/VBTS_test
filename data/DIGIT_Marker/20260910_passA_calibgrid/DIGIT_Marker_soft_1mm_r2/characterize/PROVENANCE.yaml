@@ -1,0 +1,6 @@
+moved_from: DIGIT_Marker_soft_1mm_r2__ceiling
+moved_on: '2026-09-11'
+why: 격자를 나중에 다시 재면서 폴더가 갈렸다. 이 램프가 등록부 천장의 출처다.
+zero_surface_mm: 23.560812946223777
+zero_at: '2026-09-11T02:35:35.423989'
+note: steps.csv 의 depth_mm 는 이 영점 표면 기준이며, 같은 폴더의 state.json(격자 런) 과는 다르다.
