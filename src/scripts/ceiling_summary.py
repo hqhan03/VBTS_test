@@ -23,7 +23,11 @@ import pandas as pd
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-DS = "20260910_passA_calibgrid"
+# (원리, 데이터셋) — 천장 램프가 어디 있나. DIGIT 계열은 격자 pass 안에서,
+# 9DTact 는 2026-09-11 에 따로 연 pass 에서 돈다.
+SOURCES = [("DIGIT", "20260910_passA_calibgrid"),
+           ("DIGIT_Marker", "20260910_passA_calibgrid"),
+           ("9DTact", "20260911_passC_ceiling")]
 SAT_FRAC, SAT_HITS, SAT_MIN_F, FIT_FLOOR = 0.15, 2, 0.3, 0.10
 EXP_WINDOW, EXP_MIN_F, EXP_MIN_DEPTH_FRAC, EXP_ALARM = 4, 0.5, 0.25, 2.0
 
@@ -72,56 +76,63 @@ def ceiling(S, thickness_mm, strict=False):
     return np.nan, np.nan, peak, True
 
 
-ap = argparse.ArgumentParser()
-ap.add_argument("--check", action="store_true", help="표를 쓰지 않고 등록부와만 비교")
-a = ap.parse_args()
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--check", action="store_true", help="표를 쓰지 않고 등록부와만 비교")
+    a = ap.parse_args()
 
-reg = yaml.safe_load((ROOT / "src" / "config" / "sensor_registry.yaml").open())
-BY_ID = {e["id"]: e for e in reg["sensors"]}
-rows, bad = [], []
-for pr in ("DIGIT", "DIGIT_Marker"):
-    base = ROOT / "data" / "20260911_VBTSresolution_dataset" / pr / DS
-    if not base.exists():
-        continue
-    for run in sorted(p for p in base.iterdir() if p.is_dir()):
-        st = run / "characterize" / "steps.csv"
-        if not st.exists():
-            bad.append(f"{pr}/{run.name}: characterize/steps.csv 없음")
+    reg = yaml.safe_load((ROOT / "src" / "config" / "sensor_registry.yaml").open())
+    BY_ID = {e["id"]: e for e in reg["sensors"]}
+    rows, bad = [], []
+    for pr, DS in SOURCES:
+        base = ROOT / "data" / "20260911_VBTSresolution_dataset" / pr / DS
+        if not base.exists():
             continue
-        S = pd.read_csv(st).sort_values("step")
-        unit = run.name
-        g = re.search(r"(soft|medium|hard)_(\d)mm_r(\d)", unit)
-        th = int(g.group(2))
-        ceil, depth, peak, adjacent = ceiling(S, th)
-        s_ceil, _, _, _ = ceiling(S, th, strict=True)
-        # `peak` 는 포화를 선언한 순간까지 본 최대다 — 판정이 쓴 값. 램프 전체를 다 본
-        # 최대는 그보다 크거나 같고, 그쪽이 **유닛의 성질**로서의 응답이다 (등록부의
-        # peak_slope_levels_per_N 과 같은 값). 4.1 의 교란 분석은 이쪽을 쓴다.
-        fin = S[(S.force_N > FIT_FLOOR) & S.slope_levels_per_N.notna()].slope_levels_per_N
-        peak_final = float(np.median(sorted(fin, reverse=True)[:3])) if len(fin) else np.nan
-        prov = run / "characterize" / "PROVENANCE.yaml"
-        ir = (BY_ID.get(unit) or {}).get("image_response") or {}
-        r_ceil = ir.get("max_measurable_force_N") if ir.get("reached") else None
-        err = abs(ceil - r_ceil) if (r_ceil and np.isfinite(ceil)) else np.nan
-        if np.isfinite(err) and err > 1e-4:
-            bad.append(f"{unit}: 재생 {ceil:.4f} N vs 등록부 {r_ceil:.4f} N")
-        rows.append(dict(
-            unit=unit, pr=pr, hard=g.group(1), th=th, rep=int(g.group(3)),
-            ceil=ceil, depth=depth, peak=peak, peak_final=peak_final, steps=len(S),
-            fmax=float(S.force_N.max()), dmax=float(S.depth_mm.max()),
-            img0=float(S.img_mean_abs_diff.iloc[0]), img1=float(S.img_mean_abs_diff.iloc[-1]),
-            d_over_t=depth / th, two_steps_adjacent=adjacent, ceil_strict=s_ceil,
-            registry_ceil=r_ceil, match_err=err,
-            ramp_from=(yaml.safe_load(prov.open()).get("moved_from") if prov.exists() else ""),
-        ))
+        for run in sorted(p for p in base.iterdir() if p.is_dir()):
+            st = run / "characterize" / "steps.csv"
+            if not st.exists():
+                bad.append(f"{pr}/{run.name}: characterize/steps.csv 없음")
+                continue
+            S = pd.read_csv(st).sort_values("step")
+            unit = run.name
+            g = re.search(r"(soft|medium|hard)_(\d)mm_r(\d)", unit)
+            th = int(g.group(2))
+            ceil, depth, peak, adjacent = ceiling(S, th)
+            s_ceil, _, _, _ = ceiling(S, th, strict=True)
+            # `peak` 는 포화를 선언한 순간까지 본 최대다 — 판정이 쓴 값. 램프 전체를 다 본
+            # 최대는 그보다 크거나 같고, 그쪽이 **유닛의 성질**로서의 응답이다 (등록부의
+            # peak_slope_levels_per_N 과 같은 값). 4.1 의 교란 분석은 이쪽을 쓴다.
+            fin = S[(S.force_N > FIT_FLOOR) & S.slope_levels_per_N.notna()].slope_levels_per_N
+            peak_final = float(np.median(sorted(fin, reverse=True)[:3])) if len(fin) else np.nan
+            prov = run / "characterize" / "PROVENANCE.yaml"
+            ir = (BY_ID.get(unit) or {}).get("image_response") or {}
+            r_ceil = ir.get("max_measurable_force_N") if ir.get("reached") else None
+            err = abs(ceil - r_ceil) if (r_ceil and np.isfinite(ceil)) else np.nan
+            if np.isfinite(err) and err > 1e-4:
+                bad.append(f"{unit}: 재생 {ceil:.4f} N vs 등록부 {r_ceil:.4f} N")
+            rows.append(dict(
+                unit=unit, pr=pr, dataset=DS, hard=g.group(1), th=th, rep=int(g.group(3)),
+                ceil=ceil, depth=depth, peak=peak, peak_final=peak_final, steps=len(S),
+                fmax=float(S.force_N.max()), dmax=float(S.depth_mm.max()),
+                img0=float(S.img_mean_abs_diff.iloc[0]), img1=float(S.img_mean_abs_diff.iloc[-1]),
+                d_over_t=depth / th, two_steps_adjacent=adjacent, ceil_strict=s_ceil,
+                registry_ceil=r_ceil, match_err=err,
+                ramp_from=(yaml.safe_load(prov.open()).get("moved_from") if prov.exists() else ""),
+            ))
 
-D = pd.DataFrame(rows)
-print(f"  {len(D)} 유닛, 천장 잡힌 것 {D.ceil.notna().sum()}, "
-      f"등록부와 최대 차이 {np.nanmax(D.match_err.values):.6f} N")
-for b in bad:
-    print("  ! " + b)
-if not a.check:
-    out = ROOT / "data" / "analysis" / "ceiling_summary.csv"
-    D.to_csv(out, index=False)
-    print(f"  -> {out}")
-    print(D.groupby(["pr", "hard"]).ceil.median().round(2).to_string())
+    D = pd.DataFrame(rows)
+    err = D.match_err.values
+    mx = np.nanmax(err) if np.isfinite(err).any() else 0.0
+    print(f"  {len(D)} 유닛, 천장 잡힌 것 {D.ceil.notna().sum()}, "
+          f"등록부와 대조된 것 {int(np.isfinite(err).sum())}, 최대 차이 {mx:.6f} N")
+    for b in bad:
+        print("  ! " + b)
+    if not a.check:
+        out = ROOT / "data" / "analysis" / "ceiling_summary.csv"
+        D.to_csv(out, index=False)
+        print(f"  -> {out}")
+        print(D.groupby(["pr", "hard"]).ceil.median().round(2).to_string())
+
+
+if __name__ == "__main__":
+    main()

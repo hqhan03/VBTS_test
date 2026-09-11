@@ -123,7 +123,15 @@ def run(cmd: list, label: str) -> bool:
     return rc == 0
 
 
-def _probe_offsets(probe: str, reg_all: dict, skip: str | None = None):
+def _principle_of(unit: str) -> str | None:
+    for pr in ("DIGIT_Marker", "DIGIT", "9DTact"):        # 긴 이름 먼저
+        if unit.startswith(pr + "_"):
+            return pr
+    return None
+
+
+def _probe_offsets(probe: str, reg_all: dict, skip: str | None = None,
+                   principle: str | None = None):
     """How far above its recorded surface this probe has contacted, per unit.
 
     The recorded surface comes from the 4 mm probes; a different tip reaches a
@@ -131,6 +139,14 @@ def _probe_offsets(probe: str, reg_all: dict, skip: str | None = None):
     Measured 2026-09-07 for pair100 over ten units: +1.104 mm median, sd 0.129,
     range 0.930 to 1.339. So a run whose offset is far from the others is not
     measuring what it says it is.
+
+    **The constant is per BODY, not per probe.** Pooling principles is what
+    stopped the first 9DTact pair010 run (2026-09-11) for "the wrong sensor":
+    the pair probes sit +1.13 to +1.19 mm above the record on 9DTact and +1.61
+    to +1.66 mm on DIGIT, and pair010 had only ever been used on DIGIT, so the
+    0.47 mm difference between the two bodies ate the whole 0.5 mm tolerance.
+    ball4 shows the same split: -0.01 / +0.34 / +0.16 mm. So compare within the
+    principle, and only fall back to all of them when there is nothing else.
     """
     import glob
     out = []
@@ -145,6 +161,8 @@ def _probe_offsets(probe: str, reg_all: dict, skip: str | None = None):
                                        "__badzero", "__settle015", "__failed")):
             continue
         if base == skip or base not in reg_all or not reg_all[base]:
+            continue
+        if principle and _principle_of(base) != principle:
             continue
         try:
             st = json.loads(Path(p).read_text())
@@ -196,15 +214,24 @@ def check_surface_plausible(run_dir: Path, sensor: str, probe: str,
     reg_all = {e["id"]: (e.get("gel_model") or {}).get("surface_mm")
                for e in yaml.safe_load(open(ROOT / "src" / "config" /
                                             "sensor_registry.yaml"))["sensors"]}
-    others = _probe_offsets(probe, reg_all, skip=sensor)
+    pr = _principle_of(sensor)
+    others = _probe_offsets(probe, reg_all, skip=sensor, principle=pr)
+    scope, use_tol = pr or "all", tol
+    if len(others) < 3:
+        # 이 원리에서 이 프로브를 쓴 적이 거의 없다. 원리를 섞어 비교하되,
+        # 바디 사이의 차이(측정된 0.47 mm)를 삼키도록 허용오차를 넓히고 그렇게
+        # 비교했다고 말한다.
+        others = _probe_offsets(probe, reg_all, skip=sensor)
+        scope, use_tol = "all principles", tol + 0.5
     if len(others) < 3:
         return True                       # nothing to compare against yet
     med = sorted(others)[len(others) // 2]
     print(f"\n  surface check: {surf:.3f} mm, {off:+.3f} mm above this unit's "
           f"record; {probe} has averaged {med:+.3f} mm over {len(others)} "
-          f"other units")
-    if abs(off - med) <= tol:
+          f"other units ({scope})")
+    if abs(off - med) <= use_tol:
         return True
+    tol = use_tol
     print(f"  !! that is {abs(off - med):.3f} mm off, past the {tol:.1f} mm "
           f"tolerance.")
     print(f"     The usual cause is that the sensor in the holder is not "

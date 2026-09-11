@@ -31,7 +31,13 @@ def probe_dirs(run):
 
 
 def score(run):
-    """(has_ladder, n_rungs, has_scale, n_stream, suffix) -- bigger is better."""
+    """(has_ladder, n_rungs, has_scale, n_stream, n_char, suffix) -- bigger is better.
+
+    characterize/steps.csv counts. Without it this scorer called the 15 N
+    ceiling ramp on 9DTact_hard_3mm_r1 an aborted run and proposed discarding
+    108 steps of measurement (2026-09-11), because a ceiling pass leaves no
+    ladder and no stream -- only that file.
+    """
     subs = probe_dirs(run)
     lad = n_rung = 0
     for name, p in subs.items():
@@ -48,14 +54,23 @@ def score(run):
     f = run / "stream" / "frames.csv"
     if f.exists():
         stream = sum(1 for _ in f.open()) - 1
+    char = 0
+    f = run / "characterize" / "steps.csv"
+    if f.exists():
+        char = sum(1 for _ in f.open()) - 1
     m = re.search(r"__(\d+)$", run.name)
-    return (lad, n_rung, scale, stream, int(m.group(1)) if m else 1)
+    return (lad, n_rung, scale, stream, char, int(m.group(1)) if m else 1)
 
 
 def reason(run, win):
     s, w = score(run), score(win)
-    if s[:1] == (0,) and s[3] == 0:
-        return "중단된 런 — 사다리도 스트림도 없다"
+    if s[0] == 0 and s[3] == 0 and s[4] == 0:
+        return "중단된 런 — 사다리도 스트림도 램프도 없다"
+    if s[4] and w[4]:
+        # 램프는 길이로 우열을 가리지 않는다. 짧은 쪽은 대개 **일부러 낮은 상한**으로
+        # 잰 것이고(9DTact_hard_3mm_r1 의 15 N 과 20 N), "그 상한에서는 포화하지
+        # 않았다" 는 것 자체가 결과다. 버리지 말고 반복 측정으로 보낸다.
+        return None
     if s[3] and w[3] and s[3] < w[3]:
         return f"스트림이 짧다 ({s[3]} / {w[3]} 프레임)"
     if s[0] and not s[2] and w[2]:
@@ -110,9 +125,12 @@ if DRY:
     print("\n(모의 실행. --apply 로 실제 이동)")
     sys.exit()
 
-# 이름 바꾸기를 **먼저** 한다. 안내문에 승자 폴더 이름을 적으므로, 옮기고 나서 승자
-# 이름을 바꾸면 70 개 안내문이 없는 폴더를 가리킨다 (한 번 그렇게 했다).
-plan.sort(key=lambda x: 0 if x["kind"] == "rename" else 1)
+# 순서: 패자를 먼저 치우고, 이름은 그 뒤에 바꾼다. 패자가 승자의 목표 이름을
+# 차지하고 있을 수 있기 때문이다 -- 이름을 먼저 바꾸게 했더니
+# 9DTact_soft_1mm_r1__2 -> 9DTact_soft_1mm_r1 이 "Directory not empty" 로 죽었다
+# (2026-09-11). 안내문이 없는 폴더를 가리키던 문제는 순서가 아니라 `win_now` 로
+# 푼다: 최종 이름을 미리 계산해 두고 그것을 적는다.
+plan.sort(key=lambda x: 1 if x["kind"] == "rename" else 0)
 renamed = {(x["pr"], x["ds"], x["run"]): x["win"] for x in plan if x["kind"] == "rename"}
 moved = []
 for p in plan:

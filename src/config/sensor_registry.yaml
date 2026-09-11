@@ -670,7 +670,8 @@ sensors:
       image_change_at_stop: 5.768233299255371
     run: data/_discarded/9DTact/20260907_passB_ball8/9DTact_soft_1mm_r2__2__refused_exp_alarm_2
     run_folder_was: 9DTact_soft_1mm_r2__2
-    run_folder_note: 지수 경보로 거부된 런이다. 이 유닛의 두 시도가 모두 거부돼 _discarded 로 갔고, 지금 데이터셋에 있는 같은 이름의 폴더는 그 뒤에 다시 잰 다른 런이다 — 이 이력 항목과 무관하다.
+    run_folder_note: 지수 경보로 거부된 런이다. 이 유닛의 두 시도가 모두 거부돼 _discarded 로 갔고, 지금 데이터셋에
+      있는 같은 이름의 폴더는 그 뒤에 다시 잰 다른 런이다 — 이 이력 항목과 무관하다.
   image_response:
     max_measurable_force_N: null
     reached: false
@@ -971,19 +972,26 @@ sensors:
   replicate: 1
   max_depth_mm: 2.2
   depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
-  status: characterised
+  status: damaged
+  damaged_at: '2026-09-11'
+  damaged_note: >-
+    영구 변형. 20260911_passC_ceiling 의 천장 램프에서 20.69 N / 7.31 mm
+    (두께의 2.44 배) 까지 갔다. 자국 면적은 끝까지 증가해 붕괴 신호가 없었으므로
+    면적 기준 감시로는 잡히지 않았다. 실제 경고는 국소 지수가 2.0 을 넘은
+    10.27 N / 5.97 mm (두께의 1.99 배) 였고 램프는 거기서 10.4 N 더 갔다.
+    그때 --exp-alarm-stops 가 꺼져 있어 경보는 기록만 했다.
   gel_model:
-    hertz_a: 1.0346763061228013
-    free_exponent: 2.651409634859132
-    surface_mm: 27.615
-  safe_force_N: 2.978887824430589
-  safe_depth_mm: 2.371538159515424
-  commanded_depth_mm: 2.400000000000001
-  command_vs_measured_mm: 0.028461840484576673
-  stopped_on: force cap
-  ladder_rungs_reached: 29
-  characterised_at: '2026-09-07T21:12:07.650371'
-  run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_soft_3mm_r1
+    hertz_a: 0.919267040942389
+    free_exponent: 1.8782652767222239
+    surface_mm: 26.994
+  safe_force_N: 19.08355116854802
+  safe_depth_mm: 7.201823264871997
+  commanded_depth_mm: 7.574999999999992
+  command_vs_measured_mm: 0.3731767351279949
+  stopped_on: image saturation (+ margin)
+  ladder_rungs_reached: 50
+  characterised_at: '2026-09-11T17:36:16.953305'
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260911_passC_ceiling/9DTact_soft_3mm_r1
   run_timestamp: '20260902_124057'
   ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_soft_3mm_r1
   history:
@@ -999,17 +1007,38 @@ sensors:
     depth_cap_used_mm: null
     image_response: null
     run: null
+  - characterised_at: '2026-09-07T21:12:07.650371'
+    gel_model:
+      hertz_a: 1.0346763061228013
+      free_exponent: 2.651409634859132
+      surface_mm: 27.615
+    safe_depth_mm: 2.371538159515424
+    safe_force_N: 2.978887824430589
+    stopped_on: force cap
+    ladder_rungs_reached: 29
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: null
+      reached: false
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      note: 'not reached within the limits: stopped on force cap at 2.98 N with the
+        image still changing at 5.13 lvl/N (74% of peak)'
+      peak_slope_levels_per_N: 6.963128458115593
+      image_change_at_stop: 20.9993896484375
+    run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_soft_3mm_r1
   image_response:
-    max_measurable_force_N: null
-    reached: false
+    max_measurable_force_N: 19.08355116854802
+    max_measurable_depth_mm: 7.201823264871997
+    reached: true
     metric: mean |frame - reference| over the central half, grey levels
     threshold_frac_of_peak_slope: 0.15
     min_force_N: 0.3
     consecutive: 2
-    note: 'not reached within the limits: stopped on force cap at 2.98 N with the
-      image still changing at 5.13 lvl/N (74% of peak)'
-    peak_slope_levels_per_N: 6.963128458115593
-    image_change_at_stop: 20.9993896484375
+    peak_slope_levels_per_N: 7.219679431622584
+    image_change_at_stop: 76.16497802734375
   contact_map:
     at_depth:
       target_depth_mm: 0.5
@@ -1436,7 +1465,9 @@ sensors:
   run: data/earlier_datasets/20260903_raw_dataset/9DTact_medium_2mm_r1
   run_missing: true
   run_evidence: data/earlier_datasets/20260904_probe_tests/9DTact_medium_2mm_r1/characterize_to30N_nosub
-  run_note: 이 런 폴더는 지워졌다. 남아 있는 증거는 data/earlier_datasets/20260904_probe_tests/9DTact_medium_2mm_r1/characterize_to30N_nosub — 62 단, 23.11 N, 6.19 mm (2 mm 겔의 세 배 깊이), 2026-09-04 18:49. 그 겔이 영구변형된 유일한 기록이다 (docs/force_ceiling.md 7).
+  run_note: 이 런 폴더는 지워졌다. 남아 있는 증거는 data/earlier_datasets/20260904_probe_tests/9DTact_medium_2mm_r1/characterize_to30N_nosub
+    — 62 단, 23.11 N, 6.19 mm (2 mm 겔의 세 배 깊이), 2026-09-04 18:49. 그 겔이 영구변형된 유일한 기록이다
+    (docs/force_ceiling.md 7).
   ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_medium_2mm_r1
   history:
   - characterised_at: '2026-09-03T15:56:31.279723'
@@ -1471,7 +1502,9 @@ sensors:
     run: data/earlier_datasets/20260903_raw_dataset/9DTact_medium_2mm_r1
     run_missing: true
     run_evidence: data/earlier_datasets/20260904_probe_tests/9DTact_medium_2mm_r1/characterize_to30N_nosub
-    run_note: 이 런 폴더는 지워졌다. 남아 있는 증거는 data/earlier_datasets/20260904_probe_tests/9DTact_medium_2mm_r1/characterize_to30N_nosub — 62 단, 23.11 N, 6.19 mm (2 mm 겔의 세 배 깊이), 2026-09-04 18:49. 그 겔이 영구변형된 유일한 기록이다 (docs/force_ceiling.md 7).
+    run_note: 이 런 폴더는 지워졌다. 남아 있는 증거는 data/earlier_datasets/20260904_probe_tests/9DTact_medium_2mm_r1/characterize_to30N_nosub
+      — 62 단, 23.11 N, 6.19 mm (2 mm 겔의 세 배 깊이), 2026-09-04 18:49. 그 겔이 영구변형된 유일한
+      기록이다 (docs/force_ceiling.md 7).
   image_response:
     reached: true
     max_measurable_force_N: 21.238
@@ -2380,15 +2413,15 @@ sensors:
   depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
   status: characterised
   gel_model:
-    hertz_a: 2.7412024814543923
-    free_exponent: 1.7750885362491158
-    surface_mm: 27.822
-  safe_force_N: 3.117100211568496
-  safe_depth_mm: 1.169649971730749
+    hertz_a: 1.2751327437107138
+    free_exponent: 1.5073738751197092
+    surface_mm: 27.662999999999997
+  safe_force_N: 20.51456097197204
+  safe_depth_mm: 6.141948990896765
   stopped_on: force cap
-  ladder_rungs_reached: 31
-  characterised_at: '2026-09-07T18:51:36.839310'
-  run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_hard_3mm_r1
+  ladder_rungs_reached: 50
+  characterised_at: '2026-09-11T17:18:01.124315'
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260911_passC_ceiling/9DTact_hard_3mm_r1__2
   history:
   - characterised_at: '2026-09-01T18:10:34.761369'
     gel_model:
@@ -2474,21 +2507,67 @@ sensors:
       peak_slope_levels_per_N: 2.7589398248482406
       image_change_at_stop: 9.416977882385254
     run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_hard_3mm_r1
-  commanded_depth_mm: 1.2
-  command_vs_measured_mm: 0.03035002826925104
+  - characterised_at: '2026-09-07T18:51:36.839310'
+    gel_model:
+      hertz_a: 2.7412024814543923
+      free_exponent: 1.7750885362491158
+      surface_mm: 27.822
+    safe_depth_mm: 1.169649971730749
+    safe_force_N: 3.117100211568496
+    stopped_on: force cap
+    ladder_rungs_reached: 31
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: null
+      reached: false
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      note: 'not reached within the limits: stopped on force cap at 3.12 N with the
+        image still changing at 2.65 lvl/N (106% of peak)'
+      peak_slope_levels_per_N: 2.498726563208986
+      image_change_at_stop: 8.362893104553223
+    run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_hard_3mm_r1
+  - characterised_at: '2026-09-11T17:08:52.749718'
+    gel_model:
+      hertz_a: 1.2324501724178494
+      free_exponent: 1.5412995674345864
+      surface_mm: 27.752000000000002
+    safe_depth_mm: 5.210312185732636
+    safe_force_N: 15.08088244538514
+    stopped_on: force cap
+    ladder_rungs_reached: 50
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: null
+      max_measurable_depth_mm: null
+      reached: false
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      note: 'not reached within the limits: stopped on force cap at 15.08 N with the
+        image still changing at 1.30 lvl/N (19% of peak)'
+      peak_slope_levels_per_N: 6.71399402845661
+      image_change_at_stop: 44.8316650390625
+    run: data/20260911_VBTSresolution_dataset/9DTact/20260911_passC_ceiling/9DTact_hard_3mm_r1
+  commanded_depth_mm: 6.425000000000024
+  command_vs_measured_mm: 0.283051009103259
   run_timestamp: '20260901_180351'
   ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_hard_3mm_r1
   image_response:
     max_measurable_force_N: null
+    max_measurable_depth_mm: null
     reached: false
     metric: mean |frame - reference| over the central half, grey levels
     threshold_frac_of_peak_slope: 0.15
     min_force_N: 0.3
     consecutive: 2
-    note: 'not reached within the limits: stopped on force cap at 3.12 N with the
-      image still changing at 2.65 lvl/N (106% of peak)'
-    peak_slope_levels_per_N: 2.498726563208986
-    image_change_at_stop: 8.362893104553223
+    note: 'not reached within the limits: stopped on force cap at 20.51 N with the
+      image still changing at 1.40 lvl/N (35% of peak)'
+    peak_slope_levels_per_N: 3.974345981837377
+    image_change_at_stop: 62.670875549316406
   contact_map:
     at_depth:
       target_depth_mm: 0.5
@@ -2561,17 +2640,17 @@ sensors:
   depth_limit_basis: 2.14 mm indented twice with 0.6 % agreement, so this is measured
   status: characterised
   gel_model:
-    hertz_a: 2.766309688253409
-    free_exponent: 2.943453957330511
-    surface_mm: 27.820999999999998
-  safe_force_N: 3.2323783976810008
-  safe_depth_mm: 1.4780358753266043
-  commanded_depth_mm: 1.5000000000000002
-  command_vs_measured_mm: 0.021964124673395924
-  stopped_on: force cap
-  ladder_rungs_reached: 32
-  characterised_at: '2026-09-08T00:26:09.207596'
-  run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_hard_3mm_r2
+    hertz_a: 1.3478062246988523
+    free_exponent: 1.5590216413363094
+    surface_mm: 27.739
+  safe_force_N: 18.5053537956016
+  safe_depth_mm: 5.6618299172609206
+  commanded_depth_mm: 6.875000000000011
+  command_vs_measured_mm: 1.21317008273909
+  stopped_on: image saturation (+ margin)
+  ladder_rungs_reached: 50
+  characterised_at: '2026-09-11T17:27:22.094435'
+  run: data/20260911_VBTSresolution_dataset/9DTact/20260911_passC_ceiling/9DTact_hard_3mm_r2
   ladder_run: data/earlier_datasets/20260903_ladder_protocol/9DTact_hard_3mm_r2
   history:
   - characterised_at: '2026-09-03T16:21:24.255570'
@@ -2586,17 +2665,38 @@ sensors:
     depth_cap_used_mm: null
     image_response: null
     run: null
+  - characterised_at: '2026-09-08T00:26:09.207596'
+    gel_model:
+      hertz_a: 2.766309688253409
+      free_exponent: 2.943453957330511
+      surface_mm: 27.820999999999998
+    safe_depth_mm: 1.4780358753266043
+    safe_force_N: 3.2323783976810008
+    stopped_on: force cap
+    ladder_rungs_reached: 32
+    depth_cap_used_mm: null
+    image_response:
+      max_measurable_force_N: null
+      reached: false
+      metric: mean |frame - reference| over the central half, grey levels
+      threshold_frac_of_peak_slope: 0.15
+      min_force_N: 0.3
+      consecutive: 2
+      note: 'not reached within the limits: stopped on force cap at 3.23 N with the
+        image still changing at 1.58 lvl/N (102% of peak)'
+      peak_slope_levels_per_N: 1.5425807066678647
+      image_change_at_stop: 6.515843391418457
+    run: data/20260911_VBTSresolution_dataset/9DTact/20260907_passB_ball8/9DTact_hard_3mm_r2
   image_response:
-    max_measurable_force_N: null
-    reached: false
+    max_measurable_force_N: 18.5053537956016
+    max_measurable_depth_mm: 5.6618299172609206
+    reached: true
     metric: mean |frame - reference| over the central half, grey levels
     threshold_frac_of_peak_slope: 0.15
     min_force_N: 0.3
     consecutive: 2
-    note: 'not reached within the limits: stopped on force cap at 3.23 N with the
-      image still changing at 1.58 lvl/N (102% of peak)'
-    peak_slope_levels_per_N: 1.5425807066678647
-    image_change_at_stop: 6.515843391418457
+    peak_slope_levels_per_N: 3.6289772860968275
+    image_change_at_stop: 69.8603286743164
   contact_map:
     at_depth:
       target_depth_mm: 0.5
@@ -2840,7 +2940,8 @@ sensors:
     image_change_at_stop: 15.923470497131348
   run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_soft_3mm_r1
   run_folder_was: DIGIT_soft_3mm_r1__2
-  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆
+    PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_soft_3mm_r2
   principle: DIGIT
   hardness: soft
@@ -2877,7 +2978,8 @@ sensors:
     image_change_at_stop: 17.66773223876953
   run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_soft_3mm_r2
   run_folder_was: DIGIT_soft_3mm_r2__2
-  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆
+    PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_medium_1mm_r1
   principle: DIGIT
   hardness: medium
@@ -2989,7 +3091,8 @@ sensors:
     image_change_at_stop: 21.933725357055664
   run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_medium_2mm_r1
   run_folder_was: DIGIT_medium_2mm_r1__2
-  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆
+    PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_medium_2mm_r2
   principle: DIGIT
   hardness: medium
@@ -3027,7 +3130,8 @@ sensors:
     image_change_at_stop: 20.036579132080078
   run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_medium_2mm_r2
   run_folder_was: DIGIT_medium_2mm_r2__2
-  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆
+    PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_medium_3mm_r1
   principle: DIGIT
   hardness: medium
@@ -3136,7 +3240,8 @@ sensors:
     image_change_at_stop: 16.807416915893555
   run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_hard_1mm_r1
   run_folder_was: DIGIT_hard_1mm_r1__5
-  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆
+    PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_hard_1mm_r2
   principle: DIGIT
   hardness: hard
@@ -3175,7 +3280,8 @@ sensors:
     image_change_at_stop: 17.22289276123047
   run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_hard_1mm_r2
   run_folder_was: DIGIT_hard_1mm_r2__7
-  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆
+    PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_hard_2mm_r1
   principle: DIGIT
   hardness: hard
@@ -3212,7 +3318,8 @@ sensors:
     image_change_at_stop: 19.61933135986328
   run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_hard_2mm_r1
   run_folder_was: DIGIT_hard_2mm_r1__3
-  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆
+    PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
   history:
   - characterised_at: '2026-09-10T21:07:01.463756'
     gel_model:
@@ -3237,7 +3344,8 @@ sensors:
       image_change_at_stop: 7.733381271362305
     run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_hard_2mm_r1
     run_folder_was: DIGIT_hard_2mm_r1__2
-    run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
+    run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그
+      옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_hard_2mm_r2
   principle: DIGIT
   hardness: hard
@@ -3274,7 +3382,8 @@ sensors:
     image_change_at_stop: 21.231826782226562
   run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_hard_2mm_r2
   run_folder_was: DIGIT_hard_2mm_r2__2
-  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆
+    PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
   history:
   - characterised_at: '2026-09-10T21:23:57.119270'
     gel_model:
@@ -3346,7 +3455,8 @@ sensors:
     image_change_at_stop: 14.869571685791016
   run: data/20260911_VBTSresolution_dataset/DIGIT/20260910_passA_calibgrid/DIGIT_hard_3mm_r1
   run_folder_was: DIGIT_hard_3mm_r1__2
-  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆
+    PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_hard_3mm_r2
   principle: DIGIT
   hardness: hard
@@ -3420,7 +3530,8 @@ sensors:
     image_change_at_stop: 19.668333053588867
   run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r1
   run_folder_was: DIGIT_Marker_soft_1mm_r1__2
-  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆
+    PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
   history:
   - characterised_at: '2026-09-11T00:19:06.571059'
     gel_model:
@@ -3483,7 +3594,8 @@ sensors:
     image_change_at_stop: 18.192941665649414
   run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_soft_1mm_r2
   run_folder_was: DIGIT_Marker_soft_1mm_r2__2
-  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆
+    PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
   history:
   - characterised_at: '2026-09-11T01:00:33.317625'
     gel_model:
@@ -3832,7 +3944,8 @@ sensors:
     image_change_at_stop: 18.485111236572266
   run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_medium_3mm_r1
   run_folder_was: DIGIT_Marker_medium_3mm_r1__2
-  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆
+    PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_Marker_medium_3mm_r2
   principle: DIGIT_Marker
   hardness: medium
@@ -4050,7 +4163,8 @@ sensors:
     image_change_at_stop: 24.10885238647461
   run: data/20260911_VBTSresolution_dataset/DIGIT_Marker/20260910_passA_calibgrid/DIGIT_Marker_hard_3mm_r1
   run_folder_was: DIGIT_Marker_hard_3mm_r1__2
-  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆 PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
+  run_folder_note: 2026-09-11 데이터셋 정리에서 유닛당 폴더 하나로 합쳤다. 램프는 characterize/ 에 있고 그 옆
+    PROVENANCE.yaml 이 이 이름과 그 런의 영점 표면을 담는다.
 - id: DIGIT_Marker_hard_3mm_r2
   principle: DIGIT_Marker
   hardness: hard
