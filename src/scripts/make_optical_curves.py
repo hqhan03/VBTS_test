@@ -159,6 +159,9 @@ def panel(pr, D):
 
 def main():
     plt.rcParams["font.family"] = ["NanumGothic", "DejaVu Sans"]
+    # NanumGothic 에 유니코드 마이너스(U+2212) 글리프가 없어 축 라벨이
+    # "6 x 10<깨짐>2" 로 나온다. ASCII 하이픈을 쓰게 한다.
+    plt.rcParams["axes.unicode_minus"] = False
     for pr in ("9DTact", "DIGIT", "DIGIT_Marker"):
         D = pd.concat([load(pr, p) for p in ("ball4", "ball8")], ignore_index=True)
         d = RES / FOLD[pr] / "data"

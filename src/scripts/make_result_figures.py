@@ -244,6 +244,9 @@ def fig_F():
 
 def main():
     plt.rcParams["font.family"] = ["NanumGothic", "DejaVu Sans"]
+    # NanumGothic 에 유니코드 마이너스(U+2212) 글리프가 없어 축 라벨이
+    # "6 x 10<깨짐>2" 로 나온다. ASCII 하이픈을 쓰게 한다.
+    plt.rcParams["axes.unicode_minus"] = False
     D = ceilings()
     D.to_csv(RES / "extra" / "data" / "ceilings_ball8.csv", index=False)
     fig_A(D); fig_B(D); fig_C(); fig_D(); fig_E(); fig_F()
