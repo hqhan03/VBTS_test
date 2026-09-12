@@ -109,6 +109,71 @@ def summary(d):
     pd.concat(rows).to_csv(p / "data" / "shape_mae_summary.csv", index=False)
 
 
+# ------------------------------------------------------------- DIGIT --
+def load_digit():
+    """digit_shape.py 가 낸 held-out 평가. 긴 형식 -> 9DTact 와 같은 넓은 형식."""
+    f = ROOT / "data" / "analysis" / "digit_shape" / "DIGIT_shape_vs_resolution.csv"
+    if not f.exists():
+        return None
+    d = pd.read_csv(f)
+    d["err_mm"] = (d.depth_pred_mm - d.depth_true_mm).abs()
+    w = (d.groupby(["unit", "width_px", "shape"]).err_mm.mean()
+         .unstack("shape").reset_index())
+    w = w.rename(columns={c: f"{c}_raw_mae" for c in ("cyl4", "cube4")})
+    return w.rename(columns={"unit": "sensor"})
+
+
+def digit_summary(d, raw):
+    """요약 + 예측-참값 산점도. 상관이 이 파이프라인의 핵심 증거다."""
+    fig, axes = plt.subplots(1, 2, figsize=(9.6, 3.8))
+    ax = axes[0]
+    rows = []
+    for probe, lab, c in PROBE:
+        col = f"{probe}_raw_mae"
+        if col not in d:
+            continue
+        k = d.groupby("width_px")[col].median().dropna()
+        ax.plot(k.index, k.values, "-o", c=c, lw=1.9, ms=5, mec="white",
+                mew=.7, label=lab)
+        b = k.idxmin()
+        ax.plot(b, k[b], "*", c=c, ms=13, mec="white", mew=.7, zorder=5)
+        rows.append(pd.DataFrame(dict(probe=probe, width_px=k.index,
+                                      mae_mm=k.values)))
+    ax.set_xscale("log"); ax.set_yscale("log"); plain_log(ax, "both")
+    ax.set_xlabel("가로 해상도 (px)"); ax.set_ylabel("깊이 MAE (mm)")
+    ax.set_title("DIGIT — 형상 복원 오차 대 해상도 (★ = 최소)",
+                 fontsize=10, loc="left")
+    ax.legend(frameon=False, fontsize=8.5)
+    ax.spines[["top", "right"]].set_visible(False)
+    ax.grid(alpha=.25, lw=.6, which="both"); ax.set_axisbelow(True)
+
+    ax = axes[1]
+    g = raw[raw.width_px == 426]
+    for probe, lab, c in PROBE:
+        s = g[g["shape"] == probe]
+        if not len(s):
+            continue
+        ax.scatter(s.depth_true_mm, s.depth_pred_mm, s=26, c=c, alpha=.65,
+                   edgecolor="white", lw=.5,
+                   label=f"{lab}  r={np.corrcoef(s.depth_true_mm, s.depth_pred_mm)[0,1]:+.3f}")
+    lim = [0, max(g.depth_true_mm.max(), g.depth_pred_mm.max()) * 1.05]
+    ax.plot(lim, lim, ":", c="#888", lw=1.2, zorder=1)
+    ax.set_xlim(lim); ax.set_ylim(lim)
+    ax.set_xlabel("참 깊이 (mm)"); ax.set_ylabel("복원 깊이 (mm)")
+    ax.set_title("426 px 에서의 전이 (점선 = 이상)", fontsize=10, loc="left")
+    ax.legend(frameon=False, fontsize=8)
+    ax.spines[["top", "right"]].set_visible(False)
+    ax.grid(alpha=.25, lw=.6); ax.set_axisbelow(True)
+
+    fig.tight_layout()
+    p = RES / FOLD["DIGIT"]
+    (p / "figures").mkdir(parents=True, exist_ok=True)
+    (p / "data").mkdir(parents=True, exist_ok=True)
+    fig.savefig(p / "figures" / "shape_mae_summary.png", dpi=200, bbox_inches="tight")
+    plt.close(fig)
+    pd.concat(rows).to_csv(p / "data" / "shape_mae_summary.csv", index=False)
+
+
 def main():
     plt.rcParams["font.family"] = ["NanumGothic", "DejaVu Sans"]
     plt.rcParams["axes.unicode_minus"] = False
@@ -130,6 +195,22 @@ def main():
     print(f"  9DTact  {len(d)} 행, {d.sensor.nunique()} 유닛  "
           f"최소: cyl4 {k.cyl4_raw_mae.idxmin()}px ({k.cyl4_raw_mae.min():.4f} mm)  "
           f"cube4 {k.cube4_raw_mae.idxmin()}px ({k.cube4_raw_mae.min():.4f} mm)")
+
+    dd = load_digit()
+    if dd is None or not len(dd):
+        print("  DIGIT: 형상 평가 아직 없음"); return
+    raw = pd.read_csv(ROOT / "data" / "analysis" / "digit_shape"
+                      / "DIGIT_shape_vs_resolution.csv")
+    pD = RES / FOLD["DIGIT"] / "data"; pD.mkdir(parents=True, exist_ok=True)
+    dd.to_csv(pD / "shape_vs_resolution.csv", index=False)
+    raw.to_csv(pD / "shape_predictions.csv", index=False)
+    panel_d = panel
+    globals()["RES_FOLD_OVERRIDE"] = "DIGIT"
+    digit_summary(dd, raw)
+    k2 = dd.groupby("width_px")[["cyl4_raw_mae", "cube4_raw_mae"]].median()
+    print(f"  DIGIT   {len(dd)} 행, {dd.sensor.nunique()} 유닛  "
+          f"최소: cyl4 {k2.cyl4_raw_mae.idxmin()}px ({k2.cyl4_raw_mae.min():.4f} mm)  "
+          f"cube4 {k2.cube4_raw_mae.idxmin()}px ({k2.cube4_raw_mae.min():.4f} mm)")
 
 
 if __name__ == "__main__":
