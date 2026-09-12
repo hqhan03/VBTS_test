@@ -184,6 +184,32 @@ def load_ref(run: Path, calib=False):
     return None
 
 
+def calib_frames(run: Path):
+    """보정에 쓸 (이미지 경로, 깊이, 중심, 면적) 목록.
+
+    두 곳에서 모은다. **깊이 범위를 겹치게 하는 것이 핵심이다** — 격자만 쓰면
+    0.15 ~ 1.08 mm 에서만 보정되는데 평가 형상(cyl4/cube4)은 0.01 ~ 0.58 mm 라,
+    얕은 쪽이 전부 외삽이 되어 예측이 참값의 3 배로 나오고 상관이 +0.15 ~ +0.31
+    까지 떨어졌다(2026-09-13 실측).
+
+      calibgrid_ball4/grid.csv   격자 15 위치 x 2 깊이, 0.15 ~ 1.08 mm
+      shape_ball4/ladder.csv     사다리 6 단, 0.10 ~ 0.58 mm   <- 얕은 쪽
+    """
+    out = []
+    g = run / "calibgrid_ball4"
+    if (g / "grid.csv").exists():
+        for _, r in pd.read_csv(g / "grid.csv").iterrows():
+            out.append((g / r.file, float(r.depth_mm), r.centroid_px, float(r.area_px)))
+    # 사다리는 다른 pass 에 있다. 같은 유닛의 것을 찾는다.
+    unit = run.name
+    for lad in (run.parents[1]).glob(f"*passA_ball4/{unit}*/shape_ball4/ladder.csv"):
+        for _, r in pd.read_csv(lad).iterrows():
+            out.append((lad.parent / Path(str(r.file)).name, float(r.depth_mm),
+                        r.centroid_px, float(r.area_px)))
+        break
+    return out
+
+
 def calib_samples(run: Path, px_per_mm: float, per_frame=8000, bg_mult=4, seed=0):
     """(특징, 목표) — 특징은 [dB, dG, dR, nx, ny], 목표는 [gx, gy]."""
     g = run / "calibgrid_ball4"
@@ -195,10 +221,11 @@ def calib_samples(run: Path, px_per_mm: float, per_frame=8000, bg_mult=4, seed=0
     H, W = ref.shape[:2]
     rng = np.random.default_rng(seed)
     X, Y, used = [], [], 0
-    for _, r in grid.iterrows():
-        if float(r.area_px) < MIN_AREA_PX:
+    for path, depth, cen, area in calib_frames(run):
+        if area < MIN_AREA_PX:
             continue
-        img = cv2.imread(str(g / r.file))
+        r = type("R", (), dict(depth_mm=depth, centroid_px=cen))
+        img = cv2.imread(str(path))
         if img is None or img.shape[:2] != (H, W):
             continue
         cx, cy = _centroid(r.centroid_px)
