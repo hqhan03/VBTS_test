@@ -33,52 +33,76 @@ OUT = ROOT / "data" / "analysis" / "digit_shape"
 BALL_R_MM = 2.0                      # calibgrid 는 ball4 로 돈다
 MIN_AREA_PX = 5_000                  # 이보다 작으면 접촉이 없었던 칸이다
 GRAD_CLIP = 2.0                      # |기울기| 상한. 구 가장자리에서 발산한다
+HALO_MULT = 6.0                      # 헤일로를 접촉 반경의 몇 배까지 모형화하나
 
 
 # ------------------------------------------------------------------ 기하 --
 def sphere_gradients(shape, cx, cy, depth_mm, px_per_mm, R=BALL_R_MM):
-    """접촉 안 픽셀의 참 (gx, gy) 와 그 마스크.
+    """접촉 안팎 픽셀의 참 (gx, gy) 와 그 마스크. **Hertz 접촉**으로 계산한다.
 
-    깊이 d 로 눌린 반지름 R 의 구에서, 축으로부터 거리 r 인 점의 겔 표면은
-    h(r) = d - (R - sqrt(R^2 - r^2)) 만큼 내려가 있고 (r <= a),
-    접촉 반경은 a = sqrt(2Rd - d^2), 기울기는 dh/dr = -r / sqrt(R^2 - r^2) 다.
-    구의 적도에 가까워지면 기울기가 발산하므로 GRAD_CLIP 으로 자른다 —
-    그 띠는 어차피 조명이 스치듯 들어와 색이 포화한다.
+    처음에는 접촉 반경을 `a = sqrt(2Rd - d^2)` 로 두었다 — 강체 구가 강체 평면을
+    파고들 때의 기하학적 교선이다. **탄성체에서는 틀리다.** Hertz 는
+    `a = sqrt(R*delta)` 이고, a^2 이 2 배, a 가 sqrt(2) = 1.41 배 다르다. 그
+    차이가 복원 깊이를 그만큼 얕게 만들었고, 축척을 1.25 ~ 1.75 배 키워야 맞는
+    것처럼 보이게 했다(2026-09-12 에 축척 탓으로 오진했다가, 축척이 pair 자로
+    1.000 검증된 9DTact 에서도 같은 배율이 나와 잡았다).
+
+    Hertz 의 표면 변위 (강체 구 + 반무한 탄성체, 압입 delta, 접촉 반경 a):
+        r <= a :  u(r) = delta - r^2 / (2R)                     기울기 -r/R
+        r >= a :  u(r) = (delta/pi) [ (2 - r^2/a^2) asin(a/r)
+                                      + (r/a) sqrt(1 - a^2/r^2) ]
+    r = a 에서 두 식이 delta/2 로 만나고, r -> inf 에서 0 이다. **접촉 가장자리가
+    0 이 아니라 delta/2** 라는 것이 핵심이다 — 거기를 0 으로 가르치면 깊이의
+    절반을 잃는다.
     """
     H, W = shape
     d = float(depth_mm)
     if d <= 0 or d >= R:
         return None
-    a_mm = float(np.sqrt(max(2 * R * d - d * d, 0.0)))
+    a_mm = float(np.sqrt(R * d))                 # Hertz. 기하 교선이 아니다
     a_px = a_mm * px_per_mm
     if a_px < 8:
         return None
     y, x = np.mgrid[0:H, 0:W].astype(np.float32)
     dx_px, dy_px = x - cx, y - cy
     r_px = np.hypot(dx_px, dy_px)
-    m = r_px <= a_px
-    if m.sum() < 200:
-        return None
     r_mm = r_px / px_per_mm
-    denom = np.sqrt(np.maximum(R * R - r_mm * r_mm, 1e-6))
-    # dh/dx = (dh/dr)(x/r); r -> 0 에서 0/0 이므로 중심은 0 으로 둔다
-    # **높이** z 의 기울기를 낸다 (겔 안쪽이 음수). h(r) 은 아래로 양수인 침하량이라
-    # 부호를 한 번 뒤집어야 한다 — 안 뒤집으면 복원 결과가 봉우리로 나온다.
+    inside = r_px <= a_px
+    halo = (r_px > a_px) & (r_px < HALO_MULT * a_px)
+    if (inside | halo).sum() < 200:
+        return None
+
+    def dudr(rr):
+        """du/dr. 안쪽은 해석해, 바깥쪽은 중앙차분(해석 미분이 r=a 에서 특이하다)."""
+        out = np.zeros_like(rr)
+        m_in = rr <= a_mm
+        out[m_in] = -rr[m_in] / R
+        m_out = ~m_in
+        if m_out.any():
+            def u(xx):
+                q = np.clip(a_mm / xx, 0, 1)
+                return (d / np.pi) * ((2 - (xx / a_mm) ** 2) * np.arcsin(q)
+                                      + (xx / a_mm) * np.sqrt(np.maximum(1 - q * q, 0)))
+            xo = np.maximum(rr[m_out], a_mm * (1 + 1e-6))
+            h = max(a_mm * 1e-3, 1e-6)
+            out[m_out] = (u(xo + h) - u(np.maximum(xo - h, a_mm * (1 + 1e-6)))) \
+                / (xo + h - np.maximum(xo - h, a_mm * (1 + 1e-6)))
+        return out
+
+    g = dudr(np.maximum(r_mm, 1e-9))
     with np.errstate(invalid="ignore", divide="ignore"):
-        gx = np.where(r_px > 1e-6, +(dx_px / px_per_mm) / denom, 0.0)
-        gy = np.where(r_px > 1e-6, +(dy_px / px_per_mm) / denom, 0.0)
-    ok = m & (np.abs(gx) < GRAD_CLIP) & (np.abs(gy) < GRAD_CLIP)
-    # 접촉 밖에서는 구 공식이 무의미하다 (r > R 이면 sqrt 가 클램프돼 폭발한다).
-    # 0 으로 눌러 두지 않으면 참 기울기를 적분해도 1937 mm 가 나온다(2026-09-12).
+        # du/dr 은 **침하량**(아래로 양수)의 기울기다. 높이 z = -u 이므로 뒤집는다.
+        gx = np.where(r_px > 1e-6, -g * (dx_px / px_per_mm) / np.maximum(r_mm, 1e-9), 0.0)
+        gy = np.where(r_px > 1e-6, -g * (dy_px / px_per_mm) / np.maximum(r_mm, 1e-9), 0.0)
+    ok = (inside | halo) & (np.abs(gx) < GRAD_CLIP) & (np.abs(gy) < GRAD_CLIP)
     gx = np.where(ok, gx, 0.0)
     gy = np.where(ok, gy, 0.0)
     return gx.astype(np.float32), gy.astype(np.float32), ok
 
 
 def a_of(depth_mm, px_per_mm, R=BALL_R_MM):
-    """접촉 반경(px)."""
-    d = float(depth_mm)
-    return float(np.sqrt(max(2 * R * d - d * d, 0.0))) * px_per_mm
+    """Hertz 접촉 반경(px). a = sqrt(R*delta)."""
+    return float(np.sqrt(max(R * float(depth_mm), 0.0))) * px_per_mm
 
 
 def r_of(shape, cx, cy):
@@ -188,7 +212,7 @@ def calib_samples(run: Path, px_per_mm: float, per_frame=8000, bg_mult=4, seed=0
         # 접촉 **밖** 픽셀도 같은 수만큼 넣고 기울기 0 을 준다. 이것이 없으면
         # 배경(색차 ~0)에서 모델이 0 이 아닌 기울기를 내고, 1920x1080 을 적분하는
         # 동안 그 오차가 쌓여 깊이가 7 배로 부푼다(2026-09-12 실측: 0.32 -> 2.34 mm).
-        far = np.flatnonzero((r_of(gx.shape, cx, cy) > 1.6 * a_of(r.depth_mm, px_per_mm)).ravel())
+        far = np.flatnonzero((r_of(gx.shape, cx, cy) > HALO_MULT * 1.1 * a_of(r.depth_mm, px_per_mm)).ravel())
         # 실제 프레임은 접촉:배경이 1:37 이다. 1:1 로 학습하면 배경에서 평균 0.034 의
         # 기울기가 남고, 202 만 배경 픽셀에 깔려 적분을 +0.31 mm 부풀린다(2026-09-12).
         if len(far) > per_frame * bg_mult:
