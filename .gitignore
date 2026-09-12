@@ -4,6 +4,8 @@
 # run can be re-analysed from git for everything except the pixels.
 *.png
 !docs/figures/*.png
+# 논문에 들어갈 그림은 버전 관리한다 (수백 KB). 측정 이미지와 달리 결과물이다.
+!result/**/figures/*.png
 *.jpg
 *.jpeg
 *.mp4
@@ -24,4 +26,6 @@ nohup.out
 # --- data/ 는 깃헙에 올리지 않는다 (2026-09-11, 운전자 지정) ---
 # 측정도, 분석이 낸 표도, 그 안의 문서도 전부. 데이터는 이 기계(와 그 백업)에 있다.
 # 저장소에 올라가는 것은 코드(src/)와 문서(docs/)뿐이다.
-data/
+# 최상위 측정 데이터만 막는다 (203 GB). 앞의 / 가 없으면 result/*/data/ 처럼
+# 하위 계층의 data 폴더까지 잡아 결과 CSV 가 통째로 빠진다.
+/data/

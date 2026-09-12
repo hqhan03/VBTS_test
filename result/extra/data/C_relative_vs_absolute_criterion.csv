@@ -1,0 +1,4 @@
+criterion,ninedtact,digit,ratio,p,usable
+상대 (자기 피크의 15 %),31.0,17.33,1.79,4.8e-07,True
+절대 1.0 lvl/N,30.42,7.02,4.33,8.8e-07,True
+절대 2.0 lvl/N,18.1,2.73,6.63,2.4e-03,True

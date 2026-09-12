@@ -626,6 +626,11 @@ def train_eval(X, y, tr, va, te, epochs=30, batch=64, seed=0, device="cuda",
                 fz_r2=ss, lat_r2=lat_r2, batch=batch, micro_batch=micro,
                 accum=accum, best_epoch=best[1] + 1, epochs_run=len(hist),
                 train_loss=float(tr_loss), val_loss=float(va_loss),
+                # 6 축 전부를 낸다. mae6 는 [Fx, Fy, Fz, Tx, Ty, Tz] 이고 모델의 fc 가
+                # 6 출력이므로 축별 오차는 처음부터 계산돼 있었다 — 2026-09-12 이전에는
+                # [0], [1] 을 버리고 있었을 뿐이다. lat_mae 는 hypot(Fx,Fy) 로 두 축을
+                # 합친 값이라 방향별 성능을 못 보여 준다.
+                fx_mae=float(mae6[0]), fy_mae=float(mae6[1]),
                 tx_mae=float(mae6[3]), ty_mae=float(mae6[4]), tz_mae=float(mae6[5]),
                 n_train=int(tr.sum()), n_val=int(va.sum()), n_test=int(te.sum()),
                 fz_range=float(tt[:, 2].max() - tt[:, 2].min()))
@@ -713,7 +718,8 @@ def main():
         print(f"  resuming: {len(rows)} rows already in {out.name}")
     done = {(r["sensor"], int(r["width_px"]), int(r.get("seed") or 0),
              r.get("split") or "cycle") for r in rows}
-    cols = ["sensor", "width_px", "height_px", "split", "seed", "fz_mae", "fz_rmse",
+    cols = ["sensor", "width_px", "height_px", "split", "seed",
+            "fx_mae", "fy_mae", "fz_mae", "fz_rmse",
             "fz_mae_baseline", "fz_r2", "lat_mae", "lat_mae_baseline", "lat_r2",
             "lat_mae_shear", "fz_mae_normal", "n_test_shear", "n_test_normal", "norm", "rep",
             "n_train", "n_val", "n_test", "fz_range", "tx_mae", "ty_mae", "tz_mae",
