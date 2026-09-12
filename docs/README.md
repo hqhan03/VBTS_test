@@ -5,6 +5,11 @@ into three overlapping accounts of the frame transform, two entry points and a
 rendered HTML copy of a page that had since changed. What is left is one file
 per question.
 
+> **Collection ended 2026-09-12.** Nothing more is measured. For the paper:
+> **`methods.md`** is the whole Method section and its **§10.0 is the table of
+> permanent limitations** — what went unanswered and which claim each one bounds.
+> **`force_ceiling.md` §6.8** carries the headline two-principle comparison.
+
 | I want to know… | read |
 |---|---|
 | what the campaign is, its four tests, where it stands | **`campaign_protocol.md`** ← start here |
