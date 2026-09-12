@@ -25,6 +25,19 @@ TQ = [("tx_mae", "Tx", "#c2553a"), ("ty_mae", "Ty", "#d9a441"),
 HARD = ["soft", "medium", "hard"]
 
 
+def plain_log(ax, which="y"):
+    """로그 축 눈금을 평범한 숫자로. mathtext 를 쓰지 않게 해 마이너스 깨짐을 없앤다.
+
+    NanumGothic 에 U+2212 글리프가 없어 로그 포매터의 $10^{-1}$ 이 "10<깨짐>1" 로
+    나온다. axes.unicode_minus 도 mathtext.fontset 도 이 경로에는 듣지 않았다.
+    """
+    from matplotlib.ticker import FuncFormatter, NullFormatter
+    f = FuncFormatter(lambda v, _: f"{v:g}")
+    for a in ([ax.yaxis] if which == "y" else
+              [ax.xaxis] if which == "x" else [ax.xaxis, ax.yaxis]):
+        a.set_major_formatter(f)
+        a.set_minor_formatter(NullFormatter())
+
 def load(pr):
     f = DS / pr / "force_vs_resolution_axes.csv"
     if not f.exists():
@@ -51,7 +64,7 @@ def panel(pr, d, cols, stem, ylab):
             ax.plot(k.index, k["median"], "-o", c=col, lw=1.5, ms=3.2,
                     mec="white", mew=.5, label=lab)
             ax.fill_between(k.index, k["min"], k["max"], color=col, alpha=.16, lw=0)
-        ax.set_xscale("log"); ax.set_yscale("log")
+        ax.set_xscale("log"); ax.set_yscale("log"); plain_log(ax, "both")
         ax.set_title(u, fontsize=8.5); ax.tick_params(labelsize=7)
         ax.spines[["top", "right"]].set_visible(False)
         ax.grid(alpha=.22, lw=.5, which="both"); ax.set_axisbelow(True)
@@ -81,7 +94,7 @@ def summary(pr, d):
         b = k.idxmin()
         ax.plot(b, k[b], "*", c=col, ms=14, mec="white", mew=.8, zorder=5)
         rows.append(pd.DataFrame(dict(axis=lab, width_px=k.index, mae=k.values)))
-    ax.set_xscale("log"); ax.set_yscale("log")
+    ax.set_xscale("log"); ax.set_yscale("log"); plain_log(ax, "both")
     ax.set_xlabel("가로 해상도 (px)"); ax.set_ylabel("MAE (N)")
     ax.set_title(f"{pr} — 축별 힘 오차 대 해상도 (★ = 최소)", fontsize=10.5, loc="left")
     ax.legend(frameon=False, fontsize=9)
@@ -100,6 +113,9 @@ def main():
     # NanumGothic 에 유니코드 마이너스(U+2212) 글리프가 없어 축 라벨이
     # "6 x 10<깨짐>2" 로 나온다. ASCII 하이픈을 쓰게 한다.
     plt.rcParams["axes.unicode_minus"] = False
+    # 로그 축 라벨은 mathtext 로 그려지고 그것도 NanumGothic 을 따라가
+    # "10<깨짐>1" 이 된다. mathtext 에는 완전한 폰트를 따로 준다.
+    plt.rcParams["mathtext.fontset"] = "dejavusans"
     for pr in ("9DTact", "DIGIT", "DIGIT_Marker"):
         d = load(pr)
         if d is None or not len(d):

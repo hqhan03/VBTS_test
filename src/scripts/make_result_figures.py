@@ -247,6 +247,9 @@ def main():
     # NanumGothic 에 유니코드 마이너스(U+2212) 글리프가 없어 축 라벨이
     # "6 x 10<깨짐>2" 로 나온다. ASCII 하이픈을 쓰게 한다.
     plt.rcParams["axes.unicode_minus"] = False
+    # 로그 축 라벨은 mathtext 로 그려지고 그것도 NanumGothic 을 따라가
+    # "10<깨짐>1" 이 된다. mathtext 에는 완전한 폰트를 따로 준다.
+    plt.rcParams["mathtext.fontset"] = "dejavusans"
     D = ceilings()
     D.to_csv(RES / "extra" / "data" / "ceilings_ball8.csv", index=False)
     fig_A(D); fig_B(D); fig_C(); fig_D(); fig_E(); fig_F()

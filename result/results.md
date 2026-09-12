@@ -315,7 +315,11 @@ ResNet-18 을 해상도 12 단(1920 → 8 px)에서 학습해 축별 MAE 를 낸
 
 <sub>그림: `1_9DTact/figures/force_mae_vs_resolution_18units.png` · 자료: `1_9DTact/data/force_mae_vs_resolution_18units.csv`</sub>
 
-> **DIGIT: 학습 진행 중.** 끝나면 이 문서를 다시 생성한다.
+![DIGIT — 유닛별 축별 MAE 대 해상도](2_DIGIT/figures/force_mae_vs_resolution_18units.png)
+
+*DIGIT — 유닛별 축별 MAE 대 해상도*
+
+<sub>그림: `2_DIGIT/figures/force_mae_vs_resolution_18units.png` · 자료: `2_DIGIT/data/force_mae_vs_resolution_18units.csv`</sub>
 
 > **DIGIT_Marker: 학습 진행 중.** 끝나면 이 문서를 다시 생성한다.
 
