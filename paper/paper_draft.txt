@@ -1,0 +1,1272 @@
+================================================================================
+ICRA 2027 SUBMISSION -- WORKING DRAFT
+================================================================================
+
+TITLE (working)
+How Much Camera Resolution Does a Vision-Based Tactile Sensor Need?
+A Controlled Study of Elastomer Design and Sampling Resolution
+
+Alternative kept for reference:
+Matching Camera Resolution to Elastomer: A Fabrication Guideline for
+Vision-Based Tactile Sensors
+
+
+CONTENTS
+  Abstract                                                  [DRAFTED]
+  I.    Introduction                                        [DRAFTED]
+  II.   Related Work                                        [DRAFTED]
+  III.  Sensor Fabrication and Design of Experiments        [DRAFTED]
+          A. Sensing Principles and Bodies
+          B. Elastomer Specimens
+          C. Apparatus
+          D. Probes
+          E. Running Order
+  IV.   Calibration-Free Gel Characterization               [DRAFTED]
+          A. Imprint Growth and Optical Response            [DRAFTED]
+          B. Two-Point Spatial Resolution                   [DRAFTED]
+          C. Maximum Measurable Force                       [DRAFTED]
+  V.    Task Performance Against Sampling Resolution        [DRAFTED]
+          A. 6-Axis Force Estimation                        [DRAFTED]
+          B. Shape Reconstruction                           [DRAFTED]
+  VI.   Conclusion                                          [DRAFTED]
+
+
+================================================================================
+ABSTRACT
+================================================================================
+
+[ABS]
+Abstract-- Vision-based tactile sensors encode contact as an image, and the
+sampling resolution at which that image is processed fixes the camera, the link
+bandwidth and the network input size of an entire finger. The elastomer is
+widely assumed to set that requirement, since a thicker or stiffer layer
+spreads an indentation before the camera sees it. The assumption has never been
+tested, because testing it means varying the elastomer while holding the optics
+fixed. We fabricate 27 sensors spanning the two dominant intensity-based
+principles, depth-referenced and photometric-stereo, plus a marker-bearing arm,
+each crossed with three elastomer hardnesses and three thicknesses, with one
+body, camera and illumination per principle. Training-free measurements confirm
+that the elastomer does filter spatially: two-point resolution degrades with
+thickness on every metric we can measure. That filtering does not reach the
+trained estimators. Twenty tests of a thickness or hardness dependence in the
+saturation resolution -- two principles, six force axis-groups, four held-out
+shape probes, one false-discovery correction -- return none, against a bound
+set by replicates of one gel specification disagreeing by 6.7-fold. What moves
+the requirement is the axis rather than the gel: shear saturates near 48 px of
+input width while normal force needs up to 320, inverting the usual reading of
+the 224 px convention. The elastomer instead sets the maximum readable force
+(2.3-fold across our gels) and the depth quantization of shape reconstruction
+(2.1-fold). Sampling resolution can therefore be specified before the
+elastomer is chosen.
+
+================================================================================
+I. INTRODUCTION
+================================================================================
+
+[I-1]
+Vision-based tactile sensors (VBTS) encode contact into an image. A camera
+observes the deformation of a soft elastomer, so a single frame carries dense
+information about contact geometry, normal and shear loading, and surface
+detail. The representation is also convenient for learning, since the sensor
+output is already the input format that modern vision architectures expect.
+
+[I-2]
+The cost is data volume. Each sensor produces an image stream rather than a
+handful of scalar channels, and that cost multiplies with the number of contact
+points on a hand. Aggregate bandwidth, transfer latency, and inference time
+begin to consume the control budget available for reactive manipulation;
+high-bandwidth instrumentation has been identified as a fundamental obstacle to
+integrating VBTS into compact fingers [1], and recent multi-fingered systems
+list latency minimization among their primary contributions. The sampling
+resolution -- pixels per millimetre of sensing surface actually retained and
+processed -- must therefore be fixed early, because it propagates into the
+camera module, the transfer and compute electronics, and the network input
+size.
+
+[I-3]
+The natural expectation is that this choice depends on the gel. The camera
+never observes the contact directly, only the contact as rendered by the
+elastomer, and the elastomer acts as a spatial low-pass filter: a thinner or
+softer layer conforms more locally and preserves fine detail, while a thicker
+or stiffer one distributes an indentation over a wider area and attenuates high
+spatial frequencies before the camera sees them. If that is true at the scale
+that matters, then resolution cannot be specified independently of gel design,
+and every published saturation point -- three-axis force and location
+estimation saturating near 1.7 px/mm [4], texture classification at roughly a
+quarter of the original image [5] -- is a statement about one particular gel
+rather than about the task.
+
+[I-4]
+No existing study can settle this, because each varies one side of the
+relation. Studies that sweep camera resolution hold the elastomer fixed [4],
+[5], [8]. Studies that vary elastomer modulus or thickness characterize
+sensitivity and measurement range but treat resolution as given [2], [7], or
+explore the design space in simulation [6]. Comparative frameworks span several
+commercial devices [3], where optics, field of view, and gel formulation differ
+simultaneously and no single variable can be isolated.
+
+[I-5]
+This paper measures both sides together. We fabricate 27 sensors. The main
+design spans the two dominant intensity-based sensing principles --
+depth-referenced [10] and photometric-stereo [9] -- each crossed with three
+elastomer hardness levels and three thicknesses (1, 2, 3 mm). A marker-bearing
+variant of the photometric gel is built on the same grid and carried as an
+additional arm rather than as a third level, since it shares the photometric
+formulations and is not measured on every test. Within a principle the sensor body, camera,
+lens, illumination and supply voltage are identical across all gels; the
+optical distance from the camera to the sensing surface necessarily moves with
+gel thickness, so image scale is measured on every unit rather than assumed.
+Units are measured in a shuffled order rather than blocked by thickness, so
+that anything drifting over the campaign cannot arrive in the results wearing
+the costume of a design effect. Resolution is varied in post-processing by
+downscaling a common 1920x1080 capture, so no hardware change is confounded
+with the sweep. Each unit is evaluated on five tests, grouped by whether they
+require fitting to data. Three characterize the gel directly: the ratio by
+which the imprint of a spherical indenter reads wider in the image than the
+contact geometrically is, two-point spatial resolution with paired-cylinder
+indenters, and the maximum force still readable from the image. Two are
+estimation tasks fitted to each unit's own measurements: 6-axis force
+estimation under a robot-driven normal and shear protocol with ground truth
+from a table-mounted F/T sensor, and depth-from-intensity shape reconstruction
+against probes of known geometry.
+
+[I-6]
+The saturation resolution does not move with the gel. We report this as a
+negative result deliberately, and we report it from twenty tests rather than
+one: saturation resolution against thickness and against hardness, for two
+sensing principles and a marker-bearing arm, over six force axis-groups and
+four held-out shape probes, with one false-discovery correction applied across
+all twenty. None reaches q < 0.05. An earlier, coarser sweep in this same
+campaign produced a significant thickness correlation that did not survive a
+finer resolution ladder, and we show that an unstable knee estimator
+manufactured it. The underlying physics is present -- two-point resolution
+degrades with thickness on every metric of Section IV-B -- and simply does not
+reach the scale at which a trained estimator's requirement changes.
+
+[I-6b]
+The honest bound on that null is the replicate scatter. Two units built to the
+same gel specification disagree about their own saturation resolution by a
+median factor of 6.7 on depth-referenced normal force, so an effect smaller
+than that is invisible to this design. The shear estimates are steady to within
+a factor of 1.6, and it is there that the null carries information. What does
+move the requirement is the axis and the task, not the gel: shear saturates
+near 48 px of input width in both markerless principles, normal force at or
+above that, and shape reconstruction at 80 to 160 px.
+
+[I-7]
+The practical consequence is favourable rather than disappointing. Sampling
+resolution for force estimation can be specified before the elastomer is
+chosen, which decouples two design decisions that were assumed to be entangled.
+What the elastomer does control is different: the maximum force readable from
+the image, which varies 2.3-fold across the depth-referenced gels, and the
+depth quantization of shape reconstruction, which varies 2.1-fold. The
+contributions are:
+
+[I-C1]
+1) A controlled, hardware-matched factorial study of elastomer hardness,
+elastomer thickness, sensing principle, and sampling resolution on physically
+fabricated sensors -- to our knowledge the first in which all four are varied
+together with optics held fixed.
+
+[I-C2]
+2) The measured saturation resolution for force estimation and for shape
+reconstruction, shown to be invariant to gel design across two sensing
+principles and twenty tests, together with the evidence that an apparent gel
+dependence in a coarser experiment was an artefact of the knee estimator, and a
+statement of how large an effect this design could have detected.
+
+[I-C3]
+3) Measured gel dependence where it does exist: force ceiling under an absolute
+image-response criterion, and depth quantization for shape reconstruction.
+
+[I-C4]
+4) A fabrication guideline that separates what must be co-designed from what
+need not be, and an explicit account of which claims our design cannot support.
+
+[I-8]
+Section II reviews prior work. Section III describes fabrication and the design
+of experiments. Section IV reports the three characterizations that need no
+fitting to data -- imprint growth and optical response, two-point spatial
+resolution, and maximum measurable force -- and so speak about the gel itself. Section V
+reports the two estimation tasks, force estimation and shape reconstruction,
+each swept against sampling resolution. Section VI concludes.
+
+
+================================================================================
+II. RELATED WORK
+================================================================================
+
+[II-1]
+Two families of VBTS design recur in this paper. Depth-referenced sensors place
+an opaque layer over a backlit gel and read indentation depth from how much the
+layer darkens, so a single grey image maps monotonically to height [10].
+Photometric-stereo sensors illuminate the gel from several directions with
+coloured light and recover surface gradient from the colour of the reflection
+[9], optionally with printed markers whose motion carries shear. The two
+families differ in what the camera is asked to resolve -- an intensity field in
+one case, a gradient field in the other -- which is why we treat them as
+separate axes rather than pooling them.
+
+[II-2]
+*Resolution requirements measured at one design point.* Andrussow et al. sweep
+the input to their fingertip sensor from 410x308 down to 4x3 and report that
+direct force and contact-location prediction is essentially unchanged at 82x60
+px -- about 1.7 px/mm over a 1740 mm^2 sensing surface -- while cutting the
+pixel count by a factor of 25 [4]. Shepherd et al. report texture
+classification saturating near a quarter of the original image [5], and Krohn
+et al. relate tactile resolution to manipulation performance at the taxel level
+[8]. Each result comes from a single elastomer. Andrussow et al. go further and
+name the reason: they conclude that the sensor's spatial resolution is limited
+neither by input image resolution nor by network capacity nor by test-bed
+accuracy, and conjecture that the physical smoothing properties of the
+elastomer and the shell design are what bounds it [4]. That conjecture is the
+hypothesis of the present paper. It has never been tested, because testing it
+requires varying the elastomer, which a single-sensor study cannot do.
+
+[II-3]
+*Elastomer studies that hold resolution fixed.* Halwani et al. vary modulus in
+a two-layer elastomer (1.75 and 2.5 mm) and report sensitivity and measurement
+range, with sensitivity defined as force per marker displacement, in simulation
+[2]. Agarwal et al. sweep surface curvature, illumination, and coating material
+over 1-3 mm PDMS layers, also in simulation [6]. Kakani et al. select an
+elastomer combination over Shore OO 40-80 and 1.0-2.5 mm from measured
+force-displacement behaviour [7]. All three treat the camera as given: none
+reports what happens when pixels are removed.
+
+[II-4]
+*Evaluation frameworks across devices.* Cong et al. benchmark four VBTS with
+distinct sensing mechanisms -- ViTacTip, MagicTac, and marker and markerless
+GelSight Mini variants -- on a common pipeline spanning intrinsic, performance,
+and robustness metrics [3]. Camera resolution, gel thickness, and field of view
+appear there as catalogued intrinsic attributes of each device rather than as
+controlled variables: optics, illumination, and gel formulation move together
+from one device to the next, so no single factor can be isolated. A controlled
+answer requires fabricating the specimens, which is what we do.
+
+[II-5]
+Table I places these together. The pattern is that resolution and elastomer
+design have each been varied, and never in the same experiment.
+
+[II-T1]  TABLE I -- WHAT PRIOR WORK VARIES
+  Study                     | Res | Stiff | Thick | Real/Sim | Note
+  Andrussow et al. [4]      |  O  |   X   |   X   |  Real    | 410x308 -> 4x3;
+                            |     |       |       |          | flat at 82x60.
+                            |     |       |       |          | One gel.
+  Krohn et al. [8]          |  O  |   X   |   X   |  Real    | resolution vs
+                            |     |       |       |          | manipulation,
+                            |     |       |       |          | taxel level
+  Shepherd et al. [5]       |  O  |   X   |   X   |  Real    | texture, 25 % of
+                            |     |       |       |          | original image
+  Halwani et al. [2]        |  X  |   O   |   X   |  Sim     | 2-layer gel
+                            |     |       |       |          | 1.75 / 2.5 mm
+  Agarwal et al. [6]        |  X  |   X   |   O   |  Sim     | PDMS 1-3 mm;
+                            |     |       |       |          | curvature,
+                            |     |       |       |          | lighting, coating
+  Kakani et al. [7]         |  X  |   O   |   O   |  Real    | Shore OO 40-80,
+                            |     |       |       |          | 1.0-2.5 mm
+  Cong et al. [3]           |  X  |  (O)  |  (O)  |  Real    | off-the-shelf
+                            |     |       |       |          | devices; optics
+                            |     |       |       |          | and FOV not
+                            |     |       |       |          | controlled
+  This work                 |  O  |   O   |   O   |  Real    | fabricated gels,
+                            |     |       |       |          | optics held fixed
+  (O) = the quantity differs across the devices compared, but as an inseparable
+  property of each device rather than as a controlled variable.
+
+[II-6]
+*Practice in learned tactile force estimation.* The gap also shows in how these
+models are trained. Sparsh resizes its two-frame tactile input to 224x224 for
+ViT processing and states that ablating the effect of input image and patch
+resolution is left for future work [12]. FeelAnyForce pads its 240x320 GelSight
+Mini images to 320x320 and rescales them to 224x224, and ablates the encoder
+and the depth-reconstruction head but not the input size [13]. FEATS does vary
+resolution, but on the output side: it compares U-net force-distribution
+outputs of 12x16 and 24x32 and keeps the latter for spatial detail [14]. Input
+sampling resolution is therefore inherited rather than measured, and the one
+resolution ablation in this group concerns what the network emits rather than
+what it is given. Our result bears on the 224 px convention in a way that inverts the intuition
+behind it. Shear saturates far below 224 px, near 48 px of input width in both
+markerless principles, so 224 px is generous for shear; normal force is the
+axis that keeps improving further up, to 320 px in the depth-referenced units.
+An application that needs only normal force is therefore the one for which
+224 px is not obviously enough.
+
+[II-7]
+*Measurement conventions we adopt.* For two-point spatial resolution we report
+both the classical Rayleigh dip and the Michelson-contrast criterion used by
+Digit 360 with a dual-pronged microindenter [11], since the latter makes our
+numbers directly comparable to theirs and is the stricter of the two. Both
+criteria are fixed before any paired-probe data is examined.
+
+
+================================================================================
+III. SENSOR FABRICATION AND DESIGN OF EXPERIMENTS
+================================================================================
+
+A. Sensing Principles and Sensor Bodies
+
+[III-A1]
+The study covers the two dominant intensity-based VBTS principles -- one
+depth-referenced, one photometric-stereo -- with a marker-bearing variant of
+the photometric gel carried alongside. Markers are not treated as a third
+principle: those units use the photometric formulations unchanged, and they are
+not measured on every test, so they are reported as an additional arm wherever
+the data supports it.
+
+[III-A1b]
+We build one sensor body per sensing principle and swap gels within it, so that
+every gel of a principle is read by the same camera, the same lens, the same
+illumination and the same enclosure. The three bodies were designed by us,
+following the published open designs of the corresponding sensors as closely as
+the shared camera and mount allowed. Using our own bodies rather than
+off-the-shelf units is what makes the comparison controlled: a commercial
+device fixes its gel, and a study that swaps devices necessarily swaps optics
+and illumination at the same time (Section II-D).
+
+[III-A2]
+All three bodies carry the same camera, a Sincerefirst SF-YL0320-V1 /
+SF-N1050-V1 module fitted with a D140 lens, streaming uncompressed 1920x1080
+YUYV at a measured 4.9 frames per second. Exposure, white balance and gamma are
+set manually and held fixed for the whole campaign, so that a change in the
+image is a change in the contact and not in the camera's own adaptation.
+
+[III-A3]
+In every body an acrylic window sits directly above the camera, supporting the
+gel and keeping it from touching the lens. The window is 2 mm thick in the
+depth-referenced body and 3 mm in the photometric one.
+
+[III-A4]
+Illumination differs by principle because the two sensing mechanisms require
+it. The depth-referenced body is lit from below by a white LED strip that
+shines up through the gel, so the image is a transmission map and indentation
+appears as darkening. The photometric-stereo bodies are lit from three sides by
+an LED strip supplying red, green and blue, so surface gradient appears as a
+shift in colour. In both, the strips are driven at a constant 3.3 V from a bench
+power supply rather than from the USB rail, so brightness does not drift with
+load over a session or between units.
+
+[III-A5]
+Two consequences of this arrangement should be stated rather than glossed.
+First, the optical distance from the camera to the sensing surface is not the
+same across gels: a 3 mm gel places its contact surface further from the camera
+than a 1 mm gel does. This is not an uncontrolled nuisance but a direct
+consequence of the design variable itself, and it is why image scale (mm per
+pixel) is measured on every unit with the robot rather than taken from a
+nominal figure. Second, all analysis is restricted to a central region of the
+frame and excludes the sensor periphery, so vignetting and the oblique view at
+the edge of a wide-angle lens do not enter any measurement.
+
+
+B. Elastomer Specimens
+
+[III-B1]
+The design is a full factorial of three sensing principles, three hardness
+levels and three thicknesses. Table II gives the formulation of each gel.
+Several sensors were cast for every condition; each was screened by visual
+inspection and a thickness check before any measurement, so the screening
+selects on fabrication quality and not on outcome. Two replicates of every cell
+were then kept and measured, 36 units in all, and every result in this paper is
+reported on one replicate per cell -- the 27 units of the title -- chosen by the
+rule below. The second replicate is not discarded: it is what tells us how far
+two nominally identical units disagree, which Section IV-C needs in order to
+interpret its own criterion.
+
+[III-B1b]
+*Choosing one replicate per cell.* The rule is fixed on evidence independent of
+the measured outcome and applied in order. (i) If one replicate has a confirmed
+hardware defect, keep the other; two depth-referenced units had a visually
+confirmed light leak. (ii) If one replicate has independent evidence of
+under-measurement -- fewer usable data points than its twin, which is a
+statement about how much was measured rather than about the value measured --
+keep the other; four units qualified. (iii) If only one replicate exists, keep
+it; one depth-referenced gel was destroyed by an early ramp. (iv) Otherwise
+keep r1. The fourth case covers 20 of the 27 cells and is arbitrary on purpose.
+We tested the obvious alternative -- voting across fourteen metrics for
+whichever replicate sits closer to the cell expectation -- against the two cells
+whose answer is already known from the confirmed light leaks: it identified one
+and got the other backwards. It is also biased in the direction that matters,
+since keeping the replicate nearer the trend shrinks the scatter and inflates
+the effect being measured. An arbitrary rule is unbiased with respect to the
+trend; a rule that looks defensible is not.
+
+[III-B2]  TABLE II -- ELASTOMER FORMULATIONS
+  Principle        | Grade  | Shore  | Formulation (mass ratio)
+  Depth-referenced | soft   | OO-30  | Ecoflex 00-30 A : B = 1 : 1
+  Depth-referenced | medium | OO-50  | Ecoflex 00-50 A : B = 1 : 1
+  Depth-referenced | hard   | OO-70  | Dragon Skin 20 A : B :
+                   |        |        | Dragon Skin 30 A : B = 1 : 1 : 0.8 : 0.8
+  Photometric      | soft   | OO-51  | Solaris A : B : Slacker = 1 : 1 : 4
+  Photometric      | medium | OO-54  | Solaris A : B : Slacker = 1 : 1 : 2
+  Photometric      | hard   | OO-57  | Solaris A : B : Slacker = 1 : 1 : 1
+  Marker units use the same three photometric formulations.
+
+[III-B3]
+Hardness was measured with a Shore 00 durometer on separate flat specimens cast
+at least 20 mm thick from the same batches, rather than on the sensor gels
+themselves, so that the reading is a property of the material and not of the
+backing beneath a 1 mm layer.
+
+[III-B4]
+*The two hardness scales are not the same ruler, and this bounds what can be
+claimed.* The depth-referenced series spans OO-30 to OO-70, forty durometer
+points, and crosses two product families. The photometric series spans OO-51 to
+OO-57, six points, obtained by changing only the plasticizer fraction of a
+single formulation. The depth-referenced series therefore varies hardness 6.7
+times more widely than the photometric one. Two things follow. A soft gel of
+one principle is not the counterpart of a soft gel of the other, so hardness is
+never treated as a single factor across principles. And a null hardness effect
+within the photometric series cannot be distinguished from the restricted range
+that produced it; we report it as such rather than as insensitivity to
+hardness.
+
+[III-B5]
+Gels are cast in silicone moulds made to the target gel height. The quoted
+thickness of 1, 2 or 3 mm refers to the sensing layer alone -- the translucent
+layer of the depth-referenced design and the transparent layer of the
+photometric design -- which is the layer that deforms under contact and creates
+the image. The outer optical layer described below sits on top of it and is not
+included in that figure. Following the original design, the depth-referenced
+stack also carries a transparent Solaris layer beneath the translucent one,
+between it and the acrylic window; that layer is held the same across all
+units, so the varied hardness and thickness belong to the sensing layer alone.
+[CONFIRM: its thickness and formulation]
+
+[III-B5b]
+All mixtures are degassed before casting and cured at room temperature for at
+least the manufacturer's recommended time. At least five days pass between
+casting and measurement, so the material properties have settled before any
+unit is loaded.
+
+[III-B6]
+*Outer optical layers.* Following the original designs, the depth-referenced
+gel carries an outermost black layer, cast 0.5 mm thick from Ecoflex 00-10 with
+3 % black pigment, which blocks ambient light and makes the transmitted
+intensity a function of indentation alone. The photometric gel carries an
+outermost reflective layer of Ecoflex 00-10 with 3 % white pigment, diluted
+four-fold in NOVOCS Matte and sprayed on to obtain a uniform coating.
+
+[III-B7]
+*Marker grid.* The marker units carry a lattice of 1 mm dots on 2.5 mm centres.
+The pattern is printed on water-slide decal paper, and transferred during
+casting rather than applied to a finished surface: the gel is first cast in a
+mould 0.5 mm below its final height and cured, the decal film is laid on that
+surface, a mould at the full gel height is then fitted, and the remaining
+silicone is poured and cured over it. The markers therefore sit 0.5 mm below
+the outer surface, embedded in the gel rather than printed on it.
+
+
+C. Apparatus
+
+[III-C1]
+A six-axis FAIRINO FR5 arm presses an indenter into the sensor, which is held
+in a printed fixture on top of the force/torque transducer. The transducer is
+an ATI Mini45 with the SI-145-5 calibration (Fx, Fy to 145 N, Fz to 290 N, Tx,
+Ty, Tz to 5 N m), read through an NI PCIe-6343 with an SCB-68A terminal block
+on six differential strain-gauge channels, using the manufacturer's calibration
+matrix unmodified.
+
+[III-C2]
+The transducer is mounted on the table, not on the robot flange. This keeps the
+sensor and the wrench origin rigidly fixed to one another for the whole
+campaign, at the cost of requiring a constant transform between the sensor
+frame and the robot base frame, which is measured once.
+
+[III-C3]
+The indenter is a single printed part, and all tips share one tool offset:
+tool 1 at z = 36.794 mm, calibrated once and not re-measured per probe. Every
+tip is designed so that its endpoint -- the pole of a sphere, the centre of a
+cube's end face, the centre of a cylinder's end face -- lies at the same flange
+distance, so a surface height found with one probe stays valid for the others.
+The offset was calibrated to the centre of the 4 mm sphere, 2 mm above that
+common endpoint, and only a calculation that needs a sphere centre (a Hertzian
+contact radius, say) adds that offset back.
+
+
+D. Indenter Probes
+
+[III-D1]
+Ten printed tips cover the four tests. A flat-ended cylinder pins the depth
+zero and doubles as the image-scale reference, since its imprint is a circle of
+known 4.00 mm diameter. A 4 mm sphere calibrates the shape reconstruction and
+is deliberately not used to score it; the cube, the cylinder and the star are
+the held-out shapes. Paired cylinders of fixed 1.00 mm diameter and varying gap
+measure two-point resolution. An 8 mm sphere carries force estimation and the
+saturation ramp.
+
+[III-D2]  TABLE III -- INDENTER PROBES
+  id        | tip             | dimension          | law   | test
+  ball8     | sphere          | 8.0 mm dia.        | hertz | force est., ceiling
+  ball4     | sphere          | 4.0 mm dia.        | hertz | shape (calibration)
+  cube4     | cube            | 4.0 mm edge        | punch | shape (held out)
+  cyl4      | flat cylinder   | 4.0 mm dia.        | punch | shape, image scale
+  star10    | star            | 10.0 mm across     | punch | shape (held out)
+  pair150   | cylinder pair   | 1.0 mm x 2, 1.50 mm gap | punch | resolution
+  pair100   | cylinder pair   | 1.0 mm x 2, 1.00 mm gap | punch | resolution
+  pair075   | cylinder pair   | 1.0 mm x 2, 0.75 mm gap | punch | resolution
+  pair050   | cylinder pair   | 1.0 mm x 2, 0.50 mm gap | punch | resolution
+  pair025   | cylinder pair   | 1.0 mm x 2, 0.25 mm gap | punch | resolution
+  pair010   | cylinder pair   | 1.0 mm x 2, 0.10 mm gap | punch | resolution
+  Gaps are edge to edge; centre spacing is 1.00 mm plus the gap.
+
+[III-D3]
+The probe is the outer loop: one tip is fitted and carried across every sensor
+before the next tip is mounted. Looping the other way would require re-fitting
+a probe several hundred times, and re-fitting introduces a contact asymmetry of
+about 0.09 mm and a height shift of about 0.07 mm -- errors that would land
+directly on top of the effects being compared. The gel plane, by contrast, is
+re-measured at every mounting.
+
+
+E. Running Order
+
+[III-E1]
+Within a principle the units are measured in a shuffled order fixed by a seed,
+so the sequence is reproducible and a paused campaign resumes where it left
+off. Thickness is deliberately not blocked. Measuring all the thin gels on one
+day and all the thick ones on another would save handling time, but anything
+that drifted between those days would then arrive in the results wearing the
+costume of a thickness effect, which is one of the two variables the study
+exists to measure.
+
+
+================================================================================
+IV. CALIBRATION-FREE GEL CHARACTERIZATION
+================================================================================
+
+A. Imprint Growth and Optical Response
+
+[IV-A1]
+From the same depth ladders that feed the other tests we read two quantities
+per unit: how wide the imprint of a sphere grows with indentation depth, and
+how much the mean brightness inside it changes. Both are slopes fitted over
+each unit's own valid depth band. Diameters are kept in pixels rather than
+millimetres. The conversion needs a per-unit image scale, and those scales
+disagree by up to a factor of 1.5 between units; the pixel count is what was
+measured, and converting it would import an error that the measurement does not
+have.
+
+[IV-A2]
+Against depth, the photometric units behave monotonically and simply: a thinner
+gel gives a wider and a brighter imprint, and both quantities fall from 1 to 2
+to 3 mm in all three hardness grades (Table IV). The reading is that a nearer
+backing pushes the deformation sideways and a thinner layer scatters less of
+the light. The depth-referenced units do not follow this. Their imprints are
+widest and brightest at 2 mm, not at 1 mm -- 553 px against 534 px at 1 mm and
+481 px at 3 mm for diameter, 16 grey levels against 9 and 11 for brightness.
+That 3 mm is lowest agrees with the photometric units; that 1 mm falls below
+2 mm does not, and this data does not explain it. One candidate is that the
+depth-referenced stack carries an extra pigmented layer, so its true distance
+to the backing exceeds its label and the 1 mm units may not be the thinnest
+ones; we did not test this.
+
+[IV-AT1]  TABLE IV -- IMPRINT DIAMETER GROWTH, px per mm of depth
+                     | 1 mm  2 mm  3 mm
+  depth-referenced   |
+    soft             |  321   285   256
+    medium           |  229   308   306
+    hard             |  333   464   547
+  photometric        |
+    soft             |  440   339   306
+    medium           |  502   359   243
+    hard             |  638   332   326
+  photometric+marker |
+    soft             |  330   245   202
+    medium           |  374   244    72
+    hard             |  531   273   186
+  One unit per cell. The first two blocks are the 8 mm sphere; the
+  marker-bearing block is the 4 mm sphere and is not on the same ruler. Slopes
+  are fitted over each unit's own valid depth band, so they are not comparable
+  across principles either ([IV-A7]).
+
+[IV-A3]
+Hardness barely separates these curves, and the two principles license
+different statements about that. In the depth-referenced series the three
+hardness grades overlap despite spanning forty durometer points, so here we can
+say the effect is genuinely weak. In the photometric series the grades also
+overlap, but across six durometer points, which is the restricted range of
+Section III-B rather than a result about hardness.
+
+[IV-A4]
+The most useful thing this measurement shows is that the question changes with
+the axis it is asked on. Plotting the same imprints from the same ramps against
+force instead of depth reverses which design variable separates them. Against
+depth the hardness curves lie on top of one another while the thickness curves
+separate; against force the thickness curves collapse together while the
+hardness curves fan out. Nothing changed but the abscissa. The physics is
+straightforward once stated: at equal depth what governs the deformation is how
+close the rigid backing is, so thickness wins, while at equal force what governs
+how far the indenter travels is how compliant the gel is, so hardness wins. The
+two axes are two faces of one ramp and they ask different questions.
+
+[IV-A5]
+This has a direct consequence for how sensitivity is reported in the
+literature. A sensitivity quoted per newton and a sensitivity quoted per
+millimetre are not the same claim about a gel, and a study that varies modulus
+and reports force per unit displacement [2] is on the axis where hardness
+separates by construction. We report both axes and, elsewhere in this paper,
+use depth consistently, since the design decision a fabricator makes is the
+distance to the backing.
+
+[IV-A6]
+One thing we set out to do here failed, and we report it as a negative result
+because the attempt is a natural one. We tried to fold hardness and thickness
+into a single physical variable -- the radius of the region whose brightness has
+changed, read at a fixed depth or at a fixed force. Neither definition works. At
+fixed depth the radius correlates with neither hardness nor thickness. At fixed
+force it carries hardness (rho -0.50 to -0.56, p <= 0.04), which is expected
+since a softer gel pressed to the same force sinks further and touches wider,
+but it does not carry thickness (p >= 0.38). No definition we tried carries
+both. An earlier version of this analysis reported that the fixed-depth radius
+was a restatement of thickness (rho -0.86); that was an artefact of measuring
+each unit's radius at a different brightness threshold, and the threshold rose
+with thickness. With one threshold for all units the correlation disappears.
+
+[IV-A7]
+What does predict how two units differ is not a gel variable at all. The image
+sensitivity -- grey levels of change per millimetre of indentation -- is a
+property of an individual build, not of its gel specification: two replicates of
+one specification differ by a factor of three, 0.9 against 9.3 levels per
+millimetre. The same quantity reappears twice more in this paper, as the reason
+a relative saturation criterion cannot compare units ([IV-C3]) and as the
+replicate scatter that bounds the null result of Section V ([V-A4]). Unit-to-unit
+variation in these sensors comes from the assembly and its optics rather than
+from the elastomer recipe, and a study that varies the recipe has to measure
+that scatter before it can interpret anything.
+
+[IV-A8]
+Two limits bound the numbers in Table IV. The slopes are fitted over each
+unit's own valid depth band, which differs between units and is truncated where
+the imprint fills enough of the frame that the contact-region detector loses
+the blob; slopes are therefore comparable within a principle and not across
+principles. And the diameters are pixel counts, as [IV-A1] explains, so they
+cannot be turned into a physical spread without the per-unit scale that Section
+III-A measures separately.
+
+
+B. Two-Point Spatial Resolution
+
+[IV-B1]
+Two cylinders of 1.00 mm diameter are pressed into the gel side by side, and we
+find the narrowest spacing at which the image still shows two imprints rather
+than one. Six probes span edge gaps of 0.10 to 1.50 mm, that is, centre
+spacings of 1.10 to 2.50 mm. The method follows the dual-pronged microindenter
+of Digit 360 [11] so that our numbers are comparable to theirs.
+
+[IV-B2]
+Along the axis joining the two imprints we take the intensity profile of the
+difference from the undeformed reference, and from its two peaks and the valley
+between them compute dip = (P - T)/P with P the weaker of the two peaks. Using
+the weaker peak only makes the test stricter: two points are resolved when both
+of them stand as peaks, and averaging would let one deep imprint carry a
+shallow one. Three gates must all pass. The signal gate requires P >= 2.5 grey
+levels, which is about twice the standard deviation of our depth zero, so that
+a peak is not noise. The noise gate requires the dip to exceed three times its
+own propagated uncertainty. The resolution gate requires dip >= 0.265, the
+Rayleigh criterion. We also report the Michelson-contrast criterion of Digit
+360, MTF >= 0.5, which converts to dip >= 0.667 and is therefore 2.5 times
+stricter. Both criteria and all three gates were fixed before any paired-probe
+data was examined. A unit resolves a spacing if any depth in its ladder passes.
+
+[IV-B3]
+Every photometric unit resolves the narrowest probe we built. All nine pass at
+a centre spacing of 1.10 mm -- a 0.10 mm gap -- with dips of 0.967 to 1.000,
+which clears not only Rayleigh but the Digit 360 criterion by a wide margin.
+This is a bound and not a value: what we can state is that the photometric
+resolution is finer than 0.10 mm, and the experiment does not say how much
+finer. The measurement that does separate these units is the depth over which
+they hold that resolution, which is what the right half of Table V reports.
+
+[IV-B4]
+The depth-referenced units do have a measurable limit and it moves with the
+gel. The finest resolved spacing ranges from 1.10 mm to 2.50 mm across the nine
+units, and the two 3 mm units that were tested at every gap fail everything
+below 2.50 mm while the 1 mm and 2 mm units reach 1.10 to 1.75 mm. Resolved
+depth behaves in the opposite direction: 1 mm gels hold resolution only to
+0.6 mm of indentation, while 2 and 3 mm gels hold it to 0.9 mm.
+
+[IV-BT1]  TABLE V -- TWO-POINT RESOLUTION AGAINST GEL DESIGN
+                     | finest resolved,  | resolved depth
+                     | centre spacing mm | range, mm
+                     | 1 mm  2 mm  3 mm  | 1 mm     2 mm     3 mm
+  depth-referenced   |                   |
+    soft             | 1.50  1.75  2.00  | 0.2-0.6  0.1-0.9  0.3-0.3
+    medium           | 1.10  1.10  2.50  | 0.1-0.6  0.1-0.9  0.5-0.9
+    hard             | 1.25  1.25  2.50  | 0.1-0.6  0.1-0.9  0.4-0.9
+  photometric        |                   |
+    soft             | 1.10  1.10  1.10  | 0.1-0.6  0.1-0.9  0.1-0.9
+    medium           | 1.10  1.10  1.10  | 0.1-0.6  0.1-0.9  0.2-0.9
+    hard             | 1.10  1.10  1.10  | 0.1-0.6  0.1-0.9  0.2-0.9
+  One unit per cell. Centre spacing is the 1.00 mm cylinder diameter plus the
+  edge gap; 1.10 mm is the narrowest probe built. Every photometric entry is
+  that probe, so the left half of the photometric block is a bound, not a
+  measurement. Depth-referenced units were tested at six gaps, photometric at
+  two, since the finest was already resolved.
+
+[IV-B5]
+The elastomer does filter spatially, and the cleanest evidence is at the widest
+gap. At a centre spacing of 2.50 mm, where the entire 0.1 to 0.9 mm depth
+ladder is measurable on every unit, hardness and thickness both order the
+depth-referenced results: softer gels separate the two points with a deeper
+valley (Spearman rho -0.82 against hardness, p 0.0004), thicker gels are worse
+on every metric (rho -0.69 for the count of steps passing the Digit 360
+criterion, p 0.0068; rho -0.54 for the maximum dip, p 0.0449), and thicker gels
+need a deeper press before the imprint clears the signal gate at all (rho
++0.65, p 0.0127). Steps that pass the Digit 360 criterion occur only in 1 and
+2 mm gels; all five 3 mm units score zero. This is the training-free
+confirmation that the low-pass argument of Section I is real.
+
+[IV-B6]
+It matters that this appears at the widest gap and not the narrowest, because
+the narrow-gap pattern is partly a property of the measurement. At 1.10 to
+2.00 mm the signal gate removes the shallow steps of a unit and merging removes
+the deep ones, so which steps survive differs from unit to unit and the
+resolved-or-not pattern carries the measurement as much as the gel. At 2.50 mm
+the whole ladder is available on every unit, so the gels are compared on one
+ruler. A resolution study that reports only the limiting spacing is therefore
+reporting a quantity whose gel dependence it cannot see.
+
+[IV-B7]
+Two readings we made along the way were wrong, and both corrections are
+instructive. Five depth-referenced units resolved nothing at 2.00 mm or below,
+which we first attributed to the body and assembly; at 2.50 mm four of the five
+resolve cleanly. Their imprints need 0.3 to 0.5 mm of indentation to clear the
+2.5-level signal gate, and the depth ladder of that earlier pass stopped at
+0.3 mm, so they were never pressed far enough. The cause was measurement range,
+not fabrication. The fifth, a unit with a confirmed light leak, fails at 2.50 mm
+too and is genuinely faulty; it is excluded from the reported set by the rule
+of Section III-B. Separately, an earlier analysis concluded that resolution
+fails beyond about 0.4 mm of depth because the two imprints merge. At 2.50 mm
+resolution continues to 0.9 mm in eight units. That conclusion holds only for
+spacings of 1.10 to 2.00 mm.
+
+[IV-B8]
+The narrow-gap verdicts sit on the signal gate, and we report the sensitivity
+rather than tuning it away. Lowering the gate from 2.5 to 2.0 grey levels takes
+the number of units resolving 1.25 mm from five to nine. Half a grey level
+corresponds to about 0.01 mm of indentation. The Rayleigh threshold of 0.265 is
+an optical convention and the 2.5-level gate is justified in [IV-B2]; neither
+was moved after seeing the data, but a reader should know that the limiting
+spacing of a depth-referenced unit is a threshold-sensitive number in a way
+that its resolved depth range is not.
+
+[IV-B9]
+Three limits bound this section. The marker-bearing arm was not measured for
+spatial resolution at all, so the headline variable of this paper has no
+three-principle comparison -- only the two. The photometric limit is a bound,
+as [IV-B3] states, and closing it needs probes finer than 0.10 mm. And each
+verdict rests on a single frame per depth, so there is no within-depth scatter;
+consistency across depths is the only internal check available.
+
+
+C. Maximum Measurable Force
+
+[IV-C1]
+What bounds force estimation is not where the gel fails but where the image
+stops changing. Above that load a deeper press returns the same picture, so no
+method that reads force from an image can separate two forces above it. We
+measure that point on every unit rather than extrapolating it from a
+calibration ladder; where both were available the extrapolation disagreed with
+the measurement by up to a factor of two.
+
+[IV-C2]
+A depth-controlled ramp presses the 8 mm sphere into the gel in steps,
+recording force and image at each one. Image change is reduced to a single
+number -- the mean absolute difference from the undeformed reference over the
+central half of the frame -- and the response is the slope of that number per
+newton (levels/N, least squares over a three-step window). Saturation is
+declared when the response falls below a threshold on two steps, and the
+ceiling is the force at the first of them. No criterion, including the depth
+backstop at 0.9 times gel thickness, is allowed to end a ramp below 10 N, so
+every unit is pushed against the same floor and the ceilings are comparable.
+
+[IV-C3]
+Two thresholds are reported and the difference between them matters. The
+relative criterion -- 15 % of the unit's own peak response -- is the rule the
+ramp itself ran, and it states the operating limit of a single unit correctly.
+It cannot compare units: a unit whose response is weak has a correspondingly
+low threshold and therefore reports a high ceiling. The replicate data of
+Section III-B makes this concrete rather than hypothetical. In the two pairs
+whose peak responses differ most, by 35 % and 39 %, the ceilings differ by 21 %
+and 20 %, and in both it is the weaker-responding unit that reads higher; the
+two units with a confirmed light leak, which are weak for a known reason, read
+24 % and 25 % above their twins. Comparison across principles therefore uses an
+absolute criterion, a fixed levels/N threshold, recomputed from the same
+recorded ramps.
+
+[IV-C4]
+Table VI gives both. Absolute thresholds at which more than 10 % of ramps end
+before crossing are excluded, because discarding truncated units biases the
+median of the survivors downward and the truncated units are systematically the
+high-ceiling ones; that rules out 0.2 and 0.5 levels/N, where up to 88 % of the
+depth-referenced ramps are truncated. The two admissible thresholds order the
+principles the same way and both separate them significantly, so the choice of
+threshold is not producing the result.
+
+[IV-CT1]  TABLE VI -- CEILING BY CRITERION (medians, 8 mm sphere)
+  criterion             | depth-ref. | photometric | ratio | p
+  relative, 15 % peak   |  30.97 N   |   17.72 N   | 1.8x  | 4.1e-05
+  absolute, 1.0 lvl/N   |  30.42 N   |    7.02 N   | 4.3x  | 8.8e-07
+  absolute, 2.0 lvl/N   |  18.10 N   |    2.73 N   | 6.6x  | 2.4e-03
+  The relative row is the 27-unit set, 9 units per principle, exact
+  Mann-Whitney. The two absolute rows are computed over every ramp measured,
+  including the second replicate of each cell (17 depth-referenced and 18
+  photometric), and have not yet been recomputed on the 27-unit subset.
+  Truncation at the two absolute thresholds is 6 % and 0 %.
+
+[IV-C5]
+The depth-referenced principle reads further, and the relative criterion
+understates by how much: 1.8-fold under the rule the ramp ran, 4.3- to 6.6-fold
+under the absolute criteria. In the reported set the separation is complete --
+every depth-referenced unit exceeds every photometric one, 27.5-63.2 N against
+11.8-22.4 N -- but this is a property of the reported set and not of the
+principles. With both replicates of every cell the ranges overlap, 24.6-63.2
+against 11.1-23.4 N. An individual unit therefore still cannot be assigned to a
+principle from its ceiling alone; it is the medians that separate.
+
+[IV-CT2]  TABLE VII -- CEILING AND SATURATION DEPTH AGAINST GEL DESIGN
+                     |    ceiling, N     |  saturation depth, mm
+                     | 1 mm  2 mm  3 mm  |  1 mm  2 mm  3 mm
+  depth-referenced   |                   |
+    soft             | 27.8  30.2  31.0  |  4.53  5.47  6.05
+    medium           | 31.0  30.2  38.5  |  4.71  5.25  6.61
+    hard             | 27.5  43.3  63.2  |  4.32  5.29  6.79
+  photometric        |                   |
+    soft             | 22.4  17.7  11.8  |  1.32  1.58  1.80
+    medium           | 18.2  14.1  14.4  |  1.09  1.65  2.07
+    hard             | 19.5  22.4  11.8  |  1.10  1.68  1.82
+  One unit per cell, 8 mm sphere. The marker-bearing arm is absent because it
+  was ramped with a different probe ([IV-C11]).
+
+[IV-C6]
+Thickness acts on the two principles in opposite directions (Table VII). Over the
+depth-referenced units the ceiling rises with thickness (Spearman rho +0.63,
+p 0.068) and most steeply in the hard series, 27.5 to 43.3 to 63.2 N; over the
+photometric units it falls (rho -0.79, p 0.011), and it falls in the
+marker-bearing arm as well (rho -0.53, p 0.145). The gap between the principles
+therefore widens with thickness.
+
+[IV-C7]
+The saturation depths explain the reversal, and they behave far more simply
+than the forces. Depth follows thickness in all three arms (rho +0.90 to +0.95,
+p < 0.001) and follows hardness in none of them (rho -0.05 to +0.11, p > 0.5).
+Where the saturation depth falls relative to the layer is what separates the
+principles. The depth-referenced units saturate at 2.0 to 4.7 times their own
+gel thickness, so the indenter has long since compressed the gel against the
+rigid backing and what resists it is the substrate as much as the elastomer;
+the mechanical properties of the gel enter the ceiling directly, and a thicker
+gel resists further. The photometric units saturate at 0.60 to 1.32 times
+thickness, well before the gel approaches any mechanical limit -- the optics
+saturate first, and a thicker layer images the contact less sharply, so it stops
+answering sooner. Saturation depth is set by how thick the layer is; hardness
+only changes the force needed to reach it.
+
+[IV-C8]
+Hardness and thickness multiply rather than add. Within the depth-referenced
+series the marginal correlation between ceiling and hardness is not significant
+at one unit per cell (rho +0.37, p 0.329), which is the wrong question to ask
+of this data: the ratio of the hard ceiling to the soft ceiling is 0.99 at
+1 mm, 1.43 at 2 mm and 2.04 at 3 mm. At 1 mm, forty durometer points of
+hardness buy nothing at all. The mechanism is the one above -- at 1 mm the
+ceiling depth is four to five times the gel thickness, so the load is carried
+by a backing that is identical in every unit and does not know the formulation,
+and the gel's own stiffness emerges only as the layer thickens. The design
+consequence is narrow but concrete: in a depth-referenced sensor a harder gel
+raises the maximum measurable force only if the layer is thick enough for the
+gel to carry the load.
+
+[IV-C9]
+Hardness cannot be compared across the two principles, and that is a property
+of our specimens rather than of the sensors. The depth-referenced series spans
+40 durometer points and the photometric series six (Section III-B). Applying
+the depth-referenced sensitivity at 3 mm, 0.77 N per durometer point, to the
+photometric six-point range predicts a spread of 4.6 N against a measured 3.3
+N; at 2 mm it predicts 2.4 N against a measured 3.8 N. The measured variation
+is the size the wider series would lead one to expect, and at 2 mm it is
+larger. The photometric series is therefore not insensitive to hardness -- we
+barely varied its hardness. Whether the two principles differ in hardness
+sensitivity is a question this design cannot answer.
+
+[IV-C10]
+A high ceiling and a strong response are two readings of one property, not two
+independent merits. Among the depth-referenced 3 mm units the peak response
+orders soft above medium above hard, 6.44, 5.63 and 3.23 levels/N, exactly
+opposite to their ceilings of 31.0, 38.5 and 63.2 N. A softer gel deforms more
+under the same load, so its image changes more per newton and it reaches the
+saturation threshold sooner. A fabrication guideline has to say which of the
+two is being bought.
+
+[IV-C11]
+Four limits belong with these numbers. First, the marker-bearing arm was ramped
+only with the 4 mm sphere and cannot enter Tables VI and VII. On its own ruler
+its ceilings run from 6.2 to 20.5 N with a median of 9.2 N and fall with
+thickness as the markerless photometric units do; that is as far as the
+comparison can be taken. Second, the two spheres do not convert. Across 18
+units measured with both, the force ratio scatters from 1.50 to 3.26 with a
+median of 2.37, where Hertzian contact predicts the square root of the radius
+ratio, 1.41, and two replicates of one specification give 1.98 and 3.26. The
+depth ratio, by contrast, has a median of 0.99 and is indistinguishable from
+unity (p 0.858): the saturation depth is a property of the unit, and the force
+at that depth is set by the probe. The same 18 pairs rule out a field-of-view
+confound -- the 8 mm sphere leaves an imprint 1.2 to 1.4 times larger at equal
+depth, yet it saturated shallower in only 10 of 18 units (binomial p 0.815).
+Third, the absolute criterion has not been recomputed on the 27-unit set; the
+two absolute rows of Table VI include the second replicate of every cell.
+Fourth, one depth-referenced gel was destroyed by an early ramp, so its cell is
+represented by the surviving replicate rather than by r1.
+
+
+================================================================================
+V. TASK PERFORMANCE AGAINST SAMPLING RESOLUTION
+================================================================================
+
+A. 6-Axis Force Estimation
+
+[V-A1]
+A ResNet-18 regresses the six-axis wrench from a single frame, with ground
+truth from the table-mounted transducer, and is trained separately at each of
+twelve sampling resolutions obtained by downscaling the common 1920x1080
+capture from 1920 down to 8 px of width. Every training hyperparameter is held
+identical across principles and across resolutions -- effective batch 64 by
+gradient accumulation, 30 epochs, Adam at 5e-4, weight decay 1e-4, a
+cycle-based split, three seeds -- so that a difference between two curves is a
+difference in the images and not in the optimization. The input representation
+is the one each principle's own literature uses: the depth-referenced units are
+fed the author's three-channel encoding (reference, brightening, darkening),
+the photometric units the raw camera frame, and the marker-bearing units the
+frame with the marker dots inpainted from their surroundings. This is a
+deliberate choice to give each principle its own best case rather than to force
+a common representation that would handicap one of them; the cost is that a
+difference between principles is a difference between (principle,
+representation) pairs, and we do not attribute it to the principle alone.
+
+[V-A2]
+The saturation resolution of a unit is the lowest resolution whose error is
+within 110 % of that unit's own minimum. We do not use the argmin, which
+wanders along the flat part of a curve and was the estimator that manufactured
+an apparent thickness dependence in an earlier, coarser sweep of this campaign.
+
+[V-AT1]  TABLE VIII -- SATURATION RESOLUTION FOR FORCE (median of 9 units)
+  principle          | axis  | median     | across units
+  depth-referenced   | Fz    | 320 x 180  | 32x18 - 854x480
+  depth-referenced   | shear |  48 x  27  | 32x18 - 160x90
+  photometric        | Fz    |  80 x  45  | 32x18 - 320x180
+  photometric        | shear |  48 x  27  | 32x18 - 426x240
+  photometric+marker | Fz    |  80 x  45  | 32x18 - 320x180
+  photometric+marker | shear |  80 x  45  | 48x27 - 1920x1080
+  Shear is the mean of Fx and Fy. One unit per cell, nine per principle.
+
+[V-A3]
+The saturation resolution does not move with the gel. Spearman correlations of
+saturation resolution against thickness and against hardness, over the units of
+each principle and each axis group, give twelve tests for force; none reaches
+q < 0.05. The false-discovery correction is applied once over all twenty tests
+in this section and the next, force and shape together, because correcting the
+two separately would hide the fact that twenty comparisons were made.
+
+[V-A4]
+That null is a limit on our power, not a demonstration that no effect exists,
+and the replicate data says how tight the limit is. Comparing the two
+replicates of a cell -- same gel specification, different unit -- the saturation
+resolutions disagree by a median factor of 6.7 for depth-referenced Fz, with
+four of eight pairs disagreeing by eight-fold or more. An effect of thickness
+smaller than that cannot be seen by this design. The shear estimates are much
+steadier, disagreeing by a median factor of 1.5 to 1.6, and it is there that
+the null is informative.
+
+[V-A5]
+What does move the requirement is the axis, and it moves it in the opposite
+direction to the one commonly assumed. Shear saturates at 48 x 27 px in both
+markerless principles, roughly 2.5 px/mm over the sensing field, while normal
+force saturates at or above that in every principle and at 320 x 180 in the
+depth-referenced units. Reading a normal force from these images therefore
+costs more pixels than reading a shear, not fewer. The depth-referenced Fz
+figure is also the least trustworthy number in Table VIII, being the one with
+6.7-fold replicate scatter; the ordering survives in the photometric units,
+where Fz and shear are estimated far more repeatably.
+
+
+B. Shape Reconstruction
+
+[V-B1]
+The two principles need different reconstructions and we implement each in its
+own terms. For the depth-referenced units a brightness-to-depth lookup table is
+calibrated on the 4 mm sphere and evaluated on the flat cylinder and the cube,
+neither of which is used in calibration. For the photometric units we built the
+pipeline for this study: per-pixel true surface gradients are computed from
+Hertzian contact with a sphere of known radius, so no circle detection is
+needed; a small MLP regresses (colour difference, normalized position) to
+(gx, gy); and the height map comes from solving the Poisson equation by
+discrete cosine transform. There are no empirical fitting constants. The
+marker-bearing units are not reconstructed at all, because the marker dots
+occlude the shading the method reads.
+
+[V-B2]
+The depth-referenced reconstruction depends strongly on resolution. Median
+absolute error falls from 0.529 mm at 8 x 5 px to 0.062 mm at 160 x 90, a
+factor of 8.5, and then worsens again above that. The worsening is an artefact
+of the estimator rather than of the sensor: correcting for the grey levels the
+lookup table loses at high resolution flattens the curve above 80 px. The
+number of distinct grey levels a unit resolves is itself a gel-dependent
+quantity, which is the subject of [V-B5].
+
+[V-B3]
+The photometric reconstruction has its knee in the same place, 80 x 45 px, and
+we report that only after retracting an earlier reading of the same data. We
+had recorded that the photometric error was flat against resolution and that
+the pipeline transferred to only 6 of 18 units. Both were artefacts of the
+reference frame. In every photometric run `reference.png` is 8 to 14 % brighter
+than the frames that follow it, because the approaching indenter shadows a gel
+that is lit from the side, and that offset rides directly into the colour
+difference the gradient regression consumes. With the reference corrected and
+all units recalibrated, the minimum error is 0.043 mm at 80 x 45, 15 of 18
+units fall below 0.1 mm, and the median within-unit correlation between
+predicted and true depth is +0.980.
+
+[V-BT1]  TABLE IX -- SATURATION RESOLUTION FOR SHAPE (median of 9 units)
+  principle          | probe          | median    | across units
+  depth-referenced   | cylinder 4 mm  | 160 x 90  | 80x45 - 1920x1080
+  depth-referenced   | cube 4 mm      | 160 x 90  | 80x45 - 1920x1080
+  photometric        | cylinder 4 mm  |  80 x 45  | 16x9  - 160x90
+  photometric        | cube 4 mm      |  80 x 45  | 8x5   - 160x90
+  Both probes are held out of calibration. One unit per cell.
+
+[V-B4]
+Shape gives the same answer as force. The eight remaining tests -- saturation
+resolution against thickness and against hardness, for two principles and two
+held-out probes -- contain no q < 0.05 either. Across two independent sensing
+principles and two tasks with unrelated estimators, twenty tests of the
+proposition that the elastomer sets the sampling-resolution requirement return
+nothing.
+
+[V-B5]
+Where the gel does enter shape reconstruction is not the resolution but the
+depth quantization. A depth-referenced unit resolves one depth step per 31 to
+64 micrometres depending on the gel, a spread of 2.1-fold across the nine
+units, and that is a hard floor on what any resolution can recover. It is also
+the quantity behind the high-resolution worsening in [V-B2].
+
+[V-B6]
+Four limits bound this section. First, the photometric reconstruction measures
+the depth of the contact cap and not the absolute indentation. In Hertzian
+contact the surface at the contact edge has already sunk by half the
+indentation, and the elastic halo carrying the other half has surface gradients
+below this sensor's colour-noise floor, so the regression predicts zero there;
+measured against ground truth the recovered depth is 0.47 of the true value,
+and beyond 1.5 contact radii the reconstructed surface is flat. The shape is
+recovered well and only the amplitude is wrong. Second, the correction for that
+was tried and rejected: the scale factor belongs to the indenter geometry, so a
+factor fitted on the sphere doubles the error on the flat probes (0.151 mm
+applied against 0.042 mm not applied). Third, the depth scale does not transfer
+between units -- the slope of true against predicted runs from 0.16 to 0.92 --
+so pooling units drops the correlation to +0.46 and a pooled figure must not be
+reported as performance. Fourth, the two principles are evaluated over
+different depth ranges, 0.010 to 0.578 mm for the photometric units against a
+deeper band for the depth-referenced ones, so their shape accuracies are not on
+one ruler and we do not compare them.
+
+
+================================================================================
+VI. CONCLUSION
+================================================================================
+
+[VI-1]
+We built 27 sensors to ask whether the elastomer sets the sampling resolution a
+vision-based tactile sensor needs, holding the optics fixed while varying
+hardness, thickness and sensing principle. The answer is that it does not. The
+elastomer filters spatially, and Section IV-B measures it doing so: two-point
+resolution degrades with thickness on every metric available at the one gap
+where the whole depth ladder is measurable. But that filtering does not reach
+the scale at which a trained estimator's requirement changes. Twenty tests --
+saturation resolution against thickness and against hardness, across two
+sensing principles, a marker-bearing arm, six force axis-groups and four
+held-out shape probes, under one false-discovery correction -- return nothing
+below q = 0.05.
+
+[VI-2]
+The practical consequence is favourable. Sampling resolution can be fixed
+before the gel is chosen, which unties two design decisions that fabrication
+guidance has treated as one, and it can be fixed low: shear saturates near 48
+px of input width in both markerless principles and shape reconstruction near
+80 to 160 px. The axis matters more than the gel. Normal force is the expensive
+one, saturating at or above shear in every principle and at 320 x 180 in the
+depth-referenced units -- the opposite of what the 224 px convention inherited
+from ImageNet-scale practice would suggest, and the one place where our result
+argues for more pixels rather than fewer.
+
+[VI-3]
+Where the elastomer does decide the outcome is elsewhere, and a fabricator
+should spend the design freedom there. The maximum force readable from the
+image varies 2.3-fold across the depth-referenced gels and moves in opposite
+directions with thickness in the two principles, because the two saturate for
+different reasons: the depth-referenced units at two to five times their own
+thickness, compressed against the backing where the gel's mechanics enter
+directly, and the photometric units well short of any mechanical limit, where
+the optics give out first. The depth quantization of shape reconstruction
+varies 2.1-fold and is a floor no resolution can lift. And a high ceiling and a
+strong image response are two readings of one property, not two features to be
+bought separately.
+
+[VI-4]
+Three limits should travel with these conclusions. Our null is bounded by
+replicate scatter, not by evidence of absence: two units built to one gel
+specification disagree about their own saturation resolution by a median factor
+of 6.7 on depth-referenced normal force, so a thickness effect smaller than
+that is invisible here. That scatter is itself the study's most transferable
+finding -- image sensitivity varies threefold between replicates of one
+specification, so unit-to-unit variation in these sensors comes from the
+assembly and its optics rather than from the recipe, and any study that varies
+the recipe must measure it first. The two hardness series are also not the same
+ruler, forty durometer points against six, so we compare hardness only within a
+principle. And the marker-bearing arm is measured on some tests and not others,
+so the three-principle comparison this design was built to support exists for
+force estimation and not for the headline variable.
+
+[VI-5]
+The obvious next step is the one our probes could not take. Every photometric
+unit resolved the narrowest indenter we built, so their spatial resolution is
+reported as a bound -- finer than 0.10 mm -- and closing it needs narrower
+probes rather than more analysis. Beyond that, the result argues for a division
+of labour in sensor design that has not been assumed: fix the sampling
+resolution from the task and the axis, and spend the elastomer on force range
+and depth quantization.
+
+
+================================================================================
+REFERENCES (placeholder numbering used above)
+================================================================================
+[1]  E. Donlon, S. Dong, M. Liu, J. Li, E. Adelson, and A. Rodriguez, "GelSlim:
+     A high-resolution, compact, robust, and calibrated tactile-sensing
+     finger," in Proc. IEEE/RSJ IROS, 2018, pp. 1927-1934.
+[2]  M. Halwani et al., "Enhancing sensitivity and measurement range by
+     Multi-layered Vision-Based Tactile Sensor (ML-VBTS)," Measurement, 2025.
+     [details TO VERIFY]
+[3]  Q. Cong, S. Oh, W. Fan, S. Luo, K. Althoefer, and D. Zhang, "TacEva: A
+     performance evaluation framework for vision-based tactile sensors," Adv.
+     Intell. Syst., e202501179, 2026. (arXiv:2509.19037)
+[4]  I. Andrussow, H. Sun, K. J. Kuchenbecker, and G. Martius, "Minsight: A
+     fingertip-sized vision-based tactile sensor for robotic manipulation,"
+     Adv. Intell. Syst., vol. 5, 2300042, 2023.
+[5]  D. R. Shepherd et al., "Texture and friction classification: Optical
+     TacTip vs. vibrational piezoelectric and accelerometer tactile sensors,"
+     Sensors, 2025. [details TO VERIFY]
+[6]  Agarwal et al., "PBR design framework," Nat. Comm. Eng., 2025.
+     [details TO VERIFY]
+[7]  Kakani et al., Sensors, 2021. [details TO VERIFY]
+[8]  Krohn et al., "MiTaS," arXiv, 2026. [details TO VERIFY]
+[9]  M. Lambeta, P.-W. Chou, S. Tian, B. Yang, B. Maloon, V. R. Most,
+     D. Stroud, R. Santos, A. Byagowi, G. Kammerer, D. Jayaraman, and
+     R. Calandra, "DIGIT: A novel design for a low-cost compact
+     high-resolution tactile sensor with application to in-hand manipulation,"
+     IEEE Robot. Autom. Lett., vol. 5, no. 3, pp. 3838-3845, 2020.
+[10] C. Lin, H. Zhang, J. Xu, L. Wu, and H. Xu, "9DTact: A compact
+     vision-based tactile sensor for accurate 3D shape reconstruction and
+     generalizable 6D force estimation," 2023. [venue TO VERIFY -- RA-L 2024?]
+[11] Digit 360, arXiv:2411.02479 -- MTF >= 0.5 resolution criterion.
+     [full citation TO VERIFY]
+[12] C. Higuera, A. Sharma, et al., "Sparsh: Self-supervised touch
+     representations for vision-based tactile sensing," arXiv:2410.24090,
+     2024. (CoRL 2024)
+[13] A.-H. Shahidzadeh, G. Caddeo, K. Alapati, L. Natale, C. Fermueller, and
+     Y. Aloimonos, "FeelAnyForce: Estimating contact force feedback from
+     tactile sensation for vision-based tactile sensors," arXiv:2410.02048,
+     2024.
+[14] E. Helmut, L. Dziarski, N. Funk, B. Belousov, and J. Peters, "Learning
+     force distribution estimation for the GelSight Mini optical tactile
+     sensor based on finite element analysis," in Proc. IEEE/RSJ IROS, 2025.
+     DOI 10.1109/IROS60139.2025.11246486.
+[15] H. Sun, K. J. Kuchenbecker, and G. Martius, "A soft thumb-sized
+     vision-based sensor with accurate all-round force perception," Nature
+     Machine Intelligence, vol. 4, no. 2, pp. 135-145, 2022. (Insight, the
+     predecessor of [4] -- cite if [II-2] needs the lineage)
+
+
+================================================================================
+OPEN QUESTIONS / TO RESOLVE
+================================================================================
+- FIRST FULL DRAFT COMPLETE 2026-09-13. Every section has prose. What remains
+  is verification, not writing:
+  * LENGTH IS THE BIGGEST PROBLEM. The body is ~10,500 words, roughly 12
+    pages of IEEE two-column text before a single figure or table is placed.
+    ICRA allows 6 (+2 paid). This has to lose more than half. It was written
+    to record the argument completely, not to fit; cutting is a separate pass
+    and should be done against a decided figure list, not paragraph by
+    paragraph. First candidates: [IV-A5] and [IV-A6] (the failed
+    single-variable attempt), [IV-B7] and [IV-B8] (the two corrections and the
+    threshold sensitivity), [IV-C10], and the protocol detail in [IV-C2] and
+    [V-A1] that belongs in Section III or a supplement.
+  * figures. None are placed. result/results_single_sensor.md has the
+    candidates; the argument needs B_ceiling_vs_thickness, the criterion
+    comparison, G_spatial_resolution and the two force/shape sweep grids.
+  * Section IV-A was retitled from "Imprint Spread Ratio". The old title named
+    the failed variable of docs/contact_variable.md, not what the section
+    reports. [I-5] and [I-8] were updated to match; check nothing else names it.
+- IV-C figures. result/results.md already has the five that fit this section:
+  B_ceiling_vs_thickness, A_saturation_depth_vs_thickness,
+  C_relative_vs_absolute_criterion, D_hardness_range_imbalance,
+  E_probe_transfer. At ICRA page limit not all survive. B and C are the ones
+  the argument needs; A is folded into Table VII; D and E are limitations.
+- RESOLVED 2026-09-13: the re-derived sweeps landed and [ABS] / [I-6] / [I-6b]
+  now state the same thing from them. The direction is the null, over twenty
+  tests with one BH correction, and both places now carry the replicate-scatter
+  bound rather than claiming no effect exists.
+- [II-6] was REVERSED by those numbers. The draft used to say normal force is
+  flat far below 224 px while shear needs it; the sweep says the opposite.
+  Anyone editing that paragraph should check [V-A5] first.
+- Section VI is still empty, and it is now the only prose gap besides IV-A.
+- RESOLVED 2026-09-13: one unit per cell, everywhere. result/results.md is the
+  all-unit run and result/results_single_sensor.md the 27-unit run; the
+  resolution conclusions agree (0 of 20 thickness/hardness tests reach q < 0.05
+  in either). Section V must quote the 27-unit numbers, not results.md.
+- STILL OPEN from that decision: the absolute-criterion ceiling ([IV-CT1], rows
+  2-3) is still the all-ramp computation. Recomputing it needs
+  absolute_ceiling.py over characterize/steps.csv, which lives only on the
+  measurement machine. Until then Table VI says so in its caption.
+- RESOLVED 2026-09-13: replicate selection. docs/replicate_audit.md fixed the
+  rule on outcome-independent evidence and III-B1b now states it -- confirmed
+  defect, then independent evidence of under-measurement, then sole survivor,
+  else r1. The audit also disqualified the obvious alternative: a trend-based
+  vote got one of the two known-answer cells backwards and inflates effect
+  size. 27 units, 9 per principle, no suspect units, no empty cells.
+- RESOLVED: DIGIT hard Shore measured 2026-09-12 as OO-57. Section III-B2 is
+  complete.
+- Marker pitch: designed 2.5 mm, but measured as 3.00 mm in the images
+  (marker_geometry.csv, range 2.69-3.15). Either the decal prints oversize or
+  the marker px/mm is ~20 % off -- and only 3 of 18 marker units passed the
+  px/mm self-check. The known 2.5 mm design pitch is itself a ruler and could
+  fix that scale. Decide before any marker pixel-requirement figure is quoted.
+- RESOLVED: screening criterion (visual inspection + thickness check, applied
+  before measurement), curing (degassed, room temperature, >= manufacturer's
+  time, >= 5 days before measurement), acrylic window (2 mm depth-referenced,
+  3 mm photometric), and the transparent Solaris layer under the translucent
+  one.
+- STILL OPEN in III-B5: thickness and formulation of that transparent Solaris
+  layer, and whether it is identical across all depth-referenced units.
+- III-B1 now says a thickness check was used to screen parts. An earlier
+  instruction was to say nothing about thickness measurement. The current
+  wording reports the check without reporting any number or tolerance, which is
+  consistent -- but a reviewer may ask what tolerance was applied. Decide
+  whether to keep the phrase or drop it to visual inspection only.
+- How the gel is retained against the acrylic window (bonded, clamped by the
+  housing?) is not stated. Add one clause if it matters for repeatability.
+- Is there a resolution sweep for shape reconstruction and spatial resolution
+  comparable to the force one? Determines whether contribution [I-C2] stays
+  scoped to force estimation. Note IV-B is NOT such a sweep -- it varies probe
+  spacing at native resolution, not sampling resolution.
+- [IV-B5] the gel-dependence correlations are computed over the 14 healthy
+  units of the 2.50 mm pass, not over the 27-unit set: at one unit per cell
+  n = 9 per principle and the 2.50 mm pass predates the selection. Either
+  recompute on the 9 depth-referenced units and accept the lost power, or say
+  in the text that this one result uses both replicates. Do not leave it
+  ambiguous -- every other number in IV is the 27-unit set.
+- Which is canonical for the paper: docs/ or result/ (1_9DTact, 2_DIGIT, extra)?
+- ICRA 2027 CFP: page limit, and whether submission is double-blind.
+- [II-6] VERIFIED 2026-09-12 against the three papers themselves. Sparsh:
+  224x224, resolution ablation explicitly "left for future work". FeelAnyForce:
+  224x224, no input-size ablation. FEATS: DOES ablate resolution, but of the
+  OUTPUT force map (12x16 vs 24x32) -- so the claim must always say INPUT
+  sampling resolution. Do not loosen this wording.
+- [II-2] VERIFIED: Minsight 410x308 -> 4x3, flat at 82x60, 1740 mm^2, 25x pixel
+  reduction, and the conjecture that the elastomer's smoothing is the real
+  limit. Note it is a curved 360-degree fingertip (EcoFlex 00-30 over a metal
+  skeleton), not a flat gel -- decide whether III should say so.
+- Missing citation details are marked TO VERIFY in the reference list.
