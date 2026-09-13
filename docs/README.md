@@ -41,6 +41,7 @@ Added since (this table was written when only 9DTact had been measured):
 | how the DIGIT photometric calibration grid works and whether it transfers between units | `photometric_calibration.md` |
 | how this campaign's preprocessing and training differ from the DIGIT/GelSight literature | `method_vs_literature.md` |
 | **test 4, maximum measurable force — method, all 36 units, and why it cannot compare sensors** | **`force_ceiling.md`** |
+| **how far a replicate pair disagrees, and which one to drop** | **`replicate_audit.md`** (`scripts/twin_audit.py`) |
 | what is still missing and what it would cost to collect | `data_wishlist.md` |
 | **how much of a unit's number is the gel and how much is how it was mounted** | `campaign_protocol.md` §4.15 (`scripts/repeat_spread.py`) |
 | which run of a re-measured unit the analyses read, and what the split was hiding | `../data/analysis/DATASET_CLEANUP.md` |
