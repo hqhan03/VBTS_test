@@ -1,0 +1,31 @@
+principle,metric,hardness,1mm,2mm,3mm
+9DTact,fz_knee_px,soft,80×45 / 640×360,320×180 / 426×240,80×45 / 160×90
+9DTact,fz_knee_px,medium,32×18 / 80×45,640×360,48×27 / 854×480
+9DTact,fz_knee_px,hard,48×27 / 426×240,160×90 / 854×480,32×18 / 640×360
+9DTact,shear_knee_px,soft,32×18 / 48×27,32×18 / 48×27,32×18 / 160×90
+9DTact,shear_knee_px,medium,48×27 / 80×45,48×27,32×18 / 48×27
+9DTact,shear_knee_px,hard,48×27,80×45 / 640×360,48×27 / 320×180
+DIGIT,fz_knee_px,soft,48×27 / 80×45,48×27 / 320×180,48×27 / 80×45
+DIGIT,fz_knee_px,medium,32×18 / 80×45,80×45 / 640×360,32×18
+DIGIT,fz_knee_px,hard,80×45,48×27,32×18 / 80×45
+DIGIT,shear_knee_px,soft,48×27 / 426×240,48×27,32×18 / 48×27
+DIGIT,shear_knee_px,medium,32×18,32×18 / 48×27,48×27 / 320×180
+DIGIT,shear_knee_px,hard,32×18 / 160×90,48×27,48×27
+DIGIT_Marker,fz_knee_px,soft,80×45,80×45,80×45 / 320×180
+DIGIT_Marker,fz_knee_px,medium,16×9 / 160×90,80×45,32×18 / 160×90
+DIGIT_Marker,fz_knee_px,hard,48×27 / 320×180,80×45,80×45
+DIGIT_Marker,shear_knee_px,soft,80×45 / 160×90,80×45 / 1920×1080,160×90
+DIGIT_Marker,shear_knee_px,medium,16×9 / 80×45,80×45 / 426×240,160×90 / 854×480
+DIGIT_Marker,shear_knee_px,hard,48×27 / 80×45,426×240 / 1920×1080,80×45 / 1280×720
+9DTact,cyl4_knee_px,soft,160×90,160×90,320×180 / 640×360
+9DTact,cyl4_knee_px,medium,160×90,1920×1080,160×90 / 640×360
+9DTact,cyl4_knee_px,hard,80×45 / 320×180,160×90,160×90
+9DTact,cube4_knee_px,soft,80×45 / 160×90,80×45,320×180 / 854×480
+9DTact,cube4_knee_px,medium,80×45 / 160×90,1920×1080,48×27 / 320×180
+9DTact,cube4_knee_px,hard,80×45 / 320×180,160×90,160×90
+DIGIT,cyl4_knee_px,soft,32×18 / 160×90,8×5 / 80×45,48×27 / 80×45
+DIGIT,cyl4_knee_px,medium,16×9 / 32×18,80×45,80×45
+DIGIT,cyl4_knee_px,hard,16×9 / 32×18,80×45,80×45
+DIGIT,cube4_knee_px,soft,32×18 / 160×90,80×45,80×45
+DIGIT,cube4_knee_px,medium,8×5 / 32×18,80×45,80×45 / 160×90
+DIGIT,cube4_knee_px,hard,8×5 / 160×90,80×45,80×45

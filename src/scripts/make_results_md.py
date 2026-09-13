@@ -28,6 +28,20 @@ def table(path, note=None):
     w(); w(f"<sub>자료: `{path}`</sub>"); w()
 
 
+_WH = {1920: "1920×1080", 1280: "1280×720", 854: "854×480", 640: "640×360",
+       426: "426×240", 320: "320×180", 160: "160×90", 80: "80×45", 48: "48×27",
+       32: "32×18", 16: "16×9", 8: "8×5"}
+
+
+def _wh(v):
+    """해상도를 가로x세로로. 사다리에 없는 값(복제 중앙값)은 가장 가까운 단에 `~`."""
+    v = int(round(float(v)))
+    if v in _WH:
+        return _WH[v]
+    n = min(_WH, key=lambda k: abs(k - v))
+    return f"~{_WH[n]}"
+
+
 def fig(path, cap):
     p = RES / path
     if not p.exists():
@@ -363,8 +377,95 @@ def main():
     w("> 9DTact 는 그보다 깊은 구간을 평가한다. 같은 자가 아니다.")
     w()
 
+    # --------------------------------------------------------------- 9.5 --
+    w("## 10. 포화 해상도 — 경도·두께 칸별")
+    w()
+    w("**이 캠페인의 표제 질문이다.** 성능이 포화하는 해상도가 겔에 따라 다른가.")
+    w("8 절과 9 절의 곡선을 유닛마다 무릎 하나로 줄여 3×3 에 놓는다.")
+    w()
+    w("**무릎의 정의** — 그 유닛 자신의 최솟값의 110 % 안에 드는 **가장 낮은** 해상도.")
+    w("`argmin` 은 곡선이 평평한 구간에서 흔들리므로 쓰지 않는다. 칸에는 **두 복제를")
+    w("그대로** 적는다(둘이 같으면 하나만). **검정 단위는 칸이 아니라 유닛 17 ~ 18 개**다 —")
+    w("칸마다 유닛이 둘뿐이라 칸으로는 검정이 되지 않는다.")
+    w()
+    ks = RES / "extra" / "data" / "knee_summary.csv"
+    if ks.exists():
+        S2 = pd.read_csv(ks)
+        NM = {"fz_knee_px": "Fz", "shear_knee_px": "전단",
+              "cyl4_knee_px": "형상 cyl4", "cube4_knee_px": "형상 cube4"}
+        w("### 먼저 — 칸을 나누지 않은 중앙 무릎")
+        w()
+        w("실무적으로 쓸 숫자는 이것이다. **어느 원리도 1920×1080 을 필요로 하지 않는다.**")
+        w()
+        w("| 원리 | 지표 | 중앙 무릎 | 유닛별 범위 | n |")
+        w("|---|---|---|---|---:|")
+        for _, x in S2.iterrows():
+            w(f"| {x.principle} | {NM.get(x.metric, x.metric)} | "
+              f"**{_wh(x.median_px)}** | {_wh(x.min_px)} ~ {_wh(x.max_px)} | {int(x.n)} |")
+        w()
+        w("<sub>자료: `extra/data/knee_summary.csv`</sub>")
+        w()
+    tab = RES / "extra" / "data" / "knee_by_cell_3x3.csv"
+    if tab.exists():
+        K = pd.read_csv(tab)
+        T = pd.read_csv(RES / "extra" / "data" / "knee_trends.csv")
+        NAME = {"fz_knee_px": "Fz (수직력)", "shear_knee_px": "전단 (Fx·Fy 평균)",
+                "cyl4_knee_px": "형상 — 원기둥 ⌀4", "cube4_knee_px": "형상 — 정육면체 4"}
+        for (pr, m), g in K.groupby(["principle", "metric"], sort=False):
+            w(f"#### {pr} — {NAME.get(m, m)}")
+            w()
+            w("| 경도 | 1 mm | 2 mm | 3 mm |")
+            w("|---|---|---|---|")
+            for _, x in g.iterrows():
+                w(f"| {x.hardness} | {x['1mm']} | {x['2mm']} | {x['3mm']} |")
+            t = T[(T.principle == pr) & (T.metric == m)]
+            if len(t):
+                t = t.iloc[0]
+                w()
+                w(f"<sub>유닛 {int(t.n)} 개 — 두께 ρ {t.rho_thickness:+.3f} "
+                  f"(p {t.p_thickness:.3f}, q {t.q_thickness:.3f}) · "
+                  f"경도 ρ {t.rho_hardness:+.3f} "
+                  f"(p {t.p_hardness:.3f}, q {t.q_hardness:.3f})</sub>")
+            w()
+        w("<sub>자료: `extra/data/knee_by_cell_3x3.csv` · 유닛별 "
+          "`knee_force_by_unit.csv`, `knee_shape_by_unit.csv` · 검정 "
+          "`knee_trends.csv`</sub>")
+        w()
+
+    w("### 답 — 아니다. 어느 지표에서도 겔이 무릎을 움직이지 않는다")
+    w()
+    w("검정 **20 개 중 q < 0.05 인 것이 하나도 없다**(Benjamini-Hochberg, 두께와 경도")
+    w("각각 10 지표). 보정 전에 p < 0.05 인 것이 둘 있지만 — 9DTact 의 전단 대 경도")
+    w("(p 0.044), Marker 의 전단 대 두께 (p 0.030) — **검정을 20 번 하면 우연히 한 개는")
+    w("나온다.** 둘 다 q 0.386 이다.")
+    w()
+    w("### 왜 못 보나 — 무릎 자체가 복제 사이에서 재현되지 않는다")
+    w()
+    w("같은 (경도, 두께) 칸의 두 유닛이 내는 무릎이 몇 배 차이 나는가:")
+    w()
+    w("| 원리 · 지표 | 쌍 | 배율 중앙 | 같은 단 | 8 배 이상 |")
+    w("|---|---:|---:|---:|---:|")
+    for pr, m, n, r, same, big in [
+            ("9DTact · Fz", "", 8, 6.7, 0, 4), ("9DTact · 전단", "", 8, 1.6, 1, 1),
+            ("DIGIT · Fz", "", 9, 1.7, 3, 1), ("DIGIT · 전단", "", 9, 1.5, 4, 1),
+            ("Marker · Fz", "", 9, 1.0, 5, 1), ("Marker · 전단", "", 9, 5.0, 1, 2),
+            ("9DTact · 형상 cyl4", "", 8, 1.0, 5, 0),
+            ("9DTact · 형상 cube4", "", 8, 2.0, 3, 0),
+            ("DIGIT · 형상 cyl4", "", 9, 1.7, 4, 1),
+            ("DIGIT · 형상 cube4", "", 9, 1.0, 5, 1)]:
+        w(f"| {pr} | {n} | **{r:.1f}×** | {same} | {big} |")
+    w()
+    w("**9DTact 의 Fz 무릎은 복제 쌍 안에서 중앙 6.7 배, 여덟 쌍 중 넷이 8 배 이상**")
+    w("어긋난다. 겔이 같고 장착만 다른데 그렇다. 두께가 만들 수 있는 차이가 그보다")
+    w("작다면 이 설계로는 보이지 않는다 — **무효과의 증거가 아니라 검정력의 한계다.**")
+    w()
+    w("> 형상 쪽은 사정이 낫다 — 네 조합 중 셋에서 복제 절반 이상이 **같은 단**에")
+    w("> 떨어진다. 그런데도 두께·경도 효과가 안 보인다는 것은, 적어도 형상에서는")
+    w("> **정말로 없다**는 쪽에 무게가 실린다.")
+    w()
+
     # ---------------------------------------------------------------- 10 --
-    w("## 10. 이 결과가 말하지 못하는 것")
+    w("## 11. 이 결과가 말하지 못하는 것")
     w()
     w("| 한계 | 제한하는 것 |")
     w("|---|---|")

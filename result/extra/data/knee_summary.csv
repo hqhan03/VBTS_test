@@ -1,0 +1,11 @@
+principle,metric,n,median_px,min_px,max_px
+9DTact,fz_knee_px,17,160.0,32,854
+9DTact,shear_knee_px,17,48.0,32,640
+DIGIT,fz_knee_px,18,64.0,32,640
+DIGIT,shear_knee_px,18,48.0,32,426
+DIGIT_Marker,fz_knee_px,18,80.0,16,320
+DIGIT_Marker,shear_knee_px,18,160.0,16,1920
+9DTact,cyl4_knee_px,17,160.0,80,1920
+9DTact,cube4_knee_px,17,160.0,48,1920
+DIGIT,cyl4_knee_px,18,80.0,8,160
+DIGIT,cube4_knee_px,18,80.0,8,160
