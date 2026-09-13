@@ -276,7 +276,9 @@ def group_curves(pr, D, probe):
                 q1 = np.nanpercentile(A, 25, axis=0)
                 q3 = np.nanpercentile(A, 75, axis=0)
             m = n >= 3
-            out[k] = (grid[m], med[m], q1[m], q3[m], int(A.shape[0]))
+            # 유닛별 곡선도 함께 돌려준다 — 중앙값과 띠만 보면 **그 띠를 몇 개가**
+            # **만들었는지**, 한 유닛이 튀어서 생긴 폭인지가 보이지 않는다.
+            out[k] = (grid[m], med[m], q1[m], q3[m], int(A.shape[0]), A)
         return out
 
     fig, axes = plt.subplots(2, 2, figsize=(10.4, 7.4), sharex=True)
@@ -291,10 +293,16 @@ def group_curves(pr, D, probe):
             for k in order:
                 if k not in cv:
                     continue
-                x, med, q1, q3, n = cv[k]
+                x, med, q1, q3, n, A = cv[k]
                 lab = f"{k} mm" if key == "thickness_mm" else str(k)
-                ax.fill_between(x, q1, q3, color=cmap[k], alpha=.16, lw=0)
-                ax.plot(x, med, "-", c=cmap[k], lw=2.0, label=f"{lab}  (n={n})")
+                # 유닛 하나하나를 흐리게 뒤에 깐다
+                for row in A:
+                    ax.plot(grid, row, "-", c=cmap[k], lw=.8, alpha=.30,
+                            zorder=1)
+                ax.fill_between(x, q1, q3, color=cmap[k], alpha=.14, lw=0,
+                                zorder=2)
+                ax.plot(x, med, "-", c=cmap[k], lw=2.2, label=f"{lab}  (n={n})",
+                        zorder=3)
                 tidy.append(pd.DataFrame(dict(
                     principle=pr, probe=probe, measure=col, group_by=key,
                     group=str(k), n_units=n, depth_mm=x,
@@ -307,8 +315,9 @@ def group_curves(pr, D, probe):
             ax.set_axisbelow(True)
             if i == 1:
                 ax.set_xlabel("깊이 (mm)")
-    fig.suptitle(f"{pr} — 같은 축 위에 겹친 깊이 곡선 ({probe}). 선은 중앙값, "
-                 "띠는 사분위 범위", fontsize=11.5, x=.04, ha="left")
+    fig.suptitle(f"{pr} — 같은 축 위에 겹친 깊이 곡선 ({probe}). 굵은 선은 중앙값, "
+                 "띠는 사분위 범위, 가는 선은 유닛 하나하나",
+                 fontsize=11.5, x=.04, ha="left")
     fig.tight_layout(rect=[0, 0, 1, .955])
     d = RES / FOLD[pr]
     (d / "figures").mkdir(parents=True, exist_ok=True)
@@ -328,8 +337,15 @@ def group_curves(pr, D, probe):
             if not len(piv):
                 continue
             at = piv.index[-1]; v = piv.loc[at]
+            gg = g[g.depth_mm == at]
+            between = float(v.max() - v.min())
+            within = float((gg.q3 - gg.q1).median())
             rows.append(dict(principle=pr, probe=probe, measure=meas,
                              group_by=key, at_depth_mm=at,
+                             between=between, within_iqr=within,
+                             # **이것이 판정이다.** 군 사이 차이가 군 안의 산포보다
+                             # 큰가. 1 보다 작으면 그 군들은 자기 흩어짐 안에 있다.
+                             ratio=between / within if within else float("nan"),
                              **{f"g_{k}": float(v[k]) for k in v.index},
                              spread_pct=float((v.max() - v.min())
                                               / v.median() * 100),
