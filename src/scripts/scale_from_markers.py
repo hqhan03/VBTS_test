@@ -12,8 +12,26 @@ property of the artwork) and the dot DIAMETER (a property of the printing).
 Measured 2026-09-08 on DIGIT_Marker_hard_3mm_r1 they give 97.57 and 98.66
 px/mm, 1.1 % apart.
 
-DO NOT USE THIS AS THE SCALE YET
---------------------------------
+RESOLVED 2026-09-13 -- THE GRID IS THE BETTER RULER
+---------------------------------------------------
+The operator measured the printed grid physically: dots 1.0 mm across on a
+2.5 mm pitch, exactly the nominal artwork. That kills the shrink hypothesis
+below. What is left is that the surface-height regression -- fitted on the 18
+MARKERLESS DIGIT units and extrapolated to the marker units -- reads about 20 %
+low: grid 113.6 px/mm against regression 91.2, ratio 1.198 across all 18 units
+(range 1.075-1.260), same direction every time.
+
+The dot diameter is the check, and it points the same way. Measured against the
+grid scale it is 0.88 mm, a little under the nominal 1.0 -- which is the right
+direction, because thresholding eats a soft edge. Against the regression scale
+it comes out 1.09 mm, LARGER than nominal, and nothing would make it so.
+
+See docs/cross_principle.md 3.5b. The paragraphs below are the 2026-09-08
+reasoning, kept because it shows what the evidence looked like before the
+physical measurement settled it.
+
+THE 2026-09-08 VERDICT (superseded)
+-----------------------------------
 It disagrees with everything else by 15 %, and the everything else is on firmer
 ground. Across the 18 non-marker DIGIT units the image scale is a very tight
 function of the gel's surface height -- kx = -12.44 x surface + 403.1, r =

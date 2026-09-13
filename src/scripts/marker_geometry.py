@@ -104,6 +104,44 @@ if __name__ == "__main__":
         print(f"  {unit:30s} {len(cen):4d} dots  d {dd:5.1f} px  pitch(ac) {pitch:5.1f} px"
               f" (nn {pitch_nn:5.1f}, peak {ac_peak:.2f})"
               f"  -> dot=2px at {2*1920/dd:6.1f}, pitch=2px at {2*1920/pitch:5.1f}", flush=True)
+    D = pd.DataFrame(rows)
+
+    # ---- 축척 둘을 나란히 낸다 (2026-09-13) ----
+    # 격자는 **공칭 2.5 mm** 간격이다. 운전자가 2026-09-13 에 실물을 재서 확인했다
+    # (점 지름 1.0 mm, 중심 간격 2.5 mm). 그러므로 격자는 프레임마다 누워 있는 자다.
+    #
+    # 표면 높이 회귀로 얻은 축척과 **일관되게 1.198 배**(범위 1.075~1.260) 차이가 난다.
+    # 잡음이 아니라 계통 오차다. `scale_from_markers.py` 가 2026-09-08 에 이 15 % 차이를
+    # 보고 "겔이 수축해 간격이 2.33 mm 가 됐을 것" 이라 짐작하고 보류했는데, 실측이
+    # 2.5 mm 이므로 **수축 가설은 죽고 회귀 축척이 낮은 쪽**이 된다.
+    #
+    # 검산: 격자 축척으로 점 지름을 재면 0.878 mm (공칭 1.0)가 나온다. 문턱이 무른
+    # 가장자리를 깎으므로 조금 작게 나오는 것이 맞는 방향이다. 회귀 축척으로 재면
+    # 1.091 mm 로 공칭보다 **크게** 나오는데, 그럴 이유가 없다.
+    PITCH_NOMINAL_MM = 2.5
+    D["px_per_mm_grid"] = D.pitch_px / PITCH_NOMINAL_MM
+    D["pitch_mm_grid"] = PITCH_NOMINAL_MM              # 정의상
+    D["dot_d_mm_grid"] = D.dot_d_px / D.px_per_mm_grid
+
     out = ROOT / "data" / "analysis" / "marker_geometry.csv"
-    pd.DataFrame(rows).to_csv(out, index=False)
+    # 이전 판의 열(회귀 축척으로 계산한 mm 값)이 있으면 이어 붙인다 — 두 축척을
+    # 나란히 두는 것이 이 파일의 요점이다.
+    if out.exists():
+        old = pd.read_csv(out)
+        keep = [c for c in ("unit", "px_per_mm", "pitch_mm", "dot_d_mm",
+                            "a_2N_mm", "contact_d_px", "dots_in_contact")
+                if c in old.columns]
+        if len(keep) > 1:
+            D = D.merge(old[keep], on="unit", how="left", suffixes=("", "_old"))
+            D = D.rename(columns={"px_per_mm": "px_per_mm_regression",
+                                  "pitch_mm": "pitch_mm_regression",
+                                  "dot_d_mm": "dot_d_mm_regression"})
+    D.to_csv(out, index=False)
     print("  ->", out, len(rows), "units")
+    if "px_per_mm_regression" in D:
+        r = (D.px_per_mm_grid / D.px_per_mm_regression).dropna()
+        print(f"  축척: 격자 {D.px_per_mm_grid.median():.1f} px/mm, "
+              f"회귀 {D.px_per_mm_regression.median():.1f} px/mm, "
+              f"비 중앙 {r.median():.3f} (범위 {r.min():.3f}~{r.max():.3f})")
+        print(f"  검산 — 점 지름: 격자 축척 {D.dot_d_mm_grid.median():.3f} mm, "
+              f"회귀 축척 {D.dot_d_mm_regression.median():.3f} mm (공칭 1.0)")
