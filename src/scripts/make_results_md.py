@@ -7,8 +7,10 @@ from pathlib import Path
 
 import pandas as pd
 
+import result_common as RC
+
 ROOT = Path(__file__).resolve().parents[2]
-RES = ROOT / "result"
+RES = ROOT / "result" / "single" if RC.SINGLE else ROOT / "result"
 FOLD = {"9DTact": "1_9DTact", "DIGIT": "2_DIGIT", "DIGIT_Marker": "3_DIGIT_Marker"}
 L = []
 
@@ -42,16 +44,19 @@ def _wh(v):
     return f"~{_WH[n]}"
 
 
+PREFIX = "single/" if RC.SINGLE else ""
+
+
 def fig(path, cap):
     p = RES / path
     if not p.exists():
         w(f"> 아직 없음 — `{path}`"); w(); return
     csv = path.replace("/figures/", "/data/").replace(".png", ".csv")
-    w(f"![{cap}]({path})")
+    w(f"![{cap}]({PREFIX}{path})")
     w()
     w(f"*{cap}*")
     w()
-    w(f"<sub>그림: `{path}` · 자료: `{csv}`</sub>")
+    w(f"<sub>그림: `{PREFIX}{path}` · 자료: `{PREFIX}{csv}`</sub>")
     w()
 
 
@@ -171,7 +176,7 @@ def knee_block(family, metrics, what, tail=True):
 
 
 def main():
-    w("# 결과 — 그림과 표")
+    w("# 결과 — 그림과 표" + ("  (셀당 센서 하나)" if RC.SINGLE else ""))
     w()
     w("VBTS 해상도 캠페인의 결과물 전부. **모든 그림에 그것을 그린 CSV 가 같은 이름으로")
     w("`data/` 에 있다** — 직접 다시 그릴 수 있다.")
@@ -189,6 +194,51 @@ def main():
     # ---------------------------------------------------------------- 0 --
     w("## 0. 한눈에")
     w()
+    if RC.SINGLE:
+        w("> **이 문서는 셀마다 복제 하나만 쓴 판이다.** 같은 분석을 18 유닛 전부로")
+        w("> 돌린 것은 `results.md` 에 있고, 두 문서의 절 구성은 같다. 원리당")
+        w("> **9 유닛**(경도 3 × 두께 3)이다.")
+        w(">")
+        w("> **어느 쪽을 남겼나** — `docs/replicate_audit.md` 의 우선순위를 그대로 쓴다:")
+        w(">")
+        w("> 1. 한쪽이 **확정 불량**(빛 누출)이면 다른 쪽")
+        w("> 2. 한쪽에 **독립 증거**(자료량 부족)가 있으면 다른 쪽")
+        w("> 3. 복제가 하나뿐이면(파괴) 그것")
+        w("> 4. 그 밖에는 **`r1`**")
+        w(">")
+        w("> **4 번이 투표가 아닌 이유.** `replicate_audit.md` §4.1 이 정답 있는 두 셀로")
+        w("> 추세 기반 투표를 시험했더니 하나는 맞고 하나는 **거꾸로** 짚었다. 게다가")
+        w("> 추세에 가까운 쪽을 남기는 선택은 **효과 크기를 부풀린다.** `r1` 은 임의이지만")
+        w("> **추세에 대해 편향이 없다** — 임의가 편향보다 낫다.")
+        w()
+        w("| 원리 | 남긴 유닛 |")
+        w("|---|---|")
+        for pr in ("9DTact", "DIGIT", "DIGIT_Marker"):
+            ch = sorted(RC.chosen(pr))
+            w(f"| {pr} | " + " · ".join(f"`{u}`" for u in ch) + " |")
+        w()
+        w("**1 번 · 2 번으로 갈린 셀** — 나머지는 전부 `r1` 이다:")
+        w()
+        w("| 원리 | 셀 | 버린 것 | 왜 |")
+        w("|---|---|---|---|")
+        w("| 9DTact | hard 1 mm | `r2` | 빛 누출 |")
+        w("| 9DTact | medium 1 mm | `r2` | 빛 누출 |")
+        w("| 9DTact | medium 2 mm | `r1` | 2026-09-04 파괴, 자료 없음 |")
+        w("| DIGIT | soft 1 mm | `r1` | 포화 깊이·지름 기울기 31 % + ball4 점 12 대 18 |")
+        w("| DIGIT | medium 2 mm | `r2` | 천장 46 % + ball8 점 12 대 19 |")
+        w("| DIGIT | medium 3 mm | `r2` | 광학 3 종 23~63 % + ball4 점 17 대 43 |")
+        w("| DIGIT_Marker | medium 1 mm | `r2` | 밝기 기울기 72 % + 점 7 대 21 |")
+        w()
+        w("**결론은 두 판에서 같다.** 포화 해상도의 두께·경도 의존을 묻는 검정")
+        w("20 개 중 q < 0.05 인 것이 **양쪽 모두 0 개**다. 중앙 포화 해상도는 한 단씩")
+        w("움직이는 곳이 있는데(9DTact 의 Fz 가 160×90 에서 320×180 으로), 유닛이")
+        w("절반이 되면 중앙값이 한 단 건너뛰는 것은 당연하다 — **방향이 바뀐 것이")
+        w("아니다.**")
+        w()
+        w("> **복제가 하나뿐이므로 이 문서에는 복제 산포가 없다.** `results.md` 의")
+        w("> 3×3 표는 칸마다 두 값을 적었지만 여기서는 하나다. 유닛 사이 산포를 보려면")
+        w("> 그쪽을 볼 것 — **이 문서는 산포를 지운 것이지 줄인 것이 아니다.**")
+        w()
     w("> **표시된 유닛.** `9DTact_hard_1mm_r2` 와 `9DTact_medium_1mm_r2` 는 운전자가")
     w("> 2026-09-11 에 **바디에서 빛이 새는 것을 육안으로 확인**한 유닛이다. 데이터도")
     w("> 일치한다 — 두 점 자국이 중앙 1.7 ~ 1.8 그레이 레벨로 17 유닛 중앙값 3.7 의")
@@ -566,7 +616,8 @@ def main():
     w("전체 한계표는 `docs/methods.md` §10.0.")
     w()
 
-    p = RES / "results.md"
+    p = (ROOT / "result" / "results_single_sensor.md" if RC.SINGLE
+         else RES / "results.md")
     p.write_text("\n".join(L) + "\n")
     print(f"-> {p} ({len(L)} 줄)")
 

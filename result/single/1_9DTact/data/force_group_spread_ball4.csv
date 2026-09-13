@@ -1,0 +1,5 @@
+principle,probe,measure,group_by,x,at_x,between,within_iqr,ratio,g_soft,spread_pct,monotone,g_1
+9DTact,ball4,diameter_px,hardness,force_N,0.19132466446626376,0.0,38.86609431321199,0.0,192.44146930795506,0.0,True,
+9DTact,ball4,diameter_px,thickness_mm,force_N,0.3529283572715263,0.0,53.0485495942921,0.0,,0.0,True,284.6467161354858
+9DTact,ball4,level,hardness,force_N,0.19132466446626376,0.0,2.8965227732507906,0.0,10.715432153872934,0.0,True,
+9DTact,ball4,level,thickness_mm,force_N,0.3529283572715263,0.0,1.8209239444785137,0.0,,0.0,True,8.996210945185652

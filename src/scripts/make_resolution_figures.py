@@ -21,7 +21,7 @@ import pandas as pd
 import result_common as RC
 
 ROOT = Path(__file__).resolve().parents[2]
-RES = ROOT / "result"
+RES = ROOT / "result" / "single" if RC.SINGLE else ROOT / "result"
 FOLD = {"9DTact": "1_9DTact", "DIGIT": "2_DIGIT", "DIGIT_Marker": "3_DIGIT_Marker"}
 HARD = ["soft", "medium", "hard"]
 from palette import HARD3 as CH        # 뚜렷이 갈리는 셋 — palette.py
@@ -45,7 +45,7 @@ def load(pr):
         d = d.drop(columns=[c for c in ("depth_lo_mm", "depth_hi_mm") if c in d])
         d = d.merge(gg, on="unit", how="left")
     d["suspect_hardware"] = d.unit.map(lambda u: RC.is_suspect(pr, u))
-    return d
+    return RC.keep(d, pr, "unit")
 
 
 def main():

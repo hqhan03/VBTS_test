@@ -1,0 +1,10 @@
+unit,hardness,thickness_mm,rep,probe,ceiling_N,depth_mm,status,suspect_hardware
+soft_1mm_r2,soft,1,2,ball8,22.449198933907432,1.3153767166200367,characterised,False
+soft_2mm_r1,soft,2,1,ball8,17.71834051220396,1.5753167070132683,characterised,False
+soft_3mm_r1,soft,3,1,ball8,11.76112258608135,1.796520162529884,characterised,False
+medium_1mm_r1,medium,1,1,ball8,18.21929859107194,1.0912059627263702,characterised,False
+medium_2mm_r1,medium,2,1,ball8,14.138581849754152,1.6478677457603972,characterised,False
+medium_3mm_r1,medium,3,1,ball8,14.4159646485878,2.067055300283876,characterised,False
+hard_1mm_r1,hard,1,1,ball8,19.455364506231252,1.0952844868099518,characterised,False
+hard_2mm_r1,hard,2,1,ball8,22.410931704859557,1.68118929727925,characterised,False
+hard_3mm_r1,hard,3,1,ball8,11.834344627802519,1.8226737002265274,characterised,False

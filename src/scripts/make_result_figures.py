@@ -16,7 +16,8 @@ import result_common as RC
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-RES = ROOT / "result"
+RES = ROOT / "result" / "single" if RC.SINGLE else ROOT / "result"
+SRC = ROOT / "result"
 DS = ROOT / "data" / "20260911_VBTSresolution_dataset"
 REG = yaml.safe_load(open(ROOT / "src" / "config" / "sensor_registry.yaml"))
 
@@ -38,6 +39,8 @@ def save(fig, df, stem, folder="extra"):
     d = RES / folder
     (d / "figures").mkdir(parents=True, exist_ok=True)
     (d / "data").mkdir(parents=True, exist_ok=True)
+    (d / "figures").mkdir(parents=True, exist_ok=True)
+    (d / "data").mkdir(parents=True, exist_ok=True)
     fig.savefig(d / "figures" / f"{stem}.png", dpi=200, bbox_inches="tight")
     plt.close(fig)
     df.to_csv(d / "data" / f"{stem}.csv", index=False)
@@ -57,6 +60,8 @@ def ceilings():
         tag = TAG.get(pr)
         for s in REG["sensors"]:
             if s.get("principle") != pr:
+                continue
+            if RC.SINGLE and s["id"][len(pr) + 1:] not in RC.chosen(pr):
                 continue
             ir = s.get("image_response") or {}
             run = s.get("run") or ""
@@ -241,6 +246,8 @@ def fig_E():
     if d is None:
         rows = []
         for s in REG["sensors"]:
+            if RC.SINGLE and s["id"].replace("DIGIT_", "") not in RC.chosen("DIGIT"):
+                continue
             if s.get("principle") != "DIGIT":
                 continue
             ir = s.get("image_response") or {}
@@ -293,6 +300,8 @@ def fig_F():
     for f in glob.glob(str(DS / "9DTact" / "20260911_passA_pair150" / "*" /
                            "shape_pair150" / "ladder.csv")):
         u = Path(f).parent.parent.name.replace("9DTact_", "").split("__")[0]
+        if RC.SINGLE and u not in RC.chosen("9DTact"):
+            continue
         L = pd.read_csv(f)
         col = "mean_abs_diff_in_region" if "mean_abs_diff_in_region" in L else None
         if col is None:

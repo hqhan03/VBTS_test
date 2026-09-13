@@ -14,7 +14,9 @@ import result_common as RC
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-RES = ROOT / "result"
+RES = ROOT / "result" / "single" if RC.SINGLE else ROOT / "result"
+# 공유 소스표(collect_resolution.py 가 낸 것)는 단일 모드에서도 원본을 읽는다
+SRC = ROOT / "result"
 REG = yaml.safe_load(open(ROOT / "src" / "config" / "sensor_registry.yaml"))
 HARD = ["soft", "medium", "hard"]
 FOLD = {"9DTact": "1_9DTact", "DIGIT": "2_DIGIT", "DIGIT_Marker": "3_DIGIT_Marker"}
@@ -65,7 +67,9 @@ def save(df, g, stem, pr):
 def units_of(pr):
     return pd.DataFrame([dict(unit=s["id"].replace(pr + "_", ""), hardness=s["hardness"],
                               thickness_mm=s["thickness_mm"], rep=s["replicate"])
-                         for s in REG["sensors"] if s.get("principle") == pr])
+                         for s in REG["sensors"] if s.get("principle") == pr
+                         and (not RC.SINGLE
+                              or s["id"][len(pr) + 1:] in RC.chosen(pr))])
 
 
 # ------------------------------------------------------ 1. 최대 측정 가능 힘 --
@@ -77,6 +81,8 @@ def table_ceiling(pr):
     rows = []
     for s in REG["sensors"]:
         if s.get("principle") != pr:
+            continue
+        if RC.SINGLE and s["id"][len(pr) + 1:] not in RC.chosen(pr):
             continue
         ir = s.get("image_response") or {}
         run = s.get("run") or ""
@@ -100,7 +106,7 @@ def table_ceiling(pr):
 
 # ------------------------------------------------------ 2. 공간 분해능 --
 def table_resolution(pr):
-    V = pd.read_csv(RES / "extra" / "data" / "resolution_verdicts.csv")
+    V = pd.read_csv(SRC / "extra" / "data" / "resolution_verdicts.csv")
     V = RC.mark(V[V.principle == pr], pr, "unit")
     if not len(V):
         print(f"  {pr}: 분해능 자료 없음 — 표 생략\n")

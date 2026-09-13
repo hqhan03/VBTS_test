@@ -19,7 +19,7 @@ import result_common as RC
 
 ROOT = Path(__file__).resolve().parents[2]
 DS = ROOT / "data" / "20260911_VBTSresolution_dataset"
-RES = ROOT / "result"
+RES = ROOT / "result" / "single" if RC.SINGLE else ROOT / "result"
 FOLD = {"9DTact": "1_9DTact", "DIGIT": "2_DIGIT", "DIGIT_Marker": "3_DIGIT_Marker"}
 HARD = ["soft", "medium", "hard"]
 WH = {1920: "1920×1080", 1280: "1280×720", 854: "854×480", 640: "640×360",
@@ -56,7 +56,7 @@ def shape_knees():
     out = []
     f = RES / FOLD["9DTact"] / "data" / "shape_vs_resolution.csv"
     if f.exists():
-        d = pd.read_csv(f)
+        d = RC.keep(pd.read_csv(f), "9DTact", "sensor")
         for u, g in d.groupby("sensor"):
             k = g.groupby("width_px")[["cyl4_raw_mae", "cube4_raw_mae"]].median()
             h, t, r = u.split("_")[0], int(u.split("_")[1][0]), int(u[-1])
@@ -68,7 +68,7 @@ def shape_knees():
                             cube4_best_mm=k.cube4_raw_mae.min()))
     f = ROOT / "data" / "analysis" / "digit_shape" / "DIGIT_shape_vs_resolution.csv"
     if f.exists():
-        d = pd.read_csv(f)
+        d = RC.keep(pd.read_csv(f), "DIGIT", "unit")
         d["err"] = (d.depth_pred_mm - d.depth_true_mm).abs()
         w = d.groupby(["unit", "width_px", "shape"]).err.mean().unstack("shape")
         for u, g in w.groupby(level=0):

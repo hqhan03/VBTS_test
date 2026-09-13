@@ -18,7 +18,7 @@ import result_common as RC
 
 ROOT = Path(__file__).resolve().parents[2]
 DS = ROOT / "data" / "20260911_VBTSresolution_dataset"
-RES = ROOT / "result"
+RES = ROOT / "result" / "single" if RC.SINGLE else ROOT / "result"
 FOLD = {"9DTact": "1_9DTact", "DIGIT": "2_DIGIT", "DIGIT_Marker": "3_DIGIT_Marker"}
 REP = {"9DTact": "grey", "DIGIT": "raw", "DIGIT_Marker": "inpaint"}
 AX = [("fx_mae", "Fx", "#c2553a"), ("fy_mae", "Fy", "#d9a441"),

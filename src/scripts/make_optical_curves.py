@@ -22,7 +22,7 @@ import result_common as RC
 
 ROOT = Path(__file__).resolve().parents[2]
 DS = ROOT / "data" / "20260911_VBTSresolution_dataset"
-RES = ROOT / "result"
+RES = ROOT / "result" / "single" if RC.SINGLE else ROOT / "result"
 FOLD = {"9DTact": "1_9DTact", "DIGIT": "2_DIGIT", "DIGIT_Marker": "3_DIGIT_Marker"}
 HARD = ["soft", "medium", "hard"]
 PC = {"ball4": "#c2553a", "ball8": "#1f6f8b"}

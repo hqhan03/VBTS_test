@@ -18,7 +18,7 @@ import result_common as RC
 
 ROOT = Path(__file__).resolve().parents[2]
 DS = ROOT / "data" / "20260911_VBTSresolution_dataset"
-RES = ROOT / "result"
+RES = ROOT / "result" / "single" if RC.SINGLE else ROOT / "result"
 FOLD = {"9DTact": "1_9DTact", "DIGIT": "2_DIGIT", "DIGIT_Marker": "3_DIGIT_Marker"}
 HARD = ["soft", "medium", "hard"]
 PROBE = [("cyl4", "원기둥 ⌀4 mm", "#c2553a"), ("cube4", "정육면체 4 mm", "#1f6f8b")]
@@ -247,8 +247,8 @@ def main():
     dd = load_digit()
     if dd is None or not len(dd):
         print("  DIGIT: 형상 평가 아직 없음"); return
-    raw = pd.read_csv(ROOT / "data" / "analysis" / "digit_shape"
-                      / "DIGIT_shape_vs_resolution.csv")
+    raw = RC.keep(pd.read_csv(ROOT / "data" / "analysis" / "digit_shape"
+                      / "DIGIT_shape_vs_resolution.csv"), "DIGIT", "unit")
     pD = RES / FOLD["DIGIT"] / "data"; pD.mkdir(parents=True, exist_ok=True)
     dd.to_csv(pD / "shape_vs_resolution.csv", index=False)
     raw.to_csv(pD / "shape_predictions.csv", index=False)

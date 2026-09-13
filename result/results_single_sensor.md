@@ -1,0 +1,753 @@
+# 결과 — 그림과 표  (셀당 센서 하나)
+
+VBTS 해상도 캠페인의 결과물 전부. **모든 그림에 그것을 그린 CSV 가 같은 이름으로
+`data/` 에 있다** — 직접 다시 그릴 수 있다.
+
+생성: `python3 src/scripts/make_results_md.py` (그림은 `make_result_figures.py`, `make_optical_curves.py`, 표는 `make_result_tables.py`)
+
+> **수집은 2026-09-12 에 끝났다.** 한계는 `docs/methods.md` §10.0 에 있고, 
+> 이 문서의 각 절에도 해당하는 것을 적어 두었다.
+
+---
+
+## 0. 한눈에
+
+> **이 문서는 셀마다 복제 하나만 쓴 판이다.** 같은 분석을 18 유닛 전부로
+> 돌린 것은 `results.md` 에 있고, 두 문서의 절 구성은 같다. 원리당
+> **9 유닛**(경도 3 × 두께 3)이다.
+>
+> **어느 쪽을 남겼나** — `docs/replicate_audit.md` 의 우선순위를 그대로 쓴다:
+>
+> 1. 한쪽이 **확정 불량**(빛 누출)이면 다른 쪽
+> 2. 한쪽에 **독립 증거**(자료량 부족)가 있으면 다른 쪽
+> 3. 복제가 하나뿐이면(파괴) 그것
+> 4. 그 밖에는 **`r1`**
+>
+> **4 번이 투표가 아닌 이유.** `replicate_audit.md` §4.1 이 정답 있는 두 셀로
+> 추세 기반 투표를 시험했더니 하나는 맞고 하나는 **거꾸로** 짚었다. 게다가
+> 추세에 가까운 쪽을 남기는 선택은 **효과 크기를 부풀린다.** `r1` 은 임의이지만
+> **추세에 대해 편향이 없다** — 임의가 편향보다 낫다.
+
+| 원리 | 남긴 유닛 |
+|---|---|
+| 9DTact | `hard_1mm_r1` · `hard_2mm_r1` · `hard_3mm_r1` · `medium_1mm_r1` · `medium_2mm_r2` · `medium_3mm_r1` · `soft_1mm_r1` · `soft_2mm_r1` · `soft_3mm_r1` |
+| DIGIT | `hard_1mm_r1` · `hard_2mm_r1` · `hard_3mm_r1` · `medium_1mm_r1` · `medium_2mm_r1` · `medium_3mm_r1` · `soft_1mm_r2` · `soft_2mm_r1` · `soft_3mm_r1` |
+| DIGIT_Marker | `hard_1mm_r1` · `hard_2mm_r1` · `hard_3mm_r1` · `medium_1mm_r1` · `medium_2mm_r1` · `medium_3mm_r1` · `soft_1mm_r1` · `soft_2mm_r1` · `soft_3mm_r1` |
+
+**1 번 · 2 번으로 갈린 셀** — 나머지는 전부 `r1` 이다:
+
+| 원리 | 셀 | 버린 것 | 왜 |
+|---|---|---|---|
+| 9DTact | hard 1 mm | `r2` | 빛 누출 |
+| 9DTact | medium 1 mm | `r2` | 빛 누출 |
+| 9DTact | medium 2 mm | `r1` | 2026-09-04 파괴, 자료 없음 |
+| DIGIT | soft 1 mm | `r1` | 포화 깊이·지름 기울기 31 % + ball4 점 12 대 18 |
+| DIGIT | medium 2 mm | `r2` | 천장 46 % + ball8 점 12 대 19 |
+| DIGIT | medium 3 mm | `r2` | 광학 3 종 23~63 % + ball4 점 17 대 43 |
+| DIGIT_Marker | medium 1 mm | `r2` | 밝기 기울기 72 % + 점 7 대 21 |
+
+**결론은 두 판에서 같다.** 포화 해상도의 두께·경도 의존을 묻는 검정
+20 개 중 q < 0.05 인 것이 **양쪽 모두 0 개**다. 중앙 포화 해상도는 한 단씩
+움직이는 곳이 있는데(9DTact 의 Fz 가 160×90 에서 320×180 으로), 유닛이
+절반이 되면 중앙값이 한 단 건너뛰는 것은 당연하다 — **방향이 바뀐 것이
+아니다.**
+
+> **복제가 하나뿐이므로 이 문서에는 복제 산포가 없다.** `results.md` 의
+> 3×3 표는 칸마다 두 값을 적었지만 여기서는 하나다. 유닛 사이 산포를 보려면
+> 그쪽을 볼 것 — **이 문서는 산포를 지운 것이지 줄인 것이 아니다.**
+
+> **표시된 유닛.** `9DTact_hard_1mm_r2` 와 `9DTact_medium_1mm_r2` 는 운전자가
+> 2026-09-11 에 **바디에서 빛이 새는 것을 육안으로 확인**한 유닛이다. 데이터도
+> 일치한다 — 두 점 자국이 중앙 1.7 ~ 1.8 그레이 레벨로 17 유닛 중앙값 3.7 의
+> 절반이라 네 간격 모두 '미분해' 로 기록됐고, 천장은 상대 문턱 탓에 짝보다
+> +24 %, +25 % 부풀었다.
+>
+> **빼지 않고 표시한다.** 자료는 전부 들어 있고 의심 표시만 달린다 — 뺀 자료는
+> 보이지 않으므로 검토되지도 않기 때문이다. 유닛별 그림에서는 제목에 `!` 와
+> 먹색이 붙고 선이 **점선**이며, 흩어그림에서는 **검은 테두리와 `!`** 다 —
+> 채움은 자기 군의 색 그대로라 어느 경도인지도 함께 읽힌다. **색이 아니라**
+> **형태로 표시한다**: 붉은색은 범주 팔레트의 주황과 헷갈렸다.
+> 3×3 표에서 `!` 가 붙은 칸은 그 칸의 복제 하나가 의심 유닛이라는 뜻이고,
+> 모든 csv 에 `suspect_hardware` 열이 있다. 등록부의 같은 이름 필드가 근거다.
+>
+> **통계는 포함해서 냈다.** 빼면 어떻게 되는지는 부록 A 의 csv
+> (`C_relative_vs_absolute_criterion.csv` 의 `*_no_suspect` 열)에 함께 적었다 —
+> 중앙값이 31.00 에서 30.97 N 으로 움직일 뿐 결론은 같다.
+
+| | 9DTact | DIGIT | DIGIT_Marker |
+|---|---|---|---|
+| 유닛 | 18 (천장 17) | 18 | 18 |
+| 최대 측정 가능 힘 | **ball8** 17/18 | **ball8** 18/18 | `ball4` 만 |
+| 공간 분해능 | 6 간격 × 17 | 2 간격 × 18 | **없음** |
+| 힘 추정 vs 해상도 | 12 단 × 17 | 12 단 × 18 | 12 단 × 18 |
+| 형상 복원 vs 해상도 | 8 단 × 17 | 파이프라인 신규 | **없음** |
+
+## 1. 최대 측정 가능 힘 (천장)
+
+이미지가 변하기를 멈추는 힘. 판정은 *응답이 그 유닛 최대의 15 % 아래로 두 단 연속*.
+겔이 견디는 한계가 아니라 **사진이 답하기를 멈추는 지점**이다.
+
+![천장 대 두께, 경도별 — 세 원리. 선은 복제 평균, 점은 유닛 하나하나, 세로 막대는 두 복제의 폭. 검은 테두리에 `!` 가 붙은 점이 빛 누출 의심 유닛이고, 채움은 자기 경도의 색 그대로다. **세로 축은 원리마다 다르다** — 9DTact 가 63 N 까지 가는데 DIGIT 계열은 6 ~ 23 N 이라 축을 묶으면 DIGIT 과 Marker 의 기울기가 눌려 보이지 않는다.](single/extra/figures/B_ceiling_vs_thickness.png)
+
+*천장 대 두께, 경도별 — 세 원리. 선은 복제 평균, 점은 유닛 하나하나, 세로 막대는 두 복제의 폭. 검은 테두리에 `!` 가 붙은 점이 빛 누출 의심 유닛이고, 채움은 자기 경도의 색 그대로다. **세로 축은 원리마다 다르다** — 9DTact 가 63 N 까지 가는데 DIGIT 계열은 6 ~ 23 N 이라 축을 묶으면 DIGIT 과 Marker 의 기울기가 눌려 보이지 않는다.*
+
+<sub>그림: `single/extra/figures/B_ceiling_vs_thickness.png` · 자료: `single/extra/data/B_ceiling_vs_thickness.csv`</sub>
+
+**9DTact 는 두께가 늘면 오르고 DIGIT 계열은 내려간다.** 점을 다 찍었으므로
+평균선이 두 복제 중 어느 쪽에 끌려갔는지 바로 보인다 — 예컨대 9DTact 의
+`medium 2 mm` 는 점이 하나뿐이고(짝은 2026-09-04 에 파괴됐다), `soft 2 mm` 는
+두 복제가 24.6 과 30.2 N 으로 벌어져 있다.
+
+> **`DIGIT_Marker` 의 자는 다르다.** 마커 유닛에는 `ball8` 램프가 없어 `ball4`
+> 로 잰 값이다. **힘은 프로브 사이에서 환산되지 않으므로**(부록 C: 비 1.50 ~ 3.26,
+> CV 21 %) Marker 의 세로 위치를 나머지 둘과 나란히 읽으면 안 된다. 한 원리
+> **안에서의 두께·경도 방향**만 읽을 것.
+
+### 3×3 표 — 칸은 `r1 / r2  (평균)`, `!` 는 빛 누출 의심 유닛이 든 칸
+
+**9DTact** (N)
+
+| hardness   |   1mm |   2mm |   3mm |
+|:-----------|------:|------:|------:|
+| soft       |  27.8 |  30.2 |  31   |
+| medium     |  31   |  30.2 |  38.5 |
+| hard       |  27.5 |  43.3 |  63.2 |
+
+<sub>자료: `1_9DTact/data/table_max_force_3x3.csv`</sub>
+
+**DIGIT** (N)
+
+| hardness   |   1mm |   2mm |   3mm |
+|:-----------|------:|------:|------:|
+| soft       |  22.4 |  17.7 |  11.8 |
+| medium     |  18.2 |  14.1 |  14.4 |
+| hard       |  19.5 |  22.4 |  11.8 |
+
+<sub>자료: `2_DIGIT/data/table_max_force_3x3.csv`</sub>
+
+**DIGIT_Marker** (N)
+
+| hardness   |   1mm |   2mm |   3mm |
+|:-----------|------:|------:|------:|
+| soft       |  20.5 |  12.3 |   8.1 |
+| medium     |   8.3 |   6.2 |   6.9 |
+| hard       |  10.8 |   9.7 |   9.2 |
+
+<sub>자료: `3_DIGIT_Marker/data/table_max_force_3x3.csv`</sub>
+
+`!` 는 운전자가 빛이 새는 것을 육안으로 확인한 유닛이다 — 신호가 약해 판정 문턱이
+낮아지므로 천장이 **부풀려져** 있다. 분석에서 따로 표시하거나 빼야 한다.
+
+`9DTact_medium_2mm_r1` 은 2026-09-04 에 파괴돼 복제가 하나뿐이다.
+
+**DIGIT_Marker 는 `ball4` 로 잰 값**이라 위 두 표와 같은 자가 아니다.
+
+### 경도 — 9DTact 만 따라가고, 두께와 함께 커진다
+
+| 원리 | 천장 대 경도 | 천장 대 두께 | 포화 깊이 대 경도 | 포화 깊이 대 두께 |
+|---|---|---|---|---|
+| 9DTact | ρ +0.37 (p 0.329) | ρ +0.63 (p 0.068) | ρ +0.00 (p 1.000) | **ρ +0.95 (p 0.000)** |
+| DIGIT | ρ +0.11 (p 0.787) | **ρ -0.79 (p 0.011)** | ρ +0.11 (p 0.787) | **ρ +0.95 (p 0.000)** |
+| DIGIT_Marker | ρ -0.11 (p 0.787) | ρ -0.53 (p 0.145) | ρ -0.05 (p 0.893) | **ρ +0.90 (p 0.001)** |
+
+<sub>Spearman, 유닛 단위. 자료: `extra/data/B_ceiling_vs_thickness.csv`</sub>
+
+**천장은 9DTact 에서만 경도를 따라간다**(ρ +0.67, p 0.003). DIGIT 과 Marker 는
+ρ 가 0.01 과 0.00 으로 전혀 따라가지 않는다 — 다만 그것을 "DIGIT 이 경도에
+둔감하다" 로 읽으면 안 된다. **경도를 6 Shore 점밖에 흔들지 않았다**(부록 B).
+
+**그리고 경도의 효과가 두께를 따라 커진다.** 9DTact 의 hard ÷ soft:
+
+| | 1 mm | 2 mm | 3 mm |
+|---|---:|---:|---:|
+| 천장 비 | 0.99× | 1.43× | **2.04×** |
+
+1 mm 에서는 경도를 40 Shore 점 흔들어도 천장이 13 % 밖에 안 오르는데,
+3 mm 에서는 **두 배**가 된다. 얇은 겔에서는 기재가 금방 받쳐 주므로 겔
+자신의 단단함이 들어설 자리가 없고, 두꺼워질수록 겔이 스스로 버티는 몫이
+커지기 때문으로 읽힌다. **경도와 두께는 더하기가 아니라 곱하기다.**
+
+### 포화가 일어나는 깊이
+
+![포화 깊이는 두 원리 모두 두께를 따라 증가한다 — 기울기가 2.2 배 다르다.](single/extra/figures/A_saturation_depth_vs_thickness.png)
+
+*포화 깊이는 두 원리 모두 두께를 따라 증가한다 — 기울기가 2.2 배 다르다.*
+
+<sub>그림: `single/extra/figures/A_saturation_depth_vs_thickness.png` · 자료: `single/extra/data/A_saturation_depth_vs_thickness.csv`</sub>
+
+**깊이는 경도를 전혀 따라가지 않는다.** 세 원리 모두 ρ 가 −0.03 ~ +0.17 이고
+p 는 0.51 ~ 0.92 다. 대신 **두께는 세 원리 모두에서 ρ 0.92 ~ 0.94, p < 0.001** 로
+따라간다. 천장에서는 경도가 9DTact 를 갈랐는데 **깊이에서는 아무도 가르지 않는다** —
+포화가 일어나는 **자리**는 겔이 얼마나 단단한지가 아니라 **얼마나 두꺼운지**가
+정한다. 단단함은 그 자리에 **도달하는 데 드는 힘**을 바꿀 뿐이다.
+
+**힘과 깊이는 다른 이야기를 한다.** 천장(힘)은 두 원리가 반대로 가지만, 깊이는
+둘 다 두께를 따라 증가한다. 그리고 그 깊이가 **왜 반대로 가는지를 설명한다** —
+9DTact 는 두께의 2.0 ~ 5.2 배까지 들어가 **기재에 눌린 상태**에서 포화하므로
+겔이 두꺼울수록 더 버티고, DIGIT 은 0.56 ~ 1.32 배에서 **광학이 먼저** 포화하므로
+두꺼운 겔의 흐려진 상이 오히려 먼저 답하기를 멈춘다.
+
+## 2. 깊이에 따른 자국 지름과 밝기
+
+지름은 **픽셀**로 둔다 — mm 환산에 필요한 px/mm 이 유닛마다 최대 1.5 배 어긋나는
+것이 2026-09-12 에 확인됐다. 픽셀은 측정된 그대로다.
+
+### 9DTact
+
+![9DTact — 유닛별 깊이-지름(실선)과 깊이-밝기(점선)](single/1_9DTact/figures/optical_vs_depth_18units.png)
+
+*9DTact — 유닛별 깊이-지름(실선)과 깊이-밝기(점선)*
+
+<sub>그림: `single/1_9DTact/figures/optical_vs_depth_18units.png` · 자료: `single/1_9DTact/data/optical_vs_depth_18units.csv`</sub>
+
+**지름 기울기, ball4 (px/mm)**
+
+| hardness   |   1mm | 2mm   | 3mm   |
+|:-----------|------:|:------|:------|
+| soft       |   463 | 386   | 589   |
+| medium     |   230 | —     | —     |
+| hard       |   361 | 551   | —     |
+
+<sub>자료: `1_9DTact/data/optical_slope_diameter_ball4_3x3.csv`</sub>
+
+**지름 기울기, ball8 (px/mm)**
+
+| hardness   |   1mm |   2mm |   3mm |
+|:-----------|------:|------:|------:|
+| soft       |   321 |   285 |   256 |
+| medium     |   229 |   308 |   306 |
+| hard       |   333 |   464 |   547 |
+
+<sub>자료: `1_9DTact/data/optical_slope_diameter_ball8_3x3.csv`</sub>
+
+### DIGIT
+
+![DIGIT — 유닛별 깊이-지름(실선)과 깊이-밝기(점선)](single/2_DIGIT/figures/optical_vs_depth_18units.png)
+
+*DIGIT — 유닛별 깊이-지름(실선)과 깊이-밝기(점선)*
+
+<sub>그림: `single/2_DIGIT/figures/optical_vs_depth_18units.png` · 자료: `single/2_DIGIT/data/optical_vs_depth_18units.csv`</sub>
+
+**지름 기울기, ball4 (px/mm)**
+
+| hardness   |   1mm |   2mm |   3mm |
+|:-----------|------:|------:|------:|
+| soft       |   319 |   226 |   173 |
+| medium     |   429 |   199 |   151 |
+| hard       |   414 |   250 |   167 |
+
+<sub>자료: `2_DIGIT/data/optical_slope_diameter_ball4_3x3.csv`</sub>
+
+**지름 기울기, ball8 (px/mm)**
+
+| hardness   |   1mm |   2mm |   3mm |
+|:-----------|------:|------:|------:|
+| soft       |   440 |   339 |   306 |
+| medium     |   502 |   359 |   243 |
+| hard       |   638 |   332 |   326 |
+
+<sub>자료: `2_DIGIT/data/optical_slope_diameter_ball8_3x3.csv`</sub>
+
+### DIGIT_Marker
+
+![DIGIT_Marker — 유닛별 깊이-지름(실선)과 깊이-밝기(점선)](single/3_DIGIT_Marker/figures/optical_vs_depth_18units.png)
+
+*DIGIT_Marker — 유닛별 깊이-지름(실선)과 깊이-밝기(점선)*
+
+<sub>그림: `single/3_DIGIT_Marker/figures/optical_vs_depth_18units.png` · 자료: `single/3_DIGIT_Marker/data/optical_vs_depth_18units.csv`</sub>
+
+**지름 기울기, ball4 (px/mm)**
+
+| hardness   |   1mm |   2mm |   3mm |
+|:-----------|------:|------:|------:|
+| soft       |   330 |   245 |   202 |
+| medium     |   374 |   244 |    72 |
+| hard       |   531 |   273 |   186 |
+
+<sub>자료: `3_DIGIT_Marker/data/optical_slope_diameter_ball4_3x3.csv`</sub>
+
+### 두께·경도를 나란히 — 같은 축 위에 겹친다
+
+위의 18 칸 격자는 유닛 하나하나를 보여주지만 **어느 두께가 더 가파른가** 같은
+질문에는 답하지 못한다. 칸이 다르면 눈이 기울기를 나란히 놓지 못하기 때문이다.
+그래서 같은 축 위에 겹친다 — 유닛마다 사다리가 닿은 깊이가 다르므로 공통 격자에
+보간한 뒤, **그 깊이에 자료가 있는 유닛이 3 개 이상일 때만** 그린다. 선은
+중앙값이고 띠는 사분위 범위다(평균은 한 유닛에 끌려간다).
+
+![9DTact (ball8) — 왼쪽은 경도별, 오른쪽은 두께별. 선은 중앙값, 띠는 사분위 범위.](single/1_9DTact/figures/optical_by_group_ball8.png)
+
+*9DTact (ball8) — 왼쪽은 경도별, 오른쪽은 두께별. 선은 중앙값, 띠는 사분위 범위.*
+
+<sub>그림: `single/1_9DTact/figures/optical_by_group_ball8.png` · 자료: `single/1_9DTact/data/optical_by_group_ball8.csv`</sub>
+
+![DIGIT (ball8) — 왼쪽은 경도별, 오른쪽은 두께별. 선은 중앙값, 띠는 사분위 범위.](single/2_DIGIT/figures/optical_by_group_ball8.png)
+
+*DIGIT (ball8) — 왼쪽은 경도별, 오른쪽은 두께별. 선은 중앙값, 띠는 사분위 범위.*
+
+<sub>그림: `single/2_DIGIT/figures/optical_by_group_ball8.png` · 자료: `single/2_DIGIT/data/optical_by_group_ball8.csv`</sub>
+
+![DIGIT_Marker (ball4) — 왼쪽은 경도별, 오른쪽은 두께별. 선은 중앙값, 띠는 사분위 범위.](single/3_DIGIT_Marker/figures/optical_by_group_ball4.png)
+
+*DIGIT_Marker (ball4) — 왼쪽은 경도별, 오른쪽은 두께별. 선은 중앙값, 띠는 사분위 범위.*
+
+<sub>그림: `single/3_DIGIT_Marker/figures/optical_by_group_ball4.png` · 자료: `single/3_DIGIT_Marker/data/optical_by_group_ball4.csv`</sub>
+
+**DIGIT 계열은 얇을수록 넓고 밝다** — 두 지표 모두 1 → 2 → 3 mm 로 단조 감소한다.
+기재가 가까워 변형이 옆으로 퍼지고, 겔이 얇아 빛이 덜 흩어지는 것으로 읽힌다.
+
+> **9DTact 는 단조가 아니다.** 두 지표 모두 **2 mm 가 가장 크다** — 지름
+> 553 px (1 mm 534, 3 mm 481), 밝기 16 lvl (1 mm 9, 3 mm 11). 3 mm 가 가장 낮은
+> 것은 DIGIT 과 같지만 1 mm 가 2 mm 보다 낮은 것은 다르다. **왜 가운데가 솟는지는
+> 이 자료로 답하지 못한다.** 9DTact 는 투명 겔 위에 검은 안료층을 덧씌우므로
+> 기재까지의 실제 두께가 라벨보다 두껍고(`measurement_protocol.md` 의 깊이
+> 뒷막이 항목), 1 mm 라벨의 겔이 실제로는 가장 얇지 않을 수 있다 — 확인하지
+> 않은 추측이다.
+
+> **경도가 겹치는 것을 "경도가 무관하다" 로 읽으면 안 된다.** DIGIT 계열은
+> 경도를 6 Shore 점밖에 흔들지 않았다(부록 B). 9DTact 는 40 점을 흔들고도
+> 곡선이 겹치므로, 적어도 9DTact 에서는 **실제로 약한 효과**라고 말할 수 있다.
+
+> **원리 간 기울기를 비교하면 안 된다.** 자료마다 깊이 구간이 다르고 (각 유닛의
+> 유효 구간에서 맞춘다), 자국이 시야를 채우면 `contact_region` 이 덩어리를 놓쳐
+> 지름이 무너지므로 그 지점에서 잘랐다. 구간은 `optical_slopes.csv` 의
+> `depth_lo_mm` / `depth_hi_mm` 에 있다.
+
+## 3. 힘에 따른 자국 지름과 밝기
+
+2 절과 **같은 행의 같은 자국**을 깊이 대신 **힘**에 대해 놓는다. 로봇이 깊이를
+명령하고 F/T 가 힘을 읽으므로 두 축은 같은 램프의 두 얼굴이다. 그런데 어느 쪽을
+x 로 놓느냐가 **어느 변수가 갈리는지를 바꾼다.**
+
+![9DTact (ball8) — x 가 힘이다. 왼쪽은 경도별, 오른쪽은 두께별.](single/1_9DTact/figures/force_by_group_ball8.png)
+
+*9DTact (ball8) — x 가 힘이다. 왼쪽은 경도별, 오른쪽은 두께별.*
+
+<sub>그림: `single/1_9DTact/figures/force_by_group_ball8.png` · 자료: `single/1_9DTact/data/force_by_group_ball8.csv`</sub>
+
+![DIGIT (ball8) — x 가 힘이다. 왼쪽은 경도별, 오른쪽은 두께별.](single/2_DIGIT/figures/force_by_group_ball8.png)
+
+*DIGIT (ball8) — x 가 힘이다. 왼쪽은 경도별, 오른쪽은 두께별.*
+
+<sub>그림: `single/2_DIGIT/figures/force_by_group_ball8.png` · 자료: `single/2_DIGIT/data/force_by_group_ball8.csv`</sub>
+
+![DIGIT_Marker (ball4) — x 가 힘이다. 왼쪽은 경도별, 오른쪽은 두께별.](single/3_DIGIT_Marker/figures/force_by_group_ball4.png)
+
+*DIGIT_Marker (ball4) — x 가 힘이다. 왼쪽은 경도별, 오른쪽은 두께별.*
+
+<sub>그림: `single/3_DIGIT_Marker/figures/force_by_group_ball4.png` · 자료: `single/3_DIGIT_Marker/data/force_by_group_ball4.csv`</sub>
+
+### 한 장으로 — x 축을 바꾸면 갈리는 변수가 바뀐다
+
+![9DTact (ball8). 행은 잰 것, 열은 (x 축) × (나눈 변수). 왼쪽 두 열이 깊이, 오른쪽 두 열이 힘이고 각 쌍의 앞이 경도별 뒤가 두께별이다. 행 안에서 세로 축을 맞췄으므로 **열을 가로질러 읽으면 된다.**](single/extra/figures/H_reversal_9DTact_ball8.png)
+
+*9DTact (ball8). 행은 잰 것, 열은 (x 축) × (나눈 변수). 왼쪽 두 열이 깊이, 오른쪽 두 열이 힘이고 각 쌍의 앞이 경도별 뒤가 두께별이다. 행 안에서 세로 축을 맞췄으므로 **열을 가로질러 읽으면 된다.***
+
+<sub>그림: `single/extra/figures/H_reversal_9DTact_ball8.png` · 자료: `single/extra/data/H_reversal_9DTact_ball8.csv`</sub>
+
+**왼쪽 절반과 오른쪽 절반이 서로 거울이다.** `깊이 × 경도` 에서는 세 곡선이
+포개져 있는데 `힘 × 경도` 에서는 벌어지고, `깊이 × 두께` 에서는 벌어져 있는데
+`힘 × 두께` 에서는 포개진다. 지름과 밝기가 같은 방향으로 움직인다.
+
+**같은 자국, 같은 램프, 바뀐 것은 x 축뿐이다.**
+
+물리로는 그럴 만하다. **같은 깊이**에서는 기재가 얼마나 가까운지가 변형을
+정하므로 두께가 이긴다. **같은 힘**에서는 겔이 얼마나 무른지가 얼마나 들어가는지를
+정하므로 경도가 이긴다. 두 축은 같은 램프의 두 얼굴이지만 **서로 다른 질문**이다.
+
+> **DIGIT 계열에서는 뒤집히지 않는다.** 두께가 두 기준 모두에서 갈리고, 경도는
+> 힘 기준에서도 거의 올라오지 않는다. 9DTact 는 경도를 40 Shore 점
+> 흔들었고 DIGIT 계열은 6 점을 흔들었다(부록 B) — **경도가 안 보이는 것이 아니라**
+> **거의 바꾸지 않은 것**이라는 읽기와 맞는다.
+
+> **어느 축을 쓸 것인가.** 센서를 **쓰는** 쪽에서는 힘이 자연스럽고(손이 아는 것은
+> 힘이다), 겔을 **설계하는** 쪽에서는 깊이가 자연스럽다(기재까지의 거리를 고른다).
+> 이 문서의 다른 절은 깊이를 쓰므로, 두 기준을 섞어 인용하지 말 것.
+
+## 4. 공간 분해능
+
+두 기둥(지름 1.0 mm)을 여러 간격으로 눌러 골이 보이는지 판정한다. 세 관문을
+모두 넘어야 *분해*다: **dip ≥ 0.265**(Rayleigh), **자국 ≥ 2.5 그레이 레벨**,
+**dip > 잡음의 3 배**.
+
+![3×3 표와 같은 숫자를 그림으로. 위는 분해된 가장 좁은 간격 대 두께(선은 복제 평균, 점은 유닛 하나하나), 아래는 유닛마다의 분해된 깊이 범위.](single/extra/figures/G_spatial_resolution.png)
+
+*3×3 표와 같은 숫자를 그림으로. 위는 분해된 가장 좁은 간격 대 두께(선은 복제 평균, 점은 유닛 하나하나), 아래는 유닛마다의 분해된 깊이 범위.*
+
+<sub>그림: `single/extra/figures/G_spatial_resolution.png` · 자료: `single/extra/data/G_spatial_resolution.csv`</sub>
+
+### 9DTact — 분해된 가장 좁은 간격 (중심간격 mm)
+
+| hardness   |   1mm |   2mm |   3mm |
+|:-----------|------:|------:|------:|
+| soft       |  1.5  |  1.75 |   2   |
+| medium     |  1.1  |  1.1  |   2.5 |
+| hard       |  1.25 |  1.25 |   2.5 |
+
+<sub>자료: `1_9DTact/data/table_spatial_resolution_3x3.csv`</sub>
+
+### 9DTact — 분해된 깊이 범위 (mm)
+
+| hardness   | 1mm     | 2mm     | 3mm     |
+|:-----------|:--------|:--------|:--------|
+| soft       | 0.2–0.6 | 0.1–0.9 | 0.3–0.3 |
+| medium     | 0.1–0.6 | 0.1–0.9 | 0.5–0.9 |
+| hard       | 0.1–0.6 | 0.1–0.9 | 0.4–0.9 |
+
+<sub>자료: `1_9DTact/data/table_resolved_depth_range_3x3.csv`</sub>
+
+### DIGIT — 분해된 가장 좁은 간격 (중심간격 mm)
+
+| hardness   |   1mm |   2mm |   3mm |
+|:-----------|------:|------:|------:|
+| soft       |   1.1 |   1.1 |   1.1 |
+| medium     |   1.1 |   1.1 |   1.1 |
+| hard       |   1.1 |   1.1 |   1.1 |
+
+<sub>자료: `2_DIGIT/data/table_spatial_resolution_3x3.csv`</sub>
+
+### DIGIT — 분해된 깊이 범위 (mm)
+
+| hardness   | 1mm     | 2mm     | 3mm     |
+|:-----------|:--------|:--------|:--------|
+| soft       | 0.1–0.6 | 0.1–0.9 | 0.1–0.9 |
+| medium     | 0.1–0.6 | 0.1–0.9 | 0.2–0.9 |
+| hard       | 0.1–0.6 | 0.1–0.9 | 0.2–0.9 |
+
+<sub>자료: `2_DIGIT/data/table_resolved_depth_range_3x3.csv`</sub>
+
+> **DIGIT 의 분해능 표는 아홉 칸이 전부 1.10 mm 다.** 가장 좁은 프로브를 18/18
+> 유닛이 분해했으므로 **값이 아니라 상한**이다 — "가장자리 간격 0.10 mm 보다
+> 좋다" 가 이 연구가 말할 수 있는 전부다. 구별은 **깊이 범위** 표에서 나온다:
+> 1 mm 겔은 0.6 mm 까지, 2~3 mm 겔은 0.9 mm 까지 분해한다.
+
+> **DIGIT_Marker 는 공간 분해능을 재지 않았다** (운전자 결정, 2026-09-11).
+
+## 5. 힘 추정 오차 대 해상도
+
+ResNet-18 을 해상도 12 단(1920 → 8 px)에서 학습해 축별 MAE 를 낸다.
+**학습 파라미터는 원리·해상도에 걸쳐 전부 같다** — 실효 배치 64(경사 누적으로
+고정), 30 에폭, Adam 5e-4, weight decay 1e-4, cycle 분할, seed 3 개.
+
+| 원리 | 입력 표현 |
+|---|---|
+| 9DTact | `grey` — 원저자 방식 (기준영상 + 밝아진 양 + 어두워진 양) |
+| DIGIT | `raw` — 카메라 프레임 그대로 |
+| DIGIT_Marker | `inpaint` — 마커 점을 지우고 주변에서 메움 |
+
+![9DTact — 유닛별 축별 MAE 대 해상도](single/1_9DTact/figures/force_mae_vs_resolution_18units.png)
+
+*9DTact — 유닛별 축별 MAE 대 해상도*
+
+<sub>그림: `single/1_9DTact/figures/force_mae_vs_resolution_18units.png` · 자료: `single/1_9DTact/data/force_mae_vs_resolution_18units.csv`</sub>
+
+![DIGIT — 유닛별 축별 MAE 대 해상도](single/2_DIGIT/figures/force_mae_vs_resolution_18units.png)
+
+*DIGIT — 유닛별 축별 MAE 대 해상도*
+
+<sub>그림: `single/2_DIGIT/figures/force_mae_vs_resolution_18units.png` · 자료: `single/2_DIGIT/data/force_mae_vs_resolution_18units.csv`</sub>
+
+![DIGIT_Marker — 유닛별 축별 MAE 대 해상도](single/3_DIGIT_Marker/figures/force_mae_vs_resolution_18units.png)
+
+*DIGIT_Marker — 유닛별 축별 MAE 대 해상도*
+
+<sub>그림: `single/3_DIGIT_Marker/figures/force_mae_vs_resolution_18units.png` · 자료: `single/3_DIGIT_Marker/data/force_mae_vs_resolution_18units.csv`</sub>
+
+### 포화 해상도 — 경도·두께 칸별 (힘)
+
+**포화 해상도** = 그 유닛 자신의 최솟값의 110 % 안에 드는 **가장 낮은** 해상도.
+`argmin` 은 곡선이 평평한 구간에서 흔들리므로 쓰지 않는다. 칸에는 **두 복제를
+그대로** 적는다(둘이 같으면 하나만). **검정 단위는 칸이 아니라 유닛**이다 —
+칸마다 유닛이 둘뿐이라 칸으로는 검정이 되지 않는다.
+
+칸을 나누지 않은 중앙 포화 해상도부터 — 실무적으로 쓸 숫자는 이것이다.
+
+| 원리 | 지표 | 중앙 포화 해상도 | 유닛별 범위 | n |
+|---|---|---|---|---:|
+| 9DTact | Fz | **320×180** | 32×18 ~ 854×480 | 9 |
+| 9DTact | 전단 | **48×27** | 32×18 ~ 160×90 | 9 |
+| DIGIT | Fz | **80×45** | 32×18 ~ 320×180 | 9 |
+| DIGIT | 전단 | **48×27** | 32×18 ~ 426×240 | 9 |
+| DIGIT_Marker | Fz | **80×45** | 32×18 ~ 320×180 | 9 |
+| DIGIT_Marker | 전단 | **80×45** | 48×27 ~ 1920×1080 | 9 |
+
+**9DTact — Fz (수직력)**
+
+| 경도 | 1 mm | 2 mm | 3 mm |
+|---|---|---|---|
+| soft | 80×45 | 320×180 | 160×90 |
+| medium | 80×45 | 640×360 | 854×480 |
+| hard | 426×240 | 854×480 | 32×18 |
+
+<sub>유닛 9 개 — 두께 ρ +0.133 (p 0.733, q 0.917) · 경도 ρ +0.213 (p 0.583, q 0.917)</sub>
+
+**9DTact — 전단 (Fx·Fy 평균)**
+
+| 경도 | 1 mm | 2 mm | 3 mm |
+|---|---|---|---|
+| soft | 48×27 | 32×18 | 160×90 |
+| medium | 48×27 | 48×27 | 32×18 |
+| hard | 48×27 | 80×45 | 48×27 |
+
+<sub>유닛 9 개 — 두께 ρ +0.029 (p 0.941, q 1.000) · 경도 ρ +0.145 (p 0.710, q 0.917)</sub>
+
+**DIGIT — Fz (수직력)**
+
+| 경도 | 1 mm | 2 mm | 3 mm |
+|---|---|---|---|
+| soft | 80×45 | 320×180 | 48×27 |
+| medium | 80×45 | 80×45 | 32×18 |
+| hard | 80×45 | 48×27 | 80×45 |
+
+<sub>유닛 9 개 — 두께 ρ -0.493 (p 0.177, q 0.867) · 경도 ρ -0.174 (p 0.654, q 0.917)</sub>
+
+**DIGIT — 전단 (Fx·Fy 평균)**
+
+| 경도 | 1 mm | 2 mm | 3 mm |
+|---|---|---|---|
+| soft | 426×240 | 48×27 | 32×18 |
+| medium | 32×18 | 48×27 | 48×27 |
+| hard | 160×90 | 48×27 | 48×27 |
+
+<sub>유닛 9 개 — 두께 ρ -0.406 (p 0.278, q 0.867) · 경도 ρ +0.145 (p 0.710, q 0.917)</sub>
+
+**DIGIT_Marker — Fz (수직력)**
+
+| 경도 | 1 mm | 2 mm | 3 mm |
+|---|---|---|---|
+| soft | 80×45 | 80×45 | 320×180 |
+| medium | 160×90 | 80×45 | 32×18 |
+| hard | 320×180 | 80×45 | 80×45 |
+
+<sub>유닛 9 개 — 두께 ρ -0.348 (p 0.359, q 0.896) · 경도 ρ +0.000 (p 1.000, q 1.000)</sub>
+
+**DIGIT_Marker — 전단 (Fx·Fy 평균)**
+
+| 경도 | 1 mm | 2 mm | 3 mm |
+|---|---|---|---|
+| soft | 160×90 | 80×45 | 160×90 |
+| medium | 80×45 | 80×45 | 854×480 |
+| hard | 48×27 | 1920×1080 | 80×45 |
+
+<sub>유닛 9 개 — 두께 ρ +0.387 (p 0.303, q 0.867) · 경도 ρ -0.166 (p 0.670, q 0.917)</sub>
+
+<sub>자료: `extra/data/knee_by_cell_3x3.csv` · 유닛별 `knee_force_by_unit.csv` · 요약 `knee_summary.csv` · 검정 `knee_trends.csv`</sub>
+
+**겔은 힘의 포화 해상도를 움직이지 않는다.** 위 **12 개 검정**(행 6 개 ×
+두께·경도) 어느 것도 q < 0.05 가 아니다. q 는 **힘과 형상을 합친 20 개**에
+Benjamini-Hochberg 를 건 값이다 — 두 절을 따로 보정하면 "20 번 중 하나" 라는
+사실이 가려진다.
+
+**같은 칸의 두 복제가 내는 포화 해상도가 얼마나 다른가**가 이 검정의 한계를 정한다:
+
+| 원리 · 지표 | 쌍 | 배율 중앙 | 같은 단 | 8 배 이상 |
+|---|---:|---:|---:|---:|
+| 9DTact · Fz | 8 | **6.7×** | 0 | 4 |
+| 9DTact · 전단 | 8 | **1.6×** | 1 | 1 |
+| DIGIT · Fz | 9 | **1.7×** | 3 | 1 |
+| DIGIT · 전단 | 9 | **1.5×** | 4 | 1 |
+| DIGIT_Marker · Fz | 9 | **1.0×** | 5 | 1 |
+| DIGIT_Marker · 전단 | 9 | **5.0×** | 1 | 2 |
+
+**9DTact 의 Fz 포화 해상도는 복제 쌍 안에서 중앙 6.7 배, 여덟 쌍 중 넷이 8 배 이상**
+어긋난다. 겔이 같고 장착만 다른데 그렇다. 두께가 만들 수 있는 차이가 그보다
+작다면 이 설계로는 보이지 않는다 — **무효과의 증거가 아니라 검정력의 한계다.**
+
+## 6. 형상 복원 대 해상도
+
+**9DTact** 는 밝기→깊이 조회표를 `ball4` 로 보정하고 `cyl4`·`cube4` 로 평가한다.
+**DIGIT 계열**은 광도 스테레오라 다른 파이프라인이 필요하고, 이번에 새로 만들었다
+(`src/scripts/digit_shape.py`): 알려진 반지름의 구로 픽셀별 참 기울기를 구 기하에서
+계산하고, (색차, 위치) → (gx, gy) 를 회귀한 뒤 푸아송 방정식을 DCT 로 풀어
+높이맵을 만든다.
+
+> **DIGIT_Marker 는 형상 복원을 하지 않는다** — 마커 점이 음영을 가려 같은 방법을
+> 쓸 수 없다.
+
+![9DTact — 형상 복원 오차 대 해상도. 둘 다 160×90 에서 최소.](single/1_9DTact/figures/shape_mae_summary.png)
+
+*9DTact — 형상 복원 오차 대 해상도. 둘 다 160×90 에서 최소.*
+
+<sub>그림: `single/1_9DTact/figures/shape_mae_summary.png` · 자료: `single/1_9DTact/data/shape_mae_summary.csv`</sub>
+
+**9DTact 는 해상도 의존성이 뚜렷하다** — 8×5 의 0.529 mm 에서 160×90 의 0.062 mm 까지
+**8.5 배** 좋아지고, 그 위로는 다시 나빠진다. 회색조 손실을 보정하면(점선) 80 px 위로
+평평해지므로, 고해상도의 악화는 조회표가 회색조를 잃는 데서 온다.
+
+### 유닛별 — 경도 × 두께 × 복제
+
+5 절의 힘 그림과 같은 배치다. 행이 경도, 열이 두께와 복제이고, 선 하나가 평가
+압자 하나다. 가로축은 잰 해상도 12 단을 가로×세로로 적었다.
+
+![9DTact — 유닛별 형상 복원 오차 대 해상도 (조회표 그대로)](single/1_9DTact/figures/shape_mae_vs_resolution_18units.png)
+
+*9DTact — 유닛별 형상 복원 오차 대 해상도 (조회표 그대로)*
+
+<sub>그림: `single/1_9DTact/figures/shape_mae_vs_resolution_18units.png` · 자료: `single/1_9DTact/data/shape_mae_vs_resolution_18units.csv`</sub>
+
+![9DTact — 유닛별 형상 복원 오차 대 해상도 (회색조 손실 보정)](single/1_9DTact/figures/shape_mae_corrected_18units.png)
+
+*9DTact — 유닛별 형상 복원 오차 대 해상도 (회색조 손실 보정)*
+
+<sub>그림: `single/1_9DTact/figures/shape_mae_corrected_18units.png` · 자료: `single/1_9DTact/data/shape_mae_corrected_18units.csv`</sub>
+
+![DIGIT — 유닛별 형상 복원 오차 대 해상도 (광도 스테레오)](single/2_DIGIT/figures/shape_mae_vs_resolution_18units.png)
+
+*DIGIT — 유닛별 형상 복원 오차 대 해상도 (광도 스테레오)*
+
+<sub>그림: `single/2_DIGIT/figures/shape_mae_vs_resolution_18units.png` · 자료: `single/2_DIGIT/data/shape_mae_vs_resolution_18units.csv`</sub>
+
+> **DIGIT_Marker 는 이 그림이 없다** — 형상 복원을 하지 않기 때문이다.
+
+![DIGIT — 형상 복원 오차 대 해상도, 그리고 426×240 에서의 예측-참값.](single/2_DIGIT/figures/shape_mae_summary.png)
+
+*DIGIT — 형상 복원 오차 대 해상도, 그리고 426×240 에서의 예측-참값.*
+
+<sub>그림: `single/2_DIGIT/figures/shape_mae_summary.png` · 자료: `single/2_DIGIT/data/shape_mae_summary.csv`</sub>
+
+### 포화 해상도 — 경도·두께 칸별 (형상)
+
+**포화 해상도** = 그 유닛 자신의 최솟값의 110 % 안에 드는 **가장 낮은** 해상도.
+`argmin` 은 곡선이 평평한 구간에서 흔들리므로 쓰지 않는다. 칸에는 **두 복제를
+그대로** 적는다(둘이 같으면 하나만). **검정 단위는 칸이 아니라 유닛**이다 —
+칸마다 유닛이 둘뿐이라 칸으로는 검정이 되지 않는다.
+
+칸을 나누지 않은 중앙 포화 해상도부터 — 실무적으로 쓸 숫자는 이것이다.
+
+| 원리 | 지표 | 중앙 포화 해상도 | 유닛별 범위 | n |
+|---|---|---|---|---:|
+| 9DTact | cyl4 | **160×90** | 80×45 ~ 1920×1080 | 9 |
+| 9DTact | cube4 | **160×90** | 80×45 ~ 1920×1080 | 9 |
+| DIGIT | cyl4 | **80×45** | 16×9 ~ 160×90 | 9 |
+| DIGIT | cube4 | **80×45** | 8×5 ~ 160×90 | 9 |
+
+**9DTact — 원기둥 ⌀4 mm**
+
+| 경도 | 1 mm | 2 mm | 3 mm |
+|---|---|---|---|
+| soft | 160×90 | 160×90 | 640×360 |
+| medium | 160×90 | 1920×1080 | 160×90 |
+| hard | 80×45 | 160×90 | 160×90 |
+
+<sub>유닛 9 개 — 두께 ρ +0.438 (p 0.238, q 0.867) · 경도 ρ -0.438 (p 0.238, q 0.867)</sub>
+
+**9DTact — 정육면체 4 mm**
+
+| 경도 | 1 mm | 2 mm | 3 mm |
+|---|---|---|---|
+| soft | 160×90 | 80×45 | 854×480 |
+| medium | 80×45 | 1920×1080 | 320×180 |
+| hard | 80×45 | 160×90 | 160×90 |
+
+<sub>유닛 9 개 — 두께 ρ +0.600 (p 0.088, q 0.867) · 경도 ρ -0.164 (p 0.674, q 0.917)</sub>
+
+**DIGIT — 원기둥 ⌀4 mm**
+
+| 경도 | 1 mm | 2 mm | 3 mm |
+|---|---|---|---|
+| soft | 160×90 | 80×45 | 80×45 |
+| medium | 16×9 | 80×45 | 80×45 |
+| hard | 32×18 | 80×45 | 80×45 |
+
+<sub>유닛 9 개 — 두께 ρ +0.282 (p 0.463, q 0.917) · 경도 ρ -0.438 (p 0.238, q 0.867)</sub>
+
+**DIGIT — 정육면체 4 mm**
+
+| 경도 | 1 mm | 2 mm | 3 mm |
+|---|---|---|---|
+| soft | 160×90 | 80×45 | 80×45 |
+| medium | 8×5 | 80×45 | 160×90 |
+| hard | 160×90 | 80×45 | 80×45 |
+
+<sub>유닛 9 개 — 두께 ρ -0.059 (p 0.880, q 1.000) · 경도 ρ +0.000 (p 1.000, q 1.000)</sub>
+
+<sub>자료: `extra/data/knee_by_cell_3x3.csv` · 유닛별 `knee_shape_by_unit.csv` · 요약 `knee_summary.csv` · 검정 `knee_trends.csv`</sub>
+
+q 는 **힘과 형상을 합친 20 개**에 Benjamini-Hochberg 를 건 값이다 —
+보정의 근거와 복제 재현성은 5 절에 한 번만 적었다. **어느 칸도 q < 0.05 가
+아니다.**
+
+---
+
+# 부록
+
+본문의 결론을 떠받치지만 그 자체가 결과는 아닌 것들 — 판정 기준을 어떻게
+골랐나, 겔 규격이 어떻게 불균형한가, 프로브를 바꾸면 무엇이 옮겨지나 —
+그리고 이 결과가 무엇을 말하지 못하는가.
+
+## 부록 A. 판정 기준 — 상대와 절대
+
+![상대 기준은 원리 간 격차를 1.8 배로 압축한다.](single/extra/figures/C_relative_vs_absolute_criterion.png)
+
+*상대 기준은 원리 간 격차를 1.8 배로 압축한다.*
+
+<sub>그림: `single/extra/figures/C_relative_vs_absolute_criterion.png` · 자료: `single/extra/data/C_relative_vs_absolute_criterion.csv`</sub>
+
+현행 판정은 문턱이 **유닛 자신의 최대 응답의 15 %** 라, 응답이 약한 유닛일수록
+천장이 높게 나온다. 복제 쌍 다섯에서 모두 그 방향이었다. 고정 문턱으로 다시
+계산하면 격차가 **4.3 ~ 6.6 배**로 커진다.
+
+**원리 간 비교에는 절대 기준을 쓴다.** 상대 기준 값은 한 유닛의 운용 한계로만 쓴다.
+
+## 부록 B. 경도 범위 불균형
+
+두 계열의 "soft / medium / hard" 는 같은 눈금이 아니다. 9DTact 는 OO-30 에서
+OO-70 까지 **40 Shore 점**을 흔들었고, DIGIT 계열은 OO-51 에서 OO-57 까지
+**6 점**을 흔들었다 — **6.7 배** 차이다. 9DTact 는 서로 다른 두 제품군
+(Ecoflex, Dragon Skin)을 가로지르고, DIGIT 계열은 Solaris 한 배합에서
+가소제(Slacker) 비율만 바꿨다.
+
+그래서 **9DTact 의 soft 와 DIGIT 의 soft 가 다른 물건**일 뿐 아니라,
+**DIGIT 의 soft 와 hard 도 서로 거의 같은 물건**이다. DIGIT 계열의 경도 세 등급은
+실질적으로 한 겔이다.
+
+**원리를 가로질러 경도를 하나의 요인으로 놓는 분석은 이 설계로 성립하지 않는다.**
+이 문서의 3×3 표에서 경도 행 사이의 차이는 **한 원리 안에서만** 읽을 것이고,
+그때도 DIGIT 계열은 6 점 안에서의 차이임을 함께 보아야 한다. 겔 규격과 실측
+경도는 `docs/methods.md` §2.1 에 있다.
+
+## 부록 C. 프로브 전이 — 깊이는 옮겨지고 힘은 아니다
+
+![ball8/ball4 비. 힘은 1.50~3.26 으로 흩어지고 깊이는 0.99 에 모인다.](single/extra/figures/E_probe_transfer.png)
+
+*ball8/ball4 비. 힘은 1.50~3.26 으로 흩어지고 깊이는 0.99 에 모인다.*
+
+<sub>그림: `single/extra/figures/E_probe_transfer.png` · 자료: `single/extra/data/E_probe_transfer.csv`</sub>
+
+Hertz 는 같은 깊이의 힘이 √R 에 비례한다고 예측하므로 **1.41** 을 기대하는데,
+실측 중앙이 **2.37** 이고 복제 쌍 안에서도 1.98 과 3.26 으로 갈린다. 반면 깊이
+비는 중앙 **0.99** 로 1 과 통계적으로 구분되지 않는다 (p 0.858).
+
+> **포화 깊이는 유닛의 성질이고, 그 깊이에서의 힘은 프로브가 정한다.**
+
+같은 18 쌍이 *시야 포화* 교란도 기각한다 — `ball8` 은 같은 깊이에서 자국이 1.2~1.4
+배 큰데, 시야가 원인이라면 계통적으로 더 얕게 포화해야 한다. 더 얕게 포화한 것이
+18 중 10 (이항검정 p 0.815) 으로 효과가 없다.
+
+| unit          | hardness   |   thickness_mm |   ball4_N |   ball4_depth_mm |   ball8_N |   ball8_depth_mm |   force_ratio |   depth_ratio |
+|:--------------|:-----------|---------------:|----------:|-----------------:|----------:|-----------------:|--------------:|--------------:|
+| soft_1mm_r2   | soft       |              1 |   8.46835 |          1.1716  |   22.4492 |          1.31538 |       2.65095 |      1.12272  |
+| soft_2mm_r1   | soft       |              2 |   6.40522 |          1.47523 |   17.7183 |          1.57532 |       2.76624 |      1.06784  |
+| soft_3mm_r1   | soft       |              3 |   5.26627 |          1.81725 |   11.7611 |          1.79652 |       2.23329 |      0.988595 |
+| medium_1mm_r1 | medium     |              1 |   7.52194 |          1.10242 |   18.2193 |          1.09121 |       2.42215 |      0.989829 |
+| medium_2mm_r1 | medium     |              2 |   5.19531 |          1.60146 |   14.1386 |          1.64787 |       2.72141 |      1.02898  |
+| medium_3mm_r1 | medium     |              3 |   6.63405 |          2.21707 |   14.416  |          2.06706 |       2.17303 |      0.932335 |
+| hard_1mm_r1   | hard       |              1 |   9.84857 |          1.12074 |   19.4554 |          1.09528 |       1.97545 |      0.977288 |
+| hard_2mm_r1   | hard       |              2 |   7.36926 |          1.55224 |   22.4109 |          1.68119 |       3.04114 |      1.08307  |
+| hard_3mm_r1   | hard       |              3 |   7.88039 |          2.20143 |   11.8343 |          1.82267 |       1.50175 |      0.827949 |
+
+<sub>자료: `extra/data/E_probe_transfer.csv`</sub>
+
+## 부록 D. 이 결과가 말하지 못하는 것
+
+| 한계 | 제한하는 것 |
+|---|---|
+| DIGIT_Marker 천장이 `ball4` 뿐 | **세 원리** 천장 비교 |
+| DIGIT_Marker 공간 분해능 미측정 | 표제 변수의 세 원리 비교 |
+| DIGIT 이 가장 좁은 프로브를 18/18 분해 | DIGIT 분해능 **값** — 상한만 |
+| 경도 범위가 6.7 배 불균형 | 원리 간 **경도 효과** 비교 |
+| px/mm 이 유닛마다 최대 1.5 배 어긋남 | mm 단위 자국 크기, 픽셀 요구량 |
+| F/T 라벨 바닥 0.028 N | 힘 추정의 **절대값** (상대 비교는 유효) |
+| `9DTact_medium_2mm_r1` 파괴 | 3×3 표의 한 칸이 복제 1 개 |
+
+전체 한계표는 `docs/methods.md` §10.0.
+
