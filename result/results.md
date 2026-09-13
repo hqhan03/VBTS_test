@@ -189,6 +189,64 @@ VBTS 해상도 캠페인의 결과물 전부. **모든 그림에 그것을 그�
 
 <sub>자료: `3_DIGIT_Marker/data/optical_slope_diameter_ball4_3x3.csv`</sub>
 
+### 두께·경도를 나란히 — 같은 축 위에 겹친다
+
+위의 18 칸 격자는 유닛 하나하나를 보여주지만 **어느 두께가 더 가파른가** 같은
+질문에는 답하지 못한다. 칸이 다르면 눈이 기울기를 나란히 놓지 못하기 때문이다.
+그래서 같은 축 위에 겹친다 — 유닛마다 사다리가 닿은 깊이가 다르므로 공통 격자에
+보간한 뒤, **그 깊이에 자료가 있는 유닛이 3 개 이상일 때만** 그린다. 선은
+중앙값이고 띠는 사분위 범위다(평균은 한 유닛에 끌려간다).
+
+![9DTact (ball8) — 왼쪽은 경도별, 오른쪽은 두께별. 선은 중앙값, 띠는 사분위 범위.](1_9DTact/figures/optical_by_group_ball8.png)
+
+*9DTact (ball8) — 왼쪽은 경도별, 오른쪽은 두께별. 선은 중앙값, 띠는 사분위 범위.*
+
+<sub>그림: `1_9DTact/figures/optical_by_group_ball8.png` · 자료: `1_9DTact/data/optical_by_group_ball8.csv`</sub>
+
+![DIGIT (ball8) — 왼쪽은 경도별, 오른쪽은 두께별. 선은 중앙값, 띠는 사분위 범위.](2_DIGIT/figures/optical_by_group_ball8.png)
+
+*DIGIT (ball8) — 왼쪽은 경도별, 오른쪽은 두께별. 선은 중앙값, 띠는 사분위 범위.*
+
+<sub>그림: `2_DIGIT/figures/optical_by_group_ball8.png` · 자료: `2_DIGIT/data/optical_by_group_ball8.csv`</sub>
+
+![DIGIT_Marker (ball4) — 왼쪽은 경도별, 오른쪽은 두께별. 선은 중앙값, 띠는 사분위 범위.](3_DIGIT_Marker/figures/optical_by_group_ball4.png)
+
+*DIGIT_Marker (ball4) — 왼쪽은 경도별, 오른쪽은 두께별. 선은 중앙값, 띠는 사분위 범위.*
+
+<sub>그림: `3_DIGIT_Marker/figures/optical_by_group_ball4.png` · 자료: `3_DIGIT_Marker/data/optical_by_group_ball4.csv`</sub>
+
+눈으로 "갈린다" 고 말하면 곡선이 서로 다른 깊이에서 끝나는 것에 속는다. 세 군이
+모두 자료를 가진 **가장 깊은 깊이 하나**를 잡고 거기서의 폭을 잰다:
+
+| 원리 | 잰 것 | 경도별 폭 | 두께별 폭 | 두께가 단조인가 |
+|---|---|---:|---:|---|
+| 9DTact | 자국 지름 | 5 % | **13 %** | **아니오** |
+| 9DTact | 밝기 변화 | 12 % | **65 %** | **아니오** |
+| DIGIT | 자국 지름 | 6 % | **21 %** | 예 |
+| DIGIT | 밝기 변화 | 9 % | **35 %** | 예 |
+| DIGIT_Marker | 자국 지름 | 10 % | **19 %** | 예 |
+| DIGIT_Marker | 밝기 변화 | 12 % | **36 %** | 예 |
+
+<sub>자료: `<원리>/data/optical_group_spread_<프로브>.csv` · 곡선 `optical_by_group_<프로브>.csv`</sub>
+
+**두께가 경도보다 2 ~ 5 배 크게 가른다.** 어느 원리에서도, 두 지표 모두에서.
+경도 쪽 세 곡선은 대체로 사분위 범위 안에서 겹친다.
+
+**DIGIT 계열은 얇을수록 넓고 밝다** — 두 지표 모두 1 → 2 → 3 mm 로 단조 감소한다.
+기재가 가까워 변형이 옆으로 퍼지고, 겔이 얇아 빛이 덜 흩어지는 것으로 읽힌다.
+
+> **9DTact 는 단조가 아니다.** 두 지표 모두 **2 mm 가 가장 크다** — 지름
+> 553 px (1 mm 534, 3 mm 481), 밝기 16 lvl (1 mm 9, 3 mm 11). 3 mm 가 가장 낮은
+> 것은 DIGIT 과 같지만 1 mm 가 2 mm 보다 낮은 것은 다르다. **왜 가운데가 솟는지는
+> 이 자료로 답하지 못한다.** 9DTact 는 투명 겔 위에 검은 안료층을 덧씌우므로
+> 기재까지의 실제 두께가 라벨보다 두껍고(`measurement_protocol.md` 의 깊이
+> 뒷막이 항목), 1 mm 라벨의 겔이 실제로는 가장 얇지 않을 수 있다 — 확인하지
+> 않은 추측이다.
+
+> **경도가 겹치는 것을 "경도가 무관하다" 로 읽으면 안 된다.** DIGIT 계열은
+> 경도를 6 Shore 점밖에 흔들지 않았다(부록 B). 9DTact 는 40 점을 흔들고도 폭이
+> 5 ~ 12 % 이므로, 적어도 9DTact 에서는 **실제로 약한 효과**라고 말할 수 있다.
+
 > **원리 간 기울기를 비교하면 안 된다.** 자료마다 깊이 구간이 다르고 (각 유닛의
 > 유효 구간에서 맞춘다), 자국이 시야를 채우면 `contact_region` 이 덩어리를 놓쳐
 > 지름이 무너지므로 그 지점에서 잘랐다. 구간은 `optical_slopes.csv` 의

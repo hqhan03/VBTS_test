@@ -226,6 +226,125 @@ def panel(pr, D):
         d / "data" / "optical_vs_depth_18units.csv", index=False)
 
 
+# 경도는 순서가 있는 변수라 한 색의 농담, 두께도 마찬가지다.
+CH_G = {"soft": "#9ec5d8", "medium": "#4a8fa8", "hard": "#134b5f"}
+CT_G = {1: "#e8b4a0", 2: "#c2553a", 3: "#7a2f1c"}
+
+
+def group_curves(pr, D, probe):
+    """두께·경도별로 곡선을 겹쳐 본다 — 유닛 18 칸으로는 비교가 안 되기 때문이다.
+
+    18 유닛 격자는 유닛 하나하나를 보여주지만, **어느 두께가 더 가파른가** 같은
+    질문에는 답하지 못한다. 칸이 달라 눈이 기울기를 나란히 놓지 못한다. 그래서
+    같은 축 위에 겹친다.
+
+    **깊이 격자를 맞춘다.** 유닛마다 사다리가 닿은 깊이가 다르므로(얇은 겔은 얕게
+    끝난다) 공통 격자에 보간한 뒤 **그 깊이에 자료가 있는 유닛이 3 개 이상일 때만**
+    그린다. 띠는 사분위 범위이고, 선은 중앙값이다 — 평균은 한 유닛에 끌려간다.
+    """
+    G = D[D.probe == probe].copy()
+    if not len(G):
+        return None
+    # `load()` 는 유닛 이름만 싣는다 — 여기서 경도와 두께를 풀어 쓴다
+    G["hardness"] = G.unit.str.split("_").str[0]
+    G["thickness_mm"] = G.unit.str.extract(r"_(\d)mm_")[0].astype(int)
+    lo = float(G.depth_mm[G.depth_mm > 0].min())
+    hi = float(G.groupby("unit").depth_mm.max().quantile(.8))
+    if not np.isfinite(hi) or hi <= lo:
+        return None
+    grid = np.linspace(lo, hi, 40)
+
+    def curves(key, col):
+        out = {}
+        for k, g in G.groupby(key):
+            ys = []
+            for _, gg in g.groupby("unit"):
+                gg = valid_span(gg[gg.depth_mm > 0])
+                gg = gg[gg.diameter_px > 0].sort_values("depth_mm")
+                if len(gg) < 4:
+                    continue
+                y = np.interp(grid, gg.depth_mm, gg[col],
+                              left=np.nan, right=np.nan)
+                y[(grid < gg.depth_mm.min()) | (grid > gg.depth_mm.max())] = np.nan
+                ys.append(y)
+            if len(ys) < 2:
+                continue
+            A = np.vstack(ys)
+            n = np.sum(~np.isnan(A), axis=0)
+            with np.errstate(all="ignore"):
+                med = np.nanmedian(A, axis=0)
+                q1 = np.nanpercentile(A, 25, axis=0)
+                q3 = np.nanpercentile(A, 75, axis=0)
+            m = n >= 3
+            out[k] = (grid[m], med[m], q1[m], q3[m], int(A.shape[0]))
+        return out
+
+    fig, axes = plt.subplots(2, 2, figsize=(10.4, 7.4), sharex=True)
+    rows = [("diameter_px", "자국 지름 (px)"), ("level", "밝기 변화 (lvl)")]
+    cols = [("hardness", "경도별", CH_G, ["soft", "medium", "hard"]),
+            ("thickness_mm", "두께별", CT_G, [1, 2, 3])]
+    tidy = []
+    for i, (col, ylab) in enumerate(rows):
+        for j, (key, title, cmap, order) in enumerate(cols):
+            ax = axes[i, j]
+            cv = curves(key, col)
+            for k in order:
+                if k not in cv:
+                    continue
+                x, med, q1, q3, n = cv[k]
+                lab = f"{k} mm" if key == "thickness_mm" else str(k)
+                ax.fill_between(x, q1, q3, color=cmap[k], alpha=.16, lw=0)
+                ax.plot(x, med, "-", c=cmap[k], lw=2.0, label=f"{lab}  (n={n})")
+                tidy.append(pd.DataFrame(dict(
+                    principle=pr, probe=probe, measure=col, group_by=key,
+                    group=str(k), n_units=n, depth_mm=x,
+                    median=med, q1=q1, q3=q3)))
+            ax.set_ylabel(ylab, fontsize=9)
+            ax.set_title(title, fontsize=10, loc="left")
+            ax.legend(frameon=False, fontsize=8.5)
+            ax.spines[["top", "right"]].set_visible(False)
+            ax.grid(True, which="major", alpha=.3, lw=.5, color="#b0b0b0")
+            ax.set_axisbelow(True)
+            if i == 1:
+                ax.set_xlabel("깊이 (mm)")
+    fig.suptitle(f"{pr} — 같은 축 위에 겹친 깊이 곡선 ({probe}). 선은 중앙값, "
+                 "띠는 사분위 범위", fontsize=11.5, x=.04, ha="left")
+    fig.tight_layout(rect=[0, 0, 1, .955])
+    d = RES / FOLD[pr]
+    (d / "figures").mkdir(parents=True, exist_ok=True)
+    fig.savefig(d / "figures" / f"optical_by_group_{probe}.png", dpi=180,
+                bbox_inches="tight")
+    plt.close(fig)
+    if tidy:
+        T = pd.concat(tidy)
+        T.to_csv(d / "data" / f"optical_by_group_{probe}.csv", index=False)
+        # **어느 쪽이 더 크게 가르나.** 눈으로 "갈린다" 고 말하면 곡선이 서로 다른
+        # 깊이에서 끝나는 것에 속는다. 세 군이 모두 자료를 가진 가장 깊은 깊이
+        # 하나를 잡고 거기서의 폭을 잰다 — 그래야 같은 조건에서 견준다.
+        rows = []
+        for (meas, key), g in T.groupby(["measure", "group_by"]):
+            piv = g.pivot_table(index="depth_mm", columns="group",
+                                values="median").dropna()
+            if not len(piv):
+                continue
+            at = piv.index[-1]; v = piv.loc[at]
+            rows.append(dict(principle=pr, probe=probe, measure=meas,
+                             group_by=key, at_depth_mm=at,
+                             **{f"g_{k}": float(v[k]) for k in v.index},
+                             spread_pct=float((v.max() - v.min())
+                                              / v.median() * 100),
+                             monotone=bool(
+                                 list(v[sorted(v.index)]) ==
+                                 sorted(v[sorted(v.index)], reverse=True)
+                                 or list(v[sorted(v.index)]) ==
+                                 sorted(v[sorted(v.index)]))))
+        if rows:
+            pd.DataFrame(rows).to_csv(
+                d / "data" / f"optical_group_spread_{probe}.csv", index=False)
+    print(f"    -> {FOLD[pr]}/figures/optical_by_group_{probe}.png")
+    return True
+
+
 def main():
     plt.rcParams["font.family"] = ["NanumGothic", "DejaVu Sans"]
     # NanumGothic 에 유니코드 마이너스(U+2212) 글리프가 없어 축 라벨이
@@ -251,6 +370,8 @@ def main():
                     suspect=RC.suspect(pr)).to_csv(
                 d / f"optical_slope_level_{p}_3x3.csv", index=False)
         panel(pr, D)
+        for probe in sorted(D.probe.unique()):
+            group_curves(pr, D, probe)
         got = ", ".join(f"{p} {S[S.probe==p].unit.nunique()}유닛"
                         for p in sorted(S.probe.unique()))
         print(f"  {pr:<13} {len(D):>6} 행  ({got})")
