@@ -50,10 +50,11 @@ specimens exhibit poorer paired-contact separation under the tested protocol.
 In contrast, no tested association between hardness or thickness and estimator
 plateau resolution survives false-discovery correction. This does not establish
 independence: the median replicate ratio for depth-referenced normal-force
-plateau resolution is 6.7. At a 10 % error tolerance, selected-specimen median
-plateau widths are 48 pixels for shear and 80-320 pixels for normal force in
-the markerless arms. Tightening the tolerance to 5 % reverses the normal/shear
-ordering in the photometric arm. Plateau summaries therefore depend on the
+plateau resolution is 2.2, and two of eight pairs differ by at least eight-fold.
+At a 10 % error tolerance, selected-specimen median plateau widths are 48 pixels
+for shear and 80 pixels for normal force in the markerless arms. Tightening the
+tolerance to 5 % raises the depth-referenced normal-force width to 320 and
+reverses the normal/shear ordering in the photometric arm. Plateau summaries therefore depend on the
 decision criterion as well as the task. These results characterize the tested
 quasi-static pipelines rather than a universal camera specification. They
 motivate separate evaluation of contact separability, task error, and specimen
@@ -571,22 +572,22 @@ in normal and shear blocks, preferring at least 8 % test data where feasible.
 Resizing uses OpenCV INTER_AREA on the full frame.
 
 [V-A3]
-The nominal optimizer batch is 64, but in the runs reported here the recorded
-micro-batch/accumulation pairs are 4x16 at 1920 pixels, 11x6 at 1280, 24x3 at
-854, 44x1 at 640, and 64x1 at 426 and below. Because the accumulation count is
-rounded, three of the twelve widths were optimized at effective batches of 66,
-72 and 44 rather than 64 -- the fault the accumulation was introduced to
-remove. BatchNorm also remains in training mode and uses micro-batch
-statistics. Optimization is therefore not fully matched across resolutions and
-these results characterize that implementation. The training code has since
-been corrected to round the memory allowance down to a divisor of the batch, so
-all twelve widths now use exactly 64, but the runs reported here predate that
-change and have not been repeated. The three affected widths carry the plateau
-point of three of 27 specimens for Fz, one for shear, and one each for the two
-shape probes, and they lie in the high-resolution region where [V-B2] reports
-error increasing again. The network outputs six components, but claims are
-restricted to Fx, Fy, and Fz because the protocol does not adequately excite
-all torque components.
+The optimizer batch is 64 at every width. The memory allowance is rounded down
+to a divisor of the batch, giving micro-batch/accumulation pairs of 4x16 at
+1920 pixels, 8x8 at 1280, 16x4 at 854, 32x2 at 640, and 64x1 at 426 and below.
+
+An earlier version rounded the accumulation count instead, which left three of
+the twelve widths optimized at effective batches of 66, 72 and 44 rather than
+64 -- the fault the accumulation was introduced to remove. Those three widths
+were retrained for all three arms after the fix and the corrected values are
+the ones reported here. The correction moved the affected medians by -8 % to
++12 % with no consistent sign, and changed none of the conclusions: no gel-term
+comparison reaches q < 0.05 either before or after, and the marker arm's shear
+trend is unchanged. Median plateau widths fell by one or two ladder steps.
+
+BatchNorm remains in training mode and uses micro-batch statistics, so the
+normalization statistics still differ across widths even though the optimizer
+step no longer does.
 
 [V-A4]
 Depth-referenced inputs encode reference, brightening, and darkening channels.
@@ -641,12 +642,12 @@ plateau.
 
 [V-AT2]  TABLE IX -- PLATEAU RESOLUTION FOR FORCE (median of 9 units)
   arm                | axis  | median     | across units
-  depth-referenced   | Fz    | 320 x 180  | 32x18 - 854x480
+  depth-referenced   | Fz    |  80 x  45  | 32x18 - 640x360
   depth-referenced   | shear |  48 x  27  | 32x18 - 160x90
   photometric        | Fz    |  80 x  45  | 32x18 - 320x180
   photometric        | shear |  48 x  27  | 32x18 - 426x240
   photometric+marker | Fz    |  80 x  45  | 32x18 - 320x180
-  photometric+marker | shear |  80 x  45  | 48x27 - 1920x1080
+  photometric+marker | shear | 160 x  90  | 80x45 - 1280x720
   Shear is the mean of Fx and Fy. One unit per condition, nine per arm,
   10 % tolerance.
 
@@ -660,24 +661,26 @@ nonmonotonic effects, and the result does not establish independence.
 
 [V-A8]
 Across eight depth-referenced replicate pairs, the median ratio between larger
-and smaller Fz plateau resolutions is 6.7; four pairs differ by at least
-eight-fold. Reported shear ratios are 1.5-1.6. These describe repeatability of
-the estimated plateau, not a detection threshold, and do not separate
-fabrication, acquisition, and training variability.
+and smaller Fz plateau resolutions is 2.2; two pairs differ by at least
+eight-fold. The shear ratio is 1.7, with one pair beyond eight-fold. These
+describe repeatability of the estimated plateau, not a detection threshold, and
+do not separate fabrication, acquisition, and training variability.
 
 [V-AT3]  TABLE X -- TOLERANCE SENSITIVITY, MEDIAN FORCE PLATEAU WIDTH (pixels)
   arm                 | Fz: 5 % / 10 % / 20 % | shear: 5 % / 10 % / 20 %
-  depth-referenced    |    426 / 320 /  80    |     80 /  48 /  32
+  depth-referenced    |    320 /  80 /  80    |     80 /  48 /  32
   photometric         |     80 /  80 /  32    |    160 /  48 /  32
-  photometric+marker  |     80 /  80 /  48    |    160 /  80 /  48
+  photometric+marker  |     80 /  80 /  48    |    160 / 160 /  48
   Nine selected specimens per arm; same all-frame axis errors and seed
   aggregation as the plateau analysis. The 10 % results reproduce Table IX.
 
 [V-A9]
-At 5 % tolerance, photometric shear has a higher median plateau width than Fz;
-at 10 %, the ordering reverses. Thus the normal/shear ordering is not robust to
-tolerance choice. A fixed 48-pixel shear recommendation is not supported
-independently of an allowed-error criterion.
+At 5 % tolerance, photometric shear has a higher median plateau width than Fz
+(160 against 80); at 10 % the two coincide at 80 and 48 respectively, and the
+depth-referenced arm moves from 320 to 80 across the same step. Thus neither
+the normal/shear ordering nor the absolute width is robust to tolerance choice.
+A fixed 48-pixel shear recommendation is not supported independently of an
+allowed-error criterion.
 
 [V-A10]
 The exported CSVs already contain constant training-mean baselines for Fz and
