@@ -20,14 +20,14 @@ HARD = ["soft", "medium", "hard"]
 FOLD = {"9DTact": "1_9DTact", "DIGIT": "2_DIGIT", "DIGIT_Marker": "3_DIGIT_Marker"}
 
 
-def grid(df, value, fmt="{:.2f}", note=None, dropped=None):
+def grid(df, value, fmt="{:.2f}", note=None, suspect=None):
     """긴 형식 -> 3x3. 칸은 'r1 / r2  (평균)'.
 
-    `dropped` 에 든 유닛은 이미 `df` 에서 빠져 있다. 그 유닛이 속한 칸에 `e` 를 붙여
-    **복제가 하나뿐인 칸**임을 읽을 수 있게 한다 — 값 하나짜리 칸을 두 값의 평균과
-    구별하지 못하면 표가 거짓말을 한다.
+    `suspect` 에 든 유닛은 **빠지지 않고 표에 들어 있다.** 그 유닛이 속한 칸에 `!` 를
+    붙여 **두 복제 중 하나가 의심 유닛**임을 읽을 수 있게 한다 — 값은 보여 주되 그
+    값이 무엇인지도 함께 보여 주는 것이 목적이다(`result_common` 참조).
     """
-    dropped = dropped or set()
+    suspect = suspect or set()
     rows = []
     for h in HARD:
         r = {"hardness": h}
@@ -46,8 +46,8 @@ def grid(df, value, fmt="{:.2f}", note=None, dropped=None):
                 flag = "".join("!" for x in g[note] if x)
                 if flag:
                     r[f"{t}mm"] += " " + flag
-            if any(u.startswith(f"{h}_{t}mm_") for u in dropped):
-                r[f"{t}mm"] += " e"
+            if any(u.startswith(f"{h}_{t}mm_") for u in suspect):
+                r[f"{t}mm"] += " !"
         rows.append(r)
     return pd.DataFrame(rows)
 
@@ -65,8 +65,7 @@ def save(df, g, stem, pr):
 def units_of(pr):
     return pd.DataFrame([dict(unit=s["id"].replace(pr + "_", ""), hardness=s["hardness"],
                               thickness_mm=s["thickness_mm"], rep=s["replicate"])
-                         for s in REG["sensors"] if s.get("principle") == pr
-                         and not s.get("suspect_hardware")])
+                         for s in REG["sensors"] if s.get("principle") == pr])
 
 
 # ------------------------------------------------------ 1. 최대 측정 가능 힘 --
@@ -77,8 +76,8 @@ def table_ceiling(pr):
     tag = TAG.get(pr)
     rows = []
     for s in REG["sensors"]:
-        if s.get("principle") != pr or s.get("suspect_hardware"):
-            continue      # 빛 누출 유닛 — result_common 참조
+        if s.get("principle") != pr:
+            continue
         ir = s.get("image_response") or {}
         run = s.get("run") or ""
         # ball8 pass 의 값만 쓴다. 9DTact_medium_2mm_r1 은 2026-09-03 의 프로토콜
@@ -93,16 +92,16 @@ def table_ceiling(pr):
                          ceiling_N=ir["max_measurable_force_N"] if use else np.nan,
                          depth_mm=ir.get("max_measurable_depth_mm") if use else np.nan,
                          status=s.get("status", ""),
-                         suspect=bool(s.get("suspect_hardware"))))
+                         suspect_hardware=bool(s.get("suspect_hardware"))))
     D = pd.DataFrame(rows)
-    save(D, grid(D, "ceiling_N", "{:.1f}", note="suspect",
-                 dropped=RC.excluded(pr)), "table_max_force", pr)
+    save(D, grid(D, "ceiling_N", "{:.1f}", suspect=RC.suspect(pr)),
+         "table_max_force", pr)
 
 
 # ------------------------------------------------------ 2. 공간 분해능 --
 def table_resolution(pr):
     V = pd.read_csv(RES / "extra" / "data" / "resolution_verdicts.csv")
-    V = RC.drop(V[V.principle == pr], pr, "unit")
+    V = RC.mark(V[V.principle == pr], pr, "unit")
     if not len(V):
         print(f"  {pr}: 분해능 자료 없음 — 표 생략\n")
         return
@@ -120,12 +119,12 @@ def table_resolution(pr):
                          depth_hi_mm=s.depth_mm.max() if len(s) else np.nan,
                          best_dip=s.dip.max() if len(s) else np.nan))
     D = pd.DataFrame(rows)
-    save(D, grid(D, "finest_centre_mm", "{:.2f}", dropped=RC.excluded(pr)),
+    save(D, grid(D, "finest_centre_mm", "{:.2f}", suspect=RC.suspect(pr)),
          "table_spatial_resolution", pr)
     D2 = D.assign(depth_range=D.depth_lo_mm.round(2).astype(str) + "–"
                   + D.depth_hi_mm.round(2).astype(str))
     D2.loc[D2.depth_lo_mm.isna(), "depth_range"] = "—"
-    save(D2, grid(D2, "depth_range", "{}", dropped=RC.excluded(pr)),
+    save(D2, grid(D2, "depth_range", "{}", suspect=RC.suspect(pr)),
          "table_resolved_depth_range", pr)
 
 

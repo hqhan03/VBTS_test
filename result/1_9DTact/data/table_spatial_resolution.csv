@@ -1,10 +1,12 @@
 unit,hardness,thickness_mm,rep,finest_centre_mm,finest_edge_mm,n_gaps_resolved,n_gaps_tested,depth_lo_mm,depth_hi_mm,best_dip
 hard_1mm_r1,hard,1,1,1.25,0.25,4,6,0.1,0.6,0.69
+hard_1mm_r2,hard,1,2,1.1,0.1,2,6,0.2,0.6,0.418
 hard_2mm_r1,hard,2,1,1.25,0.25,5,6,0.1,0.9,0.676
 hard_2mm_r2,hard,2,2,1.5,0.5,4,6,0.2,0.9,0.593
 hard_3mm_r1,hard,3,1,2.5,1.5,1,6,0.4,0.9,0.628
 hard_3mm_r2,hard,3,2,2.5,1.5,1,6,0.3,0.9,0.593
 medium_1mm_r1,medium,1,1,1.1,0.1,5,6,0.1,0.6,0.693
+medium_1mm_r2,medium,1,2,1.1,0.1,1,6,0.1,0.1,0.274
 medium_2mm_r2,medium,2,2,1.1,0.1,5,6,0.1,0.9,0.728
 medium_3mm_r1,medium,3,1,2.5,1.5,1,6,0.5,0.9,0.656
 medium_3mm_r2,medium,3,2,1.75,0.75,2,6,0.3,0.9,0.556

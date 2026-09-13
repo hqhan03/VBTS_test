@@ -65,7 +65,7 @@ def load(pr):
     d["hardness"] = d.sensor.str.split("_").str[0]
     d["thickness_mm"] = d.sensor.str.extract(r"_(\d)mm_").astype(int)
     d["rep"] = d.sensor.str[-1].astype(int)
-    return RC.drop(d, pr, "sensor")
+    return RC.mark(d, pr, "sensor")
 
 
 def panel(pr, d, cols, stem, ylab, yt):
@@ -80,14 +80,18 @@ def panel(pr, d, cols, stem, ylab, yt):
                     color="#999", transform=ax.transAxes)
             ax.set_title(u, fontsize=8, color="#999")
             continue
+        ls, lw = RC.style(pr, u)
         for c, lab, col in cols:
             k = g.groupby("width_px")[c].agg(["median", "min", "max"])
-            ax.plot(k.index, k["median"], "-o", c=col, lw=1.4, ms=4.2,
+            ax.plot(k.index, k["median"], ls, c=col, lw=lw, ms=4.2,
                     mec="white", mew=.7, label=lab, zorder=3)
             ax.fill_between(k.index, k["min"], k["max"], color=col, alpha=.16, lw=0)
-            drawn.append(k.reset_index().assign(sensor=u, axis=lab))
+            drawn.append(k.reset_index().assign(
+                sensor=u, axis=lab, suspect_hardware=RC.is_suspect(pr, u)))
         ax.set_xscale("log"); ax.set_yscale("log"); res_axis(ax, yt)
-        ax.set_title(u, fontsize=8.5); ax.tick_params(labelsize=7)
+        tt, tc = RC.title(pr, u)
+        ax.set_title(tt, fontsize=8.5 if tc == "black" else 7.4, color=tc)
+        ax.tick_params(labelsize=7)
         ax.spines[["top", "right"]].set_visible(False)
     for ax in axes[-1]:
         ax.set_xlabel("해상도 (가로 × 세로, px)", fontsize=8, labelpad=6)
@@ -103,8 +107,12 @@ def panel(pr, d, cols, stem, ylab, yt):
     fig.savefig(p / f"{stem}.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
     q = RES / FOLD[pr] / "data"; q.mkdir(parents=True, exist_ok=True)
-    (pd.concat(drawn)[["sensor", "axis", "width_px", "median", "min", "max"]]
+    (pd.concat(drawn)[["sensor", "axis", "width_px", "median", "min", "max",
+                       "suspect_hardware"]]
      if drawn else pd.DataFrame()).to_csv(q / f"{stem}.csv", index=False)
+    n = sum(1 for u in units if RC.is_suspect(pr, u))
+    if n:
+        print(f"    {stem}: {RC.LABEL} {n} 유닛을 포함해 그렸다 (점선 + {RC.MARK})")
 
 
 def summary(pr, d):

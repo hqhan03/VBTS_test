@@ -45,23 +45,38 @@ def save(fig, df, stem, folder="extra"):
 
 
 def ceilings():
-    """ball8 로 잰 천장 — 두 원리."""
+    """잰 천장. 9DTact·DIGIT 은 `ball8`, DIGIT_Marker 는 `ball4` 다.
+
+    **프로브가 다르므로 Marker 의 값을 나머지 둘과 나란히 읽으면 안 된다**
+    (`force_ceiling.md` §6.7: 힘은 프로브 사이에서 환산되지 않는다 — 비 1.50~3.26,
+    CV 21 %). 그래도 싣는 것은 **두께·경도에 대한 방향**은 한 원리 안에서 읽히기
+    때문이다. 열 `probe` 에 어느 자로 쟀는지 적어 둔다.
+    """
     rows = []
-    for pr, tag in TAG.items():
+    for pr in ("9DTact", "DIGIT", "DIGIT_Marker"):
+        tag = TAG.get(pr)
         for s in REG["sensors"]:
-            if s.get("suspect_hardware"):
-                continue      # 빛 누출 유닛 — result_common 참조
             if s.get("principle") != pr:
                 continue
             ir = s.get("image_response") or {}
-            if not (ir.get("reached") and tag in (s.get("run") or "")):
+            run = s.get("run") or ""
+            if not ir.get("reached"):
                 continue
-            rows.append(dict(principle=pr, unit=s["id"].replace(pr + "_", ""),
+            if tag:
+                if tag not in run:
+                    continue
+                probe = "ball8"
+            else:                       # Marker 는 ball8 램프가 없다
+                if "calibgrid" not in run:
+                    continue
+                probe = "ball4"
+            rows.append(dict(principle=pr, probe=probe,
+                             unit=s["id"].replace(pr + "_", ""),
                              hardness=s["hardness"], thickness_mm=s["thickness_mm"],
                              ceiling_N=ir["max_measurable_force_N"],
                              depth_mm=ir["max_measurable_depth_mm"],
                              peak_lvl_per_N=ir["peak_slope_levels_per_N"],
-                             suspect=bool(s.get("suspect_hardware"))))
+                             suspect_hardware=bool(s.get("suspect_hardware"))))
     return pd.DataFrame(rows)
 
 
@@ -72,8 +87,14 @@ def fig_A(D):
     out = []
     for pr, g in D.groupby("principle"):
         j = (np.random.default_rng(0).random(len(g)) - .5) * .12
-        ax.scatter(g.thickness_mm + j, g.depth_mm, s=34, c=C[pr], alpha=.75,
-                   edgecolor="white", lw=.6, label=pr, zorder=3)
+        ok = ~g.suspect_hardware.values
+        ax.scatter(g.thickness_mm.values[ok] + j[ok], g.depth_mm.values[ok],
+                   s=34, c=C[pr], alpha=.75, edgecolor="white", lw=.6,
+                   label=pr, zorder=3)
+        if (~ok).any():
+            ax.scatter(g.thickness_mm.values[~ok] + j[~ok],
+                       g.depth_mm.values[~ok], s=52, facecolor="none",
+                       edgecolor="#c2553a", lw=1.5, zorder=5)
         m, b = np.polyfit(g.thickness_mm, g.depth_mm, 1)
         xs = np.linspace(.8, 3.2, 20)
         ax.plot(xs, m * xs + b, c=C[pr], lw=1.8, alpha=.9, zorder=2)
@@ -93,21 +114,53 @@ def fig_A(D):
 
 # ------------------------------------------------------------------- B --
 def fig_B(D):
-    """천장 대 두께, 경도별. 9DTact 는 오르고 DIGIT 은 내려간다."""
-    fig, axes = plt.subplots(1, 2, figsize=(8.4, 3.6), sharey=True)
-    for ax, pr in zip(axes, ["9DTact", "DIGIT"]):
+    """천장 대 두께, 경도별. 선은 복제 평균, 점은 **유닛 하나하나**다.
+
+    평균만 그리면 두 복제가 얼마나 벌어져 있는지 보이지 않는다. 두 점을 다 찍고
+    선으로 잇는다. 세로 막대는 두 복제의 폭이다.
+    """
+    prs = [p for p in ("9DTact", "DIGIT", "DIGIT_Marker") if (D.principle == p).any()]
+    fig, axes = plt.subplots(1, len(prs), figsize=(4.2 * len(prs), 3.9),
+                             sharey=True, squeeze=False)
+    axes = axes[0]
+    rng = np.random.default_rng(0)
+    for ax, pr in zip(axes, prs):
         g = D[D.principle == pr]
         for h in ("soft", "medium", "hard"):
-            k = g[g.hardness == h].groupby("thickness_mm").ceiling_N.mean()
-            ax.plot(k.index, k.values, "o-", c=CH[h], label=h, lw=1.8, ms=6,
-                    mec="white", mew=.8)
-        ax.set_title(pr, fontsize=10, loc="left", color=C[pr])
-        ax.set_xticks([1, 2, 3]); ax.set_xlabel("겔 두께 (mm)"); style(ax)
+            gg = g[g.hardness == h]
+            if not len(gg):
+                continue
+            k = gg.groupby("thickness_mm").ceiling_N.agg(["mean", "min", "max"])
+            ax.plot(k.index, k["mean"], "-", c=CH[h], label=h, lw=1.8, zorder=3)
+            ax.vlines(k.index, k["min"], k["max"], color=CH[h], lw=1.0,
+                      alpha=.55, zorder=2)
+            # 유닛 하나하나. 겹치지 않게 아주 조금만 흔든다
+            j = (rng.random(len(gg)) - .5) * .14
+            ok = ~gg.suspect_hardware.values
+            ax.scatter(gg.thickness_mm.values[ok] + j[ok],
+                       gg.ceiling_N.values[ok], s=26, c=CH[h],
+                       edgecolor="white", lw=.6, zorder=4)
+            # 의심 유닛은 속을 비우고 테두리만
+            if (~ok).any():
+                ax.scatter(gg.thickness_mm.values[~ok] + j[~ok],
+                           gg.ceiling_N.values[~ok], s=46, facecolor="none",
+                           edgecolor="#c2553a", lw=1.5, marker="o", zorder=5)
+                for x, y in zip(gg.thickness_mm.values[~ok] + j[~ok],
+                                gg.ceiling_N.values[~ok]):
+                    ax.annotate(RC.MARK, (x, y), fontsize=7, color="#c2553a",
+                                xytext=(5, 4), textcoords="offset points", zorder=6)
+        pb = g.probe.iloc[0] if len(g) else "—"
+        ax.set_title(f"{pr}   ({pb}, {g.unit.nunique()} 유닛)", fontsize=10,
+                     loc="left", color=C[pr])
+        ax.set_xticks([1, 2, 3]); ax.set_xlim(.7, 3.3)
+        ax.set_xlabel("겔 두께 (mm)"); style(ax)
     axes[0].set_ylabel("최대 측정 가능 힘 (N)")
     axes[0].legend(frameon=False, fontsize=8.5, title="경도", title_fontsize=8.5)
-    fig.suptitle("두 원리는 두께에 정반대로 반응한다", fontsize=10.5, x=.09, ha="left")
-    save(fig, D.groupby(["principle", "hardness", "thickness_mm"])
-         .ceiling_N.agg(["mean", "min", "max", "count"]).reset_index(),
+    fig.suptitle("천장 대 두께 — 선은 복제 평균, 점은 유닛 하나하나 "
+                 f"({RC.MARK} = {RC.LABEL})", fontsize=10.5, x=.06, ha="left")
+    fig.tight_layout(rect=[0, 0, 1, .95])
+    save(fig, D[["principle", "probe", "unit", "hardness", "thickness_mm",
+                 "ceiling_N", "depth_mm", "suspect_hardware"]],
          "B_ceiling_vs_thickness")
 
 
@@ -142,14 +195,20 @@ def fig_D():
 # ------------------------------------------------------------------- C --
 def fig_C():
     """상대 기준이 원리 간 격차를 압축한다 — 절대 기준을 써야 하는 이유."""
-    # 빛 누출 두 유닛을 뺀 뒤 다시 계산한 값이다(2026-09-13). 9DTact n=15.
-    # 제외 전에는 31.00 / 30.42 / 18.10 이었다 — 중앙값은 거의 움직이지 않는다.
-    rows = [dict(criterion="상대 (자기 피크의 15 %)", ninedtact=30.97, digit=17.33,
-                 ratio=1.79, p="1.2e-06", usable=True),
-            dict(criterion="절대 1.0 lvl/N", ninedtact=30.81, digit=7.02,
-                 ratio=4.39, p="2.3e-06", usable=True),
-            dict(criterion="절대 2.0 lvl/N", ninedtact=18.58, digit=2.73,
-                 ratio=6.81, p="4.2e-03", usable=True)]
+    # **의심 유닛을 포함한 값이다**(2026-09-13). 빼면 어떻게 되는지를 함께 싣는다 —
+    # 어느 쪽을 골라도 결론이 같다는 것이 이 표가 보여야 할 것이기 때문이다.
+    rows = [dict(criterion="상대 (자기 피크의 15 %)", ninedtact=31.00, digit=17.33,
+                 ratio=1.79, p="4.8e-07", n_9dtact=17,
+                 ninedtact_no_suspect=30.97, ratio_no_suspect=1.79,
+                 p_no_suspect="1.2e-06", usable=True),
+            dict(criterion="절대 1.0 lvl/N", ninedtact=30.42, digit=7.02,
+                 ratio=4.33, p="8.8e-07", n_9dtact=16,
+                 ninedtact_no_suspect=30.81, ratio_no_suspect=4.39,
+                 p_no_suspect="2.3e-06", usable=True),
+            dict(criterion="절대 2.0 lvl/N", ninedtact=18.10, digit=2.73,
+                 ratio=6.64, p="2.4e-03", n_9dtact=16,
+                 ninedtact_no_suspect=18.58, ratio_no_suspect=6.81,
+                 p_no_suspect="4.2e-03", usable=True)]
     df = pd.DataFrame(rows)
     fig, ax = plt.subplots(figsize=(5.6, 3.2))
     y = np.arange(len(df))[::-1]
@@ -173,8 +232,6 @@ def fig_E():
     if d is None:
         rows = []
         for s in REG["sensors"]:
-            if s.get("suspect_hardware"):
-                continue
             if s.get("principle") != "DIGIT":
                 continue
             ir = s.get("image_response") or {}
@@ -227,14 +284,13 @@ def fig_F():
     for f in glob.glob(str(DS / "9DTact" / "20260911_passA_pair150" / "*" /
                            "shape_pair150" / "ladder.csv")):
         u = Path(f).parent.parent.name.replace("9DTact_", "").split("__")[0]
-        if u in RC.excluded("9DTact"):
-            continue
         L = pd.read_csv(f)
         col = "mean_abs_diff_in_region" if "mean_abs_diff_in_region" in L else None
         if col is None:
             continue
         rows.append(dict(unit=u, peak_lvl=float(L[col].max()),
-                         median_lvl=float(L[col].median())))
+                         median_lvl=float(L[col].median()),
+                         suspect_hardware=RC.is_suspect("9DTact", u)))
     if not rows:
         print("  F: pair150 사다리 없음 — 건너뜀")
         return
@@ -244,7 +300,12 @@ def fig_F():
     ax.barh(range(len(d)), d.peak_lvl, color=c, height=.7)
     ax.axvline(2.5, color="#444", ls="--", lw=1.3)
     ax.annotate("판정 바닥 2.5 레벨", (2.6, len(d) - 1.4), fontsize=8, color="#444")
-    ax.set_yticks(range(len(d))); ax.set_yticklabels(d.unit, fontsize=7.5)
+    ax.set_yticks(range(len(d)))
+    ax.set_yticklabels([f"{RC.MARK} {u}" if sp else u
+                        for u, sp in zip(d.unit, d.suspect_hardware)], fontsize=7.5)
+    for t, sp in zip(ax.get_yticklabels(), d.suspect_hardware):
+        if sp:
+            t.set_color("#c2553a")
     ax.set_xlabel("자국 최대 대비 (그레이 레벨)")
     ax.set_title("분해 실패의 상당수는 골이 아니라 대비의 문제다",
                  fontsize=10.5, loc="left")

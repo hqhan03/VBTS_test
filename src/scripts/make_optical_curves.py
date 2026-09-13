@@ -93,7 +93,7 @@ def load(pr, probe):
     # 기울기가 비교 불가가 된다 — 9DTact ball4 에서 복제 쌍이 119 대 317 로
     # 벌어진 것이 그 때문이었다(8 유닛은 깊은 램프, 9 유닛은 얕은 사다리).
     best = D.groupby("source").unit.nunique().idxmax()
-    return RC.drop(D[D.source == best], pr, "unit")
+    return RC.mark(D[D.source == best], pr, "unit")
 
 
 CLIFF = 0.70          # 누적 최대 대비 — 이 밑으로 처음 떨어지는 곳에서 자른다
@@ -150,9 +150,9 @@ def slopes(D, window=WINDOW):
     return pd.DataFrame(out)
 
 
-def grid3x3(S, col, fmt="{:.0f}", dropped=None):
-    """3x3. 칸 = 'r1 / r2  (평균)'. 제외로 복제가 빠진 칸에는 `e` 를 붙인다."""
-    dropped = dropped or set()
+def grid3x3(S, col, fmt="{:.0f}", suspect=None):
+    """3x3. 칸 = 'r1 / r2  (평균)'. 의심 유닛이 든 칸에는 `!` 를 붙인다."""
+    suspect = suspect or set()
     rows = []
     for h in HARD:
         r = {"hardness": h}
@@ -163,8 +163,8 @@ def grid3x3(S, col, fmt="{:.0f}", dropped=None):
             else:
                 e = " / ".join(fmt.format(x) for x in v)
                 r[f"{t}mm"] = f"{e}  ({fmt.format(v.mean())})" if len(v) > 1 else e
-            if any(u.startswith(f"{h}_{t}mm_") for u in dropped):
-                r[f"{t}mm"] += " e"
+            if any(u.startswith(f"{h}_{t}mm_") for u in suspect):
+                r[f"{t}mm"] += " !"
         rows.append(r)
     return pd.DataFrame(rows)
 
@@ -191,13 +191,16 @@ def panel(pr, D):
             gg = gg[gg.diameter_px > 0].sort_values("depth_mm")
             if len(gg) < 2:
                 continue
-            ax.plot(gg.depth_mm, gg.diameter_px, "-o", c=PC[p], lw=1.5, ms=3.6,
+            ls, lw = RC.style(pr, u, "-o")
+            ax.plot(gg.depth_mm, gg.diameter_px, ls, c=PC[p], lw=lw, ms=3.6,
                     mec="white", mew=.6, label=p, zorder=3)
             a2.plot(gg.depth_mm, gg.level, "--s", c=PC[p], lw=1.1, ms=2.8,
                     alpha=.65, mec="white", mew=.4)
             drawn.append(gg[["unit", "probe", "depth_mm", "diameter_px",
-                             "level"]].copy())
-        ax.set_title(u, fontsize=8.5)
+                             "level"]].assign(
+                                 suspect_hardware=RC.is_suspect(pr, u)))
+        tt, tc = RC.title(pr, u)
+        ax.set_title(tt, fontsize=8.5 if tc == "black" else 7.2, color=tc)
         ax.tick_params(labelsize=7); a2.tick_params(labelsize=6, colors="#777")
         ax.spines[["top"]].set_visible(False); a2.spines[["top"]].set_visible(False)
         # 보조선: 눈금마다 가로·세로 모두
@@ -242,10 +245,10 @@ def main():
         S.to_csv(d / "optical_slopes.csv", index=False)
         for p in S.probe.unique():
             g = S[S.probe == p]
-            grid3x3(g, "dia_slope_px_per_mm", dropped=RC.excluded(pr)).to_csv(
+            grid3x3(g, "dia_slope_px_per_mm", suspect=RC.suspect(pr)).to_csv(
                 d / f"optical_slope_diameter_{p}_3x3.csv", index=False)
             grid3x3(g, "level_slope_per_mm", "{:.1f}",
-                    dropped=RC.excluded(pr)).to_csv(
+                    suspect=RC.suspect(pr)).to_csv(
                 d / f"optical_slope_level_{p}_3x3.csv", index=False)
         panel(pr, D)
         got = ", ".join(f"{p} {S[S.probe==p].unit.nunique()}유닛"
@@ -254,7 +257,7 @@ def main():
         for p in sorted(S.probe.unique()):
             print(f"     지름 기울기 {p} (px/mm):")
             print(grid3x3(S[S.probe == p], "dia_slope_px_per_mm",
-                          dropped=RC.excluded(pr)).to_string(index=False))
+                          suspect=RC.suspect(pr)).to_string(index=False))
 
 
 if __name__ == "__main__":

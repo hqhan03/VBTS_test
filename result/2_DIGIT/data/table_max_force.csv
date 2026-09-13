@@ -1,4 +1,4 @@
-unit,hardness,thickness_mm,rep,probe,ceiling_N,depth_mm,status,suspect
+unit,hardness,thickness_mm,rep,probe,ceiling_N,depth_mm,status,suspect_hardware
 soft_1mm_r1,soft,1,1,ball8,23.412549826683517,0.9599031401923668,characterised,False
 soft_1mm_r2,soft,1,2,ball8,22.449198933907432,1.3153767166200367,characterised,False
 soft_2mm_r1,soft,2,1,ball8,17.71834051220396,1.5753167070132683,characterised,False

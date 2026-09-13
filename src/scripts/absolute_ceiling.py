@@ -98,13 +98,13 @@ def main():
             g = re.search(r"(soft|medium|hard)_(\d)mm_r(\d)", run.name)
             if not g:
                 continue
-            if run.name.split("__")[0].replace(pr + "_", "") in RC.excluded(pr):
-                continue      # 빛 누출 유닛 — result_common 참조
+            susp = RC.is_suspect(pr, run.name.split("__")[0].replace(pr + "_", ""))
             lim = SPHERE_LIMIT_MM.get(DS)
             # 한 유닛을 여러 번 돌린 재실행은 `__2`, `__3` 으로 남는다. 접미사를
             # 떼지 않으면 별개 유닛으로 세어져, 얕게 끝난 초기 램프가 "잘림" 으로
             # 집계되고 잘림 비율이 실제보다 훨씬 높게 나온다.
-            rec = dict(unit=run.name.split("__")[0], run=run.name, pr=pr,
+            rec = dict(suspect_hardware=susp,
+                       unit=run.name.split("__")[0], run=run.name, pr=pr,
                        dataset=DS, hard=g.group(1),
                        th=int(g.group(2)), fmax=float(S.force_N.max()))
             for t in TH:

@@ -12,8 +12,9 @@
 떨어져 있는가. 평균과 표준편차는 이상치 자신에게 끌려가므로 중앙값과 MAD 로 잰다
 (robust z = (x - median) / (1.4826 MAD)).
 
-`suspect_hardware` 유닛은 이미 빠져 있다(`result_common`). 여기서 새로 나오는 것은
-**빛 누출 말고 다른 이유로** 의심스러운 유닛이다.
+`suspect_hardware`(빛 누출) 유닛도 **넣고 잰다.** 그 둘은 이미 아는 결함이므로, 여기
+나오는 불일치의 크기가 **"알려진 결함이 지표를 얼마나 흔드는가" 의 눈금**이 된다 —
+다른 유닛의 불일치를 그것과 견줄 수 있다. 출력에서는 `!` 로 표시한다.
 """
 from pathlib import Path
 
@@ -69,7 +70,7 @@ def collect(pr):
     # 힘 추정 — 해상도에 걸친 seed 중앙값의 중앙값. 한 해상도만 보면 잡음을 본다.
     f = d / "force_mae_vs_resolution.csv"
     if f.exists():
-        F = RC.drop(pd.read_csv(f), pr, "sensor")
+        F = RC.mark(pd.read_csv(f), pr, "sensor")
         for u, g in F.groupby("sensor"):
             k = g.groupby("width_px")[["fx_mae", "fy_mae", "fz_mae"]].median()
             for c, nm in (("fz_mae", "Fz"), ("fx_mae", "Fx"), ("fy_mae", "Fy")):
@@ -78,7 +79,7 @@ def collect(pr):
 
     f = d / "shape_vs_resolution.csv"
     if f.exists() and pr == "9DTact":
-        S = RC.drop(pd.read_csv(f), pr, "sensor")
+        S = RC.mark(pd.read_csv(f), pr, "sensor")
         for u, g in S.groupby("sensor"):
             k = g.groupby("width_px")[["cyl4_raw_mae", "cube4_raw_mae"]].median()
             add(u, "형상 MAE cyl4 최솟값 (mm)", k.cyl4_raw_mae.min())
@@ -98,9 +99,11 @@ def twins(D):
         mu = (abs(a) + abs(b)) / 2
         if mu <= 0:
             continue
+        sp = [r for r in (1, 2) if RC.is_suspect(pr, f"{h}_{t}mm_r{r}")]
         rows.append(dict(principle=pr, metric=m, hardness=h, thickness_mm=t,
                          r1=a, r2=b, rel_diff=abs(a - b) / mu,
-                         worse_rep=1 if abs(a) > abs(b) else 2))
+                         worse_rep=1 if abs(a) > abs(b) else 2,
+                         suspect_rep=sp[0] if sp else 0))
     T = pd.DataFrame(rows)
     if not len(T):
         return T
@@ -269,10 +272,11 @@ def main():
     if not len(bad):
         print("    없음")
     for _, x in bad.iterrows():
+        sp = f"  ! r{int(x.suspect_rep)} 가 {RC.LABEL}" if x.suspect_rep else ""
         print(f"    {x.principle:<13} {x.hardness}_{x.thickness_mm}mm  "
               f"{x.metric:<32} r1 {x.r1:9.3f}  r2 {x.r2:9.3f}  "
               f"차 {x.rel_diff*100:5.1f} %  (보통 {x.typical*100:4.1f} %, "
-              f"{x.ratio:.1f}배)")
+              f"{x.ratio:.1f}배){sp}")
     print()
 
     print("  === 경향성 이상치 — 설계를 뺀 셀 잔차 / 재장착 산포 (>= 2.5 배) ===")

@@ -1,4 +1,4 @@
-unit,hardness,thickness_mm,rep,probe,ceiling_N,depth_mm,status,suspect
+unit,hardness,thickness_mm,rep,probe,ceiling_N,depth_mm,status,suspect_hardware
 soft_1mm_r1,soft,1,1,ball8,27.848915900572194,4.527912557169966,characterised,False
 soft_1mm_r2,soft,1,2,ball8,26.799817552457977,4.285544924573017,characterised,False
 soft_2mm_r1,soft,2,1,ball8,30.238843978677988,5.4744673004455215,characterised,False
@@ -6,11 +6,13 @@ soft_2mm_r2,soft,2,2,ball8,24.610286158155468,5.076735382551469,characterised,Fa
 soft_3mm_r1,soft,3,1,ball8,30.97387494840487,6.053670937241272,characterised,False
 soft_3mm_r2,soft,3,2,ball8,30.639473352105313,6.293003450833041,characterised,False
 medium_1mm_r1,medium,1,1,ball8,31.00153968042581,4.711342525137244,characterised,False
+medium_1mm_r2,medium,1,2,ball8,38.596248951006785,5.224188125932638,characterised,True
 medium_2mm_r1,medium,2,1,—,,,damaged,False
 medium_2mm_r2,medium,2,2,ball8,30.207202253506903,5.246948058025978,characterised,False
 medium_3mm_r1,medium,3,1,ball8,38.477407292298594,6.6054929903992985,characterised,False
 medium_3mm_r2,medium,3,2,ball8,34.182887472624984,6.192190817531621,characterised,False
 hard_1mm_r1,hard,1,1,ball8,27.510294207386806,4.318176562097701,characterised,False
+hard_1mm_r2,hard,1,2,ball8,34.13547167662337,4.736293115039093,characterised,True
 hard_2mm_r1,hard,2,1,ball8,43.32170674399263,5.292425101276052,characterised,False
 hard_2mm_r2,hard,2,2,ball8,43.81170816849713,5.452331049836349,characterised,False
 hard_3mm_r1,hard,3,1,ball8,63.159778301454004,6.788935798770929,characterised,False

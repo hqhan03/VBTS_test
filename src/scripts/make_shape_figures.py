@@ -62,7 +62,7 @@ def load9():
     d = pd.read_csv(f)
     d = d[d.width_px.notna()].copy()
     d["width_px"] = d.width_px.astype(int)
-    return RC.drop(d, "9DTact", "sensor")
+    return RC.mark(d, "9DTact", "sensor")
 
 
 LADDER = [0.005, 0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.5, 1.0, 2.0]
@@ -99,12 +99,16 @@ def panel(d, col_tmpl, stem, ylab, title, pr="9DTact", yt=None):
             k = g.groupby("width_px")[col].median().dropna()
             if not len(k):
                 continue
-            ax.plot(k.index, k.values, "-o", c=c, lw=1.4, ms=4.2, mec="white",
+            ls, lw = RC.style(pr, u)
+            ax.plot(k.index, k.values, ls, c=c, lw=lw, ms=4.2, mec="white",
                     mew=.7, label=lab)
             drawn.append(pd.DataFrame(dict(sensor=u, probe=probe,
-                                           width_px=k.index, mae_mm=k.values)))
+                                           width_px=k.index, mae_mm=k.values,
+                                           suspect_hardware=RC.is_suspect(pr, u))))
         ax.set_xscale("log"); ax.set_yscale("log"); res_axis(ax, list(yt), fs=6.2)
-        ax.set_title(u, fontsize=8.5); ax.tick_params(labelsize=7)
+        tt, tc = RC.title(pr, u)
+        ax.set_title(tt, fontsize=8.5 if tc == "black" else 7.4, color=tc)
+        ax.tick_params(labelsize=7)
         ax.spines[["top", "right"]].set_visible(False)
     for ax in axes[-1]:
         ax.set_xlabel("해상도 (가로 × 세로, px)", labelpad=6, fontsize=8)
@@ -164,7 +168,7 @@ def load_digit():
     w = (d.groupby(["unit", "width_px", "shape"]).err_mm.mean()
          .unstack("shape").reset_index())
     w = w.rename(columns={c: f"{c}_raw_mae" for c in ("cyl4", "cube4")})
-    return RC.drop(w.rename(columns={"unit": "sensor"}), "DIGIT", "sensor")
+    return RC.mark(w.rename(columns={"unit": "sensor"}), "DIGIT", "sensor")
 
 
 def digit_summary(d, raw):
