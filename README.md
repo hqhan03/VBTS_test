@@ -58,25 +58,25 @@ FAIRINO FR5 로봇 팔과 ATI Mini45 6축 F/T 셀로, 세 가지 촉각 센서 �
 | 로봇이 실제로 무엇을 하나 — 동작 하나하나와 그 뒤의 실측값 | **`docs/measurement_protocol.md`** |
 | **세 원리가 어떻게 다른가, 그리고 이 캠페인이 무엇을 틀렸나** | **`docs/cross_principle.md`** ← 결과이고, §5 가 자기비판 |
 | **시험 1, 힘 추정** — 세 원리 전부, 해상도별 축별 MAE | **`docs/force_estimation.md`** (§7 이 DIGIT 계열의 입력 표현 비교) |
-| **시험 2, 형상 복원** — 9DTact 의 밝기→깊이 조회표와 DIGIT 의 광도 스테레오 | **`docs/shape_reconstruction.md`** (§5 가 DIGIT 파이프라인, `scripts/digit_shape.py`) |
+| **시험 2, 형상 복원** — 9DTact 의 밝기→깊이 조회표와 DIGIT 의 광도 스테레오 | **`docs/shape_reconstruction.md`** (§5 가 DIGIT 파이프라인, `src/scripts/digit_shape.py`) |
 | **시험 3, 공간 분해능** — 방법과 전 유닛 결과 | **`docs/spatial_resolution.md`** |
 | **시험 4, 최대 측정 가능 힘** — 방법, 전 유닛, 그리고 왜 이것으로 센서를 비교할 수 없나 | **`docs/force_ceiling.md`** |
 | 형상 복원에 카메라 해상도가 얼마나 필요한가 (축소 쓸기) | `docs/shape_vs_resolution.md` |
 | 다른 분석이나 다른 역치로 0.3 mm 보다 깊은 두 점을 분해할 수 있나 | `docs/spatial_resolution_sensitivity.md` |
-| **쌍둥이 복제가 얼마나 어긋나고, 어느 쪽을 버릴 것인가** | **`docs/replicate_audit.md`** (`scripts/twin_audit.py`) |
+| **쌍둥이 복제가 얼마나 어긋나고, 어느 쪽을 버릴 것인가** | **`docs/replicate_audit.md`** (`src/scripts/twin_audit.py`) |
 | DIGIT 광도 보정 격자가 어떻게 작동하고 유닛 사이에서 전이되나 | `docs/photometric_calibration.md` |
 | 이 캠페인의 전처리·학습이 DIGIT/GelSight 문헌과 어디서 갈리나 | `docs/method_vs_literature.md` |
 | 경도와 두께를 한 변수(접촉 반지름)로 묶을 수 있나 — 시도 | `docs/contact_variable.md` |
 | 구가 표면을 왜 너무 깊게 읽나 | `docs/hertz_zero_bias.md` |
 | 두 기둥 압자의 두 기둥이 왜 같은 힘으로 안 눌리나 | `docs/pair_contact_asymmetry.md` |
-| **유닛의 숫자 중 얼마가 겔이고 얼마가 장착 방식인가** | `docs/campaign_protocol.md` §4.15 (`scripts/repeat_spread.py`) |
+| **유닛의 숫자 중 얼마가 겔이고 얼마가 장착 방식인가** | `docs/campaign_protocol.md` §4.15 (`src/scripts/repeat_spread.py`) |
 | 센서 좌표계·베이스 좌표계·겔이 어떻게 얽히나 | `docs/frames_and_transforms.md` |
 | TCP 숫자가 어디서 나왔나 | `docs/tcp_calibration_history.md` |
 | 파일이 어디에 쓰이고 그 안에 무엇이 있나 | `docs/data_recording.md` |
 | 무엇이 아직 없고 그것을 모으는 데 얼마가 드나 | `docs/data_wishlist.md` |
 | 다시 잰 유닛 중 분석이 **어느 런**을 읽나, 그리고 그 분리가 무엇을 가리고 있었나 | `data/analysis/DATASET_CLEANUP.md` |
 | **`data/` 아래 무엇이 어디 있나** | `data/README.md` |
-| **원리·압자·겔 유닛별로 어떤 자료가 있고 무엇이 없나** | `data/20260911_VBTSresolution_dataset/DATA_INVENTORY.md` (`scripts/dataset_audit.py`) |
+| **원리·압자·겔 유닛별로 어떤 자료가 있고 무엇이 없나** | `data/20260911_VBTSresolution_dataset/DATA_INVENTORY.md` (`src/scripts/dataset_audit.py`) |
 | 코드가 무엇인가 — 라이브러리, 스크립트, 설정, 테스트 | `src/README.md` |
 | 2026-09-05 의 단일 유닛 형상 파일럿 | `docs/archive/shape_reconstruction_pilot.html` |
 | 대체된 문서, 출처 보존용 | `docs/archive/` |
