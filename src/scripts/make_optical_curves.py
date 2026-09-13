@@ -18,6 +18,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+import result_common as RC
+
 ROOT = Path(__file__).resolve().parents[2]
 DS = ROOT / "data" / "20260911_VBTSresolution_dataset"
 RES = ROOT / "result"
@@ -91,18 +93,30 @@ def load(pr, probe):
     # 기울기가 비교 불가가 된다 — 9DTact ball4 에서 복제 쌍이 119 대 317 로
     # 벌어진 것이 그 때문이었다(8 유닛은 깊은 램프, 9 유닛은 얕은 사다리).
     best = D.groupby("source").unit.nunique().idxmax()
-    return D[D.source == best]
+    return RC.drop(D[D.source == best], pr, "unit")
+
+
+CLIFF = 0.70          # 누적 최대 대비 — 이 밑으로 처음 떨어지는 곳에서 자른다
 
 
 def valid_span(g):
     """검출이 살아 있는 구간만. 자국이 시야를 채우면 `contact_region` 이 덩어리를
     놓쳐 지름이 0 으로 무너지고, 그 뒤 0 과 수백 사이를 오간다(면적 감시를 떼어낸
     것과 같은 원인, docs/force_ceiling.md 6.5b). 그 구간을 넣고 직선을 맞추면
-    복제 쌍 안에서 119 대 317, 심지어 음수 기울기가 나온다. 누적 최대의 30 %
-    밑으로 처음 떨어지는 곳에서 자른다."""
+    복제 쌍 안에서 119 대 317, 심지어 음수 기울기가 나온다.
+
+    **문턱은 재서 골랐다(2026-09-13).** 자국 지름은 깊이에 대해 단조 증가하므로
+    누적 최대보다 크게 내려가는 것은 물리가 아니라 검출 실패다. 문턱을 0.30 에서
+    0.90 까지 쓸어 보면 **0.60 ~ 0.85 구간에서 잘리는 계열 수가 전혀 변하지
+    않는다**(DIGIT 11 계열 66 점, Marker 5 계열 44 점, 9DTact 0). 0.90 에서
+    14 계열 118 점으로 급증하는데, 거기서부터는 정당한 자료를 먹는다. 평탄 구간
+    가운데인 0.70 을 쓴다.
+
+    처음에 쓴 0.30 은 너무 느슨했다 — 1 mm 유닛 네 개의 낙폭이 누적 최대의
+    39 ~ 47 % 여서 통과했고, 그림에 수직 절벽으로 남았다."""
     g = g.sort_values("depth_mm").reset_index(drop=True)
     run = g.diameter_px.cummax()
-    bad = (g.diameter_px < 0.30 * run) & (run > 0)
+    bad = (g.diameter_px < CLIFF * run) & (run > 0)
     if bad.any():
         g = g.iloc[:int(bad.idxmax())]
     return g
@@ -136,8 +150,9 @@ def slopes(D, window=WINDOW):
     return pd.DataFrame(out)
 
 
-def grid3x3(S, col, fmt="{:.0f}"):
-    """3x3. 칸 = 'r1 / r2  (평균)'."""
+def grid3x3(S, col, fmt="{:.0f}", dropped=None):
+    """3x3. 칸 = 'r1 / r2  (평균)'. 제외로 복제가 빠진 칸에는 `e` 를 붙인다."""
+    dropped = dropped or set()
     rows = []
     for h in HARD:
         r = {"hardness": h}
@@ -148,6 +163,8 @@ def grid3x3(S, col, fmt="{:.0f}"):
             else:
                 e = " / ".join(fmt.format(x) for x in v)
                 r[f"{t}mm"] = f"{e}  ({fmt.format(v.mean())})" if len(v) > 1 else e
+            if any(u.startswith(f"{h}_{t}mm_") for u in dropped):
+                r[f"{t}mm"] += " e"
         rows.append(r)
     return pd.DataFrame(rows)
 
@@ -162,11 +179,18 @@ def panel(pr, D):
         if not len(g):
             ax.text(.5, .5, "자료 없음", ha="center", va="center", fontsize=8,
                     color="#999", transform=ax.transAxes)
+            ax.text(.5, .38, RC.reason(pr, u) or "", ha="center", va="center",
+                    fontsize=7.5, color="#c07a50", transform=ax.transAxes)
             ax.set_title(u, fontsize=8, color="#999"); ax.set_xticks([]); ax.set_yticks([])
             continue
         a2 = ax.twinx()
         for p, gg in g.groupby("probe"):
-            gg = gg.sort_values("depth_mm")
+            # 기울기와 같은 자를 쓴다. valid_span 이 slopes() 에만 걸려 있어
+            # 표는 잘라 쓰고 그림은 검출이 무너진 뒤의 절벽까지 그리고 있었다.
+            gg = valid_span(gg[gg.depth_mm > 0])
+            gg = gg[gg.diameter_px > 0].sort_values("depth_mm")
+            if len(gg) < 2:
+                continue
             ax.plot(gg.depth_mm, gg.diameter_px, "-o", c=PC[p], lw=1.5, ms=3.6,
                     mec="white", mew=.6, label=p, zorder=3)
             a2.plot(gg.depth_mm, gg.level, "--s", c=PC[p], lw=1.1, ms=2.8,
@@ -218,9 +242,10 @@ def main():
         S.to_csv(d / "optical_slopes.csv", index=False)
         for p in S.probe.unique():
             g = S[S.probe == p]
-            grid3x3(g, "dia_slope_px_per_mm").to_csv(
+            grid3x3(g, "dia_slope_px_per_mm", dropped=RC.excluded(pr)).to_csv(
                 d / f"optical_slope_diameter_{p}_3x3.csv", index=False)
-            grid3x3(g, "level_slope_per_mm", "{:.1f}").to_csv(
+            grid3x3(g, "level_slope_per_mm", "{:.1f}",
+                    dropped=RC.excluded(pr)).to_csv(
                 d / f"optical_slope_level_{p}_3x3.csv", index=False)
         panel(pr, D)
         got = ", ".join(f"{p} {S[S.probe==p].unit.nunique()}유닛"
@@ -228,7 +253,8 @@ def main():
         print(f"  {pr:<13} {len(D):>6} 행  ({got})")
         for p in sorted(S.probe.unique()):
             print(f"     지름 기울기 {p} (px/mm):")
-            print(grid3x3(S[S.probe == p], "dia_slope_px_per_mm").to_string(index=False))
+            print(grid3x3(S[S.probe == p], "dia_slope_px_per_mm",
+                          dropped=RC.excluded(pr)).to_string(index=False))
 
 
 if __name__ == "__main__":

@@ -11,6 +11,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
+import result_common as RC
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -47,6 +49,8 @@ def ceilings():
     rows = []
     for pr, tag in TAG.items():
         for s in REG["sensors"]:
+            if s.get("suspect_hardware"):
+                continue      # 빛 누출 유닛 — result_common 참조
             if s.get("principle") != pr:
                 continue
             ir = s.get("image_response") or {}
@@ -138,12 +142,14 @@ def fig_D():
 # ------------------------------------------------------------------- C --
 def fig_C():
     """상대 기준이 원리 간 격차를 압축한다 — 절대 기준을 써야 하는 이유."""
-    rows = [dict(criterion="상대 (자기 피크의 15 %)", ninedtact=31.00, digit=17.33,
-                 ratio=1.79, p="4.8e-07", usable=True),
-            dict(criterion="절대 1.0 lvl/N", ninedtact=30.42, digit=7.02,
-                 ratio=4.33, p="8.8e-07", usable=True),
-            dict(criterion="절대 2.0 lvl/N", ninedtact=18.10, digit=2.73,
-                 ratio=6.63, p="2.4e-03", usable=True)]
+    # 빛 누출 두 유닛을 뺀 뒤 다시 계산한 값이다(2026-09-13). 9DTact n=15.
+    # 제외 전에는 31.00 / 30.42 / 18.10 이었다 — 중앙값은 거의 움직이지 않는다.
+    rows = [dict(criterion="상대 (자기 피크의 15 %)", ninedtact=30.97, digit=17.33,
+                 ratio=1.79, p="1.2e-06", usable=True),
+            dict(criterion="절대 1.0 lvl/N", ninedtact=30.81, digit=7.02,
+                 ratio=4.39, p="2.3e-06", usable=True),
+            dict(criterion="절대 2.0 lvl/N", ninedtact=18.58, digit=2.73,
+                 ratio=6.81, p="4.2e-03", usable=True)]
     df = pd.DataFrame(rows)
     fig, ax = plt.subplots(figsize=(5.6, 3.2))
     y = np.arange(len(df))[::-1]
@@ -167,6 +173,8 @@ def fig_E():
     if d is None:
         rows = []
         for s in REG["sensors"]:
+            if s.get("suspect_hardware"):
+                continue
             if s.get("principle") != "DIGIT":
                 continue
             ir = s.get("image_response") or {}
@@ -219,6 +227,8 @@ def fig_F():
     for f in glob.glob(str(DS / "9DTact" / "20260911_passA_pair150" / "*" /
                            "shape_pair150" / "ladder.csv")):
         u = Path(f).parent.parent.name.replace("9DTact_", "").split("__")[0]
+        if u in RC.excluded("9DTact"):
+            continue
         L = pd.read_csv(f)
         col = "mean_abs_diff_in_region" if "mean_abs_diff_in_region" in L else None
         if col is None:

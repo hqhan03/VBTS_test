@@ -14,6 +14,8 @@ import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
 
+import result_common as RC
+
 ROOT = Path(__file__).resolve().parents[2]
 DS = ROOT / "data" / "20260911_VBTSresolution_dataset"
 RES = ROOT / "result"
@@ -63,7 +65,7 @@ def load(pr):
     d["hardness"] = d.sensor.str.split("_").str[0]
     d["thickness_mm"] = d.sensor.str.extract(r"_(\d)mm_").astype(int)
     d["rep"] = d.sensor.str[-1].astype(int)
-    return d
+    return RC.drop(d, pr, "sensor")
 
 
 def panel(pr, d, cols, stem, ylab, yt):
@@ -73,7 +75,8 @@ def panel(pr, d, cols, stem, ylab, yt):
     for ax, u in zip(axes.ravel(), units):
         g = d[d.sensor == u]
         if not len(g):
-            ax.text(.5, .5, "자료 없음", ha="center", va="center", fontsize=8,
+            why = RC.reason(pr, u) or "자료 없음"
+            ax.text(.5, .5, why, ha="center", va="center", fontsize=8,
                     color="#999", transform=ax.transAxes)
             ax.set_title(u, fontsize=8, color="#999")
             continue

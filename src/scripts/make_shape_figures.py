@@ -14,6 +14,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+import result_common as RC
+
 ROOT = Path(__file__).resolve().parents[2]
 DS = ROOT / "data" / "20260911_VBTSresolution_dataset"
 RES = ROOT / "result"
@@ -60,7 +62,7 @@ def load9():
     d = pd.read_csv(f)
     d = d[d.width_px.notna()].copy()
     d["width_px"] = d.width_px.astype(int)
-    return d
+    return RC.drop(d, "9DTact", "sensor")
 
 
 LADDER = [0.005, 0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.5, 1.0, 2.0]
@@ -86,7 +88,8 @@ def panel(d, col_tmpl, stem, ylab, title, pr="9DTact", yt=None):
     for ax, u in zip(axes.ravel(), units):
         g = d[d.sensor == u]
         if not len(g):
-            ax.text(.5, .5, "자료 없음", ha="center", va="center", fontsize=8,
+            why = RC.reason(pr, u) or "자료 없음"
+            ax.text(.5, .5, why, ha="center", va="center", fontsize=8,
                     color="#999", transform=ax.transAxes)
             ax.set_title(u, fontsize=8, color="#999"); continue
         for probe, lab, c in PROBE:
@@ -161,7 +164,7 @@ def load_digit():
     w = (d.groupby(["unit", "width_px", "shape"]).err_mm.mean()
          .unstack("shape").reset_index())
     w = w.rename(columns={c: f"{c}_raw_mae" for c in ("cyl4", "cube4")})
-    return w.rename(columns={"unit": "sensor"})
+    return RC.drop(w.rename(columns={"unit": "sensor"}), "DIGIT", "sensor")
 
 
 def digit_summary(d, raw):

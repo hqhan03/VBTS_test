@@ -22,12 +22,16 @@ slope_levels_per_N 을 이미 갖고 있고, 이 스크립트는 그 열을 다�
     python3 src/scripts/absolute_ceiling.py --thresholds 0.2,0.5,1.0
 """
 import argparse
+import sys
 import re
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import yaml
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import result_common as RC
 
 ROOT = Path(__file__).resolve().parents[2]
 from ceiling_summary import SOURCES, SPHERE_LIMIT_MM, SAT_HITS, SAT_MIN_F   # noqa: E402
@@ -94,6 +98,8 @@ def main():
             g = re.search(r"(soft|medium|hard)_(\d)mm_r(\d)", run.name)
             if not g:
                 continue
+            if run.name.split("__")[0].replace(pr + "_", "") in RC.excluded(pr):
+                continue      # 빛 누출 유닛 — result_common 참조
             lim = SPHERE_LIMIT_MM.get(DS)
             # 한 유닛을 여러 번 돌린 재실행은 `__2`, `__3` 으로 남는다. 접미사를
             # 떼지 않으면 별개 유닛으로 세어져, 얕게 끝난 초기 램프가 "잘림" 으로
