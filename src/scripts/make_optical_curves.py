@@ -226,9 +226,13 @@ def panel(pr, D):
         d / "data" / "optical_vs_depth_18units.csv", index=False)
 
 
-# 경도는 순서가 있는 변수라 한 색의 농담, 두께도 마찬가지다.
-CH_G = {"soft": "#9ec5d8", "medium": "#4a8fa8", "hard": "#134b5f"}
-CT_G = {1: "#e8b4a0", 2: "#c2553a", 3: "#7a2f1c"}
+# **순서가 있는 변수지만 한 색의 농담을 쓰지 않는다.** 유닛별 곡선을 흐리게 깔면
+# 같은 계통의 세 농담이 서로 묻혀 어느 군인지 못 가린다. 뚜렷이 갈리는 세 색을 쓰고,
+# 순서는 범례의 차례가 진다. Okabe-Ito 계열이라 색각 이상에서도 갈린다 — 인접 쌍
+# 최악 ΔE 11.0 (deutan), 보통 시야 25.8, 바탕 대비 전부 3:1 이상.
+_CAT3 = ["#0072B2", "#D55E00", "#009E73"]      # 파랑 · 주황 · 초록
+CH_G = dict(zip(["soft", "medium", "hard"], _CAT3))
+CT_G = dict(zip([1, 2, 3], _CAT3))
 
 
 def group_curves(pr, D, probe):
@@ -297,12 +301,14 @@ def group_curves(pr, D, probe):
                 lab = f"{k} mm" if key == "thickness_mm" else str(k)
                 # 유닛 하나하나를 흐리게 뒤에 깐다
                 for row in A:
-                    ax.plot(grid, row, "-", c=cmap[k], lw=.8, alpha=.30,
+                    ax.plot(grid, row, "-", c=cmap[k], lw=.7, alpha=.22,
                             zorder=1)
-                ax.fill_between(x, q1, q3, color=cmap[k], alpha=.14, lw=0,
+                ax.fill_between(x, q1, q3, color=cmap[k], alpha=.12, lw=0,
                                 zorder=2)
-                ax.plot(x, med, "-", c=cmap[k], lw=2.2, label=f"{lab}  (n={n})",
-                        zorder=3)
+                # 중앙값 선에 흰 테두리를 둘러 세 색이 겹쳐도 서로 끊겨 보이게 한다
+                ax.plot(x, med, "-", c="white", lw=4.0, alpha=.85, zorder=3)
+                ax.plot(x, med, "-", c=cmap[k], lw=2.4, label=f"{lab}  (n={n})",
+                        zorder=4)
                 tidy.append(pd.DataFrame(dict(
                     principle=pr, probe=probe, measure=col, group_by=key,
                     group=str(k), n_units=n, depth_mm=x,
