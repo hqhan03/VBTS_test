@@ -39,25 +39,26 @@ ABSTRACT
 Abstract-- Vision-based tactile sensors encode contact as an image, and the
 sampling resolution at which that image is processed fixes the camera, the link
 bandwidth and the network input size of an entire finger. The elastomer is
-widely assumed to set that requirement, since a thicker or stiffer layer
-spreads an indentation before the camera sees it. The assumption has never been
-tested, because testing it means varying the elastomer while holding the optics
-fixed. We fabricate 27 sensors spanning the two dominant intensity-based
-principles, depth-referenced and photometric-stereo, plus a marker-bearing arm,
-each crossed with three elastomer hardnesses and three thicknesses, with one
-body, camera and illumination per principle. Training-free measurements confirm
-that the elastomer does filter spatially: two-point resolution degrades with
-thickness on every metric we can measure. That filtering does not reach the
-trained estimators. Twenty tests of a thickness or hardness dependence in the
-saturation resolution -- two principles, six force axis-groups, four held-out
-shape probes, one false-discovery correction -- return none, against a bound
-set by replicates of one gel specification disagreeing by 6.7-fold. What moves
-the requirement is the axis rather than the gel: shear saturates near 48 px of
-input width while normal force needs up to 320, inverting the usual reading of
-the 224 px convention. The elastomer instead sets the maximum readable force
-(2.3-fold across our gels) and the depth quantization of shape reconstruction
-(2.1-fold). Sampling resolution can therefore be specified before the
-elastomer is chosen.
+widely assumed to set that requirement, since a thicker layer spreads an
+indentation before the camera sees it, but the assumption has never been
+tested: testing it means varying the elastomer while holding the optics fixed.
+We fabricate 27 sensors -- the two dominant intensity-based principles,
+depth-referenced and photometric-stereo, plus a marker-bearing arm, each
+crossed with three elastomer hardnesses and three thicknesses, one body, camera
+and illumination per principle. Training-free measurements confirm the
+elastomer does filter spatially: two-point resolution degrades with thickness
+on every metric we measure. That filtering does not reach the trained
+estimators, and twenty tests of a thickness or hardness dependence in the
+saturation resolution return none. What bounds that null is not the gel but the
+build: two units cast from one specification disagree 6.7-fold about their own
+saturation resolution, so the scatter here comes from the assembly and its
+optics, not the recipe -- which any recipe-varying study must measure first.
+What moves the requirement is the axis rather than the gel: shear saturates
+near 48 px of input width while normal force needs up to 320, inverting the
+usual reading of the 224 px convention. The elastomer instead sets the maximum
+readable force (2.3-fold across our gels) and the depth quantization of shape
+reconstruction (2.1-fold). Sampling resolution can therefore be specified
+before the elastomer is chosen.
 
 ================================================================================
 I. INTRODUCTION
@@ -625,8 +626,8 @@ with thickness. With one threshold for all units the correlation disappears.
 What does predict how two units differ is not a gel variable at all. The image
 sensitivity -- grey levels of change per millimetre of indentation -- is a
 property of an individual build, not of its gel specification: two replicates of
-one specification differ by a factor of three, 0.9 against 9.3 levels per
-millimetre. The same quantity reappears twice more in this paper, as the reason
+one specification differ by an order of magnitude, 0.9 against 9.3 levels per
+millimetre, and one unit reads 0.0. The same quantity reappears twice more in this paper, as the reason
 a relative saturation criterion cannot compare units ([IV-C3]) and as the
 replicate scatter that bounds the null result of Section V ([V-A4]). Unit-to-unit
 variation in these sensors comes from the assembly and its optics rather than
@@ -1112,8 +1113,8 @@ replicate scatter, not by evidence of absence: two units built to one gel
 specification disagree about their own saturation resolution by a median factor
 of 6.7 on depth-referenced normal force, so a thickness effect smaller than
 that is invisible here. That scatter is itself the study's most transferable
-finding -- image sensitivity varies threefold between replicates of one
-specification, so unit-to-unit variation in these sensors comes from the
+finding -- image sensitivity varies by an order of magnitude between replicates
+of one specification, so unit-to-unit variation in these sensors comes from the
 assembly and its optics rather than from the recipe, and any study that varies
 the recipe must measure it first. The two hardness series are also not the same
 ruler, forty durometer points against six, so we compare hardness only within a
@@ -1183,6 +1184,12 @@ REFERENCES (placeholder numbering used above)
 ================================================================================
 OPEN QUESTIONS / TO RESOLVE
 ================================================================================
+- [IV-A7] / [VI-4] image-sensitivity scatter: docs/contact_variable.md 4.4 says
+  replicates differ "up to threefold" but the parenthetical beside it and the
+  per-unit table both give 0.9 against 9.3 lvl/mm, an order of magnitude. Other
+  pairs are 2.3-2.8x and one unit reads 0.0. The draft now says "an order of
+  magnitude" and quotes the two values. Fix the source doc's summary line, and
+  decide whether the 0.0 unit belongs in the range at all.
 - FIRST FULL DRAFT COMPLETE 2026-09-13. Every section has prose. What remains
   is verification, not writing:
   * LENGTH IS THE BIGGEST PROBLEM. The body is ~10,500 words, roughly 12
