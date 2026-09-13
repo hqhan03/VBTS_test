@@ -26,8 +26,7 @@ AX = [("fx_mae", "Fx", "#c2553a"), ("fy_mae", "Fy", "#d9a441"),
 TQ = [("tx_mae", "Tx", "#c2553a"), ("ty_mae", "Ty", "#d9a441"),
       ("tz_mae", "Tz", "#1f6f8b")]
 HARD = ["soft", "medium", "hard"]
-# 경도 제목 색 — 순서가 있는 변수라 한 색의 농담으로 쓴다
-CH_TITLE = {"soft": "#9ec5d8", "medium": "#4a8fa8", "hard": "#134b5f"}
+from palette import HARD3 as CH_TITLE   # 경도 제목 색 — 뚜렷이 갈리는 셋
 
 
 def plain_log(ax, which="y"):

@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[2]
 RES = ROOT / "result"
 FOLD = {"9DTact": "1_9DTact", "DIGIT": "2_DIGIT", "DIGIT_Marker": "3_DIGIT_Marker"}
 HARD = ["soft", "medium", "hard"]
-CH = {"soft": "#9ec5d8", "medium": "#4a8fa8", "hard": "#134b5f"}
+from palette import HARD3 as CH        # 뚜렷이 갈리는 셋 — palette.py
 C = {"9DTact": "#1f6f8b", "DIGIT": "#c2553a"}
 
 

@@ -85,7 +85,10 @@ def load(pr, probe):
                 continue
             rows.append(pd.DataFrame(dict(
                 unit=u, probe=probe, source=Path(f).parents[2].name,
-                depth_mm=d.depth_mm, diameter_px=2 * d[dia], level=d[lvl])))
+                depth_mm=d.depth_mm,
+                # 힘은 같은 행에 이미 있다 — 깊이 대신 x 로 쓰면 힘 곡선이 된다
+                force_N=d.force_N if "force_N" in d else np.nan,
+                diameter_px=2 * d[dia], level=d[lvl])))
     if not rows:
         return pd.DataFrame()
     D = pd.concat(rows)
@@ -230,12 +233,11 @@ def panel(pr, D):
 # 같은 계통의 세 농담이 서로 묻혀 어느 군인지 못 가린다. 뚜렷이 갈리는 세 색을 쓰고,
 # 순서는 범례의 차례가 진다. Okabe-Ito 계열이라 색각 이상에서도 갈린다 — 인접 쌍
 # 최악 ΔE 11.0 (deutan), 보통 시야 25.8, 바탕 대비 전부 3:1 이상.
-_CAT3 = ["#0072B2", "#D55E00", "#009E73"]      # 파랑 · 주황 · 초록
-CH_G = dict(zip(["soft", "medium", "hard"], _CAT3))
-CT_G = dict(zip([1, 2, 3], _CAT3))
+from palette import HARD3 as CH_G, THICK3 as CT_G
 
 
-def group_curves(pr, D, probe):
+def group_curves(pr, D, probe, xcol="depth_mm", xlab="깊이 (mm)",
+                 stem="optical_by_group"):
     """두께·경도별로 곡선을 겹쳐 본다 — 유닛 18 칸으로는 비교가 안 되기 때문이다.
 
     18 유닛 격자는 유닛 하나하나를 보여주지만, **어느 두께가 더 가파른가** 같은
@@ -252,8 +254,11 @@ def group_curves(pr, D, probe):
     # `load()` 는 유닛 이름만 싣는다 — 여기서 경도와 두께를 풀어 쓴다
     G["hardness"] = G.unit.str.split("_").str[0]
     G["thickness_mm"] = G.unit.str.extract(r"_(\d)mm_")[0].astype(int)
-    lo = float(G.depth_mm[G.depth_mm > 0].min())
-    hi = float(G.groupby("unit").depth_mm.max().quantile(.8))
+    G = G[G[xcol].notna()]
+    if not len(G):
+        return None
+    lo = float(G[xcol][G[xcol] > 0].min())
+    hi = float(G.groupby("unit")[xcol].max().quantile(.8))
     if not np.isfinite(hi) or hi <= lo:
         return None
     grid = np.linspace(lo, hi, 40)
@@ -264,12 +269,12 @@ def group_curves(pr, D, probe):
             ys = []
             for _, gg in g.groupby("unit"):
                 gg = valid_span(gg[gg.depth_mm > 0])
-                gg = gg[gg.diameter_px > 0].sort_values("depth_mm")
+                gg = gg[(gg.diameter_px > 0) & gg[xcol].notna()].sort_values(xcol)
                 if len(gg) < 4:
                     continue
-                y = np.interp(grid, gg.depth_mm, gg[col],
+                y = np.interp(grid, gg[xcol], gg[col],
                               left=np.nan, right=np.nan)
-                y[(grid < gg.depth_mm.min()) | (grid > gg.depth_mm.max())] = np.nan
+                y[(grid < gg[xcol].min()) | (grid > gg[xcol].max())] = np.nan
                 ys.append(y)
             if len(ys) < 2:
                 continue
@@ -311,7 +316,7 @@ def group_curves(pr, D, probe):
                         zorder=4)
                 tidy.append(pd.DataFrame(dict(
                     principle=pr, probe=probe, measure=col, group_by=key,
-                    group=str(k), n_units=n, depth_mm=x,
+                    group=str(k), n_units=n, x_name=xcol, x=x,
                     median=med, q1=q1, q3=q3)))
             ax.set_ylabel(ylab, fontsize=9)
             ax.set_title(title, fontsize=10, loc="left")
@@ -320,34 +325,35 @@ def group_curves(pr, D, probe):
             ax.grid(True, which="major", alpha=.3, lw=.5, color="#b0b0b0")
             ax.set_axisbelow(True)
             if i == 1:
-                ax.set_xlabel("깊이 (mm)")
-    fig.suptitle(f"{pr} — 같은 축 위에 겹친 깊이 곡선 ({probe}). 굵은 선은 중앙값, "
+                ax.set_xlabel(xlab)
+    fig.suptitle(f"{pr} — 같은 축 위에 겹친 곡선, x = {xlab} ({probe}). "
+                 f"굵은 선은 중앙값, "
                  "띠는 사분위 범위, 가는 선은 유닛 하나하나",
                  fontsize=11.5, x=.04, ha="left")
     fig.tight_layout(rect=[0, 0, 1, .955])
     d = RES / FOLD[pr]
     (d / "figures").mkdir(parents=True, exist_ok=True)
-    fig.savefig(d / "figures" / f"optical_by_group_{probe}.png", dpi=180,
+    fig.savefig(d / "figures" / f"{stem}_{probe}.png", dpi=180,
                 bbox_inches="tight")
     plt.close(fig)
     if tidy:
         T = pd.concat(tidy)
-        T.to_csv(d / "data" / f"optical_by_group_{probe}.csv", index=False)
+        T.to_csv(d / "data" / f"{stem}_{probe}.csv", index=False)
         # **어느 쪽이 더 크게 가르나.** 눈으로 "갈린다" 고 말하면 곡선이 서로 다른
         # 깊이에서 끝나는 것에 속는다. 세 군이 모두 자료를 가진 가장 깊은 깊이
         # 하나를 잡고 거기서의 폭을 잰다 — 그래야 같은 조건에서 견준다.
         rows = []
         for (meas, key), g in T.groupby(["measure", "group_by"]):
-            piv = g.pivot_table(index="depth_mm", columns="group",
+            piv = g.pivot_table(index="x", columns="group",
                                 values="median").dropna()
             if not len(piv):
                 continue
             at = piv.index[-1]; v = piv.loc[at]
-            gg = g[g.depth_mm == at]
+            gg = g[g.x == at]
             between = float(v.max() - v.min())
             within = float((gg.q3 - gg.q1).median())
             rows.append(dict(principle=pr, probe=probe, measure=meas,
-                             group_by=key, at_depth_mm=at,
+                             group_by=key, x=xcol, at_x=at,
                              between=between, within_iqr=within,
                              # **이것이 판정이다.** 군 사이 차이가 군 안의 산포보다
                              # 큰가. 1 보다 작으면 그 군들은 자기 흩어짐 안에 있다.
@@ -362,8 +368,9 @@ def group_curves(pr, D, probe):
                                  sorted(v[sorted(v.index)]))))
         if rows:
             pd.DataFrame(rows).to_csv(
-                d / "data" / f"optical_group_spread_{probe}.csv", index=False)
-    print(f"    -> {FOLD[pr]}/figures/optical_by_group_{probe}.png")
+                d / "data" / f"{stem.replace('by_group', 'group_spread')}"
+                f"_{probe}.csv", index=False)
+    print(f"    -> {FOLD[pr]}/figures/{stem}_{probe}.png")
     return True
 
 
@@ -394,6 +401,8 @@ def main():
         panel(pr, D)
         for probe in sorted(D.probe.unique()):
             group_curves(pr, D, probe)
+            group_curves(pr, D, probe, xcol="force_N", xlab="힘 (N)",
+                         stem="force_by_group")
         got = ", ".join(f"{p} {S[S.probe==p].unit.nunique()}유닛"
                         for p in sorted(S.probe.unique()))
         print(f"  {pr:<13} {len(D):>6} 행  ({got})")

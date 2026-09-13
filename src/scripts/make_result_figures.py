@@ -23,7 +23,7 @@ REG = yaml.safe_load(open(ROOT / "src" / "config" / "sensor_registry.yaml"))
 # 원리별 색. 같은 원리는 어느 그림에서나 같은 색을 쓴다.
 C = {"9DTact": "#1f6f8b", "DIGIT": "#c2553a", "DIGIT_Marker": "#6a8e3b"}
 # 경도는 밝기로. 순서가 있는 변수이므로 한 색의 농담이 맞다.
-CH = {"soft": "#9ec5d8", "medium": "#4a8fa8", "hard": "#134b5f"}
+from palette import HARD3 as CH        # 뚜렷이 갈리는 셋 — palette.py
 TAG = {"9DTact": "20260911_passC_ceiling_ball8",
        "DIGIT": "20260912_passC_ceiling_ball8"}
 
