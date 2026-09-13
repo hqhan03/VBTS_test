@@ -15,7 +15,7 @@ CONTENTS
   Abstract                                                  [DRAFTED]
   I.    Introduction                                        [DRAFTED]
   II.   Related Work                                        [DRAFTED]
-  III.  Sensor Fabrication and Design of Experiments        [ ]
+  III.  Sensor Fabrication and Design of Experiments        [DRAFTED]
           A. Sensing Principles and Bodies
           B. Elastomer Specimens
           C. Apparatus
@@ -23,11 +23,11 @@ CONTENTS
           E. Running Order
   IV.   Calibration-Free Gel Characterization               [ ]
           A. Imprint Spread Ratio
-          B. Two-Point Spatial Resolution                [DRAFTED]
+          B. Two-Point Spatial Resolution                   [DRAFTED]
           C. Maximum Measurable Force                       [DRAFTED]
-  V.    Task Performance Against Sampling Resolution        [ ]
-          A. 6-Axis Force Estimation
-          B. Shape Reconstruction
+  V.    Task Performance Against Sampling Resolution        [DRAFTED]
+          A. 6-Axis Force Estimation                        [DRAFTED]
+          B. Shape Reconstruction                           [DRAFTED]
   VI.   Conclusion                                          [ ]
 
 
@@ -52,23 +52,15 @@ Each unit is evaluated on three calibration-free gel characterizations and on
 two estimation tasks swept against sampling resolution, for which we re-derive
 the preprocessing rather than inherit a pipeline built for a different sensor.
 Training-free measurements confirm that the elastomer does filter spatially:
-imprint bandwidth and optical blur both shift monotonically with thickness.
-[X: whether that shift reaches the resolution at which a trained estimator
-saturates -- the central question -- is reported from the re-derived sweep.]
-What the elastomer separately controls is clearer: the maximum force readable
-from the image and the depth quantization of shape reconstruction vary [Y]-fold
-across these gels.
-
-  [X] HELD OPEN until the re-derived force-estimation and shape-reconstruction
-      sweeps land. Do not assert a direction here before the numbers exist.
-      For reference, the sweep run with the inherited preprocessing gave a knee
-      near 2.5 px/mm that was flat against hardness and thickness; the
-      re-derivation is motivated by that pipeline not suiting these sensors.
-      Whichever way it comes out, replace this bracket with one sentence and
-      add the matching closing sentence on the design consequence.
-  [Y] pending IV-C and V-B. Ceiling ratio is 4.3x BETWEEN PRINCIPLES under the
-      1.0 lvl/N absolute criterion -- a gel-to-gel figure still has to be
-      extracted. Depth quantization spans 31-64 um/level.
+two-point resolution degrades with thickness on every metric we measure. That
+shift does not reach the resolution at which a trained estimator saturates.
+Across nine gel designs, two independent principles and two tasks whose
+estimators share nothing, twenty tests of a thickness or hardness dependence in
+the saturation resolution return none. What the elastomer separately controls
+is clearer: the maximum force readable from the image and the depth
+quantization of shape reconstruction each vary about twofold across these gels.
+Sampling resolution can therefore be specified before the elastomer is chosen,
+which decouples two decisions that fabrication guidance has treated as one.
 
 ================================================================================
 I. INTRODUCTION
@@ -142,25 +134,36 @@ from a table-mounted F/T sensor, and depth-from-intensity shape reconstruction
 against probes of known geometry.
 
 [I-6]
-The saturation resolution does not move with the gel. Across nine gel designs
-and two independent principles, force-estimation error saturates at an input
-width of roughly 40-56 px over a ~19 mm field, about 2.5 px/mm, with no
-significant dependence on either thickness or hardness. We report this as a
-negative result deliberately: an earlier, coarser sweep in this same campaign
-produced a significant thickness correlation that did not survive a finer
-resolution ladder or a change of input representation, and we show why an
-unstable knee estimate manufactured it. The underlying physics is present but
-small -- imprint bandwidth and optical blur both shift monotonically with
-thickness in training-free measurements -- and simply does not reach the scale
-at which a trained estimator's requirement changes.
+The saturation resolution does not move with the gel. We report this as a
+negative result deliberately, and we report it from twenty tests rather than
+one: saturation resolution against thickness and against hardness, for two
+sensing principles and a marker-bearing arm, over six force axis-groups and
+four held-out shape probes, with one false-discovery correction applied across
+all twenty. None reaches q < 0.05. An earlier, coarser sweep in this same
+campaign produced a significant thickness correlation that did not survive a
+finer resolution ladder, and we show that an unstable knee estimator
+manufactured it. The underlying physics is present -- two-point resolution
+degrades with thickness on every metric of Section IV-B -- and simply does not
+reach the scale at which a trained estimator's requirement changes.
+
+[I-6b]
+The honest bound on that null is the replicate scatter. Two units built to the
+same gel specification disagree about their own saturation resolution by a
+median factor of 6.7 on depth-referenced normal force, so an effect smaller
+than that is invisible to this design. The shear estimates are steady to within
+a factor of 1.6, and it is there that the null carries information. What does
+move the requirement is the axis and the task, not the gel: shear saturates
+near 48 px of input width in both markerless principles, normal force at or
+above that, and shape reconstruction at 80 to 160 px.
 
 [I-7]
 The practical consequence is favourable rather than disappointing. Sampling
 resolution for force estimation can be specified before the elastomer is
 chosen, which decouples two design decisions that were assumed to be entangled.
 What the elastomer does control is different: the maximum force readable from
-the image, and the depth quantization of shape reconstruction, both of which
-vary severalfold across our gels. The contributions are:
+the image, which varies 2.3-fold across the depth-referenced gels, and the
+depth quantization of shape reconstruction, which varies 2.1-fold. The
+contributions are:
 
 [I-C1]
 1) A controlled, hardware-matched factorial study of elastomer hardness,
@@ -169,10 +172,11 @@ fabricated sensors -- to our knowledge the first in which all four are varied
 together with optics held fixed.
 
 [I-C2]
-2) The measured saturation resolution for force estimation, ~2.5 px/mm, shown
-to be invariant to gel design across two sensing principles, together with the
-evidence that an apparent gel dependence in a coarser experiment was an
-artefact of the knee estimator.
+2) The measured saturation resolution for force estimation and for shape
+reconstruction, shown to be invariant to gel design across two sensing
+principles and twenty tests, together with the evidence that an apparent gel
+dependence in a coarser experiment was an artefact of the knee estimator, and a
+statement of how large an effect this design could have detected.
 
 [I-C3]
 3) Measured gel dependence where it does exist: force ceiling under an absolute
@@ -283,10 +287,12 @@ resolution, but on the output side: it compares U-net force-distribution
 outputs of 12x16 and 24x32 and keeps the latter for spatial detail [14]. Input
 sampling resolution is therefore inherited rather than measured, and the one
 resolution ablation in this group concerns what the network emits rather than
-what it is given. Our result partly justifies the 224 px convention and partly
-does not: shear error is lowest in a band that contains it, while normal force
-is already flat far below, so 224 px is generous for applications that need
-only normal force.
+what it is given. Our result bears on the 224 px convention in a way that inverts the intuition
+behind it. Shear saturates far below 224 px, near 48 px of input width in both
+markerless principles, so 224 px is generous for shear; normal force is the
+axis that keeps improving further up, to 320 px in the depth-referenced units.
+An application that needs only normal force is therefore the one for which
+224 px is not obviously enough.
 
 [II-7]
 *Measurement conventions we adopt.* For two-point spatial resolution we report
@@ -810,7 +816,148 @@ V. TASK PERFORMANCE AGAINST SAMPLING RESOLUTION
 
 A. 6-Axis Force Estimation
 
+[V-A1]
+A ResNet-18 regresses the six-axis wrench from a single frame, with ground
+truth from the table-mounted transducer, and is trained separately at each of
+twelve sampling resolutions obtained by downscaling the common 1920x1080
+capture from 1920 down to 8 px of width. Every training hyperparameter is held
+identical across principles and across resolutions -- effective batch 64 by
+gradient accumulation, 30 epochs, Adam at 5e-4, weight decay 1e-4, a
+cycle-based split, three seeds -- so that a difference between two curves is a
+difference in the images and not in the optimization. The input representation
+is the one each principle's own literature uses: the depth-referenced units are
+fed the author's three-channel encoding (reference, brightening, darkening),
+the photometric units the raw camera frame, and the marker-bearing units the
+frame with the marker dots inpainted from their surroundings. This is a
+deliberate choice to give each principle its own best case rather than to force
+a common representation that would handicap one of them; the cost is that a
+difference between principles is a difference between (principle,
+representation) pairs, and we do not attribute it to the principle alone.
+
+[V-A2]
+The saturation resolution of a unit is the lowest resolution whose error is
+within 110 % of that unit's own minimum. We do not use the argmin, which
+wanders along the flat part of a curve and was the estimator that manufactured
+an apparent thickness dependence in an earlier, coarser sweep of this campaign.
+
+[V-AT1]  TABLE VII -- SATURATION RESOLUTION FOR FORCE (median of 9 units)
+  principle          | axis  | median     | across units
+  depth-referenced   | Fz    | 320 x 180  | 32x18 - 854x480
+  depth-referenced   | shear |  48 x  27  | 32x18 - 160x90
+  photometric        | Fz    |  80 x  45  | 32x18 - 320x180
+  photometric        | shear |  48 x  27  | 32x18 - 426x240
+  photometric+marker | Fz    |  80 x  45  | 32x18 - 320x180
+  photometric+marker | shear |  80 x  45  | 48x27 - 1920x1080
+  Shear is the mean of Fx and Fy. One unit per cell, nine per principle.
+
+[V-A3]
+The saturation resolution does not move with the gel. Spearman correlations of
+saturation resolution against thickness and against hardness, over the units of
+each principle and each axis group, give twelve tests for force; none reaches
+q < 0.05. The false-discovery correction is applied once over all twenty tests
+in this section and the next, force and shape together, because correcting the
+two separately would hide the fact that twenty comparisons were made.
+
+[V-A4]
+That null is a limit on our power, not a demonstration that no effect exists,
+and the replicate data says how tight the limit is. Comparing the two
+replicates of a cell -- same gel specification, different unit -- the saturation
+resolutions disagree by a median factor of 6.7 for depth-referenced Fz, with
+four of eight pairs disagreeing by eight-fold or more. An effect of thickness
+smaller than that cannot be seen by this design. The shear estimates are much
+steadier, disagreeing by a median factor of 1.5 to 1.6, and it is there that
+the null is informative.
+
+[V-A5]
+What does move the requirement is the axis, and it moves it in the opposite
+direction to the one commonly assumed. Shear saturates at 48 x 27 px in both
+markerless principles, roughly 2.5 px/mm over the sensing field, while normal
+force saturates at or above that in every principle and at 320 x 180 in the
+depth-referenced units. Reading a normal force from these images therefore
+costs more pixels than reading a shear, not fewer. The depth-referenced Fz
+figure is also the least trustworthy number in Table VII, being the one with
+6.7-fold replicate scatter; the ordering survives in the photometric units,
+where Fz and shear are estimated far more repeatably.
+
+
 B. Shape Reconstruction
+
+[V-B1]
+The two principles need different reconstructions and we implement each in its
+own terms. For the depth-referenced units a brightness-to-depth lookup table is
+calibrated on the 4 mm sphere and evaluated on the flat cylinder and the cube,
+neither of which is used in calibration. For the photometric units we built the
+pipeline for this study: per-pixel true surface gradients are computed from
+Hertzian contact with a sphere of known radius, so no circle detection is
+needed; a small MLP regresses (colour difference, normalized position) to
+(gx, gy); and the height map comes from solving the Poisson equation by
+discrete cosine transform. There are no empirical fitting constants. The
+marker-bearing units are not reconstructed at all, because the marker dots
+occlude the shading the method reads.
+
+[V-B2]
+The depth-referenced reconstruction depends strongly on resolution. Median
+absolute error falls from 0.529 mm at 8 x 5 px to 0.062 mm at 160 x 90, a
+factor of 8.5, and then worsens again above that. The worsening is an artefact
+of the estimator rather than of the sensor: correcting for the grey levels the
+lookup table loses at high resolution flattens the curve above 80 px. The
+number of distinct grey levels a unit resolves is itself a gel-dependent
+quantity, which is the subject of [V-B5].
+
+[V-B3]
+The photometric reconstruction has its knee in the same place, 80 x 45 px, and
+we report that only after retracting an earlier reading of the same data. We
+had recorded that the photometric error was flat against resolution and that
+the pipeline transferred to only 6 of 18 units. Both were artefacts of the
+reference frame. In every photometric run `reference.png` is 8 to 14 % brighter
+than the frames that follow it, because the approaching indenter shadows a gel
+that is lit from the side, and that offset rides directly into the colour
+difference the gradient regression consumes. With the reference corrected and
+all units recalibrated, the minimum error is 0.043 mm at 80 x 45, 15 of 18
+units fall below 0.1 mm, and the median within-unit correlation between
+predicted and true depth is +0.980.
+
+[V-BT1]  TABLE VIII -- SATURATION RESOLUTION FOR SHAPE (median of 9 units)
+  principle          | probe          | median    | across units
+  depth-referenced   | cylinder 4 mm  | 160 x 90  | 80x45 - 1920x1080
+  depth-referenced   | cube 4 mm      | 160 x 90  | 80x45 - 1920x1080
+  photometric        | cylinder 4 mm  |  80 x 45  | 16x9  - 160x90
+  photometric        | cube 4 mm      |  80 x 45  | 8x5   - 160x90
+  Both probes are held out of calibration. One unit per cell.
+
+[V-B4]
+Shape gives the same answer as force. The eight remaining tests -- saturation
+resolution against thickness and against hardness, for two principles and two
+held-out probes -- contain no q < 0.05 either. Across two independent sensing
+principles and two tasks with unrelated estimators, twenty tests of the
+proposition that the elastomer sets the sampling-resolution requirement return
+nothing.
+
+[V-B5]
+Where the gel does enter shape reconstruction is not the resolution but the
+depth quantization. A depth-referenced unit resolves one depth step per 31 to
+64 micrometres depending on the gel, a spread of 2.1-fold across the nine
+units, and that is a hard floor on what any resolution can recover. It is also
+the quantity behind the high-resolution worsening in [V-B2].
+
+[V-B6]
+Four limits bound this section. First, the photometric reconstruction measures
+the depth of the contact cap and not the absolute indentation. In Hertzian
+contact the surface at the contact edge has already sunk by half the
+indentation, and the elastic halo carrying the other half has surface gradients
+below this sensor's colour-noise floor, so the regression predicts zero there;
+measured against ground truth the recovered depth is 0.47 of the true value,
+and beyond 1.5 contact radii the reconstructed surface is flat. The shape is
+recovered well and only the amplitude is wrong. Second, the correction for that
+was tried and rejected: the scale factor belongs to the indenter geometry, so a
+factor fitted on the sphere doubles the error on the flat probes (0.151 mm
+applied against 0.042 mm not applied). Third, the depth scale does not transfer
+between units -- the slope of true against predicted runs from 0.16 to 0.92 --
+so pooling units drops the correlation to +0.46 and a pooled figure must not be
+reported as performance. Fourth, the two principles are evaluated over
+different depth ranges, 0.010 to 0.578 mm for the photometric units against a
+deeper band for the depth-referenced ones, so their shape accuracies are not on
+one ruler and we do not compare them.
 
 
 ================================================================================
@@ -875,11 +1022,14 @@ OPEN QUESTIONS / TO RESOLVE
   C_relative_vs_absolute_criterion, D_hardness_range_imbalance,
   E_probe_transfer. At ICRA page limit not all survive. B and C are the ones
   the argument needs; A is folded into Table VI; D and E are limitations.
-- PENDING ANALYSIS: force estimation and shape reconstruction are being
-  re-derived with preprocessing appropriate to these sensors. Until those
-  numbers exist, [ABS] and [I-6] must not assert a direction for the
-  resolution sweep. [I-6] currently still asserts the old negative result --
-  reconcile it with [ABS] before circulating the draft.
+- RESOLVED 2026-09-13: the re-derived sweeps landed and [ABS] / [I-6] / [I-6b]
+  now state the same thing from them. The direction is the null, over twenty
+  tests with one BH correction, and both places now carry the replicate-scatter
+  bound rather than claiming no effect exists.
+- [II-6] was REVERSED by those numbers. The draft used to say normal force is
+  flat far below 224 px while shear needs it; the sweep says the opposite.
+  Anyone editing that paragraph should check [V-A5] first.
+- Section VI is still empty, and it is now the only prose gap besides IV-A.
 - RESOLVED 2026-09-13: one unit per cell, everywhere. result/results.md is the
   all-unit run and result/results_single_sensor.md the 27-unit run; the
   resolution conclusions agree (0 of 20 thickness/hardness tests reach q < 0.05
