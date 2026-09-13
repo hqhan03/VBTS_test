@@ -126,18 +126,22 @@ VBTS 해상도 캠페인의 결과물 전부. **모든 그림에 그것을 그�
 
 **원리 간 비교에는 절대 기준을 쓴다.** 상대 기준 값은 한 유닛의 운용 한계로만 쓴다.
 
-## 4. 경도 범위 불균형 — 철회한 결론의 근거
+## 4. 경도 범위 불균형
 
-![9DTact 는 40 Shore 점, DIGIT 계열은 6 점을 흔들었다.](extra/figures/D_hardness_range_imbalance.png)
+두 계열의 "soft / medium / hard" 는 같은 눈금이 아니다. 9DTact 는 OO-30 에서
+OO-70 까지 **40 Shore 점**을 흔들었고, DIGIT 계열은 OO-51 에서 OO-57 까지
+**6 점**을 흔들었다 — **6.7 배** 차이다. 9DTact 는 서로 다른 두 제품군
+(Ecoflex, Dragon Skin)을 가로지르고, DIGIT 계열은 Solaris 한 배합에서
+가소제(Slacker) 비율만 바꿨다.
 
-*9DTact 는 40 Shore 점, DIGIT 계열은 6 점을 흔들었다.*
+그래서 **9DTact 의 soft 와 DIGIT 의 soft 가 다른 물건**일 뿐 아니라,
+**DIGIT 의 soft 와 hard 도 서로 거의 같은 물건**이다. DIGIT 계열의 경도 세 등급은
+실질적으로 한 겔이다.
 
-<sub>그림: `extra/figures/D_hardness_range_imbalance.png` · 자료: `extra/data/D_hardness_range_imbalance.csv`</sub>
-
-한때 *"경도는 9DTact 만 가른다"* 고 적었다가 **철회했다.** 9DTact 의 경도 민감도
-(3 mm 에서 0.77 N/Shore 점)를 DIGIT 의 6 점 범위에 적용하면 예상 변이가 4.6 N 인데
-실측이 3.3 N 이다 — 같은 크기다. **DIGIT 이 둔감한 것이 아니라 경도를 거의 바꾸지
-않았다.** 원리 간 경도 효과 비교는 이 설계로 불가능하다.
+**원리를 가로질러 경도를 하나의 요인으로 놓는 분석은 이 설계로 성립하지 않는다.**
+이 문서의 3×3 표에서 경도 행 사이의 차이는 **한 원리 안에서만** 읽을 것이고,
+그때도 DIGIT 계열은 6 점 안에서의 차이임을 함께 보아야 한다. 겔 규격과 실측
+경도는 `docs/methods.md` §2.1 에 있다.
 
 ## 5. 프로브 전이 — 깊이는 옮겨지고 힘은 아니다
 
