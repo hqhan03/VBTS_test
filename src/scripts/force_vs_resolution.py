@@ -469,11 +469,25 @@ def micro_batch_for(size, base=64):
     optimiser, and 1920x1080 (the cell with the widest seed spread) was the one
     trained with the smallest batch. Gradient accumulation separates the two:
     this is the micro-batch, chosen to fit memory, and `--batch` is the
-    effective batch, which is now the same at every resolution.
+    effective batch, which is the same at every resolution.
+
+    **It has to DIVIDE the batch (fixed 2026-09-13).** The caller sets
+    `accum = round(batch / micro)`, so a micro-batch that does not divide the
+    batch silently changes the optimiser: at 640x360 micro 44 gave accum 1 and
+    an effective batch of **44**, at 854x480 micro 24 gave accum 3 and **72**,
+    at 1280x720 micro 11 gave accum 6 and **66**. Three of the twelve cells were
+    trained by a different optimiser than the other nine -- exactly the fault
+    the accumulation was introduced to remove.
+
+    So the memory allowance is rounded DOWN to a divisor of the batch. It never
+    asks for more memory than before; at worst it takes a smaller bite and one
+    more accumulation step.
     """
     px = size[0] * size[1]
     ref = 460 * 345
-    return int(max(2, min(base, base * ref / max(px, 1))))
+    allowed = int(max(2, min(base, base * ref / max(px, 1))))
+    div = [d for d in range(1, base + 1) if base % d == 0 and d <= allowed]
+    return max(div) if div else 1
 
 
 def _to_input(xb, mode):
