@@ -1,21 +1,33 @@
 # Measurement protocol — what the robot does, move by move
 
-> **Status 2026-09-07.** The move-by-move description below is still the
-> shape of a run, and the coordinate frames, the motion-enable sequence and the
-> failure modes are all still accurate. The numbers in it are not: it was
-> written for the force-ladder protocol at 5 N. What the campaign actually runs
-> now is summarised in the next section, and
-> `config/sensor_registry.yaml` + `config/probes.yaml` remain the
-> machine-readable source of truth.
+> **Status: collection closed 2026-09-12.** Nothing more is measured. The
+> move-by-move description below is the shape of every run that was taken, and
+> the coordinate frames, the motion-enable sequence and the failure modes are
+> all accurate as run. Some of its numbers are not: parts were written for the
+> force-ladder protocol at 5 N. What the campaign actually ran is summarised in
+> the next section, and `config/sensor_registry.yaml` + `config/probes.yaml`
+> remain the machine-readable source of truth.
+>
+> **Two things changed after this file was written.** The substrate-stiffening
+> alarm became record-only (2026-09-07, in the table below), and the
+> maximum-force test was re-run on both principles with one probe, `ball8`,
+> after the five ceilings declared on `ball4` turned out to sit deeper than the
+> ball's own diameter — the contact was the shank, not a sphere
+> (`force_ceiling.md` §6.3). The area watchdog used during those ramps was
+> removed: it could not separate gel destruction from detector failure
+> (`force_ceiling.md` §6.5b).
 
 ---
 
-## Current protocol at a glance — 2026-09-07
+## The protocol as it was run — final
 
-**Two passes.** Pass A (done for 9DTact): shape reconstruction and spatial
-resolution, seven probes over 17 units, sharing one depth ladder. Pass B
-(starting): force estimation with `ball8`, then the maximum-force test last,
-because it damages gels.
+**Two passes.** Pass A: shape reconstruction and spatial resolution, seven
+probes over a shared depth ladder — complete for 9DTact's 17 units; for the
+DIGIT family it covered the photometric calibration grid and the shape probes,
+but **two-point resolution was dropped** (one DIGIT unit only; DIGIT_Marker not
+at all, operator's decision 2026-09-11). Pass B: force estimation with `ball8`,
+complete for all 53 units, then the maximum-force test last because it damages
+gels — 9DTact 17/18 and DIGIT 18/18 on `ball8`, DIGIT_Marker on `ball4` only.
 
 ### Ranges and limits
 
