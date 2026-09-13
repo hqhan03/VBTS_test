@@ -1135,7 +1135,7 @@ newrun -> tare -> reference -> enable -> liftoff -> align -> qc -> search -> ...
 1. **축척 적용** — 모든 픽셀 값에 비등방 1.26과 회전 30°를, 센서별 측정값으로.
 2. **평면 보정** — 각 센서의 기울기로 접촉면의 깊이 편차를 보정.
 3. **시험 2** — `ball4`로 depth-from-intensity 룩업 보정, cube/cylinder/star로 채점.
-   **방법은 검증됐다**(`docs/shape_reconstruction_pilot.html`): 반복도 0.005 mm,
+   **방법은 검증됐다**(`docs/archive/shape_reconstruction_pilot.html`): 반복도 0.005 mm,
    1차 보정 후 잔차 0.021 mm, 복원된 원판 반지름 2.000 mm 대 정답 2.00 mm.
    깊이 분해능은 **이미지의 그레이 동적 범위**가 정한다 — 이 설계에서 28레벨에
    0.548 mm가 실려 레벨당 0.020 mm이고 그 값이 잔차와 같다. 54개 설계가 이

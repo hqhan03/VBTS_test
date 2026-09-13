@@ -14,20 +14,20 @@ per question.
 
 | I want to know… | read |
 |---|---|
-| **every figure and table for the paper, with its explanation and its csv** | **`../result/results.md`** |
+| **every figure and table for the paper, with its explanation and its csv** | **`../result/results.md`** — this is also the one-page summary; `RESULTS_SUMMARY.md` was a hand-kept copy of the same tables, went stale, and was deleted 2026-09-13 |
 | what the campaign is, its four tests, where it stands | **`campaign_protocol.md`** ← start here |
 | what the robot actually does, move by move, and every measured number behind it | **`measurement_protocol.md`** |
 | where a file gets written and what is in it | `data_recording.md` |
 | how the sensor frame, the base frame and the gel relate | `frames_and_transforms.md` |
 | where the TCP number came from | `tcp_calibration_history.md` |
-| **test 2, shape reconstruction — 9DTact's intensity→depth LUT and DIGIT's photometric stereo** | **`shape_reconstruction.md`** (§6 is the DIGIT pipeline, `scripts/digit_shape.py`) |
+| **test 2, shape reconstruction — 9DTact's intensity→depth LUT and DIGIT's photometric stereo** | **`shape_reconstruction.md`** (§5 is the DIGIT pipeline, `scripts/digit_shape.py`) |
 | **test 3, spatial resolution — method and all 17 units' results** | **`spatial_resolution.md`** |
 | **test 1, force estimation — all three principles, per-axis MAE vs resolution** | **`force_estimation.md`** |
 | how much camera resolution the shape method needs (downscale sweep) | `shape_vs_resolution.md` |
 | can hardness and thickness be one variable (contact radius)? — an attempt | `contact_variable.md` |
 | why a sphere reads the surface too deep | `hertz_zero_bias.md` |
 | why a paired probe's two posts press unequally | `pair_contact_asymmetry.md` |
-| the 2026-09-05 single-unit shape pilot | `shape_reconstruction_pilot.html` |
+| the 2026-09-05 single-unit shape pilot | `archive/shape_reconstruction_pilot.html` |
 | superseded documents, kept for provenance | `archive/` |
 
 Added since (this table was written when only 9DTact had been measured):

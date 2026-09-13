@@ -5,7 +5,7 @@ cyl4 (18 프레임) 와 cube4 (6 프레임) 로 채점 — **17 × 24 = 408 평�
 데이터: `data/20260911_VBTSresolution_dataset/9DTact/20260905_passA_{ball4,cube4,cyl4}/<sensor>/`,
 분석: `scripts/analyse_shape.py`, 결과: `data/20260911_VBTSresolution_dataset/9DTact/shape_reconstruction.csv`
 (유닛당 1 행) 와 `shape_reconstruction_rungs.csv` (프레임당 1 행).
-2026-09-05 의 단일 유닛 파일럿은 `shape_reconstruction_pilot.html` 에 그대로 있다.
+2026-09-05 의 단일 유닛 파일럿은 `archive/shape_reconstruction_pilot.html` 에 그대로 있다.
 
 ---
 
@@ -260,7 +260,7 @@ x 축 경도, y 축 두께, z 축 지표의 3차원 막대로 그렸다(칸마�
   스테레오 방식이라 별도 파이프라인이 필요하다. **2026-09-13 에 만들어 돌렸고, 결과는
   §6 에 한계로 적는다** — 18 유닛 중 6 개에서만 전이됐다.
 
-## 6. DIGIT 용 파이프라인 — 만들었고, 시제품에 그친다
+## 5. DIGIT 용 파이프라인 — 만들었고, 시제품에 그친다
 
 `src/scripts/digit_shape.py`. GelSight 계열의 표준 절차를 따른다:
 
@@ -320,7 +320,7 @@ n = 18). 겔이나 광학의 측정된 성질로 설명되지 않으므로 "더 
 
 ---
 
-## 5. 재현
+## 6. 재현
 
 ```bash
 /usr/bin/python3 src/scripts/analyse_shape.py                      # 17 유닛, CSV 두 개 갱신
