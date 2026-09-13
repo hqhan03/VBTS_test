@@ -23,7 +23,7 @@ CONTENTS
           E. Running Order
   IV.   Calibration-Free Gel Characterization               [ ]
           A. Imprint Spread Ratio
-          B. Two-Point Spatial Resolution
+          B. Two-Point Spatial Resolution                [DRAFTED]
           C. Maximum Measurable Force                       [DRAFTED]
   V.    Task Performance Against Sampling Resolution        [ ]
           A. 6-Axis Force Estimation
@@ -534,6 +534,118 @@ A. Imprint Spread Ratio
 
 B. Two-Point Spatial Resolution
 
+[IV-B1]
+Two cylinders of 1.00 mm diameter are pressed into the gel side by side, and we
+find the narrowest spacing at which the image still shows two imprints rather
+than one. Six probes span edge gaps of 0.10 to 1.50 mm, that is, centre
+spacings of 1.10 to 2.50 mm. The method follows the dual-pronged microindenter
+of Digit 360 [11] so that our numbers are comparable to theirs.
+
+[IV-B2]
+Along the axis joining the two imprints we take the intensity profile of the
+difference from the undeformed reference, and from its two peaks and the valley
+between them compute dip = (P - T)/P with P the weaker of the two peaks. Using
+the weaker peak only makes the test stricter: two points are resolved when both
+of them stand as peaks, and averaging would let one deep imprint carry a
+shallow one. Three gates must all pass. The signal gate requires P >= 2.5 grey
+levels, which is about twice the standard deviation of our depth zero, so that
+a peak is not noise. The noise gate requires the dip to exceed three times its
+own propagated uncertainty. The resolution gate requires dip >= 0.265, the
+Rayleigh criterion. We also report the Michelson-contrast criterion of Digit
+360, MTF >= 0.5, which converts to dip >= 0.667 and is therefore 2.5 times
+stricter. Both criteria and all three gates were fixed before any paired-probe
+data was examined. A unit resolves a spacing if any depth in its ladder passes.
+
+[IV-B3]
+Every photometric unit resolves the narrowest probe we built. All nine pass at
+a centre spacing of 1.10 mm -- a 0.10 mm gap -- with dips of 0.967 to 1.000,
+which clears not only Rayleigh but the Digit 360 criterion by a wide margin.
+This is a bound and not a value: what we can state is that the photometric
+resolution is finer than 0.10 mm, and the experiment does not say how much
+finer. The measurement that does separate these units is the depth over which
+they hold that resolution, which is what the right half of Table IV reports.
+
+[IV-B4]
+The depth-referenced units do have a measurable limit and it moves with the
+gel. The finest resolved spacing ranges from 1.10 mm to 2.50 mm across the nine
+units, and the two 3 mm units that were tested at every gap fail everything
+below 2.50 mm while the 1 mm and 2 mm units reach 1.10 to 1.75 mm. Resolved
+depth behaves in the opposite direction: 1 mm gels hold resolution only to
+0.6 mm of indentation, while 2 and 3 mm gels hold it to 0.9 mm.
+
+[IV-BT1]  TABLE IV -- TWO-POINT RESOLUTION AGAINST GEL DESIGN
+                     | finest resolved,  | resolved depth
+                     | centre spacing mm | range, mm
+                     | 1 mm  2 mm  3 mm  | 1 mm     2 mm     3 mm
+  depth-referenced   |                   |
+    soft             | 1.50  1.75  2.00  | 0.2-0.6  0.1-0.9  0.3-0.3
+    medium           | 1.10  1.10  2.50  | 0.1-0.6  0.1-0.9  0.5-0.9
+    hard             | 1.25  1.25  2.50  | 0.1-0.6  0.1-0.9  0.4-0.9
+  photometric        |                   |
+    soft             | 1.10  1.10  1.10  | 0.1-0.6  0.1-0.9  0.1-0.9
+    medium           | 1.10  1.10  1.10  | 0.1-0.6  0.1-0.9  0.2-0.9
+    hard             | 1.10  1.10  1.10  | 0.1-0.6  0.1-0.9  0.2-0.9
+  One unit per cell. Centre spacing is the 1.00 mm cylinder diameter plus the
+  edge gap; 1.10 mm is the narrowest probe built. Every photometric entry is
+  that probe, so the left half of the photometric block is a bound, not a
+  measurement. Depth-referenced units were tested at six gaps, photometric at
+  two, since the finest was already resolved.
+
+[IV-B5]
+The elastomer does filter spatially, and the cleanest evidence is at the widest
+gap. At a centre spacing of 2.50 mm, where the entire 0.1 to 0.9 mm depth
+ladder is measurable on every unit, hardness and thickness both order the
+depth-referenced results: softer gels separate the two points with a deeper
+valley (Spearman rho -0.82 against hardness, p 0.0004), thicker gels are worse
+on every metric (rho -0.69 for the count of steps passing the Digit 360
+criterion, p 0.0068; rho -0.54 for the maximum dip, p 0.0449), and thicker gels
+need a deeper press before the imprint clears the signal gate at all (rho
++0.65, p 0.0127). Steps that pass the Digit 360 criterion occur only in 1 and
+2 mm gels; all five 3 mm units score zero. This is the training-free
+confirmation that the low-pass argument of Section I is real.
+
+[IV-B6]
+It matters that this appears at the widest gap and not the narrowest, because
+the narrow-gap pattern is partly a property of the measurement. At 1.10 to
+2.00 mm the signal gate removes the shallow steps of a unit and merging removes
+the deep ones, so which steps survive differs from unit to unit and the
+resolved-or-not pattern carries the measurement as much as the gel. At 2.50 mm
+the whole ladder is available on every unit, so the gels are compared on one
+ruler. A resolution study that reports only the limiting spacing is therefore
+reporting a quantity whose gel dependence it cannot see.
+
+[IV-B7]
+Two readings we made along the way were wrong, and both corrections are
+instructive. Five depth-referenced units resolved nothing at 2.00 mm or below,
+which we first attributed to the body and assembly; at 2.50 mm four of the five
+resolve cleanly. Their imprints need 0.3 to 0.5 mm of indentation to clear the
+2.5-level signal gate, and the depth ladder of that earlier pass stopped at
+0.3 mm, so they were never pressed far enough. The cause was measurement range,
+not fabrication. The fifth, a unit with a confirmed light leak, fails at 2.50 mm
+too and is genuinely faulty; it is excluded from the reported set by the rule
+of Section III-B. Separately, an earlier analysis concluded that resolution
+fails beyond about 0.4 mm of depth because the two imprints merge. At 2.50 mm
+resolution continues to 0.9 mm in eight units. That conclusion holds only for
+spacings of 1.10 to 2.00 mm.
+
+[IV-B8]
+The narrow-gap verdicts sit on the signal gate, and we report the sensitivity
+rather than tuning it away. Lowering the gate from 2.5 to 2.0 grey levels takes
+the number of units resolving 1.25 mm from five to nine. Half a grey level
+corresponds to about 0.01 mm of indentation. The Rayleigh threshold of 0.265 is
+an optical convention and the 2.5-level gate is justified in [IV-B2]; neither
+was moved after seeing the data, but a reader should know that the limiting
+spacing of a depth-referenced unit is a threshold-sensitive number in a way
+that its resolved depth range is not.
+
+[IV-B9]
+Three limits bound this section. The marker-bearing arm was not measured for
+spatial resolution at all, so the headline variable of this paper has no
+three-principle comparison -- only the two. The photometric limit is a bound,
+as [IV-B3] states, and closing it needs probes finer than 0.10 mm. And each
+verdict rests on a single frame per depth, so there is no within-depth scatter;
+consistency across depths is the only internal check available.
+
 
 C. Maximum Measurable Force
 
@@ -571,7 +683,7 @@ absolute criterion, a fixed levels/N threshold, recomputed from the same
 recorded ramps.
 
 [IV-C4]
-Table IV gives both. Absolute thresholds at which more than 10 % of ramps end
+Table V gives both. Absolute thresholds at which more than 10 % of ramps end
 before crossing are excluded, because discarding truncated units biases the
 median of the survivors downward and the truncated units are systematically the
 high-ceiling ones; that rules out 0.2 and 0.5 levels/N, where up to 88 % of the
@@ -579,7 +691,7 @@ depth-referenced ramps are truncated. The two admissible thresholds order the
 principles the same way and both separate them significantly, so the choice of
 threshold is not producing the result.
 
-[IV-CT1]  TABLE IV -- CEILING BY CRITERION (medians, 8 mm sphere)
+[IV-CT1]  TABLE V -- CEILING BY CRITERION (medians, 8 mm sphere)
   criterion             | depth-ref. | photometric | ratio | p
   relative, 15 % peak   |  30.97 N   |   17.72 N   | 1.8x  | 4.1e-05
   absolute, 1.0 lvl/N   |  30.42 N   |    7.02 N   | 4.3x  | 8.8e-07
@@ -600,7 +712,7 @@ principles. With both replicates of every cell the ranges overlap, 24.6-63.2
 against 11.1-23.4 N. An individual unit therefore still cannot be assigned to a
 principle from its ceiling alone; it is the medians that separate.
 
-[IV-CT2]  TABLE V -- CEILING AND SATURATION DEPTH AGAINST GEL DESIGN
+[IV-CT2]  TABLE VI -- CEILING AND SATURATION DEPTH AGAINST GEL DESIGN
                      |    ceiling, N     |  saturation depth, mm
                      | 1 mm  2 mm  3 mm  |  1 mm  2 mm  3 mm
   depth-referenced   |                   |
@@ -615,7 +727,7 @@ principle from its ceiling alone; it is the medians that separate.
   was ramped with a different probe ([IV-C11]).
 
 [IV-C6]
-Thickness acts on the two principles in opposite directions (Table V). Over the
+Thickness acts on the two principles in opposite directions (Table VI). Over the
 depth-referenced units the ceiling rises with thickness (Spearman rho +0.63,
 p 0.068) and most steeply in the hard series, 27.5 to 43.3 to 63.2 N; over the
 photometric units it falls (rho -0.79, p 0.011), and it falls in the
@@ -674,7 +786,7 @@ two is being bought.
 
 [IV-C11]
 Four limits belong with these numbers. First, the marker-bearing arm was ramped
-only with the 4 mm sphere and cannot enter Tables IV and V. On its own ruler
+only with the 4 mm sphere and cannot enter Tables V and VI. On its own ruler
 its ceilings run from 6.2 to 20.5 N with a median of 9.2 N and fall with
 thickness as the markerless photometric units do; that is as far as the
 comparison can be taken. Second, the two spheres do not convert. Across 18
@@ -687,7 +799,7 @@ at that depth is set by the probe. The same 18 pairs rule out a field-of-view
 confound -- the 8 mm sphere leaves an imprint 1.2 to 1.4 times larger at equal
 depth, yet it saturated shallower in only 10 of 18 units (binomial p 0.815).
 Third, the absolute criterion has not been recomputed on the 27-unit set; the
-two absolute rows of Table IV include the second replicate of every cell.
+two absolute rows of Table V include the second replicate of every cell.
 Fourth, one depth-referenced gel was destroyed by an early ramp, so its cell is
 represented by the surviving replicate rather than by r1.
 
@@ -762,7 +874,7 @@ OPEN QUESTIONS / TO RESOLVE
   B_ceiling_vs_thickness, A_saturation_depth_vs_thickness,
   C_relative_vs_absolute_criterion, D_hardness_range_imbalance,
   E_probe_transfer. At ICRA page limit not all survive. B and C are the ones
-  the argument needs; A is folded into Table V; D and E are limitations.
+  the argument needs; A is folded into Table VI; D and E are limitations.
 - PENDING ANALYSIS: force estimation and shape reconstruction are being
   re-derived with preprocessing appropriate to these sensors. Until those
   numbers exist, [ABS] and [I-6] must not assert a direction for the
@@ -775,7 +887,7 @@ OPEN QUESTIONS / TO RESOLVE
 - STILL OPEN from that decision: the absolute-criterion ceiling ([IV-CT1], rows
   2-3) is still the all-ramp computation. Recomputing it needs
   absolute_ceiling.py over characterize/steps.csv, which lives only on the
-  measurement machine. Until then Table IV says so in its caption.
+  measurement machine. Until then Table V says so in its caption.
 - RESOLVED 2026-09-13: replicate selection. docs/replicate_audit.md fixed the
   rule on outcome-independent evidence and III-B1b now states it -- confirmed
   defect, then independent evidence of under-measurement, then sole survivor,
@@ -805,7 +917,14 @@ OPEN QUESTIONS / TO RESOLVE
   housing?) is not stated. Add one clause if it matters for repeatability.
 - Is there a resolution sweep for shape reconstruction and spatial resolution
   comparable to the force one? Determines whether contribution [I-C2] stays
-  scoped to force estimation.
+  scoped to force estimation. Note IV-B is NOT such a sweep -- it varies probe
+  spacing at native resolution, not sampling resolution.
+- [IV-B5] the gel-dependence correlations are computed over the 14 healthy
+  units of the 2.50 mm pass, not over the 27-unit set: at one unit per cell
+  n = 9 per principle and the 2.50 mm pass predates the selection. Either
+  recompute on the 9 depth-referenced units and accept the lost power, or say
+  in the text that this one result uses both replicates. Do not leave it
+  ambiguous -- every other number in IV is the 27-unit set.
 - Which is canonical for the paper: docs/ or result/ (1_9DTact, 2_DIGIT, extra)?
 - ICRA 2027 CFP: page limit, and whether submission is double-blind.
 - [II-6] VERIFIED 2026-09-12 against the three papers themselves. Sparsh:
