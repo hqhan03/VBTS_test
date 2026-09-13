@@ -10,6 +10,7 @@ from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
 
@@ -64,7 +65,7 @@ def panel(pr, d, cols, stem, ylab):
         for c, lab, col in cols:
             k = g.groupby("width_px")[c].agg(["median", "min", "max"])
             ax.plot(k.index, k["median"], "-o", c=col, lw=1.5, ms=3.2,
-                    mec="white", mew=.5, label=lab)
+                    mec="white", mew=.5, label=lab, zorder=3)
             ax.fill_between(k.index, k["min"], k["max"], color=col, alpha=.16, lw=0)
         ax.set_xscale("log"); ax.set_yscale("log"); plain_log(ax, "both")
         ax.set_title(u, fontsize=8.5); ax.tick_params(labelsize=7)
@@ -96,12 +97,17 @@ def summary(pr, d):
         b = k.idxmin()
         ax.plot(b, k[b], "*", c=col, ms=14, mec="white", mew=.8, zorder=5)
         rows.append(pd.DataFrame(dict(axis=lab, width_px=k.index, mae=k.values)))
-    ax.set_xscale("log"); ax.set_yscale("log"); plain_log(ax, "both")
-    ax.set_xlabel("가로 해상도 (px)"); ax.set_ylabel("MAE (N)")
+    ax.set_xscale("log"); ax.set_yscale("log")
+    ax.set_xticks(XT); ax.set_xticklabels(XTL, fontsize=7, rotation=90)
+    ax.xaxis.set_minor_locator(mticker.NullLocator())
+    ax.set_yticks(YT); ax.set_yticklabels([f"{v:g}" for v in YT], fontsize=8)
+    ax.yaxis.set_minor_formatter(mticker.NullFormatter())
+    ax.set_xlabel("해상도 (가로 × 세로, px)", labelpad=6); ax.set_ylabel("MAE (N)")
     ax.set_title(f"{pr} — 축별 힘 오차 대 해상도 (★ = 최소)", fontsize=10.5, loc="left")
     ax.legend(frameon=False, fontsize=9)
     ax.spines[["top", "right"]].set_visible(False)
-    ax.grid(alpha=.25, lw=.6, which="both"); ax.set_axisbelow(True)
+    ax.grid(True, which="major", axis="both", alpha=.35, lw=.55, color="#b0b0b0")
+    ax.set_axisbelow(True)
     p = RES / FOLD[pr]
     (p / "figures").mkdir(parents=True, exist_ok=True)
     (p / "data").mkdir(parents=True, exist_ok=True)
@@ -137,13 +143,20 @@ def main():
 
 
 # --------------------------------------------- docs/figures 용 패널 --
+SIZES_WH = [(1920, 1080), (1280, 720), (854, 480), (640, 360), (426, 240),
+            (320, 180), (160, 90), (80, 45), (48, 27), (32, 18), (16, 9), (8, 5)]
+XT = [w for w, _ in SIZES_WH]
+XTL = [f"{w}\u00d7{h}" for w, h in SIZES_WH]
+YT = [0.01, 0.02, 0.05, 0.1, 0.2]
+
+
 def doc_panel(pr, d):
     """`force_estimation.md` §2.4 와 같은 배치 — 열 = 경도, 행 = 두께 × 복제.
 
     축은 모두 공유(로그)하고 선은 Fx·Fy·Fz 셋. seed 3 개의 중앙값과 범위를 그린다.
     """
     rows = [(t, r) for t in (1, 2, 3) for r in (1, 2)]
-    fig, axes = plt.subplots(len(rows), 3, figsize=(10.5, 12),
+    fig, axes = plt.subplots(len(rows), 3, figsize=(11.5, 13.5),
                              sharex=True, sharey=True)
     for i, (t, rep) in enumerate(rows):
         for j, h in enumerate(HARD):
@@ -156,19 +169,31 @@ def doc_panel(pr, d):
             else:
                 for c, lab, col in AX:
                     k = g.groupby("width_px")[c].agg(["median", "min", "max"])
-                    ax.plot(k.index, k["median"], "-", c=col, lw=1.5, label=lab)
+                    ax.plot(k.index, k["median"], "-o", c=col, lw=1.4, ms=3.4,
+                            mec="white", mew=.6, label=lab, zorder=3)
                     ax.fill_between(k.index, k["min"], k["max"], color=col,
-                                    alpha=.15, lw=0)
-            ax.set_xscale("log"); ax.set_yscale("log"); plain_log(ax, "both")
+                                    alpha=.15, lw=0, zorder=2)
+            ax.set_xscale("log"); ax.set_yscale("log")
+            # 해상도는 측정한 12 단만 눈금으로 찍고 가로x세로로 적는다.
+            ax.set_xticks(XT); ax.set_xticklabels(XTL, fontsize=6.2, rotation=90)
+            ax.xaxis.set_minor_locator(mticker.NullLocator())
+            ax.set_yticks(YT); ax.set_yticklabels([f"{v:g}" for v in YT], fontsize=7)
+            ax.yaxis.set_minor_formatter(mticker.NullFormatter())
             ax.tick_params(labelsize=7)
             ax.spines[["top", "right"]].set_visible(False)
-            ax.grid(alpha=.2, lw=.5, which="both"); ax.set_axisbelow(True)
+            # 보조선: 눈금마다 가로·세로 모두
+            ax.grid(True, which="major", axis="both", alpha=.35, lw=.5,
+                    color="#b0b0b0")
+            ax.grid(True, which="minor", axis="y", alpha=.15, lw=.4)
+            ax.set_axisbelow(True)
             if i == 0:
                 ax.set_title(h, fontsize=11, color=CH_TITLE[h])
             if j == 0:
                 ax.set_ylabel(f"{t} mm · r{rep}\nMAE (N)", fontsize=8.5)
             if i == len(rows) - 1:
-                ax.set_xlabel("가로 해상도 (px)", fontsize=8.5)
+                ax.set_xlabel("해상도 (가로 × 세로, px)", fontsize=8.5, labelpad=6)
+            else:
+                ax.set_xticklabels([])
     h_, l_ = axes[0, 0].get_legend_handles_labels()
     fig.legend(h_, l_, loc="upper right", frameon=False, fontsize=10, ncol=3,
                bbox_to_anchor=(.99, .985))

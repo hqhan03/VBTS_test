@@ -22,6 +22,24 @@ HARD = ["soft", "medium", "hard"]
 PROBE = [("cyl4", "원기둥 ⌀4 mm", "#c2553a"), ("cube4", "정육면체 4 mm", "#1f6f8b")]
 
 
+import matplotlib.ticker as mticker
+SIZES_WH = [(1920, 1080), (1280, 720), (854, 480), (640, 360), (426, 240),
+            (320, 180), (160, 90), (80, 45), (48, 27), (32, 18), (16, 9), (8, 5)]
+XT = [w for w, _ in SIZES_WH]
+XTL = [f"{w}\u00d7{h}" for w, h in SIZES_WH]
+
+
+def res_axis(ax, yt=None, fs=7):
+    """해상도 축을 가로x세로로 적고 보조선을 켠다."""
+    ax.set_xticks(XT); ax.set_xticklabels(XTL, fontsize=fs, rotation=90)
+    ax.xaxis.set_minor_locator(mticker.NullLocator())
+    if yt is not None:
+        ax.set_yticks(yt)
+        ax.set_yticklabels([f"{v:g}" for v in yt], fontsize=fs + 1)
+    ax.yaxis.set_minor_formatter(mticker.NullFormatter())
+    ax.grid(True, which="major", axis="both", alpha=.35, lw=.55, color="#b0b0b0")
+    ax.set_axisbelow(True)
+
 def plain_log(ax, which="y"):
     """로그 축 눈금을 평범한 숫자로. mathtext 를 쓰지 않게 해 마이너스 깨짐을 없앤다.
 
@@ -63,12 +81,12 @@ def panel(d, col_tmpl, stem, ylab, title):
                 continue
             ax.plot(k.index, k.values, "-o", c=c, lw=1.5, ms=3.2, mec="white",
                     mew=.5, label=lab)
-        ax.set_xscale("log"); ax.set_yscale("log"); plain_log(ax, "both")
+        ax.set_xscale("log"); ax.set_yscale("log"); res_axis(ax, [0.03, 0.05, 0.1, 0.2, 0.5])
         ax.set_title(u, fontsize=8.5); ax.tick_params(labelsize=7)
         ax.spines[["top", "right"]].set_visible(False)
         ax.grid(alpha=.22, lw=.5, which="both"); ax.set_axisbelow(True)
     for ax in axes[-1]:
-        ax.set_xlabel("가로 해상도 (px)", fontsize=8)
+        ax.set_xlabel("해상도 (가로 × 세로, px)", labelpad=6, fontsize=8)
     for ax in axes[:, 0]:
         ax.set_ylabel(ylab, fontsize=8)
     h, l = axes[0, 0].get_legend_handles_labels()
@@ -90,14 +108,15 @@ def summary(d):
             if col not in d:
                 continue
             k = d.groupby("width_px")[col].median().dropna()
-            ax.plot(k.index, k.values, ls, c=c, lw=1.9, alpha=al,
+            ax.plot(k.index, k.values, ls, c=c, lw=1.9, alpha=al, marker="o", ms=4.2,
+                    mec="white", mew=.6,
                     label=f"{lab} · {kind}")
             b = k.idxmin()
             ax.plot(b, k[b], "*", c=c, ms=13, mec="white", mew=.7, zorder=5)
             rows.append(pd.DataFrame(dict(probe=probe, kind=kind,
                                           width_px=k.index, mae_mm=k.values)))
-    ax.set_xscale("log"); ax.set_yscale("log"); plain_log(ax, "both")
-    ax.set_xlabel("가로 해상도 (px)"); ax.set_ylabel("깊이 MAE (mm)")
+    ax.set_xscale("log"); ax.set_yscale("log"); res_axis(ax, [0.03, 0.05, 0.1, 0.2, 0.5])
+    ax.set_xlabel("해상도 (가로 × 세로, px)", labelpad=6); ax.set_ylabel("깊이 MAE (mm)")
     ax.set_title("9DTact — 형상 복원 오차 대 해상도 (★ = 최소)",
                  fontsize=10.5, loc="left")
     ax.legend(frameon=False, fontsize=8)
@@ -139,8 +158,8 @@ def digit_summary(d, raw):
         ax.plot(b, k[b], "*", c=c, ms=13, mec="white", mew=.7, zorder=5)
         rows.append(pd.DataFrame(dict(probe=probe, width_px=k.index,
                                       mae_mm=k.values)))
-    ax.set_xscale("log"); ax.set_yscale("log"); plain_log(ax, "both")
-    ax.set_xlabel("가로 해상도 (px)"); ax.set_ylabel("깊이 MAE (mm)")
+    ax.set_xscale("log"); ax.set_yscale("log"); res_axis(ax, [0.03, 0.05, 0.1, 0.2, 0.5])
+    ax.set_xlabel("해상도 (가로 × 세로, px)", labelpad=6); ax.set_ylabel("깊이 MAE (mm)")
     ax.set_title("DIGIT — 형상 복원 오차 대 해상도 (★ = 최소)",
                  fontsize=10, loc="left")
     ax.legend(frameon=False, fontsize=8.5)

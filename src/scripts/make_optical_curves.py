@@ -38,6 +38,24 @@ SRC = {
 }
 
 
+import matplotlib.ticker as mticker
+SIZES_WH = [(1920, 1080), (1280, 720), (854, 480), (640, 360), (426, 240),
+            (320, 180), (160, 90), (80, 45), (48, 27), (32, 18), (16, 9), (8, 5)]
+XT = [w for w, _ in SIZES_WH]
+XTL = [f"{w}\u00d7{h}" for w, h in SIZES_WH]
+
+
+def res_axis(ax, yt=None, fs=7):
+    """해상도 축을 가로x세로로 적고 보조선을 켠다."""
+    ax.set_xticks(XT); ax.set_xticklabels(XTL, fontsize=fs, rotation=90)
+    ax.xaxis.set_minor_locator(mticker.NullLocator())
+    if yt is not None:
+        ax.set_yticks(yt)
+        ax.set_yticklabels([f"{v:g}" for v in yt], fontsize=fs + 1)
+    ax.yaxis.set_minor_formatter(mticker.NullFormatter())
+    ax.grid(True, which="major", axis="both", alpha=.35, lw=.55, color="#b0b0b0")
+    ax.set_axisbelow(True)
+
 def plain_log(ax, which="y"):
     """로그 축 눈금을 평범한 숫자로. mathtext 를 쓰지 않게 해 마이너스 깨짐을 없앤다.
 
