@@ -41,6 +41,20 @@ def plain_log(ax, which="y"):
         a.set_major_formatter(f)
         a.set_minor_formatter(NullFormatter())
 
+def res_axis(ax, yt, fs=6.2):
+    """해상도 눈금을 **측정한 12 단만** 가로x세로로 적고, 눈금마다 보조선을 켠다.
+
+    로그 포매터가 찍는 10 / 100 / 1000 은 어느 해상도를 쟀는지 보여주지 못한다.
+    """
+    ax.set_xticks(XT); ax.set_xticklabels(XTL, fontsize=fs, rotation=90)
+    ax.xaxis.set_minor_locator(mticker.NullLocator())
+    ax.set_yticks(yt); ax.set_yticklabels([f"{v:g}" for v in yt], fontsize=fs + .8)
+    ax.yaxis.set_minor_formatter(mticker.NullFormatter())
+    ax.grid(True, which="major", axis="both", alpha=.35, lw=.5, color="#b0b0b0")
+    ax.grid(True, which="minor", axis="y", alpha=.15, lw=.4)
+    ax.set_axisbelow(True)
+
+
 def load(pr):
     f = DS / pr / "force_vs_resolution_axes.csv"
     if not f.exists():
@@ -52,8 +66,9 @@ def load(pr):
     return d
 
 
-def panel(pr, d, cols, stem, ylab):
+def panel(pr, d, cols, stem, ylab, yt):
     units = [f"{h}_{t}mm_r{r}" for h in HARD for t in (1, 2, 3) for r in (1, 2)]
+    drawn = []          # 그린 숫자를 그대로 csv 로 남긴다 — 그림과 표가 어긋나지 않게
     fig, axes = plt.subplots(3, 6, figsize=(19, 9), sharex=True, sharey=True)
     for ax, u in zip(axes.ravel(), units):
         g = d[d.sensor == u]
@@ -64,15 +79,15 @@ def panel(pr, d, cols, stem, ylab):
             continue
         for c, lab, col in cols:
             k = g.groupby("width_px")[c].agg(["median", "min", "max"])
-            ax.plot(k.index, k["median"], "-o", c=col, lw=1.5, ms=3.2,
-                    mec="white", mew=.5, label=lab, zorder=3)
+            ax.plot(k.index, k["median"], "-o", c=col, lw=1.4, ms=4.2,
+                    mec="white", mew=.7, label=lab, zorder=3)
             ax.fill_between(k.index, k["min"], k["max"], color=col, alpha=.16, lw=0)
-        ax.set_xscale("log"); ax.set_yscale("log"); plain_log(ax, "both")
+            drawn.append(k.reset_index().assign(sensor=u, axis=lab))
+        ax.set_xscale("log"); ax.set_yscale("log"); res_axis(ax, yt)
         ax.set_title(u, fontsize=8.5); ax.tick_params(labelsize=7)
         ax.spines[["top", "right"]].set_visible(False)
-        ax.grid(alpha=.22, lw=.5, which="both"); ax.set_axisbelow(True)
     for ax in axes[-1]:
-        ax.set_xlabel("가로 해상도 (px)", fontsize=8)
+        ax.set_xlabel("해상도 (가로 × 세로, px)", fontsize=8, labelpad=6)
     for ax in axes[:, 0]:
         ax.set_ylabel(ylab, fontsize=8)
     h, l = axes[0, 0].get_legend_handles_labels()
@@ -84,6 +99,9 @@ def panel(pr, d, cols, stem, ylab):
     p.mkdir(parents=True, exist_ok=True)
     fig.savefig(p / f"{stem}.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
+    q = RES / FOLD[pr] / "data"; q.mkdir(parents=True, exist_ok=True)
+    (pd.concat(drawn)[["sensor", "axis", "width_px", "median", "min", "max"]]
+     if drawn else pd.DataFrame()).to_csv(q / f"{stem}.csv", index=False)
 
 
 def summary(pr, d):
@@ -131,8 +149,8 @@ def main():
         p = RES / FOLD[pr] / "data"
         p.mkdir(parents=True, exist_ok=True)
         d.to_csv(p / "force_mae_vs_resolution.csv", index=False)
-        panel(pr, d, AX, "force_mae_vs_resolution_18units", "힘 MAE (N)")
-        panel(pr, d, TQ, "torque_mae_vs_resolution_18units", "토크 MAE (N·m)")
+        panel(pr, d, AX, "force_mae_vs_resolution_18units", "힘 MAE (N)", YT_F)
+        panel(pr, d, TQ, "torque_mae_vs_resolution_18units", "토크 MAE (N·m)", YT_T)
         summary(pr, d)
         doc_panel(pr, d)
         k = d.groupby("width_px")[[c for c, _, _ in AX]].median()
@@ -148,6 +166,10 @@ SIZES_WH = [(1920, 1080), (1280, 720), (854, 480), (640, 360), (426, 240),
 XT = [w for w, _ in SIZES_WH]
 XTL = [f"{w}\u00d7{h}" for w, h in SIZES_WH]
 YT = [0.01, 0.02, 0.05, 0.1, 0.2]
+# 유닛별 격자는 중앙값이 아니라 개별 유닛이라 폭이 넓다 (힘 0.013 ~ 0.356 N,
+# 토크 0.0001 ~ 0.0044 N·m). 두 자릿수 떨어져 있어 눈금을 따로 준다.
+YT_F = [0.01, 0.02, 0.05, 0.1, 0.2, 0.4]
+YT_T = [0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.004]
 
 
 def doc_panel(pr, d):

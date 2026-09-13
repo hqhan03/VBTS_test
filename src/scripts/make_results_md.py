@@ -226,6 +226,25 @@ def main():
     w("**8 배** 좋아지고, 그 위로는 다시 나빠진다. 회색조 손실을 보정하면(점선) 80 px 위로")
     w("평평해지므로, 고해상도의 악화는 조회표가 회색조를 잃는 데서 온다.")
     w()
+    w("### 유닛별 — 경도 × 두께 × 복제")
+    w()
+    w("8 절의 힘 그림과 같은 배치다. 행이 경도, 열이 두께와 복제이고, 선 하나가 평가")
+    w("압자 하나다. 가로축은 잰 해상도 12 단을 가로×세로로 적었다.")
+    w()
+    shp = [("1_9DTact/figures/shape_mae_vs_resolution_18units.png",
+            "9DTact — 유닛별 형상 복원 오차 대 해상도 (조회표 그대로)"),
+           ("1_9DTact/figures/shape_mae_corrected_18units.png",
+            "9DTact — 유닛별 형상 복원 오차 대 해상도 (회색조 손실 보정)"),
+           ("2_DIGIT/figures/shape_mae_vs_resolution_18units.png",
+            "DIGIT — 유닛별 형상 복원 오차 대 해상도 (광도 스테레오)")]
+    for f, cap in shp:
+        if (RES / f).exists():
+            fig(f, cap)
+        else:
+            w(f"> **{cap} — 평가 진행 중.** 끝나면 이 문서를 다시 생성한다.")
+            w()
+    w("> **DIGIT_Marker 는 이 그림이 없다** — 형상 복원을 하지 않기 때문이다.")
+    w()
     fig("2_DIGIT/figures/shape_mae_summary.png",
         "DIGIT — 형상 복원 오차와 전이. 오차가 해상도에 평평하고 상관이 +0.35 다.")
     w("### DIGIT 은 시제품이고, 논문에 실을 수준이 아니다")

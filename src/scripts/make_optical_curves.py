@@ -155,6 +155,7 @@ def grid3x3(S, col, fmt="{:.0f}"):
 def panel(pr, D):
     """유닛 18 개 격자. 프로브당 선 하나, 지름과 밝기를 두 축에."""
     units = [f"{h}_{t}mm_r{r}" for h in HARD for t in (1, 2, 3) for r in (1, 2)]
+    drawn = []          # 그린 숫자를 그대로 csv 로 남긴다
     fig, axes = plt.subplots(3, 6, figsize=(19, 9), sharex=True)
     for ax, u in zip(axes.ravel(), units):
         g = D[D.unit == u]
@@ -166,12 +167,19 @@ def panel(pr, D):
         a2 = ax.twinx()
         for p, gg in g.groupby("probe"):
             gg = gg.sort_values("depth_mm")
-            ax.plot(gg.depth_mm, gg.diameter_px, "-", c=PC[p], lw=1.6, label=p)
-            a2.plot(gg.depth_mm, gg.level, "--", c=PC[p], lw=1.1, alpha=.65)
+            ax.plot(gg.depth_mm, gg.diameter_px, "-o", c=PC[p], lw=1.5, ms=3.6,
+                    mec="white", mew=.6, label=p, zorder=3)
+            a2.plot(gg.depth_mm, gg.level, "--s", c=PC[p], lw=1.1, ms=2.8,
+                    alpha=.65, mec="white", mew=.4)
+            drawn.append(gg[["unit", "probe", "depth_mm", "diameter_px",
+                             "level"]].copy())
         ax.set_title(u, fontsize=8.5)
         ax.tick_params(labelsize=7); a2.tick_params(labelsize=6, colors="#777")
         ax.spines[["top"]].set_visible(False); a2.spines[["top"]].set_visible(False)
-        ax.grid(alpha=.2, lw=.5); ax.set_axisbelow(True)
+        # 보조선: 눈금마다 가로·세로 모두
+        ax.grid(True, which="major", axis="both", alpha=.35, lw=.5,
+                color="#b0b0b0")
+        ax.set_axisbelow(True)
     for ax in axes[-1]:
         ax.set_xlabel("깊이 (mm)", fontsize=8)
     for ax in axes[:, 0]:
@@ -186,6 +194,9 @@ def panel(pr, D):
     fig.savefig(d / "figures" / "optical_vs_depth_18units.png", dpi=150,
                 bbox_inches="tight")
     plt.close(fig)
+    (d / "data").mkdir(parents=True, exist_ok=True)
+    (pd.concat(drawn) if drawn else pd.DataFrame()).to_csv(
+        d / "data" / "optical_vs_depth_18units.csv", index=False)
 
 
 def main():

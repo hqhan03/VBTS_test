@@ -63,8 +63,25 @@ def load9():
     return d
 
 
-def panel(d, col_tmpl, stem, ylab, title):
+LADDER = [0.005, 0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.5, 1.0, 2.0]
+
+
+def auto_yt(d, cols):
+    """자료가 실제로 덮는 구간의 눈금만 고른다 — 빈 눈금은 축을 늘려 그림을 망친다."""
+    v = pd.concat([d[c] for c in cols if c in d]).dropna()
+    if not len(v):
+        return [0.03, 0.05, 0.1, 0.2, 0.5]
+    lo, hi = float(v.min()), float(v.max())
+    t = [x for x in LADDER if lo * .9 <= x <= hi * 1.1]
+    return t if len(t) >= 3 else [x for x in LADDER if lo * .5 <= x <= hi * 2]
+
+
+def panel(d, col_tmpl, stem, ylab, title, pr="9DTact", yt=None):
+    """유닛 18 개 격자 — 행 = 경도, 열 = 두께 x 복제. `force` 쪽 8 절과 같은 배치다."""
+    if yt is None:
+        yt = auto_yt(d, [col_tmpl.format(pb) for pb, _, _ in PROBE])
     units = [f"{h}_{t}mm_r{r}" for h in HARD for t in (1, 2, 3) for r in (1, 2)]
+    drawn = []          # 그린 숫자를 그대로 csv 로 남긴다
     fig, axes = plt.subplots(3, 6, figsize=(19, 9), sharex=True, sharey=True)
     for ax, u in zip(axes.ravel(), units):
         g = d[d.sensor == u]
@@ -79,12 +96,13 @@ def panel(d, col_tmpl, stem, ylab, title):
             k = g.groupby("width_px")[col].median().dropna()
             if not len(k):
                 continue
-            ax.plot(k.index, k.values, "-o", c=c, lw=1.5, ms=3.2, mec="white",
-                    mew=.5, label=lab)
-        ax.set_xscale("log"); ax.set_yscale("log"); res_axis(ax, [0.03, 0.05, 0.1, 0.2, 0.5])
+            ax.plot(k.index, k.values, "-o", c=c, lw=1.4, ms=4.2, mec="white",
+                    mew=.7, label=lab)
+            drawn.append(pd.DataFrame(dict(sensor=u, probe=probe,
+                                           width_px=k.index, mae_mm=k.values)))
+        ax.set_xscale("log"); ax.set_yscale("log"); res_axis(ax, list(yt), fs=6.2)
         ax.set_title(u, fontsize=8.5); ax.tick_params(labelsize=7)
         ax.spines[["top", "right"]].set_visible(False)
-        ax.grid(alpha=.22, lw=.5, which="both"); ax.set_axisbelow(True)
     for ax in axes[-1]:
         ax.set_xlabel("해상도 (가로 × 세로, px)", labelpad=6, fontsize=8)
     for ax in axes[:, 0]:
@@ -93,10 +111,14 @@ def panel(d, col_tmpl, stem, ylab, title):
     fig.legend(h, l, loc="upper right", frameon=False, fontsize=9.5, ncol=2)
     fig.suptitle(title, fontsize=12, x=.09, ha="left")
     fig.tight_layout(rect=[0, 0, 1, .96])
-    p = RES / FOLD["9DTact"] / "figures"
+    p = RES / FOLD[pr] / "figures"
     p.mkdir(parents=True, exist_ok=True)
     fig.savefig(p / f"{stem}.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
+    q = RES / FOLD[pr] / "data"; q.mkdir(parents=True, exist_ok=True)
+    (pd.concat(drawn) if drawn else pd.DataFrame()).to_csv(q / f"{stem}.csv",
+                                                           index=False)
+    print(f"    -> result/{FOLD[pr]}/figures/{stem}.png")
 
 
 def summary(d):
@@ -223,8 +245,8 @@ def main():
     pD = RES / FOLD["DIGIT"] / "data"; pD.mkdir(parents=True, exist_ok=True)
     dd.to_csv(pD / "shape_vs_resolution.csv", index=False)
     raw.to_csv(pD / "shape_predictions.csv", index=False)
-    panel_d = panel
-    globals()["RES_FOLD_OVERRIDE"] = "DIGIT"
+    panel(dd, "{}_raw_mae", "shape_mae_vs_resolution_18units", "깊이 MAE (mm)",
+          "DIGIT — 형상 복원 오차 대 해상도 (광도 스테레오)", pr="DIGIT")
     digit_summary(dd, raw)
     k2 = dd.groupby("width_px")[["cyl4_raw_mae", "cube4_raw_mae"]].median()
     print(f"  DIGIT   {len(dd)} 행, {dd.sensor.nunique()} 유닛  "
