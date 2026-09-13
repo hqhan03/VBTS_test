@@ -175,9 +175,17 @@ def _centroid(v):
 
 
 def load_ref(run: Path, calib=False):
-    """기준영상. calibgrid 전용 기준영상이 없는 유닛이 있어 fallback 을 둔다."""
-    for n in (["reference_calibgrid.png", "reference.png"] if calib
-              else ["reference.png", "reference_calibgrid.png"]):
+    """기준영상. **`reference.png` 를 먼저 쓰면 안 된다.**
+
+    모든 DIGIT `reference.png` 는 이후 프레임보다 8 ~ 14 % 밝다 — 프로브의 그림자가
+    반투명 측면조명 겔에 드리우기 때문이다. 그 전역 오프셋을 색차로 넣으면 모델이
+    배경에 기울기가 있다고 읽고, 적분이 거대한 경사로가 된다(2026-09-13: 실패
+    유닛의 z 범위가 -0.935 ~ +0.498 로 자국보다 배경이 컸다). `reference_working.png`
+    는 같은 프레임과 2 ~ 3 레벨 안에서 맞는다.
+    """
+    for n in (["reference_calibgrid.png", "reference_working.png", "reference.png"]
+              if calib else
+              ["reference_working.png", "touchcheck.png", "reference.png"]):
         im = cv2.imread(str(run / n))
         if im is not None:
             return im
@@ -198,14 +206,18 @@ def calib_frames(run: Path):
     out = []
     g = run / "calibgrid_ball4"
     if (g / "grid.csv").exists():
+        ref = load_ref(run, calib=True)
         for _, r in pd.read_csv(g / "grid.csv").iterrows():
-            out.append((g / r.file, float(r.depth_mm), r.centroid_px, float(r.area_px)))
-    # 사다리는 다른 pass 에 있다. 같은 유닛의 것을 찾는다.
+            out.append((g / r.file, float(r.depth_mm), r.centroid_px,
+                        float(r.area_px), ref))
+    # 사다리는 **다른 pass** 에 있다. 조명·노출이 그 pass 의 것이므로 기준영상도
+    # 그 런의 것을 써야 한다 — 격자의 기준영상을 쓰면 전역 오프셋이 들어간다.
     unit = run.name
     for lad in (run.parents[1]).glob(f"*passA_ball4/{unit}*/shape_ball4/ladder.csv"):
+        ref2 = load_ref(lad.parents[1])
         for _, r in pd.read_csv(lad).iterrows():
             out.append((lad.parent / Path(str(r.file)).name, float(r.depth_mm),
-                        r.centroid_px, float(r.area_px)))
+                        r.centroid_px, float(r.area_px), ref2))
         break
     return out
 
@@ -221,9 +233,11 @@ def calib_samples(run: Path, px_per_mm: float, per_frame=8000, bg_mult=4, seed=0
     H, W = ref.shape[:2]
     rng = np.random.default_rng(seed)
     X, Y, used = [], [], 0
-    for path, depth, cen, area in calib_frames(run):
-        if area < MIN_AREA_PX:
+    for path, depth, cen, area, reff_i in calib_frames(run):
+        if area < MIN_AREA_PX or reff_i is None:
             continue
+        reff = reff_i.astype(np.float32)
+        H, W = reff_i.shape[:2]
         r = type("R", (), dict(depth_mm=depth, centroid_px=cen))
         img = cv2.imread(str(path))
         if img is None or img.shape[:2] != (H, W):
