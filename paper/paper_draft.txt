@@ -39,28 +39,25 @@ ABSTRACT
 Abstract-- Vision-based tactile sensors encode contact as an image, and the
 sampling resolution at which that image is processed fixes the camera, the link
 bandwidth and the network input size of an entire finger. The elastomer is
-widely assumed to set that requirement: a thicker or stiffer layer spreads an
-indentation and attenuates fine detail before the camera sees it, so the
-resolution a task needs should move with the gel. This has been conjectured but
-never measured, because measuring it means varying the elastomer while holding
-the optics fixed. We fabricate 27 sensors spanning the two dominant
-intensity-based sensing principles, depth-referenced and photometric-stereo,
-each crossed with three elastomer hardness levels and three thicknesses (1, 2,
-3 mm), with one body, camera and illumination per principle; a marker-bearing
-variant of the photometric gel is built on the same grid as an additional arm.
-Each unit is evaluated on three calibration-free gel characterizations and on
-two estimation tasks swept against sampling resolution, for which we re-derive
-the preprocessing rather than inherit a pipeline built for a different sensor.
-Training-free measurements confirm that the elastomer does filter spatially:
-two-point resolution degrades with thickness on every metric we measure. That
-shift does not reach the resolution at which a trained estimator saturates.
-Across nine gel designs, two independent principles and two tasks whose
-estimators share nothing, twenty tests of a thickness or hardness dependence in
-the saturation resolution return none. What the elastomer separately controls
-is clearer: the maximum force readable from the image and the depth
-quantization of shape reconstruction each vary about twofold across these gels.
-Sampling resolution can therefore be specified before the elastomer is chosen,
-which decouples two decisions that fabrication guidance has treated as one.
+widely assumed to set that requirement, since a thicker or stiffer layer
+spreads an indentation before the camera sees it. The assumption has never been
+tested, because testing it means varying the elastomer while holding the optics
+fixed. We fabricate 27 sensors spanning the two dominant intensity-based
+principles, depth-referenced and photometric-stereo, plus a marker-bearing arm,
+each crossed with three elastomer hardnesses and three thicknesses, with one
+body, camera and illumination per principle. Training-free measurements confirm
+that the elastomer does filter spatially: two-point resolution degrades with
+thickness on every metric we can measure. That filtering does not reach the
+trained estimators. Twenty tests of a thickness or hardness dependence in the
+saturation resolution -- two principles, six force axis-groups, four held-out
+shape probes, one false-discovery correction -- return none, against a bound
+set by replicates of one gel specification disagreeing by 6.7-fold. What moves
+the requirement is the axis rather than the gel: shear saturates near 48 px of
+input width while normal force needs up to 320, inverting the usual reading of
+the 224 px convention. The elastomer instead sets the maximum readable force
+(2.3-fold across our gels) and the depth quantization of shape reconstruction
+(2.1-fold). Sampling resolution can therefore be specified before the
+elastomer is chosen.
 
 ================================================================================
 I. INTRODUCTION
