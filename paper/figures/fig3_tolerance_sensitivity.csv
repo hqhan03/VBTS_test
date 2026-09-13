@@ -1,0 +1,13 @@
+principle,measure,tol_pct,sat_of_median_px,median_of_sat_px
+9DTact,fz_mae,5,80.0,426.0
+9DTact,fz_mae,10,80.0,320.0
+9DTact,fz_mae,20,80.0,80.0
+9DTact,shear,5,80.0,80.0
+9DTact,shear,10,48.0,48.0
+9DTact,shear,20,32.0,32.0
+DIGIT,fz_mae,5,80.0,80.0
+DIGIT,fz_mae,10,32.0,80.0
+DIGIT,fz_mae,20,32.0,32.0
+DIGIT,shear,5,48.0,160.0
+DIGIT,shear,10,48.0,48.0
+DIGIT,shear,20,32.0,32.0
