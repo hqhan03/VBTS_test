@@ -1,197 +1,193 @@
-# docs — what to read for what
+# docs — 무엇을 알고 싶을 때 무엇을 읽나
 
-Written 2026-09-07 when the folder was consolidated. Thirteen files had grown
-into three overlapping accounts of the frame transform, two entry points and a
-rendered HTML copy of a page that had since changed. What is left is one file
-per question.
+2026-09-07 에 폴더를 정리하면서 쓴 색인이다. 그때 열세 개 파일이 좌표 변환을 세 번
+겹쳐 설명하고, 진입점이 둘이고, 이미 바뀐 페이지의 렌더본이 남아 있었다. 지금은
+**질문 하나에 파일 하나**다.
 
-> **Collection ended 2026-09-12.** Nothing more is measured. For the paper:
-> **`methods.md`** is the whole Method section and its **§10.0 is the table of
-> permanent limitations** — what went unanswered and which claim each one bounds.
-> **`force_ceiling.md` §6.8** carries the headline two-principle comparison.
-> **`../result/results.md`** holds every figure and table meant for the paper,
-> each one beside the csv it was drawn from — and unlike `data/`, it is on GitHub.
+> **수집은 2026-09-12 에 끝났다.** 더 이상 측정하지 않는다. 논문을 쓸 때 필요한 셋:
+> **`methods.md`** 가 Method 전체이고 그 **§10.0 이 영구 한계표**다 — 무엇을 답하지
+> 못했고 그것이 어느 주장을 제한하는지가 한 표에 있다.
+> **`force_ceiling.md` §6.8** 이 두 원리의 표제 비교다.
+> **`../result/results.md`** 에 논문에 넣을 그림과 표가 전부 있고, 그림마다 **그것을
+> 그린 csv 가 옆에** 있다 — `data/` 와 달리 저장소에 올라간다.
 
-| I want to know… | read |
+## 색인
+
+| 알고 싶은 것 | 읽을 것 |
 |---|---|
-| **every figure and table for the paper, with its explanation and its csv** | **`../result/results.md`** — this is also the one-page summary; `RESULTS_SUMMARY.md` was a hand-kept copy of the same tables, went stale, and was deleted 2026-09-13 |
-| what the campaign is, its four tests, where it stands | **`campaign_protocol.md`** ← start here |
-| what the robot actually does, move by move, and every measured number behind it | **`measurement_protocol.md`** |
-| where a file gets written and what is in it | `data_recording.md` |
-| how the sensor frame, the base frame and the gel relate | `frames_and_transforms.md` |
-| where the TCP number came from | `tcp_calibration_history.md` |
-| **test 2, shape reconstruction — 9DTact's intensity→depth LUT and DIGIT's photometric stereo** | **`shape_reconstruction.md`** (§5 is the DIGIT pipeline, `scripts/digit_shape.py`) |
-| **test 3, spatial resolution — method and all 17 units' results** | **`spatial_resolution.md`** |
-| **test 1, force estimation — all three principles, per-axis MAE vs resolution** | **`force_estimation.md`** |
-| how much camera resolution the shape method needs (downscale sweep) | `shape_vs_resolution.md` |
-| can hardness and thickness be one variable (contact radius)? — an attempt | `contact_variable.md` |
-| why a sphere reads the surface too deep | `hertz_zero_bias.md` |
-| why a paired probe's two posts press unequally | `pair_contact_asymmetry.md` |
-| the 2026-09-05 single-unit shape pilot | `archive/shape_reconstruction_pilot.html` |
-| superseded documents, kept for provenance | `archive/` |
+| **논문에 넣을 그림과 표 전부, 설명과 csv 와 함께** | **`../result/results.md`** — 한 장 요약도 이것이다 |
+| **논문 Method 전체** — 장비, 시료, 압자, 절차, 정의, 통계 | **`methods.md`** |
+| 캠페인이 무엇이고, 네 시험이 무엇이고, 어디까지 왔나 | **`campaign_protocol.md`** ← 여기서 시작 |
+| 로봇이 실제로 무엇을 하나 — 동작 하나하나와 그 뒤의 실측값 | **`measurement_protocol.md`** |
+| **세 원리가 어떻게 다른가, 그리고 이 캠페인이 무엇을 틀렸나** | **`cross_principle.md`** ← 결과이고, §5 가 자기비판 |
+| **시험 1, 힘 추정** — 세 원리 전부, 해상도별 축별 MAE | **`force_estimation.md`** (§7 이 DIGIT 계열의 입력 표현 비교) |
+| **시험 2, 형상 복원** — 9DTact 의 밝기→깊이 조회표와 DIGIT 의 광도 스테레오 | **`shape_reconstruction.md`** (§5 가 DIGIT 파이프라인, `scripts/digit_shape.py`) |
+| **시험 3, 공간 분해능** — 방법과 전 유닛 결과 | **`spatial_resolution.md`** |
+| **시험 4, 최대 측정 가능 힘** — 방법, 전 유닛, 그리고 왜 이것으로 센서를 비교할 수 없나 | **`force_ceiling.md`** |
+| 형상 복원에 카메라 해상도가 얼마나 필요한가 (축소 쓸기) | `shape_vs_resolution.md` |
+| 다른 분석이나 다른 역치로 0.3 mm 보다 깊은 두 점을 분해할 수 있나 | `spatial_resolution_sensitivity.md` |
+| **쌍둥이 복제가 얼마나 어긋나고, 어느 쪽을 버릴 것인가** | **`replicate_audit.md`** (`scripts/twin_audit.py`) |
+| DIGIT 광도 보정 격자가 어떻게 작동하고 유닛 사이에서 전이되나 | `photometric_calibration.md` |
+| 이 캠페인의 전처리·학습이 DIGIT/GelSight 문헌과 어디서 갈리나 | `method_vs_literature.md` |
+| 경도와 두께를 한 변수(접촉 반지름)로 묶을 수 있나 — 시도 | `contact_variable.md` |
+| 구가 표면을 왜 너무 깊게 읽나 | `hertz_zero_bias.md` |
+| 두 기둥 압자의 두 기둥이 왜 같은 힘으로 안 눌리나 | `pair_contact_asymmetry.md` |
+| **유닛의 숫자 중 얼마가 겔이고 얼마가 장착 방식인가** | `campaign_protocol.md` §4.15 (`scripts/repeat_spread.py`) |
+| 센서 좌표계·베이스 좌표계·겔이 어떻게 얽히나 | `frames_and_transforms.md` |
+| TCP 숫자가 어디서 나왔나 | `tcp_calibration_history.md` |
+| 파일이 어디에 쓰이고 그 안에 무엇이 있나 | `data_recording.md` |
+| 무엇이 아직 없고 그것을 모으는 데 얼마가 드나 | `data_wishlist.md` |
+| 다시 잰 유닛 중 분석이 **어느 런**을 읽나, 그리고 그 분리가 무엇을 가리고 있었나 | `../data/analysis/DATASET_CLEANUP.md` |
+| **`data/` 아래 무엇이 어디 있나** | `../data/README.md` |
+| **원리·압자·겔 유닛별로 어떤 자료가 있고 무엇이 없나** | `../data/20260911_VBTSresolution_dataset/DATA_INVENTORY.md` (`scripts/dataset_audit.py`) |
+| 코드가 무엇인가 — 라이브러리, 스크립트, 설정, 테스트 | `../src/README.md` |
+| 2026-09-05 의 단일 유닛 형상 파일럿 | `archive/shape_reconstruction_pilot.html` |
+| 대체된 문서, 출처 보존용 | `archive/` |
 
-Added since (this table was written when only 9DTact had been measured):
+## 캠페인의 현재 (2026-09-13, 수집 종료)
 
-| I want to know… | read |
+53 유닛 전부에 힘 추정 쓸기가 있고, DIGIT 계열 36 유닛 전부에 광도 보정 격자가 있으며,
+모든 데이터셋이 유닛당 정확히 한 폴더를 갖는다(`data/analysis/DATASET_CLEANUP.md` —
+분리돼 있던 폴더가 한 유닛의 축척을 잃게 하고 다른 하나를 두 번 세게 하고 있었다).
+
+표제 질문 — **오차가 포화하는 해상도가 겔에 따라 다른가** — 의 답은 **아니다**다.
+√2 사다리에서 두 DIGIT 계열 모두 무릎이 두께에 대해 평평하고(p 0.85, p 0.66), 2 배
+사다리에서 나왔던 유일한 유의 결과는 무릎 추정이 불안정해서 생긴 허상이었다
+(`cross_principle.md` §3.10). 방향 자체는 학습 없이 재는 두 측정에서 살아남지만,
+학습된 무릎으로는 보이지 않는다.
+
+### 그 뒤에 바뀐 것 — 옛 절을 읽기 전에 알아 둘 것
+
+| 바뀐 것 | 어디에 |
 |---|---|
-| **the Method section: apparatus, specimens, probes, procedure, definitions, statistics** | **`methods.md`** |
-| can a different analysis, or a different threshold, resolve two points deeper than 0.3 mm | `spatial_resolution_sensitivity.md` |
-| **how the three principles compare, and what this campaign got wrong** | **`cross_principle.md`** ← the results, and section 5 is the self-criticism |
-| test 1 on DIGIT and DIGIT_Marker — which input representation wins | `force_estimation.md` §7 |
-| how the DIGIT photometric calibration grid works and whether it transfers between units | `photometric_calibration.md` |
-| how this campaign's preprocessing and training differ from the DIGIT/GelSight literature | `method_vs_literature.md` |
-| **test 4, maximum measurable force — method, all 36 units, and why it cannot compare sensors** | **`force_ceiling.md`** |
-| **how far a replicate pair disagrees, and which one to drop** | **`replicate_audit.md`** (`scripts/twin_audit.py`) |
-| what is still missing and what it would cost to collect | `data_wishlist.md` |
-| **how much of a unit's number is the gel and how much is how it was mounted** | `campaign_protocol.md` §4.15 (`scripts/repeat_spread.py`) |
-| which run of a re-measured unit the analyses read, and what the split was hiding | `../data/analysis/DATASET_CLEANUP.md` |
-| **where anything under `data/` lives** | `../data/README.md` |
-| what the code is: the library, the scripts, the config, the tests | `../src/README.md` |
-| **what data exists per principle, probe and gel unit — and what is missing** | `../data/20260911_VBTSresolution_dataset/DATA_INVENTORY.md` (`scripts/dataset_audit.py`) |
+| **천장을 두 원리에서 한 프로브(`ball8`)로 다시 쟀다.** `ball4` 로 선언한 9DTact 천장 다섯 개를 철회했다 — 다섯 다 공의 지름보다 깊어서 접촉이 구가 아니라 **자루**였다 | `force_ceiling.md` §6.3(철회), §6.8(35 유닛 비교: 31.00 대 17.33 N, 1.8 배) |
+| **DIGIT 겔의 경도를 실측했다**: OO-51 / 54 / 57 대 9DTact 의 OO-30 / 50 / 70. 두 계열이 흔든 폭이 6 점과 40 점으로 **6.7 배** 다르므로 **경도 축으로는 두 원리를 비교할 수 없다**. 거기 기대고 있던 결론을 철회했다 | `methods.md` §2.1, `force_ceiling.md` §6.8 결론 3 |
+| **세 원리를 1920×1080 부터 8×5 까지, 학습 파라미터를 전부 같게 고정한 채 다시 학습했다.** 하나로 합친 노름 대신 축별 Fx/Fy/Fz MAE 를 낸다 | `force_estimation.md` §2.6, `../result/results.md` §8 |
+| **사전등록한 H9 이 맞았다** — 마커는 전단의 해상도 의존성을 **뒤집는다**. 1920×1080 이 80×45 보다 나은 유닛이 9DTact 2/15, DIGIT 1/18 인데 Marker 는 **15/18**(p 0.002)이다. 다만 기전은 H9 이 상정한 것이 아닐 것이다 | `cross_principle.md` §3.5a, `force_estimation.md` §2.6 |
+| **DIGIT 형상의 "평평한 곡선" 을 철회했다.** 기준영상 결함이었다 — `reference.png` 가 이후 프레임보다 8~14 % 밝다. 고치니 MAE < 0.1 mm 인 유닛이 6/18 에서 **15/18** 로, 해상도 의존성이 평평에서 **3.9 배**로 바뀌었다. 남은 한계는 정확도가 아니라 **깊이의 절대 배율** | `shape_reconstruction.md` §5, `methods.md` §10.0 |
+| **빛 새는 두 유닛을 제외했다** (`9DTact_hard_1mm_r2`, `9DTact_medium_1mm_r2`). 등록부의 `suspect_hardware` 가 근거이고, `result/` 의 모든 그림·표·csv 에서 빠진다 | `replicate_audit.md`, `force_ceiling.md` §6.5c |
 
-**Where the campaign stands (2026-09-13, collection closed).** All 53 units have
-force-estimation sweeps; all 36 DIGIT-family units have a photometric calibration
-grid, and every dataset holds exactly one folder per unit
-(`data/analysis/DATASET_CLEANUP.md`) — the split folders had been costing one unit's
-scale and double-counting another. The headline question — whether the resolution at
-which error saturates depends on the gel — is answered **no**: on a root-2 ladder
-both DIGIT principles give a flat knee against thickness (p 0.85 and p 0.66),
-and the one significant result from the doubling ladder was an artefact of an
-unstable knee estimate (`cross_principle.md` §3.10). The direction survives in
-two training-free measurements; the trained knee cannot show it.
+## 두 가지 규칙
 
-Since then, three things changed and are worth knowing before reading an older
-section:
+**`data/` 는 저장소에 없다 — 그러나 `result/` 는 있다.** 측정도, 아래 절들이 인용하는
+결과표(`data/analysis/*.csv`)도, 그 안의 문서도 전부 측정 기계에만 있다. 여기 적힌 모든
+숫자는 그 표에서 읽어 넣은 것이고, 각각을 다시 만드는 스크립트를 옆에 적어 두었다.
+논문에 넣을 그림과 표는 **`../result/`** 에 **그것을 그린 csv 와 함께** 복사해 두어
+어디서나 열린다.
 
-| what changed | where it landed |
-|---|---|
-| **the force ceiling was re-measured on both principles with one probe (`ball8`)**. The five 9DTact ceilings declared on `ball4` were retracted — all five sat deeper than the ball's own diameter, so the contact was the **shank**, not a sphere | `force_ceiling.md` §6.3 (the retraction), §6.8 (the 35-unit comparison: 31.00 vs 17.33 N, 1.8×) |
-| **the DIGIT gels' hardness was measured**: OO-51 / 54 / 57 against 9DTact's OO-30 / 50 / 70. The two families swung Shore hardness by 6 points and 40 points — 6.7× apart — so **the hardness axis cannot compare the principles**, and the conclusion that rested on it was withdrawn | `methods.md` §2.1, `force_ceiling.md` §6.8 conclusion 3 |
-| **all three principles were retrained from 1920×1080 down to 8×5 with every training parameter held identical**, giving per-axis Fx/Fy/Fz MAE rather than a single norm | `force_estimation.md` §2.6, `../result/results.md` §8 |
-
-**`data/` is not on GitHub — but `result/` is.** The measurements, the result tables
-the sections below cite (`data/analysis/*.csv`), and the documents inside them live on
-the measurement machine only. Every number quoted here was read out of those tables,
-and the script that regenerates each one is named beside it. The figures and tables
-meant for the paper were copied into **`../result/`** together with the csv behind each
-one, so they open anywhere.
-
-**The machine-readable truth is in `config/`, not here.**
-`sensor_registry.yaml` (per-sensor limits, gel models, capture policy),
-`probes.yaml` (probe geometry, TCP, contact laws), `ft_config.yaml` (wiring,
-faults, calibration) and `camera_config.yaml` are what the code reads. A number
-in a document that disagrees with the config is out of date; the config wins.
+**기계가 읽는 진실은 여기가 아니라 `config/` 에 있다.** `sensor_registry.yaml`(센서별
+한계, 겔 모델, 수집 정책), `probes.yaml`(압자 기하, TCP, 접촉 법칙), `ft_config.yaml`
+(배선, 고장, 보정), `camera_config.yaml` 이 코드가 읽는 것이다. **문서의 숫자가 설정과
+다르면 문서가 낡은 것이고, 설정이 이긴다.**
 
 ---
 
-## Four things that will bite you
+## 물릴 네 가지
 
-**1. Use `/usr/bin/python3`, not `python3`.** `python3` on PATH is Anaconda,
-which does not have `nidaqmx`. `run_one_sensor.py` checks this at startup and
-refuses **before the robot moves**.
+**1. `python3` 말고 `/usr/bin/python3` 을 쓸 것.** PATH 의 `python3` 은 Anaconda 이고
+`nidaqmx` 가 없다. `run_one_sensor.py` 가 시작할 때 검사해서 **로봇이 움직이기 전에**
+거부한다.
 
-**2. `Dev1/ai5` and `Dev1/ai6` are broken. Never assign a gauge to them.**
-`ai5` is an open circuit; `ai6` couples 2.1 % of whatever channel precedes it.
-SG5 lives on `ai7` because of this. Both faults are in `ft_config.yaml` under
-`known_hardware_faults`, and a unit test fails if either goes back into the
-channel list. Every early "phantom lateral force" result traces to this.
+**2. `Dev1/ai5` 와 `Dev1/ai6` 은 고장이다. 절대 게이지를 배정하지 말 것.**
+`ai5` 는 단선이고, `ai6` 은 바로 앞 채널의 2.1 % 를 끌어온다. SG5 가 `ai7` 에 있는 것이
+그 때문이다. 두 고장 다 `ft_config.yaml` 의 `known_hardware_faults` 에 있고, 둘 중
+하나라도 채널 목록에 돌아오면 단위 테스트가 실패한다. **초기의 "유령 횡력" 결과는 전부
+여기서 나왔다.**
 
-**3. The robot cannot move by accident, and that is deliberate.** Do not
-"fix" the gates to get past them.
+**3. 로봇은 사고로 움직일 수 없고, 그것은 의도된 것이다.** 통과하려고 관문을 "고치지"
+말 것.
 
-**4. `SetToolCoord` is not a store-only call.** FAIRINO documents it as "set
-**and load**" — it activates the register it writes. Use `SetToolList` to store
-without activating. **Tool 0 must never be overwritten**, and tool 1 already
-carries the applied TCP: do not change it without asking the operator.
+**4. `SetToolCoord` 는 저장만 하는 호출이 아니다.** FAIRINO 문서가 "set **and load**"
+라고 적어 두었다 — 쓰는 레지스터를 활성화한다. 활성화 없이 저장하려면 `SetToolList` 를
+쓸 것. **tool 0 은 절대 덮어쓰지 말 것**, tool 1 은 이미 적용된 TCP 를 담고 있으니
+운전자에게 묻지 않고 바꾸지 말 것.
 
 ---
 
-## What stops the robot moving when it should not
+## 무엇이 로봇을 멈춰 세우나
 
-There are two different safety stories in this repo and the older documents
-only described the first one.
+이 저장소에는 서로 다른 안전 이야기가 둘 있고, 옛 문서들은 첫째만 설명했다.
 
-**The legacy `RobotInterface` gates.** `dry_run=True` by default (no socket
-opens), `allow_real_motion=False` (turning off `dry_run` alone raises), and the
-real RPC dispatch was never wired. **Nothing in the campaign goes through this
-class.** It is the untaken path; leave it alone.
+**옛 `RobotInterface` 관문.** 기본이 `dry_run=True`(소켓을 열지 않는다),
+`allow_real_motion=False`(`dry_run` 만 끄면 예외가 난다), 그리고 실제 RPC 전달은
+아예 배선되지 않았다. **캠페인의 어느 것도 이 클래스를 지나가지 않는다.** 가지 않은
+길이니 건드리지 말 것.
 
-**The path the campaign actually uses** is `move_probe.py` and
-`run_indentation.py`, and its guards are:
+**캠페인이 실제로 쓰는 길**은 `move_probe.py` 와 `run_indentation.py` 이고, 그 관문은:
 
-| guard | what it does |
+| 관문 | 하는 일 |
 |---|---|
-| `--confirm MOVE` / `--confirm RUN` | no script commands motion without the literal token on the command line |
-| read-only proxy | diagnostics use a whitelist that only passes `Get*`; `SetToolCoord`, `MoveL`, `RobotEnable` and friends raise `PermissionError` before reaching the wire |
-| network preflight | every robot-touching script checks the route first and refuses if traffic for 192.168.58.2 would leave by the default route |
-| `ready_to_move()` | refuses while the controller is in manual mode — which is where hand jogging always leaves it |
-| joint-step ceiling | a planned move whose largest joint change exceeds the ceiling is refused as a reconfiguration, not sent. This is what catches a wrong IK branch, which on this arm moves a joint by over 200 degrees |
-| tilt / radial gates | a probe more than a few degrees off the gel normal, or off the sensor axis, stops the run |
-| park on every exit | a failed run, an exception and Ctrl-C all lift the probe clear before the process ends |
+| `--confirm MOVE` / `--confirm RUN` | 명령줄에 그 토큰이 글자 그대로 없으면 어떤 스크립트도 동작을 명령하지 않는다 |
+| 읽기 전용 대리자 | 진단은 `Get*` 만 통과시키는 허용 목록을 쓴다. `SetToolCoord`, `MoveL`, `RobotEnable` 따위는 선에 닿기 전에 `PermissionError` 를 낸다 |
+| 네트워크 사전 점검 | 로봇을 건드리는 모든 스크립트가 경로를 먼저 보고, 192.168.58.2 로 갈 트래픽이 기본 경로로 나가면 거부한다 |
+| `ready_to_move()` | 컨트롤러가 수동 모드이면 거부한다 — 손으로 조그하면 항상 거기에 남는다 |
+| 관절 변화 상한 | 계획된 동작의 최대 관절 변화가 상한을 넘으면 재구성으로 보고 보내지 않는다. 잘못된 IK 분기를 잡는 것이 이것인데, 이 팔에서는 관절 하나가 200° 넘게 돈다 |
+| 기울기 / 반경 관문 | 압자가 겔 법선에서 몇 도 이상 벗어나거나 센서 축에서 벗어나면 런을 멈춘다 |
+| 모든 출구에서 park | 실패한 런도, 예외도, Ctrl-C 도 프로세스가 끝나기 전에 압자를 들어 올린다 |
 
-`apply_tcp_to_tool_register.py` is deliberately outside the read-only proxy. It
-is the one place a write can happen, and it can only send `SetToolCoord` or
-`SetToolList`. **Tool 0 must never be overwritten**; tool 1 carries the applied
-TCP and must not be changed without asking the operator.
+`apply_tcp_to_tool_register.py` 만 일부러 읽기 전용 대리자 밖에 있다. 쓰기가 일어날 수
+있는 유일한 곳이고, `SetToolCoord` 또는 `SetToolList` 만 보낼 수 있다. **tool 0 은 절대
+덮어쓰지 말 것.** tool 1 은 적용된 TCP 를 담고 있으니 운전자에게 묻지 않고 바꾸지 말 것.
 
 ---
 
-## Running a sensor
+## 센서 하나 돌리기
 
 ```bash
-# Pass B (force estimation), one sensor, end to end — about 15 minutes
+# Pass B (힘 추정), 센서 하나, 처음부터 끝까지 — 약 15 분
 src/scripts/pass_b_sensor.sh 9DTact_soft_1mm_r1
 
-# Pass A (shape + resolution), one sensor for one probe
+# Pass A (형상 + 분해능), 센서 하나에 압자 하나
 src/scripts/pass_a_sensor.sh 9DTact_soft_1mm_r1 pair050
 
-# read-only: where is the arm, is it ready to move
+# 읽기 전용: 팔이 어디 있나, 움직일 준비가 됐나
 /usr/bin/python3 src/scripts/move_probe.py --status
 
-# lift clear of the gel, whatever state a run left things in
+# 런이 어떤 상태로 끝났든 겔에서 들어 올리기
 /usr/bin/python3 src/scripts/run_one_sensor.py --sensor <id> --from park --to park --confirm RUN
 ```
 
-Both pass scripts leave the probe **78 mm above the gel** on every exit path,
-including failures and Ctrl-C. If a run ever ends without that, something is
-wrong — check with `--status` before touching anything.
+두 pass 스크립트는 **모든 출구에서** 압자를 겔 위 **78 mm** 에 둔다 — 실패도 Ctrl-C 도
+마찬가지다. 그렇게 끝나지 않은 런이 있다면 무언가 잘못된 것이니, 아무것도 건드리기 전에
+`--status` 로 확인할 것.
 
-## Analysing
+## 분석
 
 ```bash
-# spatial resolution for one pass and one sensor
+# 한 pass, 한 센서의 공간 분해능
 /usr/bin/python3 src/scripts/analyse_resolution.py 20260905_passA_pair050 9DTact_hard_3mm_r2
 
-# shape reconstruction, every unit (writes data/20260911_VBTSresolution_dataset/9DTact/shape_reconstruction*.csv)
+# 형상 복원, 전 유닛 (data/20260911_VBTSresolution_dataset/9DTact/shape_reconstruction*.csv 를 쓴다)
 /usr/bin/python3 src/scripts/analyse_shape.py
 
-# the gel-normal correction for a unit (commands no motion)
+# 한 유닛의 겔 법선 보정 (동작을 명령하지 않는다)
 /usr/bin/python3 src/scripts/gel_normal.py --sensor 9DTact_hard_3mm_r1
 
-# the paper's figures and tables, into result/ — each with the csv it was drawn from
-python3 src/scripts/make_result_tables.py      # the 3x3 tables, cells are "r1 / r2  (mean)"
-python3 src/scripts/make_result_figures.py     # cross-principle figures A-F
-python3 src/scripts/make_force_mae_figures.py  # per-axis MAE against resolution
-python3 src/scripts/make_shape_figures.py      # shape accuracy against resolution
-python3 src/scripts/make_optical_curves.py     # imprint diameter and brightness against depth
-python3 src/scripts/make_results_md.py         # writes result/results.md from the above
+# 쌍둥이 불일치·경향성 이상치·자료량 부족
+python3 src/scripts/twin_audit.py
+
+# 논문용 그림과 표를 result/ 로 — 각각 그것을 그린 csv 와 함께
+python3 src/scripts/make_result_tables.py      # 3x3 표, 칸은 "r1 / r2  (평균)"
+python3 src/scripts/make_result_figures.py     # 원리를 가로지르는 그림 A~F
+python3 src/scripts/make_force_mae_figures.py  # 축별 MAE 대 해상도
+python3 src/scripts/make_shape_figures.py      # 형상 정확도 대 해상도
+python3 src/scripts/make_optical_curves.py     # 깊이에 따른 자국 지름과 밝기
+python3 src/scripts/make_results_md.py         # 위의 결과로 result/results.md 를 쓴다
 ```
 
-Every figure writes a csv of the same numbers beside it, so a plot can be redrawn
-without rerunning the analysis.
+**그림마다 같은 숫자의 csv 를 옆에 남긴다.** 분석을 다시 돌리지 않고도 그림을 다시
+그릴 수 있다.
 
 ---
 
-## The habit that this project keeps re-learning
+## 이 프로젝트가 자꾸 다시 배우는 습관
 
-Every speed hypothesis formed by reasoning here has been wrong or marginal. The
-large wins came from timing the parts: the camera was throwing away every
-second frame for a week (2.44 fps against a 4.89 fps limit) and no amount of
-thinking about USB bandwidth found it — a three-line benchmark did, in one
-minute. Likewise, "the contact wandered off axis" was a message that sent three
-runs looking for something that moved; the radial was constant to 0.010 mm and
-the offset was inherited from before the phase even started.
+여기서 **추론으로 세운 속도 가설은 전부 틀렸거나 미미했다.** 큰 이득은 부분을 재는
+데서 나왔다. 카메라가 일주일 동안 두 프레임에 한 장을 버리고 있었는데(한계 4.89 fps
+에서 2.44 fps), USB 대역폭을 아무리 생각해도 찾지 못한 것을 **세 줄짜리 벤치마크가 1 분**
+만에 찾았다. 마찬가지로 "접촉이 축에서 벗어났다" 는 메시지가 세 번의 런을 움직이는
+무언가를 찾게 만들었는데, 반경은 0.010 mm 로 일정했고 그 오프셋은 그 단계가 시작되기도
+전에 물려받은 것이었다.
 
-**Measure it before believing it, and write the measured number next to the
-decision it justifies.** That is why the documents here are full of parenthetical
-figures — they are what makes a choice reviewable later.
+**믿기 전에 재고, 잰 숫자를 그것이 정당화하는 결정 옆에 적을 것.** 여기 문서들이
+괄호 안 숫자로 가득한 이유가 그것이다 — 그것이 나중에 선택을 검토할 수 있게 만든다.
