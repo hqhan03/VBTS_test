@@ -291,39 +291,6 @@ def main():
                 fig(f, f"{pr} ({probe}) — 왼쪽은 경도별, 오른쪽은 두께별. "
                        "선은 중앙값, 띠는 사분위 범위.")
                 break
-    w("눈으로 \"갈린다\" 고 말하면 곡선이 서로 다른 깊이에서 끝나는 것에 속는다. 세 군이")
-    w("모두 자료를 가진 **가장 깊은 깊이 하나**를 잡고 거기서의 폭을 잰다:")
-    w()
-    w("| 원리 | 잰 것 | 경도별 폭 | 두께별 폭 | 두께가 단조인가 |")
-    w("|---|---|---:|---:|---|")
-    import glob as _g
-    SP = []
-    for pr, pb in (("9DTact", "ball8"), ("DIGIT", "ball8"),
-                   ("DIGIT_Marker", "ball4")):
-        f = RES / FOLD[pr] / "data" / f"optical_group_spread_{pb}.csv"
-        if f.exists():
-            SP.append(pd.read_csv(f))
-    if SP:
-        SP = pd.concat(SP)
-        MN = {"diameter_px": "자국 지름", "level": "밝기 변화"}
-        for pr in ("9DTact", "DIGIT", "DIGIT_Marker"):
-            for meas in ("diameter_px", "level"):
-                g = SP[(SP.principle == pr) & (SP.measure == meas)]
-                h = g[g.group_by == "hardness"]
-                t = g[g.group_by == "thickness_mm"]
-                if not len(h) or not len(t):
-                    continue
-                w(f"| {pr} | {MN[meas]} | {h.spread_pct.iloc[0]:.0f} % | "
-                  f"**{t.spread_pct.iloc[0]:.0f} %** | "
-                  f"{'예' if bool(t.monotone.iloc[0]) else '**아니오**'} |")
-    w()
-    w("<sub>자료: `<원리>/data/optical_group_spread_<프로브>.csv` · 곡선 "
-      "`optical_by_group_<프로브>.csv`</sub>")
-    w()
-    w("**두께가 경도보다 2 ~ 5 배 크게 가른다.** 어느 원리에서도, 두 지표 모두에서.")
-    w("다만 **가는 선을 보면 유닛 하나하나는 군을 넘나든다** — 중앙값 세 줄이 갈라져")
-    w("보여도 같은 군 안의 흩어짐이 그만큼 크다.")
-    w()
     w("**DIGIT 계열은 얇을수록 넓고 밝다** — 두 지표 모두 1 → 2 → 3 mm 로 단조 감소한다.")
     w("기재가 가까워 변형이 옆으로 퍼지고, 겔이 얇아 빛이 덜 흩어지는 것으로 읽힌다.")
     w()
@@ -336,8 +303,8 @@ def main():
     w("> 않은 추측이다.")
     w()
     w("> **경도가 겹치는 것을 \"경도가 무관하다\" 로 읽으면 안 된다.** DIGIT 계열은")
-    w("> 경도를 6 Shore 점밖에 흔들지 않았다(부록 B). 9DTact 는 40 점을 흔들고도 폭이")
-    w("> 5 ~ 12 % 이므로, 적어도 9DTact 에서는 **실제로 약한 효과**라고 말할 수 있다.")
+    w("> 경도를 6 Shore 점밖에 흔들지 않았다(부록 B). 9DTact 는 40 점을 흔들고도")
+    w("> 곡선이 겹치므로, 적어도 9DTact 에서는 **실제로 약한 효과**라고 말할 수 있다.")
     w()
     w("> **원리 간 기울기를 비교하면 안 된다.** 자료마다 깊이 구간이 다르고 (각 유닛의")
     w("> 유효 구간에서 맞춘다), 자국이 시야를 채우면 `contact_region` 이 덩어리를 놓쳐")
@@ -369,13 +336,6 @@ def main():
     w("`힘 × 두께` 에서는 포개진다. 지름과 밝기가 같은 방향으로 움직인다.")
     w()
 
-    w("2 절과 같은 방식으로 군 사이 폭을 재면 **9DTact 의 자국 지름**이 이렇다:")
-    w()
-    w("| x 축 | 경도별 폭 | 두께별 폭 |")
-    w("|---|---:|---:|")
-    w("| 깊이 | 5 % | **13 %** |")
-    w("| 힘 | **23 %** | 5 % |")
-    w()
     w("**같은 자국, 같은 램프, 바뀐 것은 x 축뿐이다.**")
     w()
     w("물리로는 그럴 만하다. **같은 깊이**에서는 기재가 얼마나 가까운지가 변형을")
