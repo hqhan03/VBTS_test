@@ -1,0 +1,5 @@
+principle,unit,n_evidence,kinds,detail
+DIGIT,medium_3mm_r2,4,쌍 불일치+자료량 부족,"쌍 불일치: 자국 지름 기울기 ball8 (px/mm) 39% (3.9배) | 쌍 불일치: 밝기 기울기 ball8 (lvl/mm) 23% (3.7배) | 쌍 불일치: 자국 지름 기울기 ball4 (px/mm) 63% (3.4배) | 자료량 부족: ball4 점 17 vs 43, 깊이폭 1.54 vs 2.51 mm"
+DIGIT,soft_1mm_r1,3,쌍 불일치+자료량 부족,"쌍 불일치: 포화 깊이 (mm) 31% (4.2배) | 쌍 불일치: 자국 지름 기울기 ball8 (px/mm) 31% (3.1배) | 자료량 부족: ball4 점 12 vs 18, 깊이폭 0.79 vs 1.18 mm"
+DIGIT_Marker,medium_1mm_r2,2,쌍 불일치+자료량 부족,"쌍 불일치: 밝기 기울기 ball4 (lvl/mm) 72% (7.4배) | 자료량 부족: ball4 점 7 vs 21, 깊이폭 0.60 vs 1.50 mm"
+DIGIT,medium_2mm_r2,2,쌍 불일치+자료량 부족,"쌍 불일치: 천장 (N) 46% (3.2배) | 자료량 부족: ball8 점 12 vs 19, 깊이폭 1.04 vs 1.73 mm"

@@ -1,0 +1,551 @@
+principle,unit,hardness,thickness_mm,rep,metric,value
+9DTact,soft_1mm_r1,soft,1,1,천장 (N),27.848915900572194
+9DTact,soft_1mm_r1,soft,1,1,포화 깊이 (mm),4.527912557169966
+9DTact,soft_1mm_r2,soft,1,2,천장 (N),26.799817552457977
+9DTact,soft_1mm_r2,soft,1,2,포화 깊이 (mm),4.285544924573017
+9DTact,soft_2mm_r1,soft,2,1,천장 (N),30.238843978677988
+9DTact,soft_2mm_r1,soft,2,1,포화 깊이 (mm),5.4744673004455215
+9DTact,soft_2mm_r2,soft,2,2,천장 (N),24.610286158155468
+9DTact,soft_2mm_r2,soft,2,2,포화 깊이 (mm),5.076735382551469
+9DTact,soft_3mm_r1,soft,3,1,천장 (N),30.97387494840487
+9DTact,soft_3mm_r1,soft,3,1,포화 깊이 (mm),6.053670937241272
+9DTact,soft_3mm_r2,soft,3,2,천장 (N),30.639473352105316
+9DTact,soft_3mm_r2,soft,3,2,포화 깊이 (mm),6.293003450833041
+9DTact,medium_1mm_r1,medium,1,1,천장 (N),31.00153968042581
+9DTact,medium_1mm_r1,medium,1,1,포화 깊이 (mm),4.711342525137244
+9DTact,medium_2mm_r2,medium,2,2,천장 (N),30.207202253506903
+9DTact,medium_2mm_r2,medium,2,2,포화 깊이 (mm),5.246948058025978
+9DTact,medium_3mm_r1,medium,3,1,천장 (N),38.477407292298594
+9DTact,medium_3mm_r1,medium,3,1,포화 깊이 (mm),6.6054929903992985
+9DTact,medium_3mm_r2,medium,3,2,천장 (N),34.182887472624984
+9DTact,medium_3mm_r2,medium,3,2,포화 깊이 (mm),6.192190817531621
+9DTact,hard_1mm_r1,hard,1,1,천장 (N),27.510294207386806
+9DTact,hard_1mm_r1,hard,1,1,포화 깊이 (mm),4.318176562097701
+9DTact,hard_2mm_r1,hard,2,1,천장 (N),43.32170674399263
+9DTact,hard_2mm_r1,hard,2,1,포화 깊이 (mm),5.292425101276052
+9DTact,hard_2mm_r2,hard,2,2,천장 (N),43.81170816849713
+9DTact,hard_2mm_r2,hard,2,2,포화 깊이 (mm),5.452331049836349
+9DTact,hard_3mm_r1,hard,3,1,천장 (N),63.159778301454
+9DTact,hard_3mm_r1,hard,3,1,포화 깊이 (mm),6.788935798770929
+9DTact,hard_3mm_r2,hard,3,2,천장 (N),60.32792947150917
+9DTact,hard_3mm_r2,hard,3,2,포화 깊이 (mm),6.669807342949163
+9DTact,hard_1mm_r1,hard,1,1,분해 가능한 최소 간격 (mm),1.25
+9DTact,hard_1mm_r1,hard,1,1,골 깊이 best_dip,0.69
+9DTact,hard_2mm_r1,hard,2,1,분해 가능한 최소 간격 (mm),1.25
+9DTact,hard_2mm_r1,hard,2,1,골 깊이 best_dip,0.676
+9DTact,hard_2mm_r2,hard,2,2,분해 가능한 최소 간격 (mm),1.5
+9DTact,hard_2mm_r2,hard,2,2,골 깊이 best_dip,0.593
+9DTact,hard_3mm_r1,hard,3,1,분해 가능한 최소 간격 (mm),2.5
+9DTact,hard_3mm_r1,hard,3,1,골 깊이 best_dip,0.628
+9DTact,hard_3mm_r2,hard,3,2,분해 가능한 최소 간격 (mm),2.5
+9DTact,hard_3mm_r2,hard,3,2,골 깊이 best_dip,0.593
+9DTact,medium_1mm_r1,medium,1,1,분해 가능한 최소 간격 (mm),1.1
+9DTact,medium_1mm_r1,medium,1,1,골 깊이 best_dip,0.693
+9DTact,medium_2mm_r2,medium,2,2,분해 가능한 최소 간격 (mm),1.1
+9DTact,medium_2mm_r2,medium,2,2,골 깊이 best_dip,0.728
+9DTact,medium_3mm_r1,medium,3,1,분해 가능한 최소 간격 (mm),2.5
+9DTact,medium_3mm_r1,medium,3,1,골 깊이 best_dip,0.656
+9DTact,medium_3mm_r2,medium,3,2,분해 가능한 최소 간격 (mm),1.75
+9DTact,medium_3mm_r2,medium,3,2,골 깊이 best_dip,0.556
+9DTact,soft_1mm_r1,soft,1,1,분해 가능한 최소 간격 (mm),1.5
+9DTact,soft_1mm_r1,soft,1,1,골 깊이 best_dip,0.838
+9DTact,soft_1mm_r2,soft,1,2,분해 가능한 최소 간격 (mm),1.75
+9DTact,soft_1mm_r2,soft,1,2,골 깊이 best_dip,0.84
+9DTact,soft_2mm_r1,soft,2,1,분해 가능한 최소 간격 (mm),1.75
+9DTact,soft_2mm_r1,soft,2,1,골 깊이 best_dip,0.707
+9DTact,soft_2mm_r2,soft,2,2,분해 가능한 최소 간격 (mm),1.25
+9DTact,soft_2mm_r2,soft,2,2,골 깊이 best_dip,0.698
+9DTact,soft_3mm_r1,soft,3,1,분해 가능한 최소 간격 (mm),2.0
+9DTact,soft_3mm_r1,soft,3,1,골 깊이 best_dip,0.289
+9DTact,soft_3mm_r2,soft,3,2,분해 가능한 최소 간격 (mm),1.25
+9DTact,soft_3mm_r2,soft,3,2,골 깊이 best_dip,0.639
+9DTact,hard_1mm_r1,hard,1,1,자국 지름 기울기 ball4 (px/mm),361.39859292976354
+9DTact,hard_1mm_r1,hard,1,1,밝기 기울기 ball4 (lvl/mm),9.8125449110978
+9DTact,hard_2mm_r1,hard,2,1,자국 지름 기울기 ball4 (px/mm),551.4473065960135
+9DTact,hard_2mm_r1,hard,2,1,밝기 기울기 ball4 (lvl/mm),11.328599543775782
+9DTact,hard_2mm_r2,hard,2,2,자국 지름 기울기 ball4 (px/mm),562.3999424790886
+9DTact,hard_2mm_r2,hard,2,2,밝기 기울기 ball4 (lvl/mm),12.35962670822491
+9DTact,medium_1mm_r1,medium,1,1,자국 지름 기울기 ball4 (px/mm),230.46942839600987
+9DTact,medium_1mm_r1,medium,1,1,밝기 기울기 ball4 (lvl/mm),11.382722390796436
+9DTact,soft_1mm_r1,soft,1,1,자국 지름 기울기 ball4 (px/mm),463.48144747126673
+9DTact,soft_1mm_r1,soft,1,1,밝기 기울기 ball4 (lvl/mm),6.172384517705332
+9DTact,soft_1mm_r2,soft,1,2,자국 지름 기울기 ball4 (px/mm),317.096680715374
+9DTact,soft_1mm_r2,soft,1,2,밝기 기울기 ball4 (lvl/mm),10.50876969478133
+9DTact,soft_2mm_r1,soft,2,1,자국 지름 기울기 ball4 (px/mm),386.26037876180334
+9DTact,soft_2mm_r1,soft,2,1,밝기 기울기 ball4 (lvl/mm),12.881748191199078
+9DTact,soft_2mm_r2,soft,2,2,자국 지름 기울기 ball4 (px/mm),686.9356376224753
+9DTact,soft_2mm_r2,soft,2,2,밝기 기울기 ball4 (lvl/mm),12.45367289308304
+9DTact,soft_3mm_r1,soft,3,1,자국 지름 기울기 ball4 (px/mm),589.0393115146466
+9DTact,soft_3mm_r1,soft,3,1,밝기 기울기 ball4 (lvl/mm),11.17260591566694
+9DTact,hard_1mm_r1,hard,1,1,자국 지름 기울기 ball8 (px/mm),332.84009243365017
+9DTact,hard_1mm_r1,hard,1,1,밝기 기울기 ball8 (lvl/mm),4.799222613106607
+9DTact,hard_2mm_r1,hard,2,1,자국 지름 기울기 ball8 (px/mm),464.3170110553484
+9DTact,hard_2mm_r1,hard,2,1,밝기 기울기 ball8 (lvl/mm),6.97427211681875
+9DTact,hard_2mm_r2,hard,2,2,자국 지름 기울기 ball8 (px/mm),359.00298230499305
+9DTact,hard_2mm_r2,hard,2,2,밝기 기울기 ball8 (lvl/mm),6.458208614233602
+9DTact,hard_3mm_r1,hard,3,1,자국 지름 기울기 ball8 (px/mm),546.7287949619356
+9DTact,hard_3mm_r1,hard,3,1,밝기 기울기 ball8 (lvl/mm),8.031789595361621
+9DTact,hard_3mm_r2,hard,3,2,자국 지름 기울기 ball8 (px/mm),452.6197215362564
+9DTact,hard_3mm_r2,hard,3,2,밝기 기울기 ball8 (lvl/mm),5.5322376118694025
+9DTact,medium_1mm_r1,medium,1,1,자국 지름 기울기 ball8 (px/mm),229.18549413362493
+9DTact,medium_1mm_r1,medium,1,1,밝기 기울기 ball8 (lvl/mm),4.910811014935804
+9DTact,medium_2mm_r2,medium,2,2,자국 지름 기울기 ball8 (px/mm),307.9337853480856
+9DTact,medium_2mm_r2,medium,2,2,밝기 기울기 ball8 (lvl/mm),9.33789119885151
+9DTact,medium_3mm_r1,medium,3,1,자국 지름 기울기 ball8 (px/mm),305.6760833313709
+9DTact,medium_3mm_r1,medium,3,1,밝기 기울기 ball8 (lvl/mm),10.164772080759615
+9DTact,medium_3mm_r2,medium,3,2,자국 지름 기울기 ball8 (px/mm),324.0219609554625
+9DTact,medium_3mm_r2,medium,3,2,밝기 기울기 ball8 (lvl/mm),9.706811717520663
+9DTact,soft_1mm_r1,soft,1,1,자국 지름 기울기 ball8 (px/mm),321.3600716641024
+9DTact,soft_1mm_r1,soft,1,1,밝기 기울기 ball8 (lvl/mm),5.391922172531981
+9DTact,soft_1mm_r2,soft,1,2,자국 지름 기울기 ball8 (px/mm),295.19740075522066
+9DTact,soft_1mm_r2,soft,1,2,밝기 기울기 ball8 (lvl/mm),5.350642287070761
+9DTact,soft_2mm_r1,soft,2,1,자국 지름 기울기 ball8 (px/mm),285.0996825752356
+9DTact,soft_2mm_r1,soft,2,1,밝기 기울기 ball8 (lvl/mm),9.610293216784026
+9DTact,soft_2mm_r2,soft,2,2,자국 지름 기울기 ball8 (px/mm),293.5394590128184
+9DTact,soft_2mm_r2,soft,2,2,밝기 기울기 ball8 (lvl/mm),11.452704934225387
+9DTact,soft_3mm_r1,soft,3,1,자국 지름 기울기 ball8 (px/mm),256.0518805833023
+9DTact,soft_3mm_r1,soft,3,1,밝기 기울기 ball8 (lvl/mm),11.192304847092997
+9DTact,soft_3mm_r2,soft,3,2,자국 지름 기울기 ball8 (px/mm),271.9648329024181
+9DTact,soft_3mm_r2,soft,3,2,밝기 기울기 ball8 (lvl/mm),11.42851487898156
+9DTact,hard_1mm_r1,hard,1,1,Fz MAE 중앙 (N),0.037194851785898195
+9DTact,hard_1mm_r1,hard,1,1,Fx MAE 중앙 (N),0.0184266557916998
+9DTact,hard_1mm_r1,hard,1,1,Fy MAE 중앙 (N),0.0257087051868438
+9DTact,hard_1mm_r1,hard,1,1,Fz 최솟값 (N),0.0235499925911426
+9DTact,hard_2mm_r1,hard,2,1,Fz MAE 중앙 (N),0.040272299200296346
+9DTact,hard_2mm_r1,hard,2,1,Fx MAE 중앙 (N),0.0316432146355509
+9DTact,hard_2mm_r1,hard,2,1,Fy MAE 중앙 (N),0.031158517114818048
+9DTact,hard_2mm_r1,hard,2,1,Fz 최솟값 (N),0.0332561768591403
+9DTact,hard_2mm_r2,hard,2,2,Fz MAE 중앙 (N),0.0336962025612592
+9DTact,hard_2mm_r2,hard,2,2,Fx MAE 중앙 (N),0.024467390961945
+9DTact,hard_2mm_r2,hard,2,2,Fy MAE 중앙 (N),0.025298991240560953
+9DTact,hard_2mm_r2,hard,2,2,Fz 최솟값 (N),0.0261730086058378
+9DTact,hard_3mm_r1,hard,3,1,Fz MAE 중앙 (N),0.047317087650299
+9DTact,hard_3mm_r1,hard,3,1,Fx MAE 중앙 (N),0.0352909322828054
+9DTact,hard_3mm_r1,hard,3,1,Fy MAE 중앙 (N),0.034770624712109496
+9DTact,hard_3mm_r1,hard,3,1,Fz 최솟값 (N),0.0412977263331413
+9DTact,hard_3mm_r2,hard,3,2,Fz MAE 중앙 (N),0.055311543866991955
+9DTact,hard_3mm_r2,hard,3,2,Fx MAE 중앙 (N),0.029109991155564702
+9DTact,hard_3mm_r2,hard,3,2,Fy MAE 중앙 (N),0.0391369611024856
+9DTact,hard_3mm_r2,hard,3,2,Fz 최솟값 (N),0.0426033437252044
+9DTact,medium_1mm_r1,medium,1,1,Fz MAE 중앙 (N),0.0532303340733051
+9DTact,medium_1mm_r1,medium,1,1,Fx MAE 중앙 (N),0.024418619461357552
+9DTact,medium_1mm_r1,medium,1,1,Fy MAE 중앙 (N),0.02589713409543035
+9DTact,medium_1mm_r1,medium,1,1,Fz 최솟값 (N),0.0478156991302967
+9DTact,medium_2mm_r2,medium,2,2,Fz MAE 중앙 (N),0.055620718747377354
+9DTact,medium_2mm_r2,medium,2,2,Fx MAE 중앙 (N),0.0262169418856501
+9DTact,medium_2mm_r2,medium,2,2,Fy MAE 중앙 (N),0.027309634722769198
+9DTact,medium_2mm_r2,medium,2,2,Fz 최솟값 (N),0.042677741497755
+9DTact,medium_3mm_r1,medium,3,1,Fz MAE 중앙 (N),0.05490621551871295
+9DTact,medium_3mm_r1,medium,3,1,Fx MAE 중앙 (N),0.031627314165234496
+9DTact,medium_3mm_r1,medium,3,1,Fy MAE 중앙 (N),0.03518145531415935
+9DTact,medium_3mm_r1,medium,3,1,Fz 최솟값 (N),0.0410246513783931
+9DTact,medium_3mm_r2,medium,3,2,Fz MAE 중앙 (N),0.0562199931591749
+9DTact,medium_3mm_r2,medium,3,2,Fx MAE 중앙 (N),0.0360748283565044
+9DTact,medium_3mm_r2,medium,3,2,Fy MAE 중앙 (N),0.03070663753896945
+9DTact,medium_3mm_r2,medium,3,2,Fz 최솟값 (N),0.0416482985019683
+9DTact,soft_1mm_r1,soft,1,1,Fz MAE 중앙 (N),0.05383417941629885
+9DTact,soft_1mm_r1,soft,1,1,Fx MAE 중앙 (N),0.02932806313037865
+9DTact,soft_1mm_r1,soft,1,1,Fy MAE 중앙 (N),0.027762380428612198
+9DTact,soft_1mm_r1,soft,1,1,Fz 최솟값 (N),0.0446228422224521
+9DTact,soft_1mm_r2,soft,1,2,Fz MAE 중앙 (N),0.06427604332566256
+9DTact,soft_1mm_r2,soft,1,2,Fx MAE 중앙 (N),0.04691039212048045
+9DTact,soft_1mm_r2,soft,1,2,Fy MAE 중앙 (N),0.03252340666949745
+9DTact,soft_1mm_r2,soft,1,2,Fz 최솟값 (N),0.0546674169600009
+9DTact,soft_2mm_r1,soft,2,1,Fz MAE 중앙 (N),0.046851634979248
+9DTact,soft_2mm_r1,soft,2,1,Fx MAE 중앙 (N),0.02461105957627295
+9DTact,soft_2mm_r1,soft,2,1,Fy MAE 중앙 (N),0.0260663842782378
+9DTact,soft_2mm_r1,soft,2,1,Fz 최솟값 (N),0.0351876318454742
+9DTact,soft_2mm_r2,soft,2,2,Fz MAE 중앙 (N),0.045587152242660495
+9DTact,soft_2mm_r2,soft,2,2,Fx MAE 중앙 (N),0.0262270793318748
+9DTact,soft_2mm_r2,soft,2,2,Fy MAE 중앙 (N),0.02362860646098845
+9DTact,soft_2mm_r2,soft,2,2,Fz 최솟값 (N),0.0345242470502853
+9DTact,soft_3mm_r1,soft,3,1,Fz MAE 중앙 (N),0.0617801900953054
+9DTact,soft_3mm_r1,soft,3,1,Fx MAE 중앙 (N),0.04568812623620025
+9DTact,soft_3mm_r1,soft,3,1,Fy MAE 중앙 (N),0.0371392220258712
+9DTact,soft_3mm_r1,soft,3,1,Fz 최솟값 (N),0.0520221218466758
+9DTact,soft_3mm_r2,soft,3,2,Fz MAE 중앙 (N),0.057842707261443096
+9DTact,soft_3mm_r2,soft,3,2,Fx MAE 중앙 (N),0.0347749795764684
+9DTact,soft_3mm_r2,soft,3,2,Fy MAE 중앙 (N),0.03132339287549255
+9DTact,soft_3mm_r2,soft,3,2,Fz 최솟값 (N),0.0469814352691173
+9DTact,hard_1mm_r1,hard,1,1,형상 MAE cyl4 최솟값 (mm),0.0370964563209486
+9DTact,hard_1mm_r1,hard,1,1,형상 MAE cube4 최솟값 (mm),0.1159738221399451
+9DTact,hard_2mm_r1,hard,2,1,형상 MAE cyl4 최솟값 (mm),0.0975424545996847
+9DTact,hard_2mm_r1,hard,2,1,형상 MAE cube4 최솟값 (mm),0.0755695400549622
+9DTact,hard_2mm_r2,hard,2,2,형상 MAE cyl4 최솟값 (mm),0.0432631555928541
+9DTact,hard_2mm_r2,hard,2,2,형상 MAE cube4 최솟값 (mm),0.0716444830298723
+9DTact,hard_3mm_r1,hard,3,1,형상 MAE cyl4 최솟값 (mm),0.061925155030431
+9DTact,hard_3mm_r1,hard,3,1,형상 MAE cube4 최솟값 (mm),0.0723464289990811
+9DTact,hard_3mm_r2,hard,3,2,형상 MAE cyl4 최솟값 (mm),0.0913877317759624
+9DTact,hard_3mm_r2,hard,3,2,형상 MAE cube4 최솟값 (mm),0.0720877367890461
+9DTact,medium_1mm_r1,medium,1,1,형상 MAE cyl4 최솟값 (mm),0.1009916774517412
+9DTact,medium_1mm_r1,medium,1,1,형상 MAE cube4 최솟값 (mm),0.1831790823027302
+9DTact,medium_2mm_r2,medium,2,2,형상 MAE cyl4 최솟값 (mm),0.0474107292291973
+9DTact,medium_2mm_r2,medium,2,2,형상 MAE cube4 최솟값 (mm),0.0492800402931567
+9DTact,medium_3mm_r1,medium,3,1,형상 MAE cyl4 최솟값 (mm),0.1047841592014676
+9DTact,medium_3mm_r1,medium,3,1,형상 MAE cube4 최솟값 (mm),0.0932602158091443
+9DTact,medium_3mm_r2,medium,3,2,형상 MAE cyl4 최솟값 (mm),0.0484627937184541
+9DTact,medium_3mm_r2,medium,3,2,형상 MAE cube4 최솟값 (mm),0.0529098308472288
+9DTact,soft_1mm_r1,soft,1,1,형상 MAE cyl4 최솟값 (mm),0.0682699738021551
+9DTact,soft_1mm_r1,soft,1,1,형상 MAE cube4 최솟값 (mm),0.1193357370114025
+9DTact,soft_1mm_r2,soft,1,2,형상 MAE cyl4 최솟값 (mm),0.094695847746312
+9DTact,soft_1mm_r2,soft,1,2,형상 MAE cube4 최솟값 (mm),0.1982524058450264
+9DTact,soft_2mm_r1,soft,2,1,형상 MAE cyl4 최솟값 (mm),0.061921004861276
+9DTact,soft_2mm_r1,soft,2,1,형상 MAE cube4 최솟값 (mm),0.1310601267416568
+9DTact,soft_2mm_r2,soft,2,2,형상 MAE cyl4 최솟값 (mm),0.0477946986604281
+9DTact,soft_2mm_r2,soft,2,2,형상 MAE cube4 최솟값 (mm),0.052946142521024
+9DTact,soft_3mm_r1,soft,3,1,형상 MAE cyl4 최솟값 (mm),0.0460480061131948
+9DTact,soft_3mm_r1,soft,3,1,형상 MAE cube4 최솟값 (mm),0.0481800079247918
+9DTact,soft_3mm_r2,soft,3,2,형상 MAE cyl4 최솟값 (mm),0.0612016849092754
+9DTact,soft_3mm_r2,soft,3,2,형상 MAE cube4 최솟값 (mm),0.0584617793593883
+DIGIT,soft_1mm_r1,soft,1,1,천장 (N),23.41254982668352
+DIGIT,soft_1mm_r1,soft,1,1,포화 깊이 (mm),0.9599031401923668
+DIGIT,soft_1mm_r2,soft,1,2,천장 (N),22.449198933907432
+DIGIT,soft_1mm_r2,soft,1,2,포화 깊이 (mm),1.3153767166200367
+DIGIT,soft_2mm_r1,soft,2,1,천장 (N),17.71834051220396
+DIGIT,soft_2mm_r1,soft,2,1,포화 깊이 (mm),1.5753167070132683
+DIGIT,soft_2mm_r2,soft,2,2,천장 (N),14.735948722276902
+DIGIT,soft_2mm_r2,soft,2,2,포화 깊이 (mm),1.496014633415438
+DIGIT,soft_3mm_r1,soft,3,1,천장 (N),11.76112258608135
+DIGIT,soft_3mm_r1,soft,3,1,포화 깊이 (mm),1.796520162529884
+DIGIT,soft_3mm_r2,soft,3,2,천장 (N),11.09157022794685
+DIGIT,soft_3mm_r2,soft,3,2,포화 깊이 (mm),1.92658814951654
+DIGIT,medium_1mm_r1,medium,1,1,천장 (N),18.21929859107194
+DIGIT,medium_1mm_r1,medium,1,1,포화 깊이 (mm),1.0912059627263702
+DIGIT,medium_1mm_r2,medium,1,2,천장 (N),22.072333152914783
+DIGIT,medium_1mm_r2,medium,1,2,포화 깊이 (mm),1.158726017423568
+DIGIT,medium_2mm_r1,medium,2,1,천장 (N),14.138581849754152
+DIGIT,medium_2mm_r1,medium,2,1,포화 깊이 (mm),1.6478677457603972
+DIGIT,medium_2mm_r2,medium,2,2,천장 (N),22.590942160303705
+DIGIT,medium_2mm_r2,medium,2,2,포화 깊이 (mm),1.528356973132368
+DIGIT,medium_3mm_r1,medium,3,1,천장 (N),14.4159646485878
+DIGIT,medium_3mm_r1,medium,3,1,포화 깊이 (mm),2.067055300283876
+DIGIT,medium_3mm_r2,medium,3,2,천장 (N),15.034245909708702
+DIGIT,medium_3mm_r2,medium,3,2,포화 깊이 (mm),2.160886736672076
+DIGIT,hard_1mm_r1,hard,1,1,천장 (N),19.45536450623125
+DIGIT,hard_1mm_r1,hard,1,1,포화 깊이 (mm),1.0952844868099518
+DIGIT,hard_1mm_r2,hard,1,2,천장 (N),16.95072029347406
+DIGIT,hard_1mm_r2,hard,1,2,포화 깊이 (mm),0.9620606494110469
+DIGIT,hard_2mm_r1,hard,2,1,천장 (N),22.41093170485956
+DIGIT,hard_2mm_r1,hard,2,1,포화 깊이 (mm),1.68118929727925
+DIGIT,hard_2mm_r2,hard,2,2,천장 (N),17.73768481074213
+DIGIT,hard_2mm_r2,hard,2,2,포화 깊이 (mm),1.467904162329777
+DIGIT,hard_3mm_r1,hard,3,1,천장 (N),11.83434462780252
+DIGIT,hard_3mm_r1,hard,3,1,포화 깊이 (mm),1.8226737002265276
+DIGIT,hard_3mm_r2,hard,3,2,천장 (N),13.673424114011729
+DIGIT,hard_3mm_r2,hard,3,2,포화 깊이 (mm),1.6889990863531956
+DIGIT,hard_1mm_r1,hard,1,1,분해 가능한 최소 간격 (mm),1.1
+DIGIT,hard_1mm_r1,hard,1,1,골 깊이 best_dip,0.997
+DIGIT,hard_1mm_r2,hard,1,2,분해 가능한 최소 간격 (mm),1.1
+DIGIT,hard_1mm_r2,hard,1,2,골 깊이 best_dip,1.0
+DIGIT,hard_2mm_r1,hard,2,1,분해 가능한 최소 간격 (mm),1.1
+DIGIT,hard_2mm_r1,hard,2,1,골 깊이 best_dip,1.0
+DIGIT,hard_2mm_r2,hard,2,2,분해 가능한 최소 간격 (mm),1.1
+DIGIT,hard_2mm_r2,hard,2,2,골 깊이 best_dip,1.0
+DIGIT,hard_3mm_r1,hard,3,1,분해 가능한 최소 간격 (mm),1.1
+DIGIT,hard_3mm_r1,hard,3,1,골 깊이 best_dip,0.967
+DIGIT,hard_3mm_r2,hard,3,2,분해 가능한 최소 간격 (mm),1.1
+DIGIT,hard_3mm_r2,hard,3,2,골 깊이 best_dip,1.0
+DIGIT,medium_1mm_r1,medium,1,1,분해 가능한 최소 간격 (mm),1.1
+DIGIT,medium_1mm_r1,medium,1,1,골 깊이 best_dip,0.977
+DIGIT,medium_1mm_r2,medium,1,2,분해 가능한 최소 간격 (mm),1.1
+DIGIT,medium_1mm_r2,medium,1,2,골 깊이 best_dip,1.0
+DIGIT,medium_2mm_r1,medium,2,1,분해 가능한 최소 간격 (mm),1.1
+DIGIT,medium_2mm_r1,medium,2,1,골 깊이 best_dip,1.0
+DIGIT,medium_2mm_r2,medium,2,2,분해 가능한 최소 간격 (mm),1.1
+DIGIT,medium_2mm_r2,medium,2,2,골 깊이 best_dip,1.0
+DIGIT,medium_3mm_r1,medium,3,1,분해 가능한 최소 간격 (mm),1.1
+DIGIT,medium_3mm_r1,medium,3,1,골 깊이 best_dip,1.0
+DIGIT,medium_3mm_r2,medium,3,2,분해 가능한 최소 간격 (mm),1.1
+DIGIT,medium_3mm_r2,medium,3,2,골 깊이 best_dip,1.0
+DIGIT,soft_1mm_r1,soft,1,1,분해 가능한 최소 간격 (mm),1.1
+DIGIT,soft_1mm_r1,soft,1,1,골 깊이 best_dip,0.984
+DIGIT,soft_1mm_r2,soft,1,2,분해 가능한 최소 간격 (mm),1.1
+DIGIT,soft_1mm_r2,soft,1,2,골 깊이 best_dip,1.0
+DIGIT,soft_2mm_r1,soft,2,1,분해 가능한 최소 간격 (mm),1.1
+DIGIT,soft_2mm_r1,soft,2,1,골 깊이 best_dip,1.0
+DIGIT,soft_2mm_r2,soft,2,2,분해 가능한 최소 간격 (mm),1.1
+DIGIT,soft_2mm_r2,soft,2,2,골 깊이 best_dip,1.0
+DIGIT,soft_3mm_r1,soft,3,1,분해 가능한 최소 간격 (mm),1.1
+DIGIT,soft_3mm_r1,soft,3,1,골 깊이 best_dip,1.0
+DIGIT,soft_3mm_r2,soft,3,2,분해 가능한 최소 간격 (mm),1.1
+DIGIT,soft_3mm_r2,soft,3,2,골 깊이 best_dip,1.0
+DIGIT,hard_1mm_r1,hard,1,1,자국 지름 기울기 ball4 (px/mm),413.5452667618863
+DIGIT,hard_1mm_r1,hard,1,1,밝기 기울기 ball4 (lvl/mm),10.430811784115168
+DIGIT,hard_1mm_r2,hard,1,2,자국 지름 기울기 ball4 (px/mm),251.9298492994843
+DIGIT,hard_1mm_r2,hard,1,2,밝기 기울기 ball4 (lvl/mm),14.75348118366535
+DIGIT,hard_2mm_r1,hard,2,1,자국 지름 기울기 ball4 (px/mm),249.8273692503749
+DIGIT,hard_2mm_r1,hard,2,1,밝기 기울기 ball4 (lvl/mm),9.261371638032442
+DIGIT,hard_2mm_r2,hard,2,2,자국 지름 기울기 ball4 (px/mm),266.3243948168619
+DIGIT,hard_2mm_r2,hard,2,2,밝기 기울기 ball4 (lvl/mm),9.381987609024176
+DIGIT,hard_3mm_r1,hard,3,1,자국 지름 기울기 ball4 (px/mm),167.3570366346791
+DIGIT,hard_3mm_r1,hard,3,1,밝기 기울기 ball4 (lvl/mm),4.717036766435144
+DIGIT,hard_3mm_r2,hard,3,2,자국 지름 기울기 ball4 (px/mm),194.9266056960076
+DIGIT,hard_3mm_r2,hard,3,2,밝기 기울기 ball4 (lvl/mm),6.354326479567449
+DIGIT,medium_1mm_r1,medium,1,1,자국 지름 기울기 ball4 (px/mm),429.4616219183464
+DIGIT,medium_1mm_r1,medium,1,1,밝기 기울기 ball4 (lvl/mm),10.270765836465824
+DIGIT,medium_1mm_r2,medium,1,2,자국 지름 기울기 ball4 (px/mm),374.46985892629687
+DIGIT,medium_1mm_r2,medium,1,2,밝기 기울기 ball4 (lvl/mm),9.97817495019154
+DIGIT,medium_2mm_r1,medium,2,1,자국 지름 기울기 ball4 (px/mm),199.23844328291236
+DIGIT,medium_2mm_r1,medium,2,1,밝기 기울기 ball4 (lvl/mm),8.967037463166596
+DIGIT,medium_2mm_r2,medium,2,2,자국 지름 기울기 ball4 (px/mm),260.62160053389675
+DIGIT,medium_2mm_r2,medium,2,2,밝기 기울기 ball4 (lvl/mm),9.169004163421922
+DIGIT,medium_3mm_r1,medium,3,1,자국 지름 기울기 ball4 (px/mm),151.35543345658985
+DIGIT,medium_3mm_r1,medium,3,1,밝기 기울기 ball4 (lvl/mm),4.824211840582126
+DIGIT,medium_3mm_r2,medium,3,2,자국 지름 기울기 ball4 (px/mm),289.1306730406684
+DIGIT,medium_3mm_r2,medium,3,2,밝기 기울기 ball4 (lvl/mm),6.343847280059633
+DIGIT,soft_1mm_r1,soft,1,1,자국 지름 기울기 ball4 (px/mm),354.8461612636051
+DIGIT,soft_1mm_r1,soft,1,1,밝기 기울기 ball4 (lvl/mm),10.067708916677573
+DIGIT,soft_1mm_r2,soft,1,2,자국 지름 기울기 ball4 (px/mm),319.35298053521416
+DIGIT,soft_1mm_r2,soft,1,2,밝기 기울기 ball4 (lvl/mm),8.622566119762539
+DIGIT,soft_2mm_r1,soft,2,1,자국 지름 기울기 ball4 (px/mm),225.92748896530736
+DIGIT,soft_2mm_r1,soft,2,1,밝기 기울기 ball4 (lvl/mm),7.733612563291599
+DIGIT,soft_2mm_r2,soft,2,2,자국 지름 기울기 ball4 (px/mm),187.5054279896097
+DIGIT,soft_2mm_r2,soft,2,2,밝기 기울기 ball4 (lvl/mm),7.816060090376827
+DIGIT,soft_3mm_r1,soft,3,1,자국 지름 기울기 ball4 (px/mm),173.33569591203118
+DIGIT,soft_3mm_r1,soft,3,1,밝기 기울기 ball4 (lvl/mm),4.751904284897488
+DIGIT,soft_3mm_r2,soft,3,2,자국 지름 기울기 ball4 (px/mm),211.19664482704349
+DIGIT,soft_3mm_r2,soft,3,2,밝기 기울기 ball4 (lvl/mm),5.800808712175026
+DIGIT,hard_1mm_r1,hard,1,1,자국 지름 기울기 ball8 (px/mm),638.3006611790873
+DIGIT,hard_1mm_r1,hard,1,1,밝기 기울기 ball8 (lvl/mm),17.55663871084708
+DIGIT,hard_1mm_r2,hard,1,2,자국 지름 기울기 ball8 (px/mm),586.1843070146483
+DIGIT,hard_1mm_r2,hard,1,2,밝기 기울기 ball8 (lvl/mm),19.282634232190443
+DIGIT,hard_2mm_r1,hard,2,1,자국 지름 기울기 ball8 (px/mm),331.5452523035655
+DIGIT,hard_2mm_r1,hard,2,1,밝기 기울기 ball8 (lvl/mm),13.90868376388371
+DIGIT,hard_2mm_r2,hard,2,2,자국 지름 기울기 ball8 (px/mm),366.2458130210628
+DIGIT,hard_2mm_r2,hard,2,2,밝기 기울기 ball8 (lvl/mm),15.5106648635808
+DIGIT,hard_3mm_r1,hard,3,1,자국 지름 기울기 ball8 (px/mm),325.8332621086778
+DIGIT,hard_3mm_r1,hard,3,1,밝기 기울기 ball8 (lvl/mm),10.89066574754941
+DIGIT,hard_3mm_r2,hard,3,2,자국 지름 기울기 ball8 (px/mm),291.81905004587605
+DIGIT,hard_3mm_r2,hard,3,2,밝기 기울기 ball8 (lvl/mm),10.247517045755886
+DIGIT,medium_1mm_r1,medium,1,1,자국 지름 기울기 ball8 (px/mm),501.9506340054464
+DIGIT,medium_1mm_r1,medium,1,1,밝기 기울기 ball8 (lvl/mm),16.19884355807204
+DIGIT,medium_1mm_r2,medium,1,2,자국 지름 기울기 ball8 (px/mm),453.6503051744608
+DIGIT,medium_1mm_r2,medium,1,2,밝기 기울기 ball8 (lvl/mm),16.22466722657855
+DIGIT,medium_2mm_r1,medium,2,1,자국 지름 기울기 ball8 (px/mm),358.7384234383605
+DIGIT,medium_2mm_r1,medium,2,1,밝기 기울기 ball8 (lvl/mm),15.034256714352848
+DIGIT,medium_2mm_r2,medium,2,2,자국 지름 기울기 ball8 (px/mm),366.6674348141979
+DIGIT,medium_2mm_r2,medium,2,2,밝기 기울기 ball8 (lvl/mm),15.030788267336453
+DIGIT,medium_3mm_r1,medium,3,1,자국 지름 기울기 ball8 (px/mm),242.6391616914896
+DIGIT,medium_3mm_r1,medium,3,1,밝기 기울기 ball8 (lvl/mm),7.856433029172784
+DIGIT,medium_3mm_r2,medium,3,2,자국 지름 기울기 ball8 (px/mm),361.0045309616525
+DIGIT,medium_3mm_r2,medium,3,2,밝기 기울기 ball8 (lvl/mm),9.852365827526947
+DIGIT,soft_1mm_r1,soft,1,1,자국 지름 기울기 ball8 (px/mm),321.5622522053266
+DIGIT,soft_1mm_r1,soft,1,1,밝기 기울기 ball8 (lvl/mm),12.464051928674026
+DIGIT,soft_1mm_r2,soft,1,2,자국 지름 기울기 ball8 (px/mm),440.4323477477473
+DIGIT,soft_1mm_r2,soft,1,2,밝기 기울기 ball8 (lvl/mm),12.5723721754194
+DIGIT,soft_2mm_r1,soft,2,1,자국 지름 기울기 ball8 (px/mm),339.0952732344857
+DIGIT,soft_2mm_r1,soft,2,1,밝기 기울기 ball8 (lvl/mm),11.532629076540356
+DIGIT,soft_2mm_r2,soft,2,2,자국 지름 기울기 ball8 (px/mm),319.2811952020355
+DIGIT,soft_2mm_r2,soft,2,2,밝기 기울기 ball8 (lvl/mm),12.57004808342867
+DIGIT,soft_3mm_r1,soft,3,1,자국 지름 기울기 ball8 (px/mm),306.24021822393007
+DIGIT,soft_3mm_r1,soft,3,1,밝기 기울기 ball8 (lvl/mm),8.161594765412328
+DIGIT,soft_3mm_r2,soft,3,2,자국 지름 기울기 ball8 (px/mm),254.7504727036609
+DIGIT,soft_3mm_r2,soft,3,2,밝기 기울기 ball8 (lvl/mm),7.744322749940202
+DIGIT,hard_1mm_r1,hard,1,1,Fz MAE 중앙 (N),0.0790803655982017
+DIGIT,hard_1mm_r1,hard,1,1,Fx MAE 중앙 (N),0.030934981070458847
+DIGIT,hard_1mm_r1,hard,1,1,Fy MAE 중앙 (N),0.03530800528824325
+DIGIT,hard_1mm_r1,hard,1,1,Fz 최솟값 (N),0.0695246458053588
+DIGIT,hard_1mm_r2,hard,1,2,Fz MAE 중앙 (N),0.10936468094587325
+DIGIT,hard_1mm_r2,hard,1,2,Fx MAE 중앙 (N),0.0346352439373731
+DIGIT,hard_1mm_r2,hard,1,2,Fy MAE 중앙 (N),0.049743739888072
+DIGIT,hard_1mm_r2,hard,1,2,Fz 최솟값 (N),0.0948507860302925
+DIGIT,hard_2mm_r1,hard,2,1,Fz MAE 중앙 (N),0.06484527885913846
+DIGIT,hard_2mm_r1,hard,2,1,Fx MAE 중앙 (N),0.02505231276154515
+DIGIT,hard_2mm_r1,hard,2,1,Fy MAE 중앙 (N),0.029115874320268603
+DIGIT,hard_2mm_r1,hard,2,1,Fz 최솟값 (N),0.056309524923563
+DIGIT,hard_2mm_r2,hard,2,2,Fz MAE 중앙 (N),0.07015683129429814
+DIGIT,hard_2mm_r2,hard,2,2,Fx MAE 중앙 (N),0.030999764800071654
+DIGIT,hard_2mm_r2,hard,2,2,Fy MAE 중앙 (N),0.04255495034158225
+DIGIT,hard_2mm_r2,hard,2,2,Fz 최솟값 (N),0.0628333464264869
+DIGIT,hard_3mm_r1,hard,3,1,Fz MAE 중앙 (N),0.06859074905514714
+DIGIT,hard_3mm_r1,hard,3,1,Fx MAE 중앙 (N),0.0324096176773309
+DIGIT,hard_3mm_r1,hard,3,1,Fy MAE 중앙 (N),0.03989115543663495
+DIGIT,hard_3mm_r1,hard,3,1,Fz 최솟값 (N),0.0573203340172767
+DIGIT,hard_3mm_r2,hard,3,2,Fz MAE 중앙 (N),0.05566842481493945
+DIGIT,hard_3mm_r2,hard,3,2,Fx MAE 중앙 (N),0.02385179139673705
+DIGIT,hard_3mm_r2,hard,3,2,Fy MAE 중앙 (N),0.0296102259308099
+DIGIT,hard_3mm_r2,hard,3,2,Fz 최솟값 (N),0.0490000694990158
+DIGIT,medium_1mm_r1,medium,1,1,Fz MAE 중앙 (N),0.06314604356884951
+DIGIT,medium_1mm_r1,medium,1,1,Fx MAE 중앙 (N),0.025309131480753352
+DIGIT,medium_1mm_r1,medium,1,1,Fy MAE 중앙 (N),0.02135932445526115
+DIGIT,medium_1mm_r1,medium,1,1,Fz 최솟값 (N),0.0492114089429378
+DIGIT,medium_1mm_r2,medium,1,2,Fz MAE 중앙 (N),0.0988574065268039
+DIGIT,medium_1mm_r2,medium,1,2,Fx MAE 중앙 (N),0.0399447754025459
+DIGIT,medium_1mm_r2,medium,1,2,Fy MAE 중앙 (N),0.0507675446569919
+DIGIT,medium_1mm_r2,medium,1,2,Fz 최솟값 (N),0.089378722012043
+DIGIT,medium_2mm_r1,medium,2,1,Fz MAE 중앙 (N),0.06260083056986325
+DIGIT,medium_2mm_r1,medium,2,1,Fx MAE 중앙 (N),0.0346768945455551
+DIGIT,medium_2mm_r1,medium,2,1,Fy MAE 중앙 (N),0.0376164093613624
+DIGIT,medium_2mm_r1,medium,2,1,Fz 최솟값 (N),0.0471034236252307
+DIGIT,medium_2mm_r2,medium,2,2,Fz MAE 중앙 (N),0.07005340233445159
+DIGIT,medium_2mm_r2,medium,2,2,Fx MAE 중앙 (N),0.0267006056383252
+DIGIT,medium_2mm_r2,medium,2,2,Fy MAE 중앙 (N),0.02629715390503405
+DIGIT,medium_2mm_r2,medium,2,2,Fz 최솟값 (N),0.0524851642549037
+DIGIT,medium_3mm_r1,medium,3,1,Fz MAE 중앙 (N),0.053049525246024104
+DIGIT,medium_3mm_r1,medium,3,1,Fx MAE 중앙 (N),0.02489815372973675
+DIGIT,medium_3mm_r1,medium,3,1,Fy MAE 중앙 (N),0.0337095204740762
+DIGIT,medium_3mm_r1,medium,3,1,Fz 최솟값 (N),0.0460463054478168
+DIGIT,medium_3mm_r2,medium,3,2,Fz MAE 중앙 (N),0.06194532662630074
+DIGIT,medium_3mm_r2,medium,3,2,Fx MAE 중앙 (N),0.03208806365728375
+DIGIT,medium_3mm_r2,medium,3,2,Fy MAE 중앙 (N),0.04431708157062525
+DIGIT,medium_3mm_r2,medium,3,2,Fz 최솟값 (N),0.0539338067173957
+DIGIT,soft_1mm_r1,soft,1,1,Fz MAE 중앙 (N),0.08324177935719485
+DIGIT,soft_1mm_r1,soft,1,1,Fx MAE 중앙 (N),0.02846002578735345
+DIGIT,soft_1mm_r1,soft,1,1,Fy MAE 중앙 (N),0.026609295047819552
+DIGIT,soft_1mm_r1,soft,1,1,Fz 최솟값 (N),0.0717098638415336
+DIGIT,soft_1mm_r2,soft,1,2,Fz MAE 중앙 (N),0.09489171952009195
+DIGIT,soft_1mm_r2,soft,1,2,Fx MAE 중앙 (N),0.03064674418419595
+DIGIT,soft_1mm_r2,soft,1,2,Fy MAE 중앙 (N),0.0350040793418884
+DIGIT,soft_1mm_r2,soft,1,2,Fz 최솟값 (N),0.0819605216383934
+DIGIT,soft_2mm_r1,soft,2,1,Fz MAE 중앙 (N),0.056412555277347495
+DIGIT,soft_2mm_r1,soft,2,1,Fx MAE 중앙 (N),0.032500559464096954
+DIGIT,soft_2mm_r1,soft,2,1,Fy MAE 중앙 (N),0.02522281091660255
+DIGIT,soft_2mm_r1,soft,2,1,Fz 최솟값 (N),0.0487581752240657
+DIGIT,soft_2mm_r2,soft,2,2,Fz MAE 중앙 (N),0.0623599532991647
+DIGIT,soft_2mm_r2,soft,2,2,Fx MAE 중앙 (N),0.024444868788123103
+DIGIT,soft_2mm_r2,soft,2,2,Fy MAE 중앙 (N),0.03117279242724175
+DIGIT,soft_2mm_r2,soft,2,2,Fz 최솟값 (N),0.0550210326910018
+DIGIT,soft_3mm_r1,soft,3,1,Fz MAE 중앙 (N),0.06487819924950596
+DIGIT,soft_3mm_r1,soft,3,1,Fx MAE 중앙 (N),0.03720404021441935
+DIGIT,soft_3mm_r1,soft,3,1,Fy MAE 중앙 (N),0.05322009883821005
+DIGIT,soft_3mm_r1,soft,3,1,Fz 최솟값 (N),0.057066049426794
+DIGIT,soft_3mm_r2,soft,3,2,Fz MAE 중앙 (N),0.05818215198814865
+DIGIT,soft_3mm_r2,soft,3,2,Fx MAE 중앙 (N),0.03059074375778435
+DIGIT,soft_3mm_r2,soft,3,2,Fy MAE 중앙 (N),0.04449974372982975
+DIGIT,soft_3mm_r2,soft,3,2,Fz 최솟값 (N),0.0491091050207614
+DIGIT_Marker,soft_1mm_r1,soft,1,1,천장 (N),20.516453738273636
+DIGIT_Marker,soft_1mm_r1,soft,1,1,포화 깊이 (mm),1.2727021687009383
+DIGIT_Marker,soft_1mm_r2,soft,1,2,천장 (N),12.330521853015586
+DIGIT_Marker,soft_1mm_r2,soft,1,2,포화 깊이 (mm),1.3164236352716507
+DIGIT_Marker,soft_2mm_r1,soft,2,1,천장 (N),12.25352802735473
+DIGIT_Marker,soft_2mm_r1,soft,2,1,포화 깊이 (mm),1.9909762995799165
+DIGIT_Marker,soft_2mm_r2,soft,2,2,천장 (N),9.41348192227478
+DIGIT_Marker,soft_2mm_r2,soft,2,2,포화 깊이 (mm),1.892519039407965
+DIGIT_Marker,soft_3mm_r1,soft,3,1,천장 (N),8.053216786675609
+DIGIT_Marker,soft_3mm_r1,soft,3,1,포화 깊이 (mm),2.3053805692824056
+DIGIT_Marker,soft_3mm_r2,soft,3,2,천장 (N),7.054495608897099
+DIGIT_Marker,soft_3mm_r2,soft,3,2,포화 깊이 (mm),2.0492864697147546
+DIGIT_Marker,medium_1mm_r1,medium,1,1,천장 (N),8.257566191896903
+DIGIT_Marker,medium_1mm_r1,medium,1,1,포화 깊이 (mm),1.6037119787833518
+DIGIT_Marker,medium_1mm_r2,medium,1,2,천장 (N),12.56442504405656
+DIGIT_Marker,medium_1mm_r2,medium,1,2,포화 깊이 (mm),1.5752936647203413
+DIGIT_Marker,medium_2mm_r1,medium,2,1,천장 (N),6.226042374151303
+DIGIT_Marker,medium_2mm_r1,medium,2,1,포화 깊이 (mm),1.5152520646213397
+DIGIT_Marker,medium_2mm_r2,medium,2,2,천장 (N),10.027504378909551
+DIGIT_Marker,medium_2mm_r2,medium,2,2,포화 깊이 (mm),1.9627252858517004
+DIGIT_Marker,medium_3mm_r1,medium,3,1,천장 (N),6.939144782104512
+DIGIT_Marker,medium_3mm_r1,medium,3,1,포화 깊이 (mm),2.0557431305114164
+DIGIT_Marker,medium_3mm_r2,medium,3,2,천장 (N),6.7336824064301934
+DIGIT_Marker,medium_3mm_r2,medium,3,2,포화 깊이 (mm),2.3297621188709137
+DIGIT_Marker,hard_1mm_r1,hard,1,1,천장 (N),10.800870363452788
+DIGIT_Marker,hard_1mm_r1,hard,1,1,포화 깊이 (mm),1.1734465279000403
+DIGIT_Marker,hard_1mm_r2,hard,1,2,천장 (N),10.013795399696884
+DIGIT_Marker,hard_1mm_r2,hard,1,2,포화 깊이 (mm),1.0445186621386249
+DIGIT_Marker,hard_2mm_r1,hard,2,1,천장 (N),9.696140478630076
+DIGIT_Marker,hard_2mm_r1,hard,2,1,포화 깊이 (mm),1.6797744690066558
+DIGIT_Marker,hard_2mm_r2,hard,2,2,천장 (N),9.415069372416507
+DIGIT_Marker,hard_2mm_r2,hard,2,2,포화 깊이 (mm),1.7409262240222674
+DIGIT_Marker,hard_3mm_r1,hard,3,1,천장 (N),9.23497435667556
+DIGIT_Marker,hard_3mm_r1,hard,3,1,포화 깊이 (mm),2.396653616661414
+DIGIT_Marker,hard_3mm_r2,hard,3,2,천장 (N),12.282480305298373
+DIGIT_Marker,hard_3mm_r2,hard,3,2,포화 깊이 (mm),2.7536539445552783
+DIGIT_Marker,hard_1mm_r1,hard,1,1,자국 지름 기울기 ball4 (px/mm),530.5080495218044
+DIGIT_Marker,hard_1mm_r1,hard,1,1,밝기 기울기 ball4 (lvl/mm),7.395398748686571
+DIGIT_Marker,hard_1mm_r2,hard,1,2,자국 지름 기울기 ball4 (px/mm),397.5337655708648
+DIGIT_Marker,hard_1mm_r2,hard,1,2,밝기 기울기 ball4 (lvl/mm),8.51002051434434
+DIGIT_Marker,hard_2mm_r1,hard,2,1,자국 지름 기울기 ball4 (px/mm),273.1546632718084
+DIGIT_Marker,hard_2mm_r1,hard,2,1,밝기 기울기 ball4 (lvl/mm),10.723056631459716
+DIGIT_Marker,hard_2mm_r2,hard,2,2,자국 지름 기울기 ball4 (px/mm),262.0192684725216
+DIGIT_Marker,hard_2mm_r2,hard,2,2,밝기 기울기 ball4 (lvl/mm),11.747077972418388
+DIGIT_Marker,hard_3mm_r1,hard,3,1,자국 지름 기울기 ball4 (px/mm),185.98179662550908
+DIGIT_Marker,hard_3mm_r1,hard,3,1,밝기 기울기 ball4 (lvl/mm),7.94597290565095
+DIGIT_Marker,hard_3mm_r2,hard,3,2,자국 지름 기울기 ball4 (px/mm),146.59976736763804
+DIGIT_Marker,hard_3mm_r2,hard,3,2,밝기 기울기 ball4 (lvl/mm),6.310953705674358
+DIGIT_Marker,medium_1mm_r1,medium,1,1,자국 지름 기울기 ball4 (px/mm),373.509779414642
+DIGIT_Marker,medium_1mm_r1,medium,1,1,밝기 기울기 ball4 (lvl/mm),10.340161457117755
+DIGIT_Marker,medium_1mm_r2,medium,1,2,자국 지름 기울기 ball4 (px/mm),328.6439612118957
+DIGIT_Marker,medium_1mm_r2,medium,1,2,밝기 기울기 ball4 (lvl/mm),4.866797382786714
+DIGIT_Marker,medium_2mm_r1,medium,2,1,자국 지름 기울기 ball4 (px/mm),243.57094457570352
+DIGIT_Marker,medium_2mm_r1,medium,2,1,밝기 기울기 ball4 (lvl/mm),10.886579890326251
+DIGIT_Marker,medium_2mm_r2,medium,2,2,자국 지름 기울기 ball4 (px/mm),283.56843757951253
+DIGIT_Marker,medium_2mm_r2,medium,2,2,밝기 기울기 ball4 (lvl/mm),10.707107455215532
+DIGIT_Marker,medium_3mm_r1,medium,3,1,자국 지름 기울기 ball4 (px/mm),72.20882555959831
+DIGIT_Marker,medium_3mm_r1,medium,3,1,밝기 기울기 ball4 (lvl/mm),4.280201295757159
+DIGIT_Marker,medium_3mm_r2,medium,3,2,자국 지름 기울기 ball4 (px/mm),168.62542123803928
+DIGIT_Marker,medium_3mm_r2,medium,3,2,밝기 기울기 ball4 (lvl/mm),4.830997378228154
+DIGIT_Marker,soft_1mm_r1,soft,1,1,자국 지름 기울기 ball4 (px/mm),329.757198473174
+DIGIT_Marker,soft_1mm_r1,soft,1,1,밝기 기울기 ball4 (lvl/mm),12.6062016968933
+DIGIT_Marker,soft_1mm_r2,soft,1,2,자국 지름 기울기 ball4 (px/mm),378.744123908418
+DIGIT_Marker,soft_1mm_r2,soft,1,2,밝기 기울기 ball4 (lvl/mm),11.441042724563816
+DIGIT_Marker,soft_2mm_r1,soft,2,1,자국 지름 기울기 ball4 (px/mm),245.27492274627
+DIGIT_Marker,soft_2mm_r1,soft,2,1,밝기 기울기 ball4 (lvl/mm),10.234620084048586
+DIGIT_Marker,soft_2mm_r2,soft,2,2,자국 지름 기울기 ball4 (px/mm),222.64667900489923
+DIGIT_Marker,soft_2mm_r2,soft,2,2,밝기 기울기 ball4 (lvl/mm),9.78480066126733
+DIGIT_Marker,soft_3mm_r1,soft,3,1,자국 지름 기울기 ball4 (px/mm),201.51040585847664
+DIGIT_Marker,soft_3mm_r1,soft,3,1,밝기 기울기 ball4 (lvl/mm),8.226188971638006
+DIGIT_Marker,soft_3mm_r2,soft,3,2,자국 지름 기울기 ball4 (px/mm),184.93690333642772
+DIGIT_Marker,soft_3mm_r2,soft,3,2,밝기 기울기 ball4 (lvl/mm),8.952987347416038
+DIGIT_Marker,hard_1mm_r1,hard,1,1,Fz MAE 중앙 (N),0.1171793565154075
+DIGIT_Marker,hard_1mm_r1,hard,1,1,Fx MAE 중앙 (N),0.0225118473172187
+DIGIT_Marker,hard_1mm_r1,hard,1,1,Fy MAE 중앙 (N),0.02907173149287695
+DIGIT_Marker,hard_1mm_r1,hard,1,1,Fz 최솟값 (N),0.087947778403759
+DIGIT_Marker,hard_1mm_r2,hard,1,2,Fz MAE 중앙 (N),0.117049615830183
+DIGIT_Marker,hard_1mm_r2,hard,1,2,Fx MAE 중앙 (N),0.0302422530949115
+DIGIT_Marker,hard_1mm_r2,hard,1,2,Fy MAE 중앙 (N),0.0389693900942802
+DIGIT_Marker,hard_1mm_r2,hard,1,2,Fz 최솟값 (N),0.1088357791304588
+DIGIT_Marker,hard_2mm_r1,hard,2,1,Fz MAE 중앙 (N),0.08645191416144371
+DIGIT_Marker,hard_2mm_r1,hard,2,1,Fx MAE 중앙 (N),0.037935230880975654
+DIGIT_Marker,hard_2mm_r1,hard,2,1,Fy MAE 중앙 (N),0.029343177564442102
+DIGIT_Marker,hard_2mm_r1,hard,2,1,Fz 최솟값 (N),0.0719996243715286
+DIGIT_Marker,hard_2mm_r2,hard,2,2,Fz MAE 중앙 (N),0.08130670711398119
+DIGIT_Marker,hard_2mm_r2,hard,2,2,Fx MAE 중앙 (N),0.02698962483555075
+DIGIT_Marker,hard_2mm_r2,hard,2,2,Fy MAE 중앙 (N),0.03626832924783225
+DIGIT_Marker,hard_2mm_r2,hard,2,2,Fz 최솟값 (N),0.0684476718306541
+DIGIT_Marker,hard_3mm_r1,hard,3,1,Fz MAE 중앙 (N),0.07036677747964856
+DIGIT_Marker,hard_3mm_r1,hard,3,1,Fx MAE 중앙 (N),0.03612344525754445
+DIGIT_Marker,hard_3mm_r1,hard,3,1,Fy MAE 중앙 (N),0.036800980567932046
+DIGIT_Marker,hard_3mm_r1,hard,3,1,Fz 최솟값 (N),0.0633693858981132
+DIGIT_Marker,hard_3mm_r2,hard,3,2,Fz MAE 중앙 (N),0.06190915219485755
+DIGIT_Marker,hard_3mm_r2,hard,3,2,Fx MAE 중앙 (N),0.02756298612803215
+DIGIT_Marker,hard_3mm_r2,hard,3,2,Fy MAE 중앙 (N),0.031182527542114202
+DIGIT_Marker,hard_3mm_r2,hard,3,2,Fz 최솟값 (N),0.0574850998818874
+DIGIT_Marker,medium_1mm_r1,medium,1,1,Fz MAE 중앙 (N),0.13699945807456965
+DIGIT_Marker,medium_1mm_r1,medium,1,1,Fx MAE 중앙 (N),0.039626481011509854
+DIGIT_Marker,medium_1mm_r1,medium,1,1,Fy MAE 중앙 (N),0.06020491942763325
+DIGIT_Marker,medium_1mm_r1,medium,1,1,Fz 최솟값 (N),0.1114101260900497
+DIGIT_Marker,medium_1mm_r2,medium,1,2,Fz MAE 중앙 (N),0.1567366421222686
+DIGIT_Marker,medium_1mm_r2,medium,1,2,Fx MAE 중앙 (N),0.046428527683019596
+DIGIT_Marker,medium_1mm_r2,medium,1,2,Fy MAE 중앙 (N),0.05203361250460145
+DIGIT_Marker,medium_1mm_r2,medium,1,2,Fz 최솟값 (N),0.1336043328046798
+DIGIT_Marker,medium_2mm_r1,medium,2,1,Fz MAE 중앙 (N),0.07679658755660054
+DIGIT_Marker,medium_2mm_r1,medium,2,1,Fx MAE 중앙 (N),0.02662283740937705
+DIGIT_Marker,medium_2mm_r1,medium,2,1,Fy MAE 중앙 (N),0.0338041167706251
+DIGIT_Marker,medium_2mm_r1,medium,2,1,Fz 최솟값 (N),0.0642960518598556
+DIGIT_Marker,medium_2mm_r2,medium,2,2,Fz MAE 중앙 (N),0.0810032747685909
+DIGIT_Marker,medium_2mm_r2,medium,2,2,Fx MAE 중앙 (N),0.03481793031096455
+DIGIT_Marker,medium_2mm_r2,medium,2,2,Fy MAE 중앙 (N),0.0378432106226682
+DIGIT_Marker,medium_2mm_r2,medium,2,2,Fz 최솟값 (N),0.0652675107121467
+DIGIT_Marker,medium_3mm_r1,medium,3,1,Fz MAE 중앙 (N),0.07201109454035756
+DIGIT_Marker,medium_3mm_r1,medium,3,1,Fx MAE 중앙 (N),0.02139906957745545
+DIGIT_Marker,medium_3mm_r1,medium,3,1,Fy MAE 중앙 (N),0.0259902765974402
+DIGIT_Marker,medium_3mm_r1,medium,3,1,Fz 최솟값 (N),0.0641959533095359
+DIGIT_Marker,medium_3mm_r2,medium,3,2,Fz MAE 중앙 (N),0.08570563048124305
+DIGIT_Marker,medium_3mm_r2,medium,3,2,Fx MAE 중앙 (N),0.031682418659329345
+DIGIT_Marker,medium_3mm_r2,medium,3,2,Fy MAE 중앙 (N),0.049185989424586254
+DIGIT_Marker,medium_3mm_r2,medium,3,2,Fz 최솟값 (N),0.0705107674002647
+DIGIT_Marker,soft_1mm_r1,soft,1,1,Fz MAE 중앙 (N),0.1354743987321853
+DIGIT_Marker,soft_1mm_r1,soft,1,1,Fx MAE 중앙 (N),0.029818938113749
+DIGIT_Marker,soft_1mm_r1,soft,1,1,Fy MAE 중앙 (N),0.045112948864698396
+DIGIT_Marker,soft_1mm_r1,soft,1,1,Fz 최솟값 (N),0.1156897842884063
+DIGIT_Marker,soft_1mm_r2,soft,1,2,Fz MAE 중앙 (N),0.1372503414750099
+DIGIT_Marker,soft_1mm_r2,soft,1,2,Fx MAE 중앙 (N),0.03388116508722305
+DIGIT_Marker,soft_1mm_r2,soft,1,2,Fy MAE 중앙 (N),0.0461419429630041
+DIGIT_Marker,soft_1mm_r2,soft,1,2,Fz 최솟값 (N),0.1158408150076866
+DIGIT_Marker,soft_2mm_r1,soft,2,1,Fz MAE 중앙 (N),0.1315062418580055
+DIGIT_Marker,soft_2mm_r1,soft,2,1,Fx MAE 중앙 (N),0.03939142450690265
+DIGIT_Marker,soft_2mm_r1,soft,2,1,Fy MAE 중앙 (N),0.06385033950209615
+DIGIT_Marker,soft_2mm_r1,soft,2,1,Fz 최솟값 (N),0.1044399440288543
+DIGIT_Marker,soft_2mm_r2,soft,2,2,Fz MAE 중앙 (N),0.0973256602883338
+DIGIT_Marker,soft_2mm_r2,soft,2,2,Fx MAE 중앙 (N),0.0194652006030082
+DIGIT_Marker,soft_2mm_r2,soft,2,2,Fy MAE 중앙 (N),0.0241568386554718
+DIGIT_Marker,soft_2mm_r2,soft,2,2,Fz 최솟값 (N),0.0973256602883338
