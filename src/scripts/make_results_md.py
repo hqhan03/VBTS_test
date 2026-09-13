@@ -250,10 +250,60 @@ def main():
     w()
     w("**DIGIT_Marker 는 `ball4` 로 잰 값**이라 위 두 표와 같은 자가 아니다.")
     w()
+    w("### 경도 — 9DTact 만 따라가고, 두께와 함께 커진다")
+    w()
+    B = RES / "extra" / "data" / "B_ceiling_vs_thickness.csv"
+    if B.exists():
+        from scipy.stats import spearmanr
+        D2 = pd.read_csv(B)
+        HZ = {"soft": 0, "medium": 1, "hard": 2}
+        w("| 원리 | 천장 대 경도 | 천장 대 두께 | 포화 깊이 대 경도 | 포화 깊이 대 두께 |")
+        w("|---|---|---|---|---|")
+        for pr in ("9DTact", "DIGIT", "DIGIT_Marker"):
+            g = D2[D2.principle == pr]
+            if not len(g):
+                continue
+            cell = []
+            for col in ("ceiling_N", "depth_mm"):
+                for key, vals in (("h", g.hardness.map(HZ)), ("t", g.thickness_mm)):
+                    r, pv = spearmanr(vals, g[col])
+                    star = "**" if pv < .05 else ""
+                    cell.append(f"{star}ρ {r:+.2f} (p {pv:.3f}){star}")
+            w(f"| {pr} | {cell[0]} | {cell[1]} | {cell[2]} | {cell[3]} |")
+        w()
+        w("<sub>Spearman, 유닛 단위. 자료: `extra/data/B_ceiling_vs_thickness.csv`</sub>")
+        w()
+        w("**천장은 9DTact 에서만 경도를 따라간다**(ρ +0.67, p 0.003). DIGIT 과 Marker 는")
+        w("ρ 가 0.01 과 0.00 으로 전혀 따라가지 않는다 — 다만 그것을 \"DIGIT 이 경도에")
+        w("둔감하다\" 로 읽으면 안 된다. **경도를 6 Shore 점밖에 흔들지 않았다**(부록 B).")
+        w()
+        # 경도 끝점 비를 두께별로 — 상호작용
+        g = D2[D2.principle == "9DTact"]
+        piv = g.pivot_table(index="hardness", columns="thickness_mm",
+                            values="ceiling_N", aggfunc="mean")
+        if set(["soft", "hard"]) <= set(piv.index):
+            w("**그리고 경도의 효과가 두께를 따라 커진다.** 9DTact 의 hard ÷ soft:")
+            w()
+            w("| | 1 mm | 2 mm | 3 mm |")
+            w("|---|---:|---:|---:|")
+            r = [f"{piv.loc['hard', t] / piv.loc['soft', t]:.2f}×" for t in (1, 2, 3)]
+            w(f"| 천장 비 | {r[0]} | {r[1]} | **{r[2]}** |")
+            w()
+            w("1 mm 에서는 경도를 40 Shore 점 흔들어도 천장이 13 % 밖에 안 오르는데,")
+            w("3 mm 에서는 **두 배**가 된다. 얇은 겔에서는 기재가 금방 받쳐 주므로 겔")
+            w("자신의 단단함이 들어설 자리가 없고, 두꺼워질수록 겔이 스스로 버티는 몫이")
+            w("커지기 때문으로 읽힌다. **경도와 두께는 더하기가 아니라 곱하기다.**")
+            w()
     w("### 포화가 일어나는 깊이")
     w()
     fig("extra/figures/A_saturation_depth_vs_thickness.png",
         "포화 깊이는 두 원리 모두 두께를 따라 증가한다 — 기울기가 2.2 배 다르다.")
+    w("**깊이는 경도를 전혀 따라가지 않는다.** 세 원리 모두 ρ 가 −0.03 ~ +0.17 이고")
+    w("p 는 0.51 ~ 0.92 다. 대신 **두께는 세 원리 모두에서 ρ 0.92 ~ 0.94, p < 0.001** 로")
+    w("따라간다. 천장에서는 경도가 9DTact 를 갈랐는데 **깊이에서는 아무도 가르지 않는다** —")
+    w("포화가 일어나는 **자리**는 겔이 얼마나 단단한지가 아니라 **얼마나 두꺼운지**가")
+    w("정한다. 단단함은 그 자리에 **도달하는 데 드는 힘**을 바꿀 뿐이다.")
+    w()
     w("**힘과 깊이는 다른 이야기를 한다.** 천장(힘)은 두 원리가 반대로 가지만, 깊이는")
     w("둘 다 두께를 따라 증가한다. 그리고 그 깊이가 **왜 반대로 가는지를 설명한다** —")
     w("9DTact 는 두께의 2.0 ~ 5.2 배까지 들어가 **기재에 눌린 상태**에서 포화하므로")
