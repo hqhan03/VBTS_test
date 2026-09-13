@@ -31,7 +31,9 @@ for unit,info in can.items():
     yx=np.unravel_index(np.argmax(diff),diff.shape)
     cy,cx=float(yx[0]),float(yx[1])
     g=geo.loc[unit]
-    a_px=g.contact_d_px/2
+    # **격자 축척**으로 낸 접촉 크기를 쓴다. 옛 열(contact_d_px)은 회귀 축척으로
+    # 계산돼 접촉 원을 20 % 작게 그렸다 (cross_principle.md 3.5b).
+    a_px=(g.contact_d_px_grid if "contact_d_px_grid" in g.index else g.contact_d_px)/2
     yy,xx=np.mgrid[0:refg.shape[0],0:refg.shape[1]]
     incontact=(yy-cy)**2+(xx-cx)**2<=a_px**2
     covered=float((dotmask&incontact).sum()/max(incontact.sum(),1))

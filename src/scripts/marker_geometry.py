@@ -22,6 +22,10 @@ import numpy as np, pandas as pd, cv2
 from pathlib import Path
 from scipy import ndimage, spatial, signal
 
+# 격자의 실제 치수. 운전자가 2026-09-13 에 실물을 재서 확인했다.
+PITCH_NOMINAL_MM = 2.5
+DOT_NOMINAL_MM = 1.0
+
 ROOT = Path(__file__).resolve().parents[2]
 DS = ROOT / "data" / "20260911_VBTSresolution_dataset" / "DIGIT_Marker" / "20260908_passB_ball8"
 
@@ -118,10 +122,10 @@ if __name__ == "__main__":
     # 검산: 격자 축척으로 점 지름을 재면 0.878 mm (공칭 1.0)가 나온다. 문턱이 무른
     # 가장자리를 깎으므로 조금 작게 나오는 것이 맞는 방향이다. 회귀 축척으로 재면
     # 1.091 mm 로 공칭보다 **크게** 나오는데, 그럴 이유가 없다.
-    PITCH_NOMINAL_MM = 2.5
     D["px_per_mm_grid"] = D.pitch_px / PITCH_NOMINAL_MM
     D["pitch_mm_grid"] = PITCH_NOMINAL_MM              # 정의상
     D["dot_d_mm_grid"] = D.dot_d_px / D.px_per_mm_grid
+
 
     out = ROOT / "data" / "analysis" / "marker_geometry.csv"
     # 이전 판의 열(회귀 축척으로 계산한 mm 값)이 있으면 이어 붙인다 — 두 축척을
@@ -136,6 +140,16 @@ if __name__ == "__main__":
             D = D.rename(columns={"px_per_mm": "px_per_mm_regression",
                                   "pitch_mm": "pitch_mm_regression",
                                   "dot_d_mm": "dot_d_mm_regression"})
+    # 접촉 크기를 **격자 축척**으로 다시 낸다 — 하류(`marker_occlusion.py`)가 읽는다.
+    # `a_2N_mm` 은 Hertz 로 얻으므로 이미지 축척과 무관하다. 그것을 픽셀로 옮길 때만
+    # 축척이 들어가는데, 옛 판은 회귀 축척(20 % 낮음)을 써서 접촉 원을 작게 그렸고
+    # 가려진 비율이 그만큼 틀어졌다.
+    if "a_2N_mm" in D:
+        D["contact_d_px_grid"] = 2 * D.a_2N_mm * D.px_per_mm_grid
+        D["contact_over_pitch_grid"] = 2 * D.a_2N_mm / PITCH_NOMINAL_MM
+        # 접촉 원 안에 들어오는 점의 기대 개수 = (면적비) x (격자 밀도)
+        D["dots_in_contact_grid"] = (np.pi / 4) * D.contact_over_pitch_grid ** 2
+
     D.to_csv(out, index=False)
     print("  ->", out, len(rows), "units")
     if "px_per_mm_regression" in D:
