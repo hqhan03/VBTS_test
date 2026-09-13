@@ -1,6 +1,6 @@
 # 이 캠페인의 학습 방식이 문헌과 어디서 갈리는가 — 2026-09-10
 
-`force_estimation.md` 와 `force_estimation_digit.md` 가 쓴 전처리·학습을, DIGIT/GelSight 로
+`force_estimation.md` 와 `force_estimation.md` §7가 쓴 전처리·학습을, DIGIT/GelSight 로
 힘을 추정한 공개 연구들과 나란히 놓고 본다. 목적은 "우리가 맞다/틀리다" 가 아니라
 **어느 선택이 표준과 다르고, 그 차이가 결론의 어디에 걸리는가**를 분명히 해 두는 것이다.
 
@@ -60,7 +60,7 @@ ImageNet 사전학습 ResNet 은 채널별 평균·표준편차로 정규화된 
 
 **재봤다 (2026-09-11).** DIGIT 의 레시피를 통째로 옮긴 팔(`--rep raw --input-norm imagenet`,
 18 유닛)이 우리 방식(`colour`, 정규화 없음)보다 **나쁘다** — 전단 p 0.008, Fz p 0.054
-(`force_estimation_digit.md` §3b). 즉 정규화를 안 켠 것이 우리 숫자를 부풀리고 있지는
+(`force_estimation.md` §7.3b). 즉 정규화를 안 켠 것이 우리 숫자를 부풀리고 있지는
 않다. `colour + ImageNet` 팔로 둘을 갈랐다: **정규화만 바꾸면 차이가 없고**(Fz p 0.97,
 전단 p 0.52), **기준 차분만 빼면 전단이 p 0.0008 로 나빠진다.** 즉 §3.3 의 이 차이는
 결론에 걸리지 않는다 — 정규화를 안 켠 것이 우리 숫자에 영향을 주지 않았다. 문헌과 갈리는
@@ -76,7 +76,7 @@ ImageNet 사전학습 ResNet 은 채널별 평균·표준편차로 정규화된 
 ### 3.5 회색 대 색
 
 우리 기본 표현은 9DTact 조리법을 따라 **회색 차영상**이다. 문헌은 RGB 를 유지한다(Sparsh 는
-2 프레임 × 3 채널). `force_estimation_digit.md` §3 에서 재보니 **DIGIT 에서 색을 살리면
+2 프레임 × 3 채널). `force_estimation.md` §7.3 에서 재보니 **DIGIT 에서 색을 살리면
 오차가 4–10 % 준다** — 낮은 해상도일수록 이득이 크다. 즉 문헌 쪽 관행이 DIGIT 에서는 옳고,
 회색 기본값은 9DTact 에서 물려온 것이다. 두 표현을 모두 돌려 둔 것이 다행이다.
 

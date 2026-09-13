@@ -23,6 +23,8 @@ AX = [("fx_mae", "Fx", "#c2553a"), ("fy_mae", "Fy", "#d9a441"),
 TQ = [("tx_mae", "Tx", "#c2553a"), ("ty_mae", "Ty", "#d9a441"),
       ("tz_mae", "Tz", "#1f6f8b")]
 HARD = ["soft", "medium", "hard"]
+# 경도 제목 색 — 순서가 있는 변수라 한 색의 농담으로 쓴다
+CH_TITLE = {"soft": "#9ec5d8", "medium": "#4a8fa8", "hard": "#134b5f"}
 
 
 def plain_log(ax, which="y"):
@@ -126,10 +128,58 @@ def main():
         panel(pr, d, AX, "force_mae_vs_resolution_18units", "힘 MAE (N)")
         panel(pr, d, TQ, "torque_mae_vs_resolution_18units", "토크 MAE (N·m)")
         summary(pr, d)
+        doc_panel(pr, d)
         k = d.groupby("width_px")[[c for c, _, _ in AX]].median()
         print(f"  {pr:<13} {len(d)} 행, {d.sensor.nunique()} 유닛  "
               f"최소: Fx {k.fx_mae.idxmin()}px  Fy {k.fy_mae.idxmin()}px  "
               f"Fz {k.fz_mae.idxmin()}px")
+
+
+
+# --------------------------------------------- docs/figures 용 패널 --
+def doc_panel(pr, d):
+    """`force_estimation.md` §2.4 와 같은 배치 — 열 = 경도, 행 = 두께 × 복제.
+
+    축은 모두 공유(로그)하고 선은 Fx·Fy·Fz 셋. seed 3 개의 중앙값과 범위를 그린다.
+    """
+    rows = [(t, r) for t in (1, 2, 3) for r in (1, 2)]
+    fig, axes = plt.subplots(len(rows), 3, figsize=(10.5, 12),
+                             sharex=True, sharey=True)
+    for i, (t, rep) in enumerate(rows):
+        for j, h in enumerate(HARD):
+            ax = axes[i, j]
+            u = f"{h}_{t}mm_r{rep}"
+            g = d[d.sensor == u]
+            if not len(g):
+                ax.text(.5, .5, "—", ha="center", va="center", fontsize=13,
+                        color="#bbb", transform=ax.transAxes)
+            else:
+                for c, lab, col in AX:
+                    k = g.groupby("width_px")[c].agg(["median", "min", "max"])
+                    ax.plot(k.index, k["median"], "-", c=col, lw=1.5, label=lab)
+                    ax.fill_between(k.index, k["min"], k["max"], color=col,
+                                    alpha=.15, lw=0)
+            ax.set_xscale("log"); ax.set_yscale("log"); plain_log(ax, "both")
+            ax.tick_params(labelsize=7)
+            ax.spines[["top", "right"]].set_visible(False)
+            ax.grid(alpha=.2, lw=.5, which="both"); ax.set_axisbelow(True)
+            if i == 0:
+                ax.set_title(h, fontsize=11, color=CH_TITLE[h])
+            if j == 0:
+                ax.set_ylabel(f"{t} mm · r{rep}\nMAE (N)", fontsize=8.5)
+            if i == len(rows) - 1:
+                ax.set_xlabel("가로 해상도 (px)", fontsize=8.5)
+    h_, l_ = axes[0, 0].get_legend_handles_labels()
+    fig.legend(h_, l_, loc="upper right", frameon=False, fontsize=10, ncol=3,
+               bbox_to_anchor=(.99, .985))
+    fig.suptitle(f"{pr} — 축별 힘 추정 오차 대 해상도 (입력 `{REP[pr]}`)",
+                 fontsize=12.5, x=.06, ha="left", y=.985)
+    fig.tight_layout(rect=[0, 0, 1, .965])
+    p = ROOT / "docs" / "figures"
+    p.mkdir(parents=True, exist_ok=True)
+    fig.savefig(p / f"force_axes_{pr}.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print(f"    -> docs/figures/force_axes_{pr}.png")
 
 
 if __name__ == "__main__":

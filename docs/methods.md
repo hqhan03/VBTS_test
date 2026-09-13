@@ -255,7 +255,7 @@ Pass B 는 그 폴더의 `CANONICAL.yaml` 이 정하고(1000 프레임을 채운
 많은가 → 마지막 시도인가. 접미사만 보고 고르면 틀린다(`data/analysis/DATASET_CLEANUP.md`).
 
 **기준 영상은 빼는 것이지 나누는 것이 아니다.** 표현 비교에서 결론이 났다
-(`force_estimation_digit.md`).
+(`force_estimation.md` §7).
 
 **겔 라벨은 손으로 입력된다.** 무부하 색비율로 실제 겔을 판정해 한 pass 전체가
 soft/hard 뒤바뀐 것을 잡아냈다(`RELABEL.md`, `campaign_protocol.md` §4.11).

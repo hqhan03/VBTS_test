@@ -19,7 +19,7 @@ per question.
 | where the TCP number came from | `tcp_calibration_history.md` |
 | **test 2, shape reconstruction — method and all 17 units' results** | **`shape_reconstruction.md`** |
 | **test 3, spatial resolution — method and all 17 units' results** | **`spatial_resolution.md`** |
-| **test 1, force estimation — method, all 17 units, and the resolution sweep** | **`force_estimation.md`** |
+| **test 1, force estimation — all three principles, per-axis MAE vs resolution** | **`force_estimation.md`** |
 | how much camera resolution the shape method needs (downscale sweep) | `shape_vs_resolution.md` |
 | can hardness and thickness be one variable (contact radius)? — an attempt | `contact_variable.md` |
 | why a sphere reads the surface too deep | `hertz_zero_bias.md` |
@@ -34,7 +34,7 @@ Added since (this table was written when only 9DTact had been measured):
 | **the Method section: apparatus, specimens, probes, procedure, definitions, statistics** | **`methods.md`** |
 | can a different analysis, or a different threshold, resolve two points deeper than 0.3 mm | `spatial_resolution_sensitivity.md` |
 | **how the three principles compare, and what this campaign got wrong** | **`cross_principle.md`** ← the results, and section 5 is the self-criticism |
-| test 1 on DIGIT and DIGIT_Marker — all 36 units, and which input representation wins | `force_estimation_digit.md` |
+| test 1 on DIGIT and DIGIT_Marker — which input representation wins | `force_estimation.md` §7 |
 | how the DIGIT photometric calibration grid works and whether it transfers between units | `photometric_calibration.md` |
 | how this campaign's preprocessing and training differ from the DIGIT/GelSight literature | `method_vs_literature.md` |
 | **test 4, maximum measurable force — method, all 36 units, and why it cannot compare sensors** | **`force_ceiling.md`** |
