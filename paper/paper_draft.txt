@@ -24,7 +24,7 @@ CONTENTS
   IV.   Calibration-Free Gel Characterization               [ ]
           A. Imprint Spread Ratio
           B. Two-Point Spatial Resolution
-          C. Maximum Measurable Force
+          C. Maximum Measurable Force                       [DRAFTED]
   V.    Task Performance Against Sampling Resolution        [ ]
           A. 6-Axis Force Estimation
           B. Shape Reconstruction
@@ -512,7 +512,159 @@ A. Imprint Spread Ratio
 
 B. Two-Point Spatial Resolution
 
+
 C. Maximum Measurable Force
+
+[IV-C1]
+What bounds force estimation is not where the gel fails but where the image
+stops changing. Above that load a deeper press returns the same picture, so no
+method that reads force from an image can separate two forces above it. We
+measure that point on every unit rather than extrapolating it from a
+calibration ladder; where both were available the extrapolation disagreed with
+the measurement by up to a factor of two.
+
+[IV-C2]
+A depth-controlled ramp presses the 8 mm sphere into the gel in steps,
+recording force and image at each one. Image change is reduced to a single
+number -- the mean absolute difference from the undeformed reference over the
+central half of the frame -- and the response is the slope of that number per
+newton (levels/N, least squares over a three-step window). Saturation is
+declared when the response falls below a threshold on two steps, and the
+ceiling is the force at the first of them. No criterion, including the depth
+backstop at 0.9 times gel thickness, is allowed to end a ramp below 10 N, so
+every unit is pushed against the same floor and the ceilings are comparable.
+
+[IV-C3]
+Two thresholds are reported and the difference between them matters. The
+relative criterion -- 15 % of the unit's own peak response -- is the rule the
+ramp itself ran, and it states the operating limit of a single unit correctly.
+It cannot compare units: a unit whose response is weak has a correspondingly
+low threshold and therefore reports a high ceiling. The mechanism is visible
+inside replicate pairs of one gel specification. In the two pairs whose peak
+responses differ most, by 35 % and 39 %, the ceilings differ by 21 % and 20 %,
+and in both it is the weaker-responding unit that reads higher. Comparison
+across principles therefore uses an absolute criterion, a fixed levels/N
+threshold, recomputed from the same recorded ramps.
+
+[IV-C4]
+Table IV gives both. Thresholds at which more than 10 % of ramps end before
+crossing are excluded, because discarding truncated units biases the median of
+the survivors downward and the truncated units are systematically the
+high-ceiling ones. That rules out 0.2 and 0.5 levels/N, where up to 88 % of the
+depth-referenced ramps are truncated. The two admissible thresholds order the
+principles the same way and both separate them significantly, so the choice of
+threshold is not producing the result.
+
+[IV-CT1]  TABLE IV -- CEILING BY CRITERION (medians, 8 mm sphere)
+  criterion             | depth-ref. | photometric | ratio | p
+  relative, 15 % peak   |  31.00 N   |   17.33 N   | 1.8x  | 4.8e-07
+  absolute, 1.0 lvl/N   |  30.42 N   |    7.02 N   | 4.3x  | 8.8e-07
+  absolute, 2.0 lvl/N   |  18.10 N   |    2.73 N   | 6.6x  | 2.4e-03
+  Mann-Whitney U over 17 depth-referenced and 18 photometric units; one
+  depth-referenced unit had been destroyed by an earlier ramp. Truncation at
+  the two absolute thresholds is 6 % and 0 %.
+
+[IV-C5]
+The depth-referenced principle reads further, and the relative criterion
+understates by how much: 1.8-fold under the rule the ramp ran, 4.3- to 6.6-fold
+under the absolute criteria. The distributions nevertheless overlap -- at
+1.0 levels/N, 11.4 to 51.9 N against 4.6 to 13.1 N -- so the medians separate
+the principles while an individual unit cannot be assigned to a principle from
+its ceiling alone.
+
+[IV-C6]
+Thickness acts on the two principles in opposite directions (Table V). In the
+depth-referenced hard series the ceiling rises with thickness, 30.8 to 43.6 to
+61.7 N, while the photometric hard series falls, 18.2 to 20.1 to 12.8 N; the
+direction is consistent across all three hardness levels of each principle. The
+gap between the principles therefore widens from 1.2-1.7 fold at 1 mm to
+2.5-4.8 fold at 3 mm. Within these gels it is thickness, not hardness, that
+moves this quantity.
+
+[IV-CT2]  TABLE V -- CEILING AND SATURATION DEPTH AGAINST GEL DESIGN
+                     |    ceiling, N     |  saturation depth, mm
+                     | 1 mm  2 mm  3 mm  |  1 mm  2 mm  3 mm
+  depth-referenced   |                   |
+    soft             | 27.3  27.4  30.8  |  4.41  5.28  6.17
+    medium           | 34.8  30.2  36.3  |  4.97  5.25  6.40
+    hard             | 30.8  43.6  61.7  |  4.53  5.37  6.73
+  photometric        |                   |
+    soft             | 22.9  16.2  11.4  |  1.14  1.54  1.86
+    medium           | 20.1  18.4  14.7  |  1.12  1.59  2.11
+    hard             | 18.2  20.1  12.8  |  1.03  1.57  1.76
+  Replicate means under the relative criterion, 8 mm sphere. The
+  depth-referenced medium, 2 mm cell is a single replicate; two
+  depth-referenced 1 mm cells contain a unit with a confirmed light leak
+  ([IV-C11]).
+
+[IV-C7]
+The saturation depths explain the reversal, and they say something the forces
+do not: depth rises with thickness for both principles, and only the slope
+differs, by a factor of 2.2. What separates the principles is where that depth
+falls relative to the layer. The depth-referenced units saturate at 2.0 to 5.2
+times their own gel thickness, so the indenter has long since compressed the
+gel against the rigid backing and what resists it is the substrate as much as
+the elastomer; the mechanical properties of the gel enter the ceiling directly.
+The photometric units saturate at 0.56 to 1.32 times thickness, well before the
+gel approaches any mechanical limit -- the optics saturate first. A limit set by
+the optical encoding does not move when the formulation is changed, and a
+thicker layer of the same material is more compliant, so it reaches that same
+optically-fixed depth at a lower force. That is the reading consistent with
+both tables, though we have not tested it against an independent measurement of
+layer compliance.
+
+[IV-C8]
+Within the depth-referenced series the thickness effect is confined to the hard
+gel; soft and medium are flat as thickness triples. The same mechanism accounts
+for it. Recovering an effective stiffness at the ceiling point, the three
+hardness grades agree to within 8 % at 1 mm and spread to 76 % at 3 mm. At 1 mm
+the ceiling depth is four to five times the gel thickness, so the load is
+carried by the backing, which is identical in every unit and does not know the
+formulation; the gel's own stiffness emerges only as the layer thickens. The
+design consequence is narrow but concrete: in a depth-referenced sensor,
+choosing a harder gel raises the maximum measurable force only if the layer is
+thick enough for the gel to carry the load.
+
+[IV-C9]
+Hardness cannot be compared across the two principles, and that is a property
+of our specimens rather than of the sensors. The depth-referenced series spans
+40 durometer points and the photometric series six (Section III-B). Applying
+the depth-referenced sensitivity at 3 mm, 0.77 N per durometer point, to the
+photometric six-point range predicts a spread of 4.6 N against a measured 3.3
+N; at 2 mm it predicts 2.4 N against a measured 3.8 N. The measured variation
+is the size the wider series would lead one to expect, and at 2 mm it is
+larger. The photometric series is therefore not insensitive to hardness -- we
+barely varied its hardness. Whether the two principles differ in hardness
+sensitivity is a question this design cannot answer.
+
+[IV-C10]
+A high ceiling and a strong response are two readings of one property, not two
+independent merits. At 3 mm the peak response orders soft above medium above
+hard, 6.44-7.09 against 5.63-5.85 against 3.19-3.23 levels/N, exactly opposite
+to the ceiling. A softer gel deforms more under the same load, so its image
+changes more per newton and it reaches the saturation threshold sooner. A
+fabrication guideline has to say which of the two is being bought.
+
+[IV-C11]
+Four limits belong with these numbers. First, the marker-bearing arm was ramped
+only with the 4 mm sphere and cannot enter Tables IV and V. On its own ruler
+its cell means run from 6.8 to 16.4 N and fall with thickness in the soft and
+medium series, as the markerless photometric units do; that is as far as the
+comparison can be taken. Second, the two spheres do not convert. Across 18
+units measured with both, the force ratio scatters from 1.50 to 3.26 with a
+median of 2.37, where Hertzian contact predicts the square root of the radius
+ratio, 1.41, and two replicates of one specification give 1.98 and 3.26. The
+depth ratio, by contrast, has a median of 0.99 and is indistinguishable from
+unity (p 0.858): the saturation depth is a property of the unit, and the force
+at that depth is set by the probe. The same 18 pairs rule out a field-of-view
+confound -- the 8 mm sphere leaves an imprint 1.2 to 1.4 times larger at equal
+depth, yet it saturated shallower in only 10 of 18 units (binomial p 0.815).
+Third, two depth-referenced units with a visually confirmed light leak read
+24 % and 25 % above their replicates; they are flagged in the per-unit data
+because a weak signal lowers the relative threshold and inflates the ceiling,
+which is the mechanism of [IV-C3] appearing as a fabrication defect. Fourth,
+one depth-referenced unit was destroyed by an early ramp, leaving its cell with
+a single replicate.
 
 
 ================================================================================
@@ -581,6 +733,28 @@ REFERENCES (placeholder numbering used above)
 ================================================================================
 OPEN QUESTIONS / TO RESOLVE
 ================================================================================
+- **UNIT COUNT CONFLICT, now concrete.** III-B1 says 27 units are analysed --
+  one per cell, three principles x three hardness x three thicknesses. IV-C
+  reports 17 + 18 = 35 units, i.e. BOTH replicates of every cell, and its
+  argument leans on replicate pairs ([IV-C3], [IV-C11]). The two sections
+  currently describe different datasets. Either III-B1 becomes "two replicates
+  per cell, 36 cast, 35 ramped" or IV-C is recomputed at one unit per cell --
+  and the second choice deletes the replicate-pair evidence for the relative
+  criterion being unusable across units, which is the reason IV-C reports an
+  absolute criterion at all. Decide before anything else in IV or V.
+- [IV-C7] the compliance reading (a thicker layer of the same material reaches
+  the optically-fixed saturation depth at lower force) is an inference from
+  Tables IV and V, not an independent measurement. Either measure layer
+  compliance or keep the hedge in the last sentence. Do not drop the hedge.
+- [IV-C11] the two light-leak units are currently INCLUDED in the Table V
+  replicate means and flagged in text. Excluding them changes the
+  depth-referenced 1 mm cells (medium 34.8, hard 30.8). Decide: include with a
+  flag, or exclude and report n per cell.
+- IV-C figures. result/results.md already has the five that fit this section:
+  B_ceiling_vs_thickness, A_saturation_depth_vs_thickness,
+  C_relative_vs_absolute_criterion, D_hardness_range_imbalance,
+  E_probe_transfer. At ICRA page limit not all survive. B and C are the ones
+  the argument needs; A is folded into Table V; D and E are limitations.
 - PENDING ANALYSIS: force estimation and shape reconstruction are being
   re-derived with preprocessing appropriate to these sensors. Until those
   numbers exist, [ABS] and [I-6] must not assert a direction for the
