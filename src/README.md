@@ -22,6 +22,8 @@
 
 로봇을 움직이는 것은 `run_indentation.py`(단계별)와 `run_one_sensor.py`(한 유닛 전체)다.
 나머지는 분석이고, 어느 스크립트가 어느 표를 만드는지는 `docs/README.md` 에 있다.
+`make_*.py` 여섯 개는 논문용 산출물을 `result/` 에 쓴다 — 그림마다 같은 숫자의 csv 를
+옆에 함께 남기므로, 분석을 다시 돌리지 않고도 그림을 다시 그릴 수 있다.
 경로는 모두 저장소 루트 기준으로 잡는다 — `Path(__file__).resolve().parents[2]`.
 
 ## `config/`

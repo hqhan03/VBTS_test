@@ -9,15 +9,18 @@ per question.
 > **`methods.md`** is the whole Method section and its **§10.0 is the table of
 > permanent limitations** — what went unanswered and which claim each one bounds.
 > **`force_ceiling.md` §6.8** carries the headline two-principle comparison.
+> **`../result/results.md`** holds every figure and table meant for the paper,
+> each one beside the csv it was drawn from — and unlike `data/`, it is on GitHub.
 
 | I want to know… | read |
 |---|---|
+| **every figure and table for the paper, with its explanation and its csv** | **`../result/results.md`** |
 | what the campaign is, its four tests, where it stands | **`campaign_protocol.md`** ← start here |
 | what the robot actually does, move by move, and every measured number behind it | **`measurement_protocol.md`** |
 | where a file gets written and what is in it | `data_recording.md` |
 | how the sensor frame, the base frame and the gel relate | `frames_and_transforms.md` |
 | where the TCP number came from | `tcp_calibration_history.md` |
-| **test 2, shape reconstruction — method and all 17 units' results** | **`shape_reconstruction.md`** |
+| **test 2, shape reconstruction — 9DTact's intensity→depth LUT and DIGIT's photometric stereo** | **`shape_reconstruction.md`** (§6 is the DIGIT pipeline, `scripts/digit_shape.py`) |
 | **test 3, spatial resolution — method and all 17 units' results** | **`spatial_resolution.md`** |
 | **test 1, force estimation — all three principles, per-axis MAE vs resolution** | **`force_estimation.md`** |
 | how much camera resolution the shape method needs (downscale sweep) | `shape_vs_resolution.md` |
@@ -45,21 +48,32 @@ Added since (this table was written when only 9DTact had been measured):
 | what the code is: the library, the scripts, the config, the tests | `../src/README.md` |
 | **what data exists per principle, probe and gel unit — and what is missing** | `../data/20260911_VBTSresolution_dataset/DATA_INVENTORY.md` (`scripts/dataset_audit.py`) |
 
-**Where the campaign stands (2026-09-11).** All 53 units have force-estimation
-sweeps; all 36 DIGIT-family units have a photometric calibration grid and a
-measured force ceiling, and every dataset now holds exactly one folder per
-unit (`data/analysis/DATASET_CLEANUP.md`) — the split folders had been costing one unit's
-scale and double-counting another. The headline question — whether the resolution at which
-error saturates depends on the gel — is answered **no**: on a root-2 ladder
+**Where the campaign stands (2026-09-13, collection closed).** All 53 units have
+force-estimation sweeps; all 36 DIGIT-family units have a photometric calibration
+grid, and every dataset holds exactly one folder per unit
+(`data/analysis/DATASET_CLEANUP.md`) — the split folders had been costing one unit's
+scale and double-counting another. The headline question — whether the resolution at
+which error saturates depends on the gel — is answered **no**: on a root-2 ladder
 both DIGIT principles give a flat knee against thickness (p 0.85 and p 0.66),
 and the one significant result from the doubling ladder was an artefact of an
 unstable knee estimate (`cross_principle.md` §3.10). The direction survives in
 two training-free measurements; the trained knee cannot show it.
 
-**`data/` is not on GitHub.** The measurements, the result tables the sections
-below cite (`data/analysis/*.csv`), and the documents inside them live on the
-measurement machine only. Every number quoted here was read out of those tables,
-and the script that regenerates each one is named beside it.
+Since then, three things changed and are worth knowing before reading an older
+section:
+
+| what changed | where it landed |
+|---|---|
+| **the force ceiling was re-measured on both principles with one probe (`ball8`)**. The five 9DTact ceilings declared on `ball4` were retracted — all five sat deeper than the ball's own diameter, so the contact was the **shank**, not a sphere | `force_ceiling.md` §6.3 (the retraction), §6.8 (the 35-unit comparison: 31.00 vs 17.33 N, 1.8×) |
+| **the DIGIT gels' hardness was measured**: OO-51 / 54 / 57 against 9DTact's OO-30 / 50 / 70. The two families swung Shore hardness by 6 points and 40 points — 6.7× apart — so **the hardness axis cannot compare the principles**, and the conclusion that rested on it was withdrawn | `methods.md` §2.1, `force_ceiling.md` §6.8 conclusion 3 |
+| **all three principles were retrained from 1920×1080 down to 8×5 with every training parameter held identical**, giving per-axis Fx/Fy/Fz MAE rather than a single norm | `force_estimation.md` §2.6, `../result/results.md` §8 |
+
+**`data/` is not on GitHub — but `result/` is.** The measurements, the result tables
+the sections below cite (`data/analysis/*.csv`), and the documents inside them live on
+the measurement machine only. Every number quoted here was read out of those tables,
+and the script that regenerates each one is named beside it. The figures and tables
+meant for the paper were copied into **`../result/`** together with the csv behind each
+one, so they open anywhere.
 
 **The machine-readable truth is in `config/`, not here.**
 `sensor_registry.yaml` (per-sensor limits, gel models, capture policy),
@@ -152,7 +166,18 @@ wrong — check with `--status` before touching anything.
 
 # the gel-normal correction for a unit (commands no motion)
 /usr/bin/python3 src/scripts/gel_normal.py --sensor 9DTact_hard_3mm_r1
+
+# the paper's figures and tables, into result/ — each with the csv it was drawn from
+python3 src/scripts/make_result_tables.py      # the 3x3 tables, cells are "r1 / r2  (mean)"
+python3 src/scripts/make_result_figures.py     # cross-principle figures A-F
+python3 src/scripts/make_force_mae_figures.py  # per-axis MAE against resolution
+python3 src/scripts/make_shape_figures.py      # shape accuracy against resolution
+python3 src/scripts/make_optical_curves.py     # imprint diameter and brightness against depth
+python3 src/scripts/make_results_md.py         # writes result/results.md from the above
 ```
+
+Every figure writes a csv of the same numbers beside it, so a plot can be redrawn
+without rerunning the analysis.
 
 ---
 
