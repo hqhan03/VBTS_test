@@ -374,6 +374,100 @@ def group_curves(pr, D, probe, xcol="depth_mm", xlab="깊이 (mm)",
     return True
 
 
+def reversal(pr, D, probe):
+    """x 축을 깊이에서 힘으로 바꾸면 **어느 변수가 갈리는지가 바뀐다** — 한 장에.
+
+    행은 잰 것(지름·밝기), 열은 (x 축) x (나눈 변수) 넷이다. 왼쪽 두 열이 깊이,
+    오른쪽 두 열이 힘이고, 각 쌍의 앞이 경도별 뒤가 두께별이다. 같은 자국, 같은
+    램프, 바뀐 것은 x 축뿐이므로 **열을 가로질러 읽으면 뒤집힘이 보인다.**
+    """
+    G = D[D.probe == probe].copy()
+    if not len(G) or "force_N" not in G:
+        return None
+    G["hardness"] = G.unit.str.split("_").str[0]
+    G["thickness_mm"] = G.unit.str.extract(r"_(\d)mm_")[0].astype(int)
+
+    tidy = []
+
+    def band(xcol, key, col, order, cmap, ax):
+        g = G[G[xcol].notna()]
+        lo = float(g[xcol][g[xcol] > 0].min())
+        hi = float(g.groupby("unit")[xcol].max().quantile(.8))
+        if not np.isfinite(hi) or hi <= lo:
+            return
+        grid = np.linspace(lo, hi, 40)
+        for k in order:
+            gg0 = g[g[key] == k]
+            ys = []
+            for _, u in gg0.groupby("unit"):
+                u = valid_span(u[u.depth_mm > 0])
+                u = u[(u.diameter_px > 0) & u[xcol].notna()].sort_values(xcol)
+                if len(u) < 4:
+                    continue
+                y = np.interp(grid, u[xcol], u[col], left=np.nan, right=np.nan)
+                y[(grid < u[xcol].min()) | (grid > u[xcol].max())] = np.nan
+                ys.append(y)
+            if len(ys) < 2:
+                continue
+            A = np.vstack(ys)
+            n = np.sum(~np.isnan(A), axis=0)
+            with np.errstate(all="ignore"):
+                med, q1, q3 = (np.nanmedian(A, 0), np.nanpercentile(A, 25, 0),
+                               np.nanpercentile(A, 75, 0))
+            m = n >= 3
+            for row in A:
+                ax.plot(grid, row, "-", c=cmap[k], lw=.6, alpha=.18, zorder=1)
+            ax.fill_between(grid[m], q1[m], q3[m], color=cmap[k], alpha=.13,
+                            lw=0, zorder=2)
+            lab = f"{k} mm" if key == "thickness_mm" else str(k)
+            ax.plot(grid[m], med[m], "-", c="white", lw=3.6, alpha=.85, zorder=3)
+            ax.plot(grid[m], med[m], "-", c=cmap[k], lw=2.2, label=lab, zorder=4)
+            tidy.append(pd.DataFrame(dict(
+                principle=pr, probe=probe, measure=col, x_name=xcol,
+                group_by=key, group=str(k), n_units=int(A.shape[0]),
+                x=grid[m], median=med[m], q1=q1[m], q3=q3[m])))
+
+    COLS = [("depth_mm", "hardness", "깊이 × 경도", ["soft", "medium", "hard"], CH_G),
+            ("depth_mm", "thickness_mm", "깊이 × 두께", [1, 2, 3], CT_G),
+            ("force_N", "hardness", "힘 × 경도", ["soft", "medium", "hard"], CH_G),
+            ("force_N", "thickness_mm", "힘 × 두께", [1, 2, 3], CT_G)]
+    ROWS = [("diameter_px", "자국 지름 (px)"), ("level", "밝기 변화 (lvl)")]
+    fig, axes = plt.subplots(2, 4, figsize=(16.4, 7.2))
+    for i, (col, ylab) in enumerate(ROWS):
+        for j, (xcol, key, title, order, cmap) in enumerate(COLS):
+            ax = axes[i, j]
+            band(xcol, key, col, order, cmap, ax)
+            ax.set_title(title, fontsize=10.5, loc="left")
+            ax.set_xlabel("깊이 (mm)" if xcol == "depth_mm" else "힘 (N)",
+                          fontsize=9)
+            if j == 0:
+                ax.set_ylabel(ylab, fontsize=9.5)
+            ax.legend(frameon=False, fontsize=8)
+            ax.spines[["top", "right"]].set_visible(False)
+            ax.grid(True, which="major", alpha=.28, lw=.5, color="#b0b0b0")
+            ax.set_axisbelow(True)
+        # 행 안에서 y 축을 맞춘다 — 열을 가로질러 읽어야 하기 때문이다
+        lo = min(a.get_ylim()[0] for a in axes[i])
+        hi = max(a.get_ylim()[1] for a in axes[i])
+        for a in axes[i]:
+            a.set_ylim(lo, hi)
+    fig.suptitle(f"{pr} ({probe}) — x 축을 바꾸면 갈리는 변수가 바뀐다. "
+                 "왼쪽 두 열은 깊이, 오른쪽 두 열은 힘",
+                 fontsize=12, x=.03, ha="left")
+    fig.tight_layout(rect=[0, 0, 1, .955])
+    d = RES / "extra"
+    (d / "figures").mkdir(parents=True, exist_ok=True)
+    fig.savefig(d / "figures" / f"H_reversal_{pr}_{probe}.png", dpi=170,
+                bbox_inches="tight")
+    plt.close(fig)
+    (d / "data").mkdir(parents=True, exist_ok=True)
+    if tidy:
+        pd.concat(tidy).to_csv(
+            d / "data" / f"H_reversal_{pr}_{probe}.csv", index=False)
+    print(f"    -> extra/figures/H_reversal_{pr}_{probe}.png")
+    return True
+
+
 def main():
     plt.rcParams["font.family"] = ["NanumGothic", "DejaVu Sans"]
     # NanumGothic 에 유니코드 마이너스(U+2212) 글리프가 없어 축 라벨이
@@ -403,6 +497,8 @@ def main():
             group_curves(pr, D, probe)
             group_curves(pr, D, probe, xcol="force_N", xlab="힘 (N)",
                          stem="force_by_group")
+        if pr == "9DTact" and "ball8" in set(D.probe):
+            reversal(pr, D, "ball8")
         got = ", ".join(f"{p} {S[S.probe==p].unit.nunique()}유닛"
                         for p in sorted(S.probe.unique()))
         print(f"  {pr:<13} {len(D):>6} 행  ({got})")
