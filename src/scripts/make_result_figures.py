@@ -120,8 +120,12 @@ def fig_B(D):
     선으로 잇는다. 세로 막대는 두 복제의 폭이다.
     """
     prs = [p for p in ("9DTact", "DIGIT", "DIGIT_Marker") if (D.principle == p).any()]
-    fig, axes = plt.subplots(1, len(prs), figsize=(4.2 * len(prs), 3.9),
-                             sharey=True, squeeze=False)
+    # **y 축을 공유하지 않는다.** 9DTact 가 63 N 까지 가는데 DIGIT 계열은 6~23 N 이라,
+    # 축을 묶으면 DIGIT 과 Marker 의 기울기가 아래쪽에 눌려 보이지 않는다. 축이 다르다는
+    # 것은 제목과 그림 제목에 적고, 어차피 Marker 는 프로브가 달라 세로로 비교하면
+    # 안 되는 값이다(force_ceiling.md 6.7).
+    fig, axes = plt.subplots(1, len(prs), figsize=(4.4 * len(prs), 3.9),
+                             sharey=False, squeeze=False)
     axes = axes[0]
     rng = np.random.default_rng(0)
     for ax, pr in zip(axes, prs):
@@ -154,10 +158,13 @@ def fig_B(D):
                      loc="left", color=C[pr])
         ax.set_xticks([1, 2, 3]); ax.set_xlim(.7, 3.3)
         ax.set_xlabel("겔 두께 (mm)"); style(ax)
-    axes[0].set_ylabel("최대 측정 가능 힘 (N)")
+        # y 라벨을 칸마다 단다 — 축이 따로라는 것을 눈금과 함께 보이게 한다
+        ax.set_ylabel("최대 측정 가능 힘 (N)", fontsize=9)
     axes[0].legend(frameon=False, fontsize=8.5, title="경도", title_fontsize=8.5)
-    fig.suptitle("천장 대 두께 — 선은 복제 평균, 점은 유닛 하나하나 "
-                 f"({RC.MARK} = {RC.LABEL})", fontsize=10.5, x=.06, ha="left")
+    # matplotlib 은 마크다운을 그리지 않는다 — 별표를 쓰면 별표가 그대로 나온다
+    fig.suptitle("천장 대 두께 — 선은 복제 평균, 점은 유닛 하나하나.  "
+                 f"세로 축은 칸마다 다르다  ({RC.MARK} = {RC.LABEL})",
+                 fontsize=10.5, x=.04, ha="left")
     fig.tight_layout(rect=[0, 0, 1, .95])
     save(fig, D[["principle", "probe", "unit", "hardness", "thickness_mm",
                  "ceiling_N", "depth_mm", "suspect_hardware"]],
