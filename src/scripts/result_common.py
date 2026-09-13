@@ -27,6 +27,10 @@ ROOT = Path(__file__).resolve().parents[2]
 _REG = yaml.safe_load((ROOT / "src" / "config" / "sensor_registry.yaml").read_text())
 
 MARK = "!"           # 그림 제목에 붙이는 표시. NanumGothic 에 없는 글리프는 두부로 나온다
+# **표시는 색이 아니라 형태로 한다.** 붉은색을 쓰다가 범주 팔레트의 주황(#D55E00)과
+# 헷갈렸다(2026-09-13). 먹색은 어느 범주 색과도 겹치지 않으므로 "또 하나의 군" 으로
+# 읽히지 않고 주석으로 읽힌다. 점은 자기 군의 색을 그대로 채우고 테두리만 먹색이다.
+INK = "#1a1a1a"
 LABEL = "빛 누출 의심"
 
 
@@ -73,5 +77,5 @@ def style(pr, unit, base="-o"):
 def title(pr, unit):
     """유닛별 그림의 제목과 색."""
     if is_suspect(pr, unit):
-        return f"{MARK} {unit}  ({LABEL})", "#c2553a"
+        return f"{MARK} {unit}  ({LABEL})", INK
     return unit, "black"

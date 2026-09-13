@@ -80,8 +80,8 @@ def main():
                        edgecolor="white", lw=.6, zorder=4)
             if (~ok).any():
                 ax.scatter(g.thickness_mm.values[~ok] + jit[~ok],
-                           g.finest_centre_mm.values[~ok], s=46, facecolor="none",
-                           edgecolor="#c2553a", lw=1.5, zorder=5)
+                           g.finest_centre_mm.values[~ok], s=48, c=CH[h],
+                           edgecolor=RC.INK, lw=1.6, zorder=5)
         ax.set_xticks([1, 2, 3]); ax.set_xlim(.7, 3.3)
         ax.set_xlabel("겔 두께 (mm)")
         ax.set_title(f"{pr} — 분해된 가장 좁은 간격", fontsize=10.5, loc="left",
@@ -117,14 +117,14 @@ def main():
                     lw=5, solid_capstyle="butt", color=CH[x.hardness],
                     alpha=.95, zorder=3)
             if x.suspect_hardware:
-                ax.plot([x.depth_lo_mm, x.depth_hi_mm], [yy, yy], lw=6.6,
-                        solid_capstyle="butt", color="#c2553a", alpha=.9, zorder=2)
+                ax.plot([x.depth_lo_mm, x.depth_hi_mm], [yy, yy], lw=7.0,
+                        solid_capstyle="butt", color=RC.INK, alpha=.9, zorder=2)
         ax.set_yticks(y)
         ax.set_yticklabels([f"{'! ' if s else ''}{u}"
                             for u, s in zip(e.unit, e.suspect_hardware)], fontsize=7)
         for t, s in zip(ax.get_yticklabels(), e.suspect_hardware):
             if s:
-                t.set_color("#c2553a")
+                t.set_color(RC.INK)
         ax.invert_yaxis()
         ax.set_xlabel("깊이 (mm)")
         ax.set_title(f"{pr} — 분해된 깊이 범위", fontsize=10.5, loc="left",

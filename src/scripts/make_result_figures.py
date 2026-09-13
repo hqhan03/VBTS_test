@@ -93,8 +93,8 @@ def fig_A(D):
                    label=pr, zorder=3)
         if (~ok).any():
             ax.scatter(g.thickness_mm.values[~ok] + j[~ok],
-                       g.depth_mm.values[~ok], s=52, facecolor="none",
-                       edgecolor="#c2553a", lw=1.5, zorder=5)
+                       g.depth_mm.values[~ok], s=52, c=C[pr],
+                       edgecolor=RC.INK, lw=1.6, zorder=5)
         m, b = np.polyfit(g.thickness_mm, g.depth_mm, 1)
         xs = np.linspace(.8, 3.2, 20)
         ax.plot(xs, m * xs + b, c=C[pr], lw=1.8, alpha=.9, zorder=2)
@@ -146,13 +146,15 @@ def fig_B(D):
                        edgecolor="white", lw=.6, zorder=4)
             # 의심 유닛은 속을 비우고 테두리만
             if (~ok).any():
+                # 자기 군의 색으로 채우고 테두리만 먹색 — 어느 경도인지도 읽혀야 한다
                 ax.scatter(gg.thickness_mm.values[~ok] + j[~ok],
-                           gg.ceiling_N.values[~ok], s=46, facecolor="none",
-                           edgecolor="#c2553a", lw=1.5, marker="o", zorder=5)
+                           gg.ceiling_N.values[~ok], s=48, c=CH[h],
+                           edgecolor=RC.INK, lw=1.6, marker="o", zorder=5)
                 for x, y in zip(gg.thickness_mm.values[~ok] + j[~ok],
                                 gg.ceiling_N.values[~ok]):
-                    ax.annotate(RC.MARK, (x, y), fontsize=7, color="#c2553a",
-                                xytext=(5, 4), textcoords="offset points", zorder=6)
+                    ax.annotate(RC.MARK, (x, y), fontsize=8, color=RC.INK,
+                                weight="bold", xytext=(5, 4),
+                                textcoords="offset points", zorder=6)
         pb = g.probe.iloc[0] if len(g) else "—"
         ax.set_title(f"{pr}   ({pb}, {g.unit.nunique()} 유닛)", fontsize=10,
                      loc="left", color=C[pr])
@@ -312,7 +314,7 @@ def fig_F():
                         for u, sp in zip(d.unit, d.suspect_hardware)], fontsize=7.5)
     for t, sp in zip(ax.get_yticklabels(), d.suspect_hardware):
         if sp:
-            t.set_color("#c2553a")
+            t.set_color(RC.INK)
     ax.set_xlabel("자국 최대 대비 (그레이 레벨)")
     ax.set_title("분해 실패의 상당수는 골이 아니라 대비의 문제다",
                  fontsize=10.5, loc="left")
