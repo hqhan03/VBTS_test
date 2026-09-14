@@ -59,25 +59,25 @@ constrains camera, electronics and network input size together. Choosing it
 requires knowing what elastomer design and what task requirements each decide,
 and the two have never been varied in the same experiment.
 
-We separate the two decisions using 27 sensors, one per condition, spanning
-two sensing principles and a marker-bearing photometric variant, three hardness
-levels and three sensing-layer thicknesses. Imaging hardware is reused within
-each arm, and one 1920x1080 capture is downsampled across twelve densities. The
-elastomer decides three things and we measure all three: paired-contact
-separation, which degrades with thickness on every measure we record (Spearman
-rho = -0.74 for maximum dip, p = 0.023); the force at which the image response
-saturates, which moves with thickness in opposite directions in the two arms;
-and how the imprint grows and brightens with indentation.
+We separate the two decisions by sweeping three sensor types -- two sensing
+principles and a marker-bearing photometric variant -- against three gel
+hardness levels and three sensing-layer thicknesses. Imaging hardware is reused
+within each arm, and one 1920x1080 capture is downsampled across twelve
+densities. The elastomer decides three things and we measure all three:
+paired-contact separation, which degrades with thickness on every measure we
+record; the force at which the image response saturates, which moves with
+thickness in opposite directions in the two arms; and how the imprint grows and
+brightens with indentation.
 
 Pixel density is decided by the task instead. Across twenty tests of a
 thickness or hardness association with the density at which force and shape
 errors level off, none survives false-discovery correction, so within these
 nine gel designs there is no reason to revisit pixel density when the gel
-changes. What does move it is
-the task and the error tolerance: at a 10 % tolerance the markerless arms
-plateau at 6.4-13.6 px/mm^2 for the resultant force error, with shape between
-2.9 and 6.3. Choose the gel from the contact and force requirements; choose
-the pixel density from the task and the error you will accept.
+changes. What does move it is the task and the error tolerance: at a 10 %
+tolerance the markerless arms plateau at 6.4-13.6 px/mm^2 for the resultant
+force error, with shape between 2.9 and 6.3. Choose the gel from the contact
+and force requirements; choose the pixel density from the task and the error
+you will accept.
 
 ================================================================================
 I. INTRODUCTION
