@@ -30,6 +30,18 @@ DIGIT 계열은 내려간다. 9DTact 만 그리면 그 관찰이 그림에서 �
     선택 규칙이 빛 누출 유닛을 이미 걸렀으므로 이 집합에는 의심 유닛이 없다
     (`suspect_hardware` 전부 False). 표식을 따로 두지 않는다.
 
+표식은 전부 동그라미다 (운전자 결정, 2026-09-15)
+    경도는 **색만으로** 갈린다. 팔레트가 색각 검증을 통과하므로(인접 쌍 최악
+    ΔE 11.0 deutan) 색각 이상에서는 읽히고, 남는 위험은 **흑백 인쇄**다.
+
+캡션이 져야 할 것
+    1. **어느 패널이 무엇인가** — 제목의 `(a)` `(b)` `(c)` 와 원리 이름.
+    2. **세로 축이 패널마다 다르고 값을 가로로 견주면 안 된다**는 것
+       (상대 기준 + Marker 는 프로브가 다름).
+    3. **두께 경향** — 9DTact ρ +0.63 (p 0.068) 대 DIGIT −0.90 (p 0.001),
+       Marker −0.53 (p 0.145). 그림에서 뺐고 `fig_ceiling_stats.csv` 에 있다.
+       경도는 세 원리 모두 비유의(+0.37 / +0.05 / −0.11).
+
 자료
     `result/single/extra/data/B_ceiling_vs_thickness.csv`  (분석 집합 27)
 """
@@ -42,7 +54,7 @@ from scipy.stats import spearmanr
 from matplotlib.lines import Line2D
 
 import paper_style as PS
-from paper_style import HARD3, MARKER, SHORE, DISPLAY
+from paper_style import HARD3, SHORE, DISPLAY
 
 PS.use_paper_style()                      # rcParams 를 pyplot 을 쓰기 전에 건다
 import matplotlib.pyplot as plt           # noqa: E402
@@ -82,15 +94,15 @@ def main():
     fig, axes = plt.subplots(1, 3, figsize=(PS.FULL_W, 2.45))
     stats = []
 
-    for ax, pr in zip(axes, PRINCIPLES):
+    for tag, ax, pr in zip("abc", axes, PRINCIPLES):
         one = single[single.principle == pr]
 
         for h in HARDNESS:
             col, dx = HARD3[h], DODGE[h]
             g = one[one.hardness == h].sort_values("thickness_mm")
             ax.plot(g.thickness_mm + dx, g.ceiling_N, "-", c=col, lw=1.4, zorder=3)
-            ax.plot(g.thickness_mm + dx, g.ceiling_N, MARKER[h], c=col,
-                    ms=4.4, mec="white", mew=0.7, ls="none", zorder=4)
+            ax.plot(g.thickness_mm + dx, g.ceiling_N, "o", c=col,
+                    ms=5.0, mec="white", mew=0.7, ls="none", zorder=4)
 
 
         rho, p_ex = exact_p(one.thickness_mm.values, one.ceiling_N.values)
@@ -102,18 +114,11 @@ def main():
                           n_units=len(one)))
 
         sh = SHORE[pr]
-        span = max(sh.values()) - min(sh.values())
         probe = one.probe.iloc[0]
-        ax.set_title(f"{DISPLAY[pr]}", fontsize=8.0, loc="left",
-                     color=PS.PRINCIPLE[pr], pad=11)
-        ax.annotate(f"{probe}  ·  Shore OO {sh['soft']}/{sh['medium']}/{sh['hard']} "
-                    f"(span {span})",
-                    xy=(0, 1.012), xycoords="axes fraction",
-                    fontsize=6.3, color=PS.MUTED)
-        ax.annotate(rf"$\rho_{{\rm thickness}}$ = {rho:+.2f}   (p = {p_as:.3f})",
-                    xy=(0.5, 0.03), xycoords="axes fraction", ha="center",
-                    fontsize=6.5, color=PS.MUTED)
-
+        ax.set_title(f"({tag})  {DISPLAY[pr]}", loc="left", pad=13)
+        ax.annotate(f"{probe}  ·  Shore OO {sh['soft']}/{sh['medium']}/{sh['hard']}",
+                    xy=(0, 1.015), xycoords="axes fraction",
+                    fontsize=7.5, color=PS.MUTED)
         ax.set_xticks([1, 2, 3])
         ax.set_xlim(0.72, 3.46)
         ax.set_ylim(0, None)
@@ -122,7 +127,7 @@ def main():
         PS.style(ax)
 
     fig.tight_layout(w_pad=1.3, rect=[0, 0.075, 1, 1])
-    hs = [Line2D([], [], color=HARD3[h], marker=MARKER[h], ms=4.4, lw=1.4,
+    hs = [Line2D([], [], color=HARD3[h], marker="o", ms=5.0, lw=1.6,
                  mec="white", mew=0.7, label=h) for h in HARDNESS]
     fig.legend(handles=hs, loc="lower center", ncol=3, frameon=False,
                fontsize=7.0, handlelength=1.8, columnspacing=2.0,
