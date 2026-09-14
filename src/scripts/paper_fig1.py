@@ -21,6 +21,7 @@
 같은 경도(hard), 같은 프로브(pair100, 중심 간격 2.0 mm), 같은 압입 단(0.3 mm)
 에서 두께만 1 mm 와 3 mm 로 다른 둘을 쓴다. **표시 범위와 대비 배율도 공유한다.**
 """
+import re
 from pathlib import Path
 
 import matplotlib
@@ -30,6 +31,7 @@ import matplotlib.patches as mp
 import numpy as np
 import pandas as pd
 import cv2
+import yaml
 
 import pixel_density as PD
 from palette import HARD3
@@ -41,6 +43,20 @@ PAIR = "20260905_passA_pair100"
 STEP = "pair100_d0.30_r1.png"
 UNITS = [("9DTact_hard_1mm_r1", "1 mm"), ("9DTact_hard_3mm_r1", "3 mm")]
 SHOW = [320, 80, 16]
+
+# (b) 의 조건은 **파일 이름과 probes.yaml 에서 뽑는다.** 손으로 적으면 STEP 이나
+# 프로브를 바꿀 때 캡션만 옛날 값으로 남는다.
+DEPTH_MM = float(re.search(r"_d([\d.]+)_", STEP).group(1))
+
+
+def pair_geometry(pid=PAIR.split("_")[-1]):
+    """기둥 지름과 중심 간격 (mm). 중심 간격 = 지름 + 틈."""
+    f = ROOT / "src" / "config" / "probes.yaml"
+    for pr in yaml.safe_load(f.read_text())["probes"]:
+        if pr.get("id") == pid:
+            d = float(pr["element_diameter_mm"])
+            return d, d + float(pr["gap_mm"])
+    return None, None
 
 
 def imprint(unit):
@@ -62,7 +78,7 @@ def main():
     fig = plt.figure(figsize=(7.16, 3.9))
     gs = fig.add_gridspec(2, 3, width_ratios=[.95, 1.18, 1.36],
                           height_ratios=[.88, 1.0], wspace=.40, hspace=.38,
-                          left=.065, right=.995, top=.80, bottom=.125)
+                          left=.065, right=.995, top=.745, bottom=.125)
 
     # ---------------------------------------------------------- (a) 설계 --
     # 왼쪽 열을 세로로 다 쓴다. 위쪽이 3x3 그림, 아래쪽이 설명 두 줄이다.
@@ -173,15 +189,26 @@ def main():
     # 패널 이름 셋을 **같은 높이**에, 각 패널이 실제로 차지한 x 범위의 가운데에.
     # 손으로 찍은 x 는 열 너비를 바꿀 때마다 어긋난다.
     fig.canvas.draw()
-    groups = [([axa], "(a) Elastomer design"),
-              (bx, "(b) Two distinct contacts"),
-              (cx_, "(c) Task input resolution")]
-    for axs, lab in groups:
+    dia, pitch = pair_geometry()
+    bsub = (f"hard gel, {DEPTH_MM:.2f} mm indentation\n"
+            f"two {dia:.1f} mm posts, {pitch:.2f} mm apart"
+            if dia else f"hard gel, {DEPTH_MM:.2f} mm indentation")
+    groups = [([axa], "(a) Elastomer design", None),
+              (bx, "(b) Two distinct contacts", bsub),
+              (cx_, "(c) Task input resolution",
+               "one contact frame, area-averaged down\n"
+               "$R$ = pixels per mm² of gel surface")]
+    for axs, lab, sub_ in groups:
         pos = [a.get_position() for a in axs if a is not None]
         if not pos:
             continue
         xc = (min(p.x0 for p in pos) + max(p.x1 for p in pos)) / 2
-        fig.text(xc, .885, lab, fontsize=8.5, ha="center", weight="bold")
+        fig.text(xc, .915, lab, fontsize=8.5, ha="center", weight="bold")
+        if sub_:
+            # 축 위쪽이 .745 이고 그 위를 이미지 제목이 쓰므로, 조건 줄은 그보다
+            # 더 위에 둔다. 전에는 .845 라 제목과 겹쳤다.
+            fig.text(xc, .878, sub_, fontsize=6.0, ha="center", va="top",
+                     color="#555", linespacing=1.4)
     fig.suptitle("Separating contact resolvability from task-specific input "
                  "resolution", fontsize=9.5, y=.975)
     OUT.mkdir(parents=True, exist_ok=True)
