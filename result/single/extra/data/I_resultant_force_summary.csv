@@ -1,0 +1,4 @@
+principle,n_units,best_lo_N,best_at_px,sat_px,sat_R,fz_sat_px,fz_sat_R,fz_share_median,band_ratio
+9DTact,9,0.0578,640,80,13.65,48,4.91,0.634,1.644
+DIGIT,9,0.0699,80,32,2.84,32,2.84,0.69,1.625
+DIGIT_Marker,9,0.0949,320,320,361.15,320,361.15,0.788,1.537

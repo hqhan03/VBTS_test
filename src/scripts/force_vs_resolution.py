@@ -624,6 +624,21 @@ def train_eval(X, y, tr, va, te, epochs=30, batch=64, seed=0, device="cuda",
     bte = blk_te if blk_te is not None else np.zeros(len(tt), int)
     ms, mn = bte == 1, bte == 0
     lat_mae_shear = float(np.abs(lat_p[ms] - lat_t[ms]).mean()) if ms.any() else np.nan
+    # **합력 오차.** 센서를 쓰는 쪽이 아는 것은 축이 아니라 힘 벡터 하나다.
+    # 축별 MAE 로는 이 값을 낼 수 없다 — 프레임마다 세 오차를 함께 봐야 한다
+    # (부등식으로 상·하한만 친다: `resultant_force.py`). 두 가지를 낸다:
+    #   res_mae — ‖F_pred − F_true‖ 의 평균. "벡터가 얼마나 어긋났나"
+    #   mag_mae — | ‖F_pred‖ − ‖F_true‖ | 의 평균. "크기를 얼마나 틀렸나"
+    # 방향만 틀리고 크기는 맞을 수 있으므로 둘은 다른 수다.
+    dF = p[:, :3] - tt[:, :3]
+    res = np.linalg.norm(dF, axis=1)
+    mag_p = np.linalg.norm(p[:, :3], axis=1)
+    mag_t = np.linalg.norm(tt[:, :3], axis=1)
+    res_mae = float(res.mean())
+    res_rmse = float(np.sqrt((res ** 2).mean()))
+    mag_mae = float(np.abs(mag_p - mag_t).mean())
+    res_mae_shear = float(res[ms].mean()) if ms.any() else np.nan
+    res_mae_normal = float(res[mn].mean()) if mn.any() else np.nan
     fz_mae_normal = float(np.abs(p[mn, 2] - tt[mn, 2]).mean()) if mn.any() else np.nan
     ss = float(1 - np.sum((p[:, 2] - tt[:, 2]) ** 2)
                / max(np.sum((tt[:, 2] - tt[:, 2].mean()) ** 2), 1e-9))
@@ -644,6 +659,8 @@ def train_eval(X, y, tr, va, te, epochs=30, batch=64, seed=0, device="cuda",
                 # 6 출력이므로 축별 오차는 처음부터 계산돼 있었다 — 2026-09-12 이전에는
                 # [0], [1] 을 버리고 있었을 뿐이다. lat_mae 는 hypot(Fx,Fy) 로 두 축을
                 # 합친 값이라 방향별 성능을 못 보여 준다.
+                res_mae=res_mae, res_rmse=res_rmse, mag_mae=mag_mae,
+                res_mae_shear=res_mae_shear, res_mae_normal=res_mae_normal,
                 fx_mae=float(mae6[0]), fy_mae=float(mae6[1]),
                 tx_mae=float(mae6[3]), ty_mae=float(mae6[4]), tz_mae=float(mae6[5]),
                 n_train=int(tr.sum()), n_val=int(va.sum()), n_test=int(te.sum()),
@@ -734,6 +751,7 @@ def main():
              r.get("split") or "cycle") for r in rows}
     cols = ["sensor", "width_px", "height_px", "split", "seed",
             "fx_mae", "fy_mae", "fz_mae", "fz_rmse",
+            "res_mae", "res_rmse", "mag_mae", "res_mae_shear", "res_mae_normal",
             "fz_mae_baseline", "fz_r2", "lat_mae", "lat_mae_baseline", "lat_r2",
             "lat_mae_shear", "fz_mae_normal", "n_test_shear", "n_test_normal", "norm", "rep",
             "n_train", "n_val", "n_test", "fz_range", "tx_mae", "ty_mae", "tz_mae",

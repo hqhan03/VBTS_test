@@ -631,6 +631,70 @@ def main():
             w()
 
 
+    # ---- 합력 -----------------------------------------------------------
+    w("### 세 축을 합친 힘 오차")
+    w()
+    w("위의 그림은 전부 **축별** MAE 다. 그런데 센서를 쓰는 쪽이 아는 것은 축이")
+    w("아니라 **힘 벡터 하나**다 — \"이 손가락이 힘을 몇 N 틀리게 읽는가\" 는")
+    w("‖F_pred − F_true‖ 의 크기다.")
+    w()
+    w("> **이 값은 지금 자료로 정확히 낼 수 없다.** 프레임마다 세 오차를 함께 봐야")
+    w("> 하는데 스윕은 축별 MAE 만 내보내고 프레임별 예측을 버린다(가중치도 디스크에")
+    w("> 없다). 그래서 **엄밀한 상·하한**을 친다. L2 노름이 볼록하므로 옌센")
+    w("> 부등식으로 √(MAEx² + MAEy² + MAEz²) ≤ E‖ΔF‖ ≤ MAEx + MAEy + MAEz 이다.")
+    w("> **띠는 불확실성이 아니라 부등식의 폭**이고, 인용할 값은 하한이다 — 세 축이")
+    w("> 프레임마다 함께 틀릴 때 하한이 참값과 같아지는데, 압입이 세 축을 동시에")
+    w("> 흔드는 이 실험이 그 경우에 가깝다.")
+    w()
+    fig("extra/figures/I_resultant_force.png",
+        "합력 오차 대 화소 밀도. (a) 굵은 선이 하한, 가는 선과 띠가 상한까지의 "
+        "폭이다. (b) 제곱합에서 Fz 가 차지하는 몫 — 세 축이 같다면 33 % 다.")
+    # 숫자는 CSV 에서 읽는다. 손으로 적으면 전체판과 단일판이 갈린다.
+    sf = RES / "extra" / "data" / "I_resultant_force_summary.csv"
+    if sf.exists():
+        S = pd.read_csv(sf).set_index("principle")
+        w("| 원리 | 합력 오차 바닥 (N) | 그때 폭 | 포화 R | Fz 의 몫 |")
+        w("|---|---:|---:|---:|---:|")
+        for pr in ("9DTact", "DIGIT", "DIGIT_Marker"):
+            if pr not in S.index:
+                continue
+            x = S.loc[pr]
+            w(f"| {pr} | **{x.best_lo_N:.4f}** | {int(x.best_at_px)} px | "
+              f"{PD.fmt(x.sat_R)} | {x.fz_share_median * 100:.0f} % |")
+        w()
+        lo = ", ".join(f"{pr} {S.loc[pr].best_lo_N:.3f}"
+                       for pr in ("9DTact", "DIGIT", "DIGIT_Marker")
+                       if pr in S.index)
+        w(f"**합력 오차의 바닥은 원리 순서를 그대로 따른다** — {lo} N. 세 곡선 모두")
+        w("R ≈ 10 아래에서 가파르게 나빠지고 그 위로는 평평하다.")
+        w()
+        sh = ", ".join(f"{pr} {S.loc[pr].fz_share_median * 100:.0f} %"
+                       for pr in ("9DTact", "DIGIT", "DIGIT_Marker")
+                       if pr in S.index)
+        w(f"**합력은 사실상 Fz 다.** 제곱합에서 Fz 의 몫이 {sh} 로 셋 다 등분선")
+        w("(33 %)보다 한참 위이고, **그 비중이 해상도를 따라 움직이지 않는다.** 즉")
+        w("합력 곡선의 모양은 Fz 곡선의 모양이고, 전단은 크기를 조금 올릴 뿐이다.")
+        w("마커에서 이 쏠림이 가장 심한 것은 마커가 전단을 돕고(H9) Fz 는 돕지")
+        w("않기 때문이다.")
+        w()
+        w("> **포화 R 열은 조심해서 읽을 것.** 합력 곡선의 평평한 구간은 폭이 넓고")
+        w("> 얕아 110 % 규칙이 유닛 수에 민감하다 — 같은 계산을 " +
+          ("전체 18 유닛" if RC.SINGLE else "9 유닛") + "으로 하면")
+        w("> 값이 한두 단 움직인다. 움직이지 않는 것은 **바닥의 크기와 원리 순서**다.")
+        w()
+        rng = S.best_lo_N
+        w(f"**실무적으로**: 세 원리 모두 합력 오차 {rng.min():.2f} ~ {rng.max():.2f} N")
+        w("이고 측정 범위가 0 ~ 2.1 N 이므로 **범위의 "
+          f"{rng.min() / 2.1 * 100:.0f} ~ {rng.max() / 2.1 * 100:.0f} %** 다. 그 값을")
+        w("더 낮추려면 해상도가 아니라 Fz 를 고쳐야 한다.")
+        w()
+    w("<sub>만드는 것은 `scripts/resultant_force.py` · 자료 "
+      "`extra/data/I_resultant_force.csv`, 요약 `..._summary.csv`. 정확한 값을")
+    w("원하면 `force_vs_resolution.py` 가 이제 내보내는 `res_mae`(벡터 오차)와")
+    w("`mag_mae`(크기 오차)를 쓰면 되지만, 전 사다리 재학습 약 21 GPU·시간이")
+    w("든다.</sub>")
+    w()
+
     knee_block("force", ["fz", "shear"], "힘")
 
     # ---------------------------------------------------------------- 6 --
