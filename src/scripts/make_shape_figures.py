@@ -142,6 +142,70 @@ def panel(d, col_tmpl, stem, ylab, title, pr="9DTact", yt=None,
     print(f"    -> result/{FOLD[pr]}/figures/{stem}.png")
 
 
+def all_units(d, pr, stem, title, col_tmpl="{}_raw_mae",
+              ylab="깊이 MAE (mm)", logy=True, zero_line=False, yt=None):
+    """**원리 하나에 모든 센서 선을 한 판에.** 격자는 유닛을 하나씩 떼어 보여
+    주지만, 유닛들이 서로 얼마나 벌어져 있는지는 겹쳐 놓아야 보인다 — 힘 쪽
+    Figure 2 가 하는 것과 같다(2026-09-14, 운전자 요청).
+
+    가는 선이 센서 하나, 굵은 선이 그 압자의 중앙값이다. 압자로 색을 나눈다.
+    """
+    fig, ax = plt.subplots(figsize=(6.4, 4.2))
+    rows = []
+    for probe, lab, c in PROBE:
+        col = col_tmpl.format(probe)
+        if col not in d:
+            continue
+        n = 0
+        for u, g in d.groupby("sensor"):
+            k = g.groupby("density_px_per_mm2")[col].median().dropna().sort_index()
+            if not len(k):
+                continue
+            ls, lw = RC.style(pr, u)
+            ax.plot(k.index, k.values, ls.replace("o", ""), c=c, lw=.9,
+                    alpha=.45, zorder=2)
+            rows.append(pd.DataFrame(dict(sensor=u, probe=probe,
+                                          density_px_per_mm2=k.index,
+                                          mae_mm=k.values)))
+            n += 1
+        # 굵은 선은 **사다리 단**으로 묶는다 — 밀도로 묶으면 유닛마다 값이 달라
+        # 한 행씩 쪼개진다(2026-09-14 에 같은 실수를 요약 그림에서 잡았다).
+        m = (d.groupby("width_px")
+               .agg(v=(col, "median"), R=("density_px_per_mm2", "median"))
+               .dropna().sort_values("R"))
+        if len(m):
+            ax.plot(m.R, m.v, "-", c="white", lw=4.0, alpha=.9, zorder=3)
+            ax.plot(m.R, m.v, "-o", c=c, lw=2.2, ms=4.5, mec="white", mew=.7,
+                    label=f"{lab} (중앙, 센서 {n})", zorder=4)
+    ax.set_xscale("log")
+    if logy:
+        # 눈금을 명시하지 않으면 기본 로그 포매터가 mathtext 로 "10^-1" 을 그리고,
+        # NanumGothic 에 그 글리프가 없어 "10<깨짐>1" 이 된다.
+        if yt is None:
+            yt = auto_yt(d, [col_tmpl.format(pb) for pb, _, _ in PROBE])
+        ax.set_yscale("log"); res_axis(ax, list(yt), fs=7)
+        plain_log(ax, "y")
+    else:
+        res_axis(ax, None, fs=7)
+        if zero_line:
+            ax.axhline(0, c="#1a1a1a", ls=":", lw=1.0, zorder=1)
+        if yt:
+            ax.set_ylim(*yt)
+    ax.set_xlabel("화소 밀도 R (px/mm²)", labelpad=6)
+    ax.set_ylabel(ylab)
+    ax.set_title(title, fontsize=10.5, loc="left")
+    ax.legend(frameon=False, fontsize=8)
+    ax.spines[["top", "right"]].set_visible(False)
+    q = RES / FOLD[pr]
+    (q / "figures").mkdir(parents=True, exist_ok=True)
+    (q / "data").mkdir(parents=True, exist_ok=True)
+    fig.savefig(q / "figures" / f"{stem}.png", dpi=200, bbox_inches="tight")
+    plt.close(fig)
+    if rows:
+        pd.concat(rows).to_csv(q / "data" / f"{stem}.csv", index=False)
+    print(f"    -> result/{FOLD[pr]}/figures/{stem}.png")
+
+
 def summary(d):
     fig, ax = plt.subplots(figsize=(5.8, 3.8))
     rows = []
@@ -286,6 +350,12 @@ def main():
           "지름 오차 (mm, 참 4 mm 대비)",
           "9DTact — 되찾은 가로 크기의 오차 대 해상도 (0 이 참값)",
           logy=False, zero_line=True, yt=(-2.2, 2.2))
+    all_units(d, "9DTact", RC.grid_stem("shape_mae_all"),
+               "9DTact — 센서마다의 형상 복원 오차 대 화소 밀도")
+    all_units(d, "9DTact", RC.grid_stem("shape_size_err_all"),
+               "9DTact — 센서마다의 지름 오차 대 화소 밀도 (0 이 참 4 mm)",
+               col_tmpl="{}_raw_size_err", ylab="지름 오차 (mm)",
+               logy=False, zero_line=True, yt=(-2.2, 2.2))
     summary(d)
     k = d.groupby("width_px")[["cyl4_raw_mae", "cube4_raw_mae"]].median()
     print(f"  9DTact  {len(d)} 행, {d.sensor.nunique()} 유닛  "
@@ -300,6 +370,13 @@ def main():
     pD = RES / FOLD["DIGIT"] / "data"; pD.mkdir(parents=True, exist_ok=True)
     dd.to_csv(pD / "shape_vs_resolution.csv", index=False)
     raw.to_csv(pD / "shape_predictions.csv", index=False)
+    all_units(dd, "DIGIT", RC.grid_stem("shape_mae_all"),
+               "DIGIT — 센서마다의 형상 복원 오차 대 화소 밀도")
+    if "cyl4_size_err" in dd:
+        all_units(dd, "DIGIT", RC.grid_stem("shape_size_err_all"),
+                   "DIGIT — 센서마다의 지름 오차 대 화소 밀도 (0 이 참 4 mm)",
+                   col_tmpl="{}_size_err", ylab="지름 오차 (mm)",
+                   logy=False, zero_line=True, yt=(-2.2, 2.2))
     if "cyl4_size_err" in dd:
         panel(dd, "{}_size_err", RC.grid_stem("shape_size_err_vs_resolution"),
               "지름 오차 (mm, 참 4 mm 대비)",

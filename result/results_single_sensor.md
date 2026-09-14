@@ -234,7 +234,11 @@ p 는 0.51 ~ 0.92 다. 대신 **두께는 세 원리 모두에서 ρ 0.92 ~ 0.94
 
 ### 9DTact
 
-> 아직 없음 — `1_9DTact/figures/optical_vs_depth_9units.png`
+![9DTact — 유닛별 깊이-지름(실선)과 깊이-밝기(점선)](single/1_9DTact/figures/optical_vs_depth_9units.png)
+
+*9DTact — 유닛별 깊이-지름(실선)과 깊이-밝기(점선)*
+
+<sub>그림: `single/1_9DTact/figures/optical_vs_depth_9units.png` · 자료: `single/1_9DTact/data/optical_vs_depth_9units.csv`</sub>
 
 **지름 기울기, ball4 (px/mm)**
 
@@ -258,7 +262,11 @@ p 는 0.51 ~ 0.92 다. 대신 **두께는 세 원리 모두에서 ρ 0.92 ~ 0.94
 
 ### DIGIT
 
-> 아직 없음 — `2_DIGIT/figures/optical_vs_depth_9units.png`
+![DIGIT — 유닛별 깊이-지름(실선)과 깊이-밝기(점선)](single/2_DIGIT/figures/optical_vs_depth_9units.png)
+
+*DIGIT — 유닛별 깊이-지름(실선)과 깊이-밝기(점선)*
+
+<sub>그림: `single/2_DIGIT/figures/optical_vs_depth_9units.png` · 자료: `single/2_DIGIT/data/optical_vs_depth_9units.csv`</sub>
 
 **지름 기울기, ball4 (px/mm)**
 
@@ -282,7 +290,11 @@ p 는 0.51 ~ 0.92 다. 대신 **두께는 세 원리 모두에서 ρ 0.92 ~ 0.94
 
 ### DIGIT_Marker
 
-> 아직 없음 — `3_DIGIT_Marker/figures/optical_vs_depth_9units.png`
+![DIGIT_Marker — 유닛별 깊이-지름(실선)과 깊이-밝기(점선)](single/3_DIGIT_Marker/figures/optical_vs_depth_9units.png)
+
+*DIGIT_Marker — 유닛별 깊이-지름(실선)과 깊이-밝기(점선)*
+
+<sub>그림: `single/3_DIGIT_Marker/figures/optical_vs_depth_9units.png` · 자료: `single/3_DIGIT_Marker/data/optical_vs_depth_9units.csv`</sub>
 
 **지름 기울기, ball4 (px/mm)**
 
@@ -498,11 +510,23 @@ ResNet-18 을 해상도 12 단(가로 1920 → 8 px, 화소 밀도로는 원리�
 | DIGIT | `raw` — 카메라 프레임 그대로 |
 | DIGIT_Marker | `inpaint` — 마커 점을 지우고 주변에서 메움 |
 
-> **9DTact: 학습 진행 중.** 끝나면 이 문서를 다시 생성한다.
+![9DTact — 유닛별 축별 MAE 대 해상도](single/1_9DTact/figures/force_mae_vs_resolution_9units.png)
 
-> **DIGIT: 학습 진행 중.** 끝나면 이 문서를 다시 생성한다.
+*9DTact — 유닛별 축별 MAE 대 해상도*
 
-> **DIGIT_Marker: 학습 진행 중.** 끝나면 이 문서를 다시 생성한다.
+<sub>그림: `single/1_9DTact/figures/force_mae_vs_resolution_9units.png` · 자료: `single/1_9DTact/data/force_mae_vs_resolution_9units.csv`</sub>
+
+![DIGIT — 유닛별 축별 MAE 대 해상도](single/2_DIGIT/figures/force_mae_vs_resolution_9units.png)
+
+*DIGIT — 유닛별 축별 MAE 대 해상도*
+
+<sub>그림: `single/2_DIGIT/figures/force_mae_vs_resolution_9units.png` · 자료: `single/2_DIGIT/data/force_mae_vs_resolution_9units.csv`</sub>
+
+![DIGIT_Marker — 유닛별 축별 MAE 대 해상도](single/3_DIGIT_Marker/figures/force_mae_vs_resolution_9units.png)
+
+*DIGIT_Marker — 유닛별 축별 MAE 대 해상도*
+
+<sub>그림: `single/3_DIGIT_Marker/figures/force_mae_vs_resolution_9units.png` · 자료: `single/3_DIGIT_Marker/data/force_mae_vs_resolution_9units.csv`</sub>
 
 ### 세 축을 합친 힘 오차
 
@@ -721,6 +745,31 @@ Benjamini-Hochberg 를 건 값이다 — 두 절을 따로 보정하면 "20 번 
 
 > **DIGIT_Marker 는 이 그림이 없다** — 형상 복원을 하지 않기 때문이다.
 
+### 원리별 — 모든 센서를 한 판에
+
+격자는 유닛을 하나씩 떼어 보여 준다. 유닛들이 서로 얼마나 벌어져 있는지는
+**겹쳐 놓아야** 보인다 — 힘 쪽 Figure 2 가 하는 것과 같다. 가는 선이 센서
+하나, 굵은 선이 그 압자의 중앙값이다.
+
+![9DTact — 센서마다의 형상 복원 오차 대 화소 밀도](single/1_9DTact/figures/shape_mae_all_9units.png)
+
+*9DTact — 센서마다의 형상 복원 오차 대 화소 밀도*
+
+<sub>그림: `single/1_9DTact/figures/shape_mae_all_9units.png` · 자료: `single/1_9DTact/data/shape_mae_all_9units.csv`</sub>
+
+![DIGIT — 센서마다의 형상 복원 오차 대 화소 밀도](single/2_DIGIT/figures/shape_mae_all_9units.png)
+
+*DIGIT — 센서마다의 형상 복원 오차 대 화소 밀도*
+
+<sub>그림: `single/2_DIGIT/figures/shape_mae_all_9units.png` · 자료: `single/2_DIGIT/data/shape_mae_all_9units.csv`</sub>
+
+**유닛 사이의 산포가 해상도 효과보다 크다.** 평평한 구간(32×18 이상)에서
+유닛별 `cyl4` 중앙이 9DTact 0.035 ~ 0.091 mm (**2.6 배**), DIGIT
+0.032 ~ 0.119 mm (**3.8 배**) 로 깔려 있다. 같은 구간에서 해상도를 여섯 단
+내려도 중앙선은 9DTact 1.9 배, DIGIT **1.1 배**밖에 안 움직인다. 힘
+쪽(Figure 2)에서 본 것과 같은 모양이다 — **어느 카메라를 쓰느냐보다 어느
+겔이 손에 들어왔느냐가 먼저 온다.**
+
 ### 유닛별 — 깊이가 아니라 **지름**
 
 위 격자는 전부 깊이 오차다. 압자는 ⌀4 mm 원기둥과 한 변 4 mm 정육면체이므로
@@ -765,6 +814,18 @@ Benjamini-Hochberg 를 건 값이다 — 두 절을 따로 보정하면 "20 번 
 **DIGIT 은 원기둥을 일관되게 작게 되찾는다**(−0.31 ~ −1.02 mm). 9DTact 가
 0 근처인 것과 대조되지만, 두 파이프라인은 서로 다른 깊이 구간을 평가하므로
 이 차이로 우열을 매기지 않는다 — 방향이 다르다는 것만 기록한다.
+
+![9DTact — 센서마다의 지름 오차 대 화소 밀도 (0 이 참 4 mm)](single/1_9DTact/figures/shape_size_err_all_9units.png)
+
+*9DTact — 센서마다의 지름 오차 대 화소 밀도 (0 이 참 4 mm)*
+
+<sub>그림: `single/1_9DTact/figures/shape_size_err_all_9units.png` · 자료: `single/1_9DTact/data/shape_size_err_all_9units.csv`</sub>
+
+![DIGIT — 센서마다의 지름 오차 대 화소 밀도 (0 이 참 4 mm)](single/2_DIGIT/figures/shape_size_err_all_9units.png)
+
+*DIGIT — 센서마다의 지름 오차 대 화소 밀도 (0 이 참 4 mm)*
+
+<sub>그림: `single/2_DIGIT/figures/shape_size_err_all_9units.png` · 자료: `single/2_DIGIT/data/shape_size_err_all_9units.csv`</sub>
 
 > **가장 왼쪽 점은 읽지 말 것.** R ≈ 0.2 (8×5) 에서는 자국이 화소 두세
 > 개라 반깊이 윤곽이 화면을 덮거나 아예 잡히지 않는다. 축 밖으로 솟는

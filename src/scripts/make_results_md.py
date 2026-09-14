@@ -3,6 +3,7 @@
 
 숫자는 전부 result/ 의 CSV 에서 읽는다. 자료가 갱신되면 다시 돌리면 된다.
 """
+import os
 from pathlib import Path
 
 import numpy as np
@@ -200,6 +201,15 @@ def knee_block(family, metrics, what, tail=True):
 
 
 def main():
+    # **results.md 는 2026-09-14 에 쓰지 않기로 했다** (운전자 지정: 선택한 27
+    # 유닛만으로 분석을 진행한다). 파일은 기록으로 남기고 손대지 않는다.
+    # 전 유닛 판이 정말 필요하면 VBTS_ALLUNITS=1 로 명시해야 한다.
+    if not RC.SINGLE and not os.environ.get("VBTS_ALLUNITS"):
+        print("  results.md 는 더 이상 생성하지 않는다 — 분석은 선택한 27 유닛"
+              " (VBTS_SINGLE=1) 으로 한다.\n"
+              "  정말 전 유닛 판이 필요하면 VBTS_ALLUNITS=1 을 붙일 것.")
+        return
+
     w("# 결과 — 그림과 표" + ("  (셀당 센서 하나)" if RC.SINGLE else ""))
     w()
     w("VBTS 해상도 캠페인의 결과물 전부. **모든 그림에 그것을 그린 CSV 가 같은 이름으로")
@@ -811,6 +821,26 @@ def main():
             w()
     w("> **DIGIT_Marker 는 이 그림이 없다** — 형상 복원을 하지 않기 때문이다.")
     w()
+    w("### 원리별 — 모든 센서를 한 판에")
+    w()
+    w("격자는 유닛을 하나씩 떼어 보여 준다. 유닛들이 서로 얼마나 벌어져 있는지는")
+    w("**겹쳐 놓아야** 보인다 — 힘 쪽 Figure 2 가 하는 것과 같다. 가는 선이 센서")
+    w("하나, 굵은 선이 그 압자의 중앙값이다.")
+    w()
+    _sa = RC.grid_stem("shape_mae_all")
+    for f, cap in [(f"1_9DTact/figures/{_sa}.png",
+                    "9DTact — 센서마다의 형상 복원 오차 대 화소 밀도"),
+                   (f"2_DIGIT/figures/{_sa}.png",
+                    "DIGIT — 센서마다의 형상 복원 오차 대 화소 밀도")]:
+        if (RES / f).exists():
+            fig(f, cap)
+    w("**유닛 사이의 산포가 해상도 효과보다 크다.** 평평한 구간(32×18 이상)에서")
+    w("유닛별 `cyl4` 중앙이 9DTact 0.035 ~ 0.091 mm (**2.6 배**), DIGIT")
+    w("0.032 ~ 0.119 mm (**3.8 배**) 로 깔려 있다. 같은 구간에서 해상도를 여섯 단")
+    w("내려도 중앙선은 9DTact 1.9 배, DIGIT **1.1 배**밖에 안 움직인다. 힘")
+    w("쪽(Figure 2)에서 본 것과 같은 모양이다 — **어느 카메라를 쓰느냐보다 어느")
+    w("겔이 손에 들어왔느냐가 먼저 온다.**")
+    w()
 
     # ---- 지름 --------------------------------------------------------
     w("### 유닛별 — 깊이가 아니라 **지름**")
@@ -853,6 +883,13 @@ def main():
     w("0 근처인 것과 대조되지만, 두 파이프라인은 서로 다른 깊이 구간을 평가하므로")
     w("이 차이로 우열을 매기지 않는다 — 방향이 다르다는 것만 기록한다.")
     w()
+    _za = RC.grid_stem("shape_size_err_all")
+    for f, cap in [(f"1_9DTact/figures/{_za}.png",
+                    "9DTact — 센서마다의 지름 오차 대 화소 밀도 (0 이 참 4 mm)"),
+                   (f"2_DIGIT/figures/{_za}.png",
+                    "DIGIT — 센서마다의 지름 오차 대 화소 밀도 (0 이 참 4 mm)")]:
+        if (RES / f).exists():
+            fig(f, cap)
     w("> **가장 왼쪽 점은 읽지 말 것.** R ≈ 0.2 (8×5) 에서는 자국이 화소 두세")
     w("> 개라 반깊이 윤곽이 화면을 덮거나 아예 잡히지 않는다. 축 밖으로 솟는")
     w("> 선이 그것이고, 값이 아니라 검출 실패다.")
