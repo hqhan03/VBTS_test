@@ -75,9 +75,10 @@ errors level off, none survives false-discovery correction, so within these
 nine gel designs there is no reason to revisit pixel density when the gel
 changes. What does move it is
 the task and the error tolerance: at a 10 % tolerance the markerless arms
-plateau at 5.9-6.3 px/mm^2 for shear and 13.3-17.3 for normal force, with shape
-between 14.9 and 55.0, and tightening the tolerance to 5 % raises the
-depth-referenced normal-force density more than twelvefold. Choose the gel from
+plateau at 6.4-13.6 px/mm^2 for the resultant force error, with shape between
+14.9 and 55.0, and tightening the tolerance to 5 % leaves the depth-referenced
+arm almost unmoved (13.6 to 13.8) while the photometric arm rises 3.3-fold
+(6.4 to 20.8). Choose the gel from
 the contact and force requirements; choose the pixel density from the task and
 the error you will accept.
 
@@ -642,6 +643,14 @@ tracking. Cross-arm comparisons include preprocessing, material, and hardware
 differences.
 
 [V-A5]
+The resultant force error is ||F_pred - F_true||, the length of the error
+vector over the three force axes. It is the quantity a user of the sensor
+experiences, and it is not recoverable from per-axis MAEs: it needs the three
+errors of the same frame. Where a number below is marked a bound, it is the
+Jensen lower bound sqrt(MAE_x^2 + MAE_y^2 + MAE_z^2) <= E||dF||, which is tight
+when the axis errors rise together -- the case here, since one indentation
+moves all three. The upper bound is their sum, a median factor 1.6 above.
+
 We define the plateau resolution as the lowest tested width whose error is at
 most 1.10 times the specimen's minimum across widths. This is a descriptive
 near-minimum point, not necessarily the start of a monotonic plateau. It
