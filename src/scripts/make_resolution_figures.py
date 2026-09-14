@@ -157,11 +157,18 @@ def sweep_figure():
     무너지는지와 **왜** 무너지는지를 함께 보여야 한다 — 골이 얕아져서인지, 자국이
     옅어져서인지, 검출기가 접촉을 놓쳐서인지가 다른 이야기다.
     """
-    f = RES / "extra" / "data" / "resolution_sweep_pair100.csv"
+    # 스윕의 원자료는 집합과 무관한 측정이라 **한 곳에만** 있다. 단일 센서
+    # 문서는 그것을 읽어 자기 아홉 유닛만 남긴다 — 전에는 result/single 밑에서
+    # 찾다 못 찾고 조용히 빠져나가 그림이 통째로 없었다(2026-09-14).
+    f = ROOT / "result" / "extra" / "data" / "resolution_sweep_pair100.csv"
     if not f.exists():
         return
     import analyse_resolution as AR
-    d = pd.read_csv(f)
+    d = RC.keep(pd.read_csv(f), "9DTact", "unit")
+    if RC.SINGLE:
+        d = d[d.unit.isin(RC.chosen("9DTact"))]
+    if not len(d):
+        return
     # 유닛마다 시야가 다르므로 x 를 화소 밀도로 옮긴다. 이 스윕은 9DTact 뿐이다.
     d["R"] = [PD.density("9DTact", u, w) for u, w in zip(d.unit, d.width_px)]
     xr = d.groupby("width_px").R.median()
@@ -190,8 +197,8 @@ def sweep_figure():
     m = d.groupby("width_px").imprint_lvl.median()
     ax.plot(xr.reindex(m.index).values, m.values, "-o", c="#009E73", lw=1.8, ms=4)
     ax.axhline(AR.MIN_PEAK, c="#1a1a1a", ls=":", lw=1.1)
-    ax.text(.97, .06, f"floor {AR.MIN_PEAK}", transform=ax.transAxes,
-            fontsize=6.2, ha="right")
+    ax.text(.03, .06, f"floor {AR.MIN_PEAK}", transform=ax.transAxes,
+            fontsize=6.2, ha="left")
     ax.set_ylabel("median imprint [levels]", fontsize=8)
 
     for ax in axes:
@@ -202,10 +209,12 @@ def sweep_figure():
         ax.set_xlabel("Pixel density $R$ [px/mm$^2$]", fontsize=8)
         ax.tick_params(labelsize=7); style(ax)
     fig.suptitle("Two-point judgement against input resolution "
-                 "(9DTact, pair100, centre gap 2.0 mm)", fontsize=9, x=.02,
-                 ha="left")
+                 f"(9DTact, pair100, centre gap 2.0 mm, {d.unit.nunique()} units)",
+                 fontsize=9, x=.02, ha="left")
     fig.tight_layout(rect=[0, 0, 1, .92])
     p = RES / "extra"
+    (p / "figures").mkdir(parents=True, exist_ok=True)
+    (p / "data").mkdir(parents=True, exist_ok=True)
     fig.savefig(p / "figures" / "H_resolution_sweep.png", dpi=200,
                 bbox_inches="tight")
     plt.close(fig)
