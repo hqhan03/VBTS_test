@@ -173,10 +173,10 @@ def grid3x3(S, col, fmt="{:.0f}", suspect=None):
 
 
 def panel(pr, D):
-    """유닛 18 개 격자. 프로브당 선 하나, 지름과 밝기를 두 축에."""
-    units = [f"{h}_{t}mm_r{r}" for h in HARD for t in (1, 2, 3) for r in (1, 2)]
+    """유닛 격자. 프로브당 선 하나, 지름과 밝기를 두 축에."""
+    units, ncol = RC.grid(pr)   # 단일 모드면 3x3 — 빈 칸을 만들지 않는다
     drawn = []          # 그린 숫자를 그대로 csv 로 남긴다
-    fig, axes = plt.subplots(3, 6, figsize=(19, 9), sharex=True)
+    fig, axes = plt.subplots(3, ncol, figsize=(3.2 * ncol, 9), sharex=True)
     for ax, u in zip(axes.ravel(), units):
         g = D[D.unit == u]
         if not len(g):
@@ -221,12 +221,12 @@ def panel(pr, D):
     fig.tight_layout(rect=[0, 0, 1, .96])
     d = RES / FOLD[pr]
     (d / "figures").mkdir(parents=True, exist_ok=True)
-    fig.savefig(d / "figures" / "optical_vs_depth_18units.png", dpi=150,
-                bbox_inches="tight")
+    stem = RC.grid_stem("optical_vs_depth")
+    fig.savefig(d / "figures" / f"{stem}.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
     (d / "data").mkdir(parents=True, exist_ok=True)
     (pd.concat(drawn) if drawn else pd.DataFrame()).to_csv(
-        d / "data" / "optical_vs_depth_18units.csv", index=False)
+        d / "data" / f"{stem}.csv", index=False)
 
 
 # **순서가 있는 변수지만 한 색의 농담을 쓰지 않는다.** 유닛별 곡선을 흐리게 깔면

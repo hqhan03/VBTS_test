@@ -472,7 +472,7 @@ def main():
     w()
     for pr in ("9DTact", "DIGIT", "DIGIT_Marker"):
         w(f"### {pr}"); w()
-        fig(f"{FOLD[pr]}/figures/optical_vs_depth_18units.png",
+        fig(f"{FOLD[pr]}/figures/{RC.grid_stem('optical_vs_depth')}.png",
             f"{pr} — 유닛별 깊이-지름(실선)과 깊이-밝기(점선)")
         for probe in ("ball4", "ball8"):
             f = f"{FOLD[pr]}/data/optical_slope_diameter_{probe}_3x3.csv"
@@ -632,7 +632,8 @@ def main():
     w("| DIGIT_Marker | `inpaint` — 마커 점을 지우고 주변에서 메움 |")
     w()
     for pr in ("9DTact", "DIGIT", "DIGIT_Marker"):
-        f = f"{FOLD[pr]}/figures/force_mae_vs_resolution_18units.png"
+        f = (f"{FOLD[pr]}/figures/"
+             f"{RC.grid_stem('force_mae_vs_resolution')}.png")
         if (RES / f).exists():
             fig(f, f"{pr} — 유닛별 축별 MAE 대 해상도")
         else:
@@ -760,11 +761,13 @@ def main():
       ("" if RC.SINGLE else "와 복제") + "이고, 선 하나가 평가")
     w("압자 하나다. 가로축은 화소 밀도 R (px/mm²) 이다.")
     w()
-    shp = [("1_9DTact/figures/shape_mae_vs_resolution_18units.png",
+    _sv = RC.grid_stem("shape_mae_vs_resolution")
+    _sc = RC.grid_stem("shape_mae_corrected")
+    shp = [(f"1_9DTact/figures/{_sv}.png",
             "9DTact — 유닛별 형상 복원 오차 대 해상도 (조회표 그대로)"),
-           ("1_9DTact/figures/shape_mae_corrected_18units.png",
+           (f"1_9DTact/figures/{_sc}.png",
             "9DTact — 유닛별 형상 복원 오차 대 해상도 (회색조 손실 보정)"),
-           ("2_DIGIT/figures/shape_mae_vs_resolution_18units.png",
+           (f"2_DIGIT/figures/{_sv}.png",
             "DIGIT — 유닛별 형상 복원 오차 대 해상도 (광도 스테레오)")]
     for f, cap in shp:
         if (RES / f).exists():

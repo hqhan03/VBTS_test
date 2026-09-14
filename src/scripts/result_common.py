@@ -161,6 +161,36 @@ def chosen(pr):
     return out
 
 
+def grid(pr):
+    """유닛 격자의 이름 목록과 열 수 — 행 = 경도, 열 = 두께(x 복제).
+
+    **단일 센서 모드에서는 빈 칸을 만들지 않는다** (2026-09-14, 운전자 지시).
+    지금까지 격자는 늘 18 칸이었고 그중 아홉이 "자료 없음" 으로 비어 있었다 —
+    단일 모드는 셀마다 하나만 남기므로 나머지 복제를 그릴 자료가 애초에 없다.
+    빈 칸 아홉이 그림 넓이의 절반을 먹고, 읽는 사람에게 "여기 있어야 할 것이
+    빠졌다" 고 잘못 말한다. 남긴 하나만 두어 3x3 으로 만든다.
+
+    전수 모드는 3x6 그대로다 — 거기서는 빈 칸이 참말이다(파괴된 유닛).
+    """
+    H = ("soft", "medium", "hard")
+    if not SINGLE:
+        return [f"{h}_{t}mm_r{r}" for h in H for t in (1, 2, 3)
+                for r in (1, 2)], 6
+    ch = chosen(pr)
+    units = []
+    for h in H:
+        for t in (1, 2, 3):
+            c = sorted(u for u in ch if u.startswith(f"{h}_{t}mm_r"))
+            units.append(c[0] if c else f"{h}_{t}mm_r1")
+    return units, 3
+
+
+def grid_stem(name):
+    """격자 그림·csv 의 파일 이름. 칸 수가 모드에 따라 다르므로 이름도 따라간다 —
+    아홉 칸짜리 그림을 `_18units` 로 부르면 읽는 사람이 속는다."""
+    return f"{name}_{9 if SINGLE else 18}units"
+
+
 def keep(d, pr, col="sensor"):
     """단일 센서 모드일 때만 걸러낸다. 아니면 그대로 돌려준다."""
     if not SINGLE or col not in d:

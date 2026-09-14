@@ -81,12 +81,13 @@ def auto_yt(d, cols):
 
 
 def panel(d, col_tmpl, stem, ylab, title, pr="9DTact", yt=None):
-    """유닛 18 개 격자 — 행 = 경도, 열 = 두께 x 복제. `force` 쪽 8 절과 같은 배치다."""
+    """유닛 격자 — 행 = 경도, 열 = 두께(x 복제). `force` 쪽 8 절과 같은 배치다."""
     if yt is None:
         yt = auto_yt(d, [col_tmpl.format(pb) for pb, _, _ in PROBE])
-    units = [f"{h}_{t}mm_r{r}" for h in HARD for t in (1, 2, 3) for r in (1, 2)]
+    units, ncol = RC.grid(pr)   # 단일 모드면 3x3 — 빈 칸을 만들지 않는다
     drawn = []          # 그린 숫자를 그대로 csv 로 남긴다
-    fig, axes = plt.subplots(3, 6, figsize=(19, 9), sharex=True, sharey=True)
+    fig, axes = plt.subplots(3, ncol, figsize=(3.2 * ncol, 9),
+                             sharex=True, sharey=True)
     for ax, u in zip(axes.ravel(), units):
         g = d[d.sensor == u]
         if not len(g):
@@ -252,9 +253,11 @@ def main():
     p = RES / FOLD["9DTact"] / "data"
     p.mkdir(parents=True, exist_ok=True)
     d.to_csv(p / "shape_vs_resolution.csv", index=False)
-    panel(d, "{}_raw_mae", "shape_mae_vs_resolution_18units", "깊이 MAE (mm)",
+    panel(d, "{}_raw_mae", RC.grid_stem("shape_mae_vs_resolution"),
+          "깊이 MAE (mm)",
           "9DTact — 형상 복원 오차 대 해상도 (조회표 그대로)")
-    panel(d, "{}_corrected_mae", "shape_mae_corrected_18units", "깊이 MAE (mm)",
+    panel(d, "{}_corrected_mae", RC.grid_stem("shape_mae_corrected"),
+          "깊이 MAE (mm)",
           "9DTact — 형상 복원 오차 대 해상도 (회색조 손실 보정)")
     summary(d)
     k = d.groupby("width_px")[["cyl4_raw_mae", "cube4_raw_mae"]].median()
@@ -270,7 +273,8 @@ def main():
     pD = RES / FOLD["DIGIT"] / "data"; pD.mkdir(parents=True, exist_ok=True)
     dd.to_csv(pD / "shape_vs_resolution.csv", index=False)
     raw.to_csv(pD / "shape_predictions.csv", index=False)
-    panel(dd, "{}_raw_mae", "shape_mae_vs_resolution_18units", "깊이 MAE (mm)",
+    panel(dd, "{}_raw_mae", RC.grid_stem("shape_mae_vs_resolution"),
+          "깊이 MAE (mm)",
           "DIGIT — 형상 복원 오차 대 해상도 (광도 스테레오)", pr="DIGIT")
     digit_summary(dd, raw)
     k2 = dd.groupby("width_px")[["cyl4_raw_mae", "cube4_raw_mae"]].median()

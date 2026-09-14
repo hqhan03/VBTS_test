@@ -69,9 +69,10 @@ def load(pr):
 
 
 def panel(pr, d, cols, stem, ylab, yt):
-    units = [f"{h}_{t}mm_r{r}" for h in HARD for t in (1, 2, 3) for r in (1, 2)]
+    units, ncol = RC.grid(pr)   # 단일 모드면 3x3 — 빈 칸을 만들지 않는다
     drawn = []          # 그린 숫자를 그대로 csv 로 남긴다 — 그림과 표가 어긋나지 않게
-    fig, axes = plt.subplots(3, 6, figsize=(19, 9), sharex=True, sharey=True)
+    fig, axes = plt.subplots(3, ncol, figsize=(3.2 * ncol, 9),
+                             sharex=True, sharey=True)
     for ax, u in zip(axes.ravel(), units):
         g = d[d.sensor == u]
         if not len(g):
@@ -167,8 +168,10 @@ def main():
         p = RES / FOLD[pr] / "data"
         p.mkdir(parents=True, exist_ok=True)
         d.to_csv(p / "force_mae_vs_resolution.csv", index=False)
-        panel(pr, d, AX, "force_mae_vs_resolution_18units", "힘 MAE (N)", YT_F)
-        panel(pr, d, TQ, "torque_mae_vs_resolution_18units", "토크 MAE (N·m)", YT_T)
+        panel(pr, d, AX, RC.grid_stem("force_mae_vs_resolution"),
+              "힘 MAE (N)", YT_F)
+        panel(pr, d, TQ, RC.grid_stem("torque_mae_vs_resolution"),
+              "토크 MAE (N·m)", YT_T)
         summary(pr, d)
         doc_panel(pr, d)
         k = d.groupby("width_px")[[c for c, _, _ in AX]].median()
