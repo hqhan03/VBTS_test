@@ -17,14 +17,21 @@ DIGIT 계열은 내려간다. 9DTact 만 그리면 그 관찰이 그림에서 �
         환산되지 않는다(비 1.50 ~ 3.26, CV 21 % — 부록 C).
     그래서 **한 원리 안에서의 두께·경도 방향**만 읽는 그림이다.
 
-n = 1 을 감추지 않는다
-    분석 집합은 칸당 시편 하나다. 선은 그 하나를 잇는 것이고, 분석에 쓰지 않은
-    복제를 속 빈 표식으로 함께 찍어 **제작 간 산포가 설계 효과만 하다**는 것을
-    보인다. 오차 막대가 없는 선을 정밀한 것으로 읽으면 안 된다.
+칸마다 정해진 센서 하나만 쓴다
+    운전자 결정(2026-09-14, `CLAUDE.md` §1). 칸마다 복제를 둘씩 만들었지만
+    **고른 시편 하나**만 분석하고 그린다 — 원리당 9, 합 27. 고르는 것은
+    `result_common.chosen()` 이고(확정 불량 → 독립 증거 → 파괴 → 그 밖에는 r1),
+    고르지 않은 복제는 **그림에 겹쳐 찍지 않는다.**
+
+    그래서 이 그림에는 오차 막대가 없다 — 칸마다 점이 하나다. **선을 정밀한
+    것으로 읽으면 안 된다.** 제작 간 산포(9DTact Fz 요구 밀도가 복제 쌍 안에서
+    중앙 6.7 배)는 54 유닛 집합에서만 나오므로 **한계 절의 숫자로** 인용한다.
+
+    선택 규칙이 빛 누출 유닛을 이미 걸렀으므로 이 집합에는 의심 유닛이 없다
+    (`suspect_hardware` 전부 False). 표식을 따로 두지 않는다.
 
 자료
-    선·채운 점  `result/single/extra/data/B_ceiling_vs_thickness.csv`  (분석 집합 27)
-    속 빈 점    `result/extra/data/B_ceiling_vs_thickness.csv`         (제작 집합 54)
+    `result/single/extra/data/B_ceiling_vs_thickness.csv`  (분석 집합 27)
 """
 from itertools import combinations
 
@@ -42,7 +49,7 @@ import matplotlib.pyplot as plt           # noqa: E402
 
 HARDNESS = ("soft", "medium", "hard")
 PRINCIPLES = ("9DTact", "DIGIT", "DIGIT_Marker")
-DODGE = dict(zip(HARDNESS, (-0.075, 0.0, 0.075)))   # 정해진 어긋냄 — 난수 흔들기가 아니다
+DODGE = dict(zip(HARDNESS, (-0.055, 0.0, 0.055)))   # 정해진 어긋냄 — 난수 흔들기가 아니다
 
 
 def exact_p(th, y):
@@ -70,41 +77,20 @@ def exact_p(th, y):
 
 def main():
     single = pd.read_csv(PS.ROOT / "result/single/extra/data/B_ceiling_vs_thickness.csv")
-    every = pd.read_csv(PS.ROOT / "result/extra/data/B_ceiling_vs_thickness.csv")
-
-    # 분석에 쓴 유닛에 표시를 달아 두 집합을 한 표로 합친다 — csv 를 받은 사람이
-    # 어느 점이 선을 만든 점인지 알아야 하기 때문이다.
-    chosen = set(zip(single.principle, single.unit))
-    every["analysed"] = [(p, u) in chosen for p, u in zip(every.principle, every.unit)]
+    assert not single.suspect_hardware.any(), "선택 규칙이 거른 유닛이 남아 있다"
 
     fig, axes = plt.subplots(1, 3, figsize=(PS.FULL_W, 2.45))
     stats = []
 
     for ax, pr in zip(axes, PRINCIPLES):
-        one, all_ = single[single.principle == pr], every[every.principle == pr]
+        one = single[single.principle == pr]
 
         for h in HARDNESS:
             col, dx = HARD3[h], DODGE[h]
             g = one[one.hardness == h].sort_values("thickness_mm")
-
-            # 분석하지 않은 복제 — 속을 비워 찍고, 짝과 가는 선으로 잇는다
-            other = all_[(all_.hardness == h) & ~all_.analysed]
-            for _, r in other.iterrows():
-                mate = g[g.thickness_mm == r.thickness_mm]
-                if len(mate):
-                    ax.plot([r.thickness_mm + dx] * 2,
-                            [r.ceiling_N, mate.ceiling_N.iloc[0]],
-                            "-", c=col, lw=0.5, alpha=0.45, zorder=1)
-                ax.plot(r.thickness_mm + dx, r.ceiling_N,
-                        marker="x" if r.suspect_hardware else MARKER[h],
-                        mfc="none", mec=col,
-                        mew=1.1 if r.suspect_hardware else 0.8,
-                        ms=4.0 if r.suspect_hardware else 3.4,
-                        ls="none", zorder=2)
-
             ax.plot(g.thickness_mm + dx, g.ceiling_N, "-", c=col, lw=1.4, zorder=3)
             ax.plot(g.thickness_mm + dx, g.ceiling_N, MARKER[h], c=col,
-                    ms=4.0, mec="white", mew=0.7, ls="none", zorder=4)
+                    ms=4.4, mec="white", mew=0.7, ls="none", zorder=4)
 
 
         rho, p_ex = exact_p(one.thickness_mm.values, one.ceiling_N.values)
@@ -136,17 +122,13 @@ def main():
         PS.style(ax)
 
     fig.tight_layout(w_pad=1.3, rect=[0, 0.075, 1, 1])
-    hs = [Line2D([], [], color=HARD3[h], marker=MARKER[h], ms=4.0, lw=1.4,
+    hs = [Line2D([], [], color=HARD3[h], marker=MARKER[h], ms=4.4, lw=1.4,
                  mec="white", mew=0.7, label=h) for h in HARDNESS]
-    hs += [Line2D([], [], color=PS.MUTED, marker="o", mfc="none", ms=3.4,
-                  lw=0, label="replicate not analysed"),
-           Line2D([], [], color=PS.MUTED, marker="x", ms=4.0, mew=1.1,
-                  lw=0, label="light leak (ceiling inflated)")]
-    fig.legend(handles=hs, loc="lower center", ncol=5, frameon=False,
-               fontsize=6.6, handlelength=1.6, columnspacing=1.5,
-               handletextpad=0.5, bbox_to_anchor=(0.5, -0.005))
-    out = every[["principle", "probe", "unit", "hardness", "thickness_mm",
-                 "ceiling_N", "suspect_hardware", "analysed"]]
+    fig.legend(handles=hs, loc="lower center", ncol=3, frameon=False,
+               fontsize=7.0, handlelength=1.8, columnspacing=2.0,
+               handletextpad=0.5, bbox_to_anchor=(0.5, -0.008))
+    out = single[["principle", "probe", "unit", "hardness", "thickness_mm",
+                  "ceiling_N"]]
     PS.save(fig, out, "fig_ceiling")
 
     st = pd.DataFrame(stats)
