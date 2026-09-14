@@ -50,16 +50,15 @@ ABSTRACT
 ================================================================================
 
 [ABS]
-Vision-based tactile sensors encode contact as an image, buying dense spatial
-information at the cost of a large data volume per sensor. That cost becomes a
-system constraint as sensor count grows, raising aggregate bandwidth and
-spending the latency budget reactive control needs; high-bandwidth
-instrumentation has been named a fundamental obstacle for compact tactile
-fingers [1]. Pixel density, in pixels per square millimetre of sensing surface,
-is therefore fixed early, since it constrains camera, electronics and network
-input size together. Designers currently have no basis for choosing it, because
-the elastomer and the camera have never been varied in the same experiment. We
-separate the two decisions using 27 sensors, one per condition, spanning two
+Vision-based tactile sensors provide dense contact information, but their image
+data impose bandwidth and processing demands that grow with sensor count;
+high-bandwidth instrumentation has been named a fundamental obstacle for
+compact tactile fingers [1]. The processed pixel density -- pixels per square
+millimetre of sensing surface -- must therefore be fixed early, since it
+constrains camera, electronics and network input size together. Choosing it
+requires knowing what elastomer design and what task requirements each decide,
+and the two have never been varied in the same experiment. We separate the two
+decisions using 27 sensors, one per condition, spanning two
 sensing principles and a marker-bearing photometric variant, three hardness
 levels and three sensing-layer thicknesses. Imaging hardware is reused within
 each arm, and one 1920x1080 capture is downsampled across twelve densities. The
