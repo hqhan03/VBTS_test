@@ -71,10 +71,9 @@ with indentation. In the depth-referenced arm paired-contact separation
 degrades with thickness on every measure we record, while the photometric arm
 stays at the bound of our probe set; and the saturating force rises with
 thickness in the depth-referenced arm but falls in the photometric one.
-Hardness moves none of the three on its own, though in the depth-referenced arm
-the hard-to-soft saturation ratio grows from 0.99 at 1 mm to 2.04 at 3 mm, and
-our photometric formulations span only Shore 00-51 to 00-57, so that null is a
-weak one in this arm.
+Hardness is the weaker lever: it moves paired-contact separation in neither
+arm, and among the imprint measures only the depth-referenced diameter growth
+trends with it.
 
 Pixel density is decided by the task instead. Across twenty tests of a
 thickness or hardness association with the density at which force and shape
