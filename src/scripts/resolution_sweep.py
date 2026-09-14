@@ -31,6 +31,7 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import analyse_resolution as A
+import pixel_density as PD
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "result" / "extra" / "data"
@@ -122,6 +123,9 @@ def main():
               flush=True)
     OUT.mkdir(parents=True, exist_ok=True)
     D = pd.DataFrame(rows)
+    # 픽셀 폭은 이 카메라만의 숫자다. 유닛·원리를 가로질러 견주려면 시야 면적으로
+    # 나눈 화소 밀도여야 한다 — 문서와 그림이 쓰는 x 축이 이 열이다.
+    D = PD.add(D, "9DTact", unit_col="unit")
     f = OUT / f"resolution_sweep_{probe}.csv"
     D.to_csv(f, index=False)
     print(f"\n  -> {f}  ({len(D)} 행)")

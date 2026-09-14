@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+import pixel_density as PD
 import result_common as RC
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -27,13 +28,14 @@ PROBE = [("cyl4", "원기둥 ⌀4 mm", "#c2553a"), ("cube4", "정육면체 4 mm"
 import matplotlib.ticker as mticker
 SIZES_WH = [(1920, 1080), (1280, 720), (854, 480), (640, 360), (426, 240),
             (320, 180), (160, 90), (80, 45), (48, 27), (32, 18), (16, 9), (8, 5)]
-XT = [w for w, _ in SIZES_WH]
-XTL = [f"{w}\u00d7{h}" for w, h in SIZES_WH]
+# x 축은 화소 밀도 R (px/mm^2) — `pixel_density.py`
+XT = [0.1, 1, 10, 100, 1000, 10000]
+XTL = ["0.1", "1", "10", "100", "1000", "10\u2074"]
 
 
 def res_axis(ax, yt=None, fs=7):
     """해상도 축을 가로x세로로 적고 보조선을 켠다."""
-    ax.set_xticks(XT); ax.set_xticklabels(XTL, fontsize=fs, rotation=90)
+    ax.set_xticks(XT); ax.set_xticklabels(XTL, fontsize=fs + 1)
     ax.xaxis.set_minor_locator(mticker.NullLocator())
     if yt is not None:
         ax.set_yticks(yt)
@@ -62,7 +64,7 @@ def load9():
     d = pd.read_csv(f)
     d = d[d.width_px.notna()].copy()
     d["width_px"] = d.width_px.astype(int)
-    return RC.mark(d, "9DTact", "sensor")
+    return PD.add(RC.mark(d, "9DTact", "sensor"), "9DTact")
 
 
 LADDER = [0.005, 0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.5, 1.0, 2.0]
@@ -96,14 +98,15 @@ def panel(d, col_tmpl, stem, ylab, title, pr="9DTact", yt=None):
             col = col_tmpl.format(probe)
             if col not in g:
                 continue
-            k = g.groupby("width_px")[col].median().dropna()
+            k = g.groupby("density_px_per_mm2")[col].median().dropna().sort_index()
             if not len(k):
                 continue
             ls, lw = RC.style(pr, u)
             ax.plot(k.index, k.values, ls, c=c, lw=lw, ms=4.2, mec="white",
                     mew=.7, label=lab)
             drawn.append(pd.DataFrame(dict(sensor=u, probe=probe,
-                                           width_px=k.index, mae_mm=k.values,
+                                           density_px_per_mm2=k.index,
+                                           mae_mm=k.values,
                                            suspect_hardware=RC.is_suspect(pr, u))))
         ax.set_xscale("log"); ax.set_yscale("log"); res_axis(ax, list(yt), fs=6.2)
         tt, tc = RC.title(pr, u)
@@ -111,7 +114,7 @@ def panel(d, col_tmpl, stem, ylab, title, pr="9DTact", yt=None):
         ax.tick_params(labelsize=7)
         ax.spines[["top", "right"]].set_visible(False)
     for ax in axes[-1]:
-        ax.set_xlabel("해상도 (가로 × 세로, px)", labelpad=6, fontsize=8)
+        ax.set_xlabel("화소 밀도 R (px/mm²)", labelpad=6, fontsize=8)
     for ax in axes[:, 0]:
         ax.set_ylabel(ylab, fontsize=8)
     h, l = axes[0, 0].get_legend_handles_labels()
@@ -136,7 +139,7 @@ def summary(d):
             col = f"{probe}_{kind}_mae"
             if col not in d:
                 continue
-            k = d.groupby("width_px")[col].median().dropna()
+            k = d.groupby("density_px_per_mm2")[col].median().dropna().sort_index()
             ax.plot(k.index, k.values, ls, c=c, lw=1.9, alpha=al, marker="o", ms=4.2,
                     mec="white", mew=.6,
                     label=f"{lab} · {kind}")
@@ -145,7 +148,7 @@ def summary(d):
             rows.append(pd.DataFrame(dict(probe=probe, kind=kind,
                                           width_px=k.index, mae_mm=k.values)))
     ax.set_xscale("log"); ax.set_yscale("log"); res_axis(ax, [0.03, 0.05, 0.1, 0.2, 0.5])
-    ax.set_xlabel("해상도 (가로 × 세로, px)", labelpad=6); ax.set_ylabel("깊이 MAE (mm)")
+    ax.set_xlabel("화소 밀도 R (px/mm²)", labelpad=6); ax.set_ylabel("깊이 MAE (mm)")
     ax.set_title("9DTact — 형상 복원 오차 대 해상도 (★ = 최소)",
                  fontsize=10.5, loc="left")
     ax.legend(frameon=False, fontsize=8)
@@ -168,7 +171,8 @@ def load_digit():
     w = (d.groupby(["unit", "width_px", "shape"]).err_mm.mean()
          .unstack("shape").reset_index())
     w = w.rename(columns={c: f"{c}_raw_mae" for c in ("cyl4", "cube4")})
-    return RC.mark(w.rename(columns={"unit": "sensor"}), "DIGIT", "sensor")
+    return PD.add(RC.mark(w.rename(columns={"unit": "sensor"}), "DIGIT",
+                          "sensor"), "DIGIT")
 
 
 def digit_summary(d, raw):
@@ -188,7 +192,7 @@ def digit_summary(d, raw):
         rows.append(pd.DataFrame(dict(probe=probe, width_px=k.index,
                                       mae_mm=k.values)))
     ax.set_xscale("log"); ax.set_yscale("log"); res_axis(ax, [0.03, 0.05, 0.1, 0.2, 0.5])
-    ax.set_xlabel("해상도 (가로 × 세로, px)", labelpad=6); ax.set_ylabel("깊이 MAE (mm)")
+    ax.set_xlabel("화소 밀도 R (px/mm²)", labelpad=6); ax.set_ylabel("깊이 MAE (mm)")
     ax.set_title("DIGIT — 형상 복원 오차 대 해상도 (★ = 최소)",
                  fontsize=10, loc="left")
     ax.legend(frameon=False, fontsize=8.5)

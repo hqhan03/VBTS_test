@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+import pixel_density as PD
 import result_common as RC
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -161,22 +162,25 @@ def sweep_figure():
         return
     import analyse_resolution as AR
     d = pd.read_csv(f)
+    # 유닛마다 시야가 다르므로 x 를 화소 밀도로 옮긴다. 이 스윕은 9DTact 뿐이다.
+    d["R"] = [PD.density("9DTact", u, w) for u, w in zip(d.unit, d.width_px)]
+    xr = d.groupby("width_px").R.median()
     W = sorted(d.width_px.unique())
     fig, axes = plt.subplots(1, 3, figsize=(7.16, 2.5))
 
     ax = axes[0]
     frac = d.assign(r=d.verdict.eq("분해")).groupby("width_px").r.mean() * 100
     lost = d.assign(r=d.verdict.eq("접촉 없음")).groupby("width_px").r.mean() * 100
-    ax.plot(frac.index, frac.values, "-o", c="#0072B2", lw=1.8, ms=4,
+    ax.plot(xr.reindex(frac.index).values, frac.values, "-o", c="#0072B2", lw=1.8, ms=4,
             label="resolved")
-    ax.plot(lost.index, lost.values, "--s", c="#1a1a1a", lw=1.2, ms=3,
+    ax.plot(xr.reindex(lost.index).values, lost.values, "--s", c="#1a1a1a", lw=1.2, ms=3,
             alpha=.6, label="contact lost")
     ax.set_ylabel("share of ladder steps [%]", fontsize=8)
     ax.legend(frameon=False, fontsize=6.8)
 
     ax = axes[1]
     m = d.groupby("width_px").dip.median()
-    ax.plot(m.index, m.values, "-o", c="#D55E00", lw=1.8, ms=4)
+    ax.plot(xr.reindex(m.index).values, m.values, "-o", c="#D55E00", lw=1.8, ms=4)
     ax.axhline(AR.RAYLEIGH, c="#1a1a1a", ls=":", lw=1.1)
     ax.text(.97, .06, f"Rayleigh {AR.RAYLEIGH}", transform=ax.transAxes,
             fontsize=6.2, ha="right")
@@ -184,7 +188,7 @@ def sweep_figure():
 
     ax = axes[2]
     m = d.groupby("width_px").imprint_lvl.median()
-    ax.plot(m.index, m.values, "-o", c="#009E73", lw=1.8, ms=4)
+    ax.plot(xr.reindex(m.index).values, m.values, "-o", c="#009E73", lw=1.8, ms=4)
     ax.axhline(AR.MIN_PEAK, c="#1a1a1a", ls=":", lw=1.1)
     ax.text(.97, .06, f"floor {AR.MIN_PEAK}", transform=ax.transAxes,
             fontsize=6.2, ha="right")
@@ -192,11 +196,10 @@ def sweep_figure():
 
     for ax in axes:
         ax.set_xscale("log")
-        ax.set_xticks([8, 32, 80, 320, 1920])
-        ax.set_xticklabels(["8", "32", "80", "320", "1920"], fontsize=7,
-                           rotation=90)
+        ax.set_xticks([0.1, 1, 10, 100, 1000, 10000])
+        ax.set_xticklabels(["0.1", "1", "10", "100", "1000", "10⁴"], fontsize=6.8)
         ax.minorticks_off()
-        ax.set_xlabel("Input width [px]", fontsize=8)
+        ax.set_xlabel("Pixel density $R$ [px/mm$^2$]", fontsize=8)
         ax.tick_params(labelsize=7); style(ax)
     fig.suptitle("Two-point judgement against input resolution "
                  "(9DTact, pair100, centre gap 2.0 mm)", fontsize=9, x=.02,
@@ -208,7 +211,8 @@ def sweep_figure():
     plt.close(fig)
     # 그림이 그린 숫자를 그대로 — 원자료는 resolution_sweep_pair100.csv 다
     pd.DataFrame(dict(
-        width_px=frac.index, resolved_pct=frac.values,
+        width_px=frac.index, density_px_per_mm2=xr.reindex(frac.index).values,
+        resolved_pct=frac.values,
         contact_lost_pct=lost.reindex(frac.index).values,
         median_dip=d.groupby("width_px").dip.median().reindex(frac.index).values,
         median_imprint_lvl=d.groupby("width_px").imprint_lvl.median()

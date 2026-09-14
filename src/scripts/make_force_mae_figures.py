@@ -14,6 +14,7 @@ import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
 
+import pixel_density as PD
 import result_common as RC
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -47,7 +48,7 @@ def res_axis(ax, yt, fs=6.2):
 
     로그 포매터가 찍는 10 / 100 / 1000 은 어느 해상도를 쟀는지 보여주지 못한다.
     """
-    ax.set_xticks(XT); ax.set_xticklabels(XTL, fontsize=fs, rotation=90)
+    ax.set_xticks(XT); ax.set_xticklabels(XTL, fontsize=fs + 1)
     ax.xaxis.set_minor_locator(mticker.NullLocator())
     ax.set_yticks(yt); ax.set_yticklabels([f"{v:g}" for v in yt], fontsize=fs + .8)
     ax.yaxis.set_minor_formatter(mticker.NullFormatter())
@@ -64,7 +65,7 @@ def load(pr):
     d["hardness"] = d.sensor.str.split("_").str[0]
     d["thickness_mm"] = d.sensor.str.extract(r"_(\d)mm_").astype(int)
     d["rep"] = d.sensor.str[-1].astype(int)
-    return RC.mark(d, pr, "sensor")
+    return PD.add(RC.mark(d, pr, "sensor"), pr)
 
 
 def panel(pr, d, cols, stem, ylab, yt):
@@ -81,7 +82,8 @@ def panel(pr, d, cols, stem, ylab, yt):
             continue
         ls, lw = RC.style(pr, u)
         for c, lab, col in cols:
-            k = g.groupby("width_px")[c].agg(["median", "min", "max"])
+            k = g.groupby("density_px_per_mm2")[c].agg(["median", "min", "max"])
+            k = k.sort_index()
             ax.plot(k.index, k["median"], ls, c=col, lw=lw, ms=4.2,
                     mec="white", mew=.7, label=lab, zorder=3)
             ax.fill_between(k.index, k["min"], k["max"], color=col, alpha=.16, lw=0)
@@ -93,7 +95,7 @@ def panel(pr, d, cols, stem, ylab, yt):
         ax.tick_params(labelsize=7)
         ax.spines[["top", "right"]].set_visible(False)
     for ax in axes[-1]:
-        ax.set_xlabel("해상도 (가로 × 세로, px)", fontsize=8, labelpad=6)
+        ax.set_xlabel("화소 밀도 R (px/mm²)", fontsize=8, labelpad=6)
     for ax in axes[:, 0]:
         ax.set_ylabel(ylab, fontsize=8)
     h, l = axes[0, 0].get_legend_handles_labels()
@@ -106,8 +108,8 @@ def panel(pr, d, cols, stem, ylab, yt):
     fig.savefig(p / f"{stem}.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
     q = RES / FOLD[pr] / "data"; q.mkdir(parents=True, exist_ok=True)
-    (pd.concat(drawn)[["sensor", "axis", "width_px", "median", "min", "max",
-                       "suspect_hardware"]]
+    (pd.concat(drawn)[["sensor", "axis", "density_px_per_mm2", "median", "min",
+                       "max", "suspect_hardware"]]
      if drawn else pd.DataFrame()).to_csv(q / f"{stem}.csv", index=False)
     n = sum(1 for u in units if RC.is_suspect(pr, u))
     if n:
@@ -119,18 +121,18 @@ def summary(pr, d):
     fig, ax = plt.subplots(figsize=(5.6, 3.8))
     rows = []
     for c, lab, col in AX:
-        k = d.groupby("width_px")[c].median()
+        k = d.groupby("density_px_per_mm2")[c].median().sort_index()
         ax.plot(k.index, k.values, "-o", c=col, lw=1.8, ms=5, mec="white",
                 mew=.7, label=lab)
         b = k.idxmin()
         ax.plot(b, k[b], "*", c=col, ms=14, mec="white", mew=.8, zorder=5)
         rows.append(pd.DataFrame(dict(axis=lab, width_px=k.index, mae=k.values)))
     ax.set_xscale("log"); ax.set_yscale("log")
-    ax.set_xticks(XT); ax.set_xticklabels(XTL, fontsize=7, rotation=90)
+    ax.set_xticks(XT); ax.set_xticklabels(XTL, fontsize=7)
     ax.xaxis.set_minor_locator(mticker.NullLocator())
     ax.set_yticks(YT); ax.set_yticklabels([f"{v:g}" for v in YT], fontsize=8)
     ax.yaxis.set_minor_formatter(mticker.NullFormatter())
-    ax.set_xlabel("해상도 (가로 × 세로, px)", labelpad=6); ax.set_ylabel("MAE (N)")
+    ax.set_xlabel("화소 밀도 R (px/mm²)", labelpad=6); ax.set_ylabel("MAE (N)")
     ax.set_title(f"{pr} — 축별 힘 오차 대 해상도 (★ = 최소)", fontsize=10.5, loc="left")
     ax.legend(frameon=False, fontsize=9)
     ax.spines[["top", "right"]].set_visible(False)
@@ -173,8 +175,10 @@ def main():
 # --------------------------------------------- docs/figures 용 패널 --
 SIZES_WH = [(1920, 1080), (1280, 720), (854, 480), (640, 360), (426, 240),
             (320, 180), (160, 90), (80, 45), (48, 27), (32, 18), (16, 9), (8, 5)]
-XT = [w for w, _ in SIZES_WH]
-XTL = [f"{w}\u00d7{h}" for w, h in SIZES_WH]
+# x 축은 **화소 밀도** R (px/mm^2). 유닛마다 시야가 다르므로 픽셀 폭은 물리량이
+# 아니다 (`pixel_density.py`).
+XT = [0.1, 1, 10, 100, 1000, 10000]
+XTL = ["0.1", "1", "10", "100", "1000", "10\u2074"]
 YT = [0.01, 0.02, 0.05, 0.1, 0.2]
 # 유닛별 격자는 중앙값이 아니라 개별 유닛이라 폭이 넓다 (힘 0.013 ~ 0.356 N,
 # 토크 0.0001 ~ 0.0044 N·m). 두 자릿수 떨어져 있어 눈금을 따로 준다.
@@ -200,14 +204,15 @@ def doc_panel(pr, d):
                         color="#bbb", transform=ax.transAxes)
             else:
                 for c, lab, col in AX:
-                    k = g.groupby("width_px")[c].agg(["median", "min", "max"])
+                    k = (g.groupby("density_px_per_mm2")[c]
+                           .agg(["median", "min", "max"]).sort_index())
                     ax.plot(k.index, k["median"], "-o", c=col, lw=1.4, ms=3.4,
                             mec="white", mew=.6, label=lab, zorder=3)
                     ax.fill_between(k.index, k["min"], k["max"], color=col,
                                     alpha=.15, lw=0, zorder=2)
             ax.set_xscale("log"); ax.set_yscale("log")
             # 해상도는 측정한 12 단만 눈금으로 찍고 가로x세로로 적는다.
-            ax.set_xticks(XT); ax.set_xticklabels(XTL, fontsize=6.2, rotation=90)
+            ax.set_xticks(XT); ax.set_xticklabels(XTL, fontsize=6.8)
             ax.xaxis.set_minor_locator(mticker.NullLocator())
             ax.set_yticks(YT); ax.set_yticklabels([f"{v:g}" for v in YT], fontsize=7)
             ax.yaxis.set_minor_formatter(mticker.NullFormatter())
@@ -223,7 +228,7 @@ def doc_panel(pr, d):
             if j == 0:
                 ax.set_ylabel(f"{t} mm · r{rep}\nMAE (N)", fontsize=8.5)
             if i == len(rows) - 1:
-                ax.set_xlabel("해상도 (가로 × 세로, px)", fontsize=8.5, labelpad=6)
+                ax.set_xlabel("화소 밀도 R (px/mm²)", fontsize=8.5, labelpad=6)
             else:
                 ax.set_xticklabels([])
     h_, l_ = axes[0, 0].get_legend_handles_labels()

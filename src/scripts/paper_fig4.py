@@ -28,6 +28,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 warnings.filterwarnings("ignore")
 import cv2
 import digit_shape as D
+import pixel_density as PD
 
 ROOT = Path(__file__).resolve().parents[2]
 DS = ROOT / "data" / "20260911_VBTSresolution_dataset" / "DIGIT"
@@ -145,17 +146,21 @@ def main():
             continue
         per = g.groupby(["unit", "width_px"]).e.mean().unstack()
         med = per.median(axis=0)
-        for _, row in per.iterrows():
-            ax.plot(row.index, row.values, "-", c=c, lw=.6, alpha=.22)
-        ax.plot(med.index, med.values, "-", c="white", lw=3.4, alpha=.9)
-        ax.plot(med.index, med.values, "-", c=c, lw=2.0, label=lab)
+        for u, row in per.iterrows():
+            xs = [PD.density("DIGIT", u, w) for w in row.index]
+            ax.plot(xs, row.values, "-", c=c, lw=.6, alpha=.22)
+        xm = [np.median([PD.density("DIGIT", u, w) for u in per.index])
+              for w in med.index]
+        ax.plot(xm, med.values, "-", c="white", lw=3.4, alpha=.9)
+        ax.plot(xm, med.values, "-", c=c, lw=2.0, label=lab)
     ax.set_xscale("log"); ax.set_yscale("log")
-    ax.set_xticks([8, 32, 80, 320, 1920])
-    ax.set_xticklabels(["8", "32", "80", "320", "1920"], fontsize=7, rotation=90)
+    ax.set_xticks([0.1, 1, 10, 100, 1000, 10000])
+    ax.set_xticklabels(["0.1", "1", "10", "100", "1000", "10⁴"], fontsize=6.5,
+                       rotation=90)
     ax.minorticks_off()
     ax.set_yticks([.02, .05, .1, .2, .5])
     ax.set_yticklabels(["0.02", "0.05", "0.1", "0.2", "0.5"], fontsize=7)
-    ax.set_xlabel("Input width [px]", fontsize=8)
+    ax.set_xlabel("$R$ [px/mm$^2$]", fontsize=8)
     ax.set_ylabel("Depth MAE [mm]", fontsize=8)
     ax.set_title("(c) error vs. resolution", fontsize=8, loc="left")
     ax.legend(frameon=False, fontsize=7)

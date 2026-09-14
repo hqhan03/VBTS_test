@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """성능이 포화하는 해상도 — 경도·두께 칸별로.
 
-**무릎의 정의.** 그 유닛 자신의 최솟값의 110 % 안에 드는 **가장 낮은** 해상도.
+**포화 해상도의 정의.** 그 유닛 자신의 최솟값의 110 % 안에 드는 **가장 낮은** 해상도.
 `argmin` 은 곡선이 평평한 구간에서 흔들리므로 쓰지 않는다 — 같은 유닛을 seed 만
-바꿔 돌려도 argmin 이 한두 단 움직이는데, 무릎은 움직이지 않는다.
+바꿔 돌려도 argmin 이 한두 단 움직이는데, 포화 해상도는 움직이지 않는다.
 
 **칸마다 유닛이 둘뿐이다.** 그래서 칸 값은 두 복제의 중앙값이고, 경향은 칸이 아니라
 **유닛 18 개**로 검정한다(Spearman). 칸 표는 눈으로 보라고 있는 것이지 검정의
@@ -15,6 +15,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import spearmanr
 
+import pixel_density as PD
 import result_common as RC
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -22,17 +23,21 @@ DS = ROOT / "data" / "20260911_VBTSresolution_dataset"
 RES = ROOT / "result" / "single" if RC.SINGLE else ROOT / "result"
 FOLD = {"9DTact": "1_9DTact", "DIGIT": "2_DIGIT", "DIGIT_Marker": "3_DIGIT_Marker"}
 HARD = ["soft", "medium", "hard"]
-WH = {1920: "1920×1080", 1280: "1280×720", 854: "854×480", 640: "640×360",
-      426: "426×240", 320: "320×180", 160: "160×90", 80: "80×45", 48: "48×27",
-      32: "32×18", 16: "16×9", 8: "8×5"}
 
 
 def knee(v, tol=1.10):
-    """최솟값의 110 % 안에 드는 가장 낮은 해상도."""
+    """최솟값의 110 % 안에 드는 가장 낮은 해상도(픽셀 폭)."""
     v = v.dropna()
     if len(v) < 4:
         return np.nan
     return int(v.index[v <= v.min() * tol].min())
+
+
+def knee_R(v, pr, unit, tol=1.10):
+    """같은 것을 **화소 밀도** R (px/mm²) 로. 유닛마다 시야가 다르므로 같은 픽셀
+    폭이 같은 물리 밀도가 아니다 — 원리·유닛을 가로질러 견주려면 이쪽이다."""
+    w = knee(v, tol)
+    return np.nan if not np.isfinite(w) else PD.density(pr, unit, w)
 
 
 def force_knees(pr):
@@ -48,7 +53,10 @@ def force_knees(pr):
         out.append(dict(principle=pr, unit=u, hardness=h, thickness_mm=t, rep=r,
                         suspect_hardware=RC.is_suspect(pr, u),
                         fz_knee_px=knee(k.fz_mae), fz_best=k.fz_mae.min(),
-                        shear_knee_px=knee(k.shear_mae), shear_best=k.shear_mae.min()))
+                        shear_knee_px=knee(k.shear_mae),
+                        shear_best=k.shear_mae.min(),
+                        fz_knee_R=knee_R(k.fz_mae, pr, u),
+                        shear_knee_R=knee_R(k.shear_mae, pr, u)))
     return pd.DataFrame(out)
 
 
@@ -65,7 +73,9 @@ def shape_knees():
                             cyl4_knee_px=knee(k.cyl4_raw_mae),
                             cyl4_best_mm=k.cyl4_raw_mae.min(),
                             cube4_knee_px=knee(k.cube4_raw_mae),
-                            cube4_best_mm=k.cube4_raw_mae.min()))
+                            cube4_best_mm=k.cube4_raw_mae.min(),
+                            cyl4_knee_R=knee_R(k.cyl4_raw_mae, "9DTact", u),
+                            cube4_knee_R=knee_R(k.cube4_raw_mae, "9DTact", u)))
     f = ROOT / "data" / "analysis" / "digit_shape" / "DIGIT_shape_vs_resolution.csv"
     if f.exists():
         d = RC.keep(pd.read_csv(f), "DIGIT", "unit")
@@ -79,7 +89,9 @@ def shape_knees():
                             cyl4_knee_px=knee(g.get("cyl4")),
                             cyl4_best_mm=g.get("cyl4").min(),
                             cube4_knee_px=knee(g.get("cube4")),
-                            cube4_best_mm=g.get("cube4").min()))
+                            cube4_best_mm=g.get("cube4").min(),
+                            cyl4_knee_R=knee_R(g.get("cyl4"), "DIGIT", u),
+                            cube4_knee_R=knee_R(g.get("cube4"), "DIGIT", u)))
     return pd.DataFrame(out)
 
 
@@ -97,16 +109,15 @@ def cell(D, col):
             if not len(v):
                 r[f"{t}mm"] = "—"
             elif v.nunique() == 1:
-                r[f"{t}mm"] = WH.get(int(v.iloc[0]), str(int(v.iloc[0])))
+                r[f"{t}mm"] = PD.fmt(v.iloc[0])
             else:
-                r[f"{t}mm"] = " / ".join(WH.get(int(x), str(int(x)))
-                                         for x in sorted(v))
+                r[f"{t}mm"] = " / ".join(PD.fmt(x) for x in sorted(v))
         rows.append(r)
     return pd.DataFrame(rows)
 
 
 def trend(D, col):
-    """무릎이 두께·경도를 따라가나 — 검정 단위는 유닛이다."""
+    """포화 해상도가 두께·경도를 따라가나 — 검정 단위는 유닛이다."""
     d = D.dropna(subset=[col])
     if len(d) < 6:
         return None
@@ -131,10 +142,11 @@ def main():
         cols = [c for c in ("fz_knee_px", "shear_knee_px",
                             "cyl4_knee_px", "cube4_knee_px") if c in D]
         for c in cols:
-            g = cell(D, c)
-            g.insert(0, "metric", c); g.insert(0, "principle", pr)
+            g = cell(D, c.replace("_px", "_R"))
+            g.insert(0, "metric", c.replace("_knee_px", ""))
+            g.insert(0, "principle", pr)
             tabs.append(g)
-            tr = trend(D, c)
+            tr = trend(D, c.replace("_px", "_R"))
             print(f"\n  === {pr} · {c} ===")
             print(g.to_string(index=False))
             if tr:
@@ -147,9 +159,10 @@ def main():
     for pr, D in list(F.groupby("principle")) + list(S.groupby("principle")):
         for c in [x for x in ("fz_knee_px", "shear_knee_px",
                               "cyl4_knee_px", "cube4_knee_px") if x in D]:
-            tr = trend(D, c)
+            tr = trend(D, c.replace("_px", "_R"))
             if tr:
-                rows.append(dict(principle=pr, metric=c, **tr))
+                rows.append(dict(principle=pr,
+                                 metric=c.replace("_knee_px", ""), **tr))
     T = pd.DataFrame(rows)
     # **다중검정 보정.** 두께와 경도를 원리 x 지표 10 조합에 걸어 20 번 검정한다.
     # 20 번 중 하나가 p < 0.05 인 것은 우연으로 나오는 수다. Benjamini-Hochberg 로
@@ -162,22 +175,28 @@ def main():
     T.to_csv(out / "knee_trends.csv", index=False)
     print(f"\n  다중검정 보정: 검정 {len(q)} 개 중 q < 0.05 인 것 {(q < .05).sum()} 개")
 
-    # 전체 중앙 무릎 — 칸을 나누지 않은 요약. 실무적으로 쓸 숫자는 이것이다.
+    # 전체 중앙 포화 해상도 — 칸을 나누지 않은 요약. 실무적으로 쓸 숫자는 이것이다.
     srow = []
     for pr, D in list(F.groupby("principle")) + list(S.groupby("principle")):
         for c in [x for x in ("fz_knee_px", "shear_knee_px",
                               "cyl4_knee_px", "cube4_knee_px") if x in D]:
             v = D[c].dropna()
+            vR = D[c.replace("_px", "_R")].dropna()
             if not len(v):
                 continue
-            srow.append(dict(principle=pr, metric=c, n=len(v),
+            srow.append(dict(principle=pr, metric=c.replace("_knee_px", ""),
+                             n=len(v),
+                             median_R=round(float(np.median(vR)), 3),
+                             min_R=round(float(vR.min()), 3),
+                             max_R=round(float(vR.max()), 3),
                              median_px=float(np.median(v)),
                              min_px=int(v.min()), max_px=int(v.max())))
     pd.DataFrame(srow).to_csv(out / "knee_summary.csv", index=False)
-    print("\n  === 전체 중앙 무릎 (칸을 나누지 않고) ===")
+    print("\n  === 전체 중앙 포화 해상도 (칸을 나누지 않고) ===")
     for x in srow:
-        print(f"    {x['principle']:<13} {x['metric']:<14} 중앙 {x['median_px']:6.0f} px "
-              f"  범위 {x['min_px']} ~ {x['max_px']}  n={x['n']}")
+        print(f"    {x['principle']:<13} {x['metric']:<7} 중앙 "
+              f"{x['median_R']:8.3g} px/mm²  범위 {x['min_R']:.3g} ~ "
+              f"{x['max_R']:.3g}  (폭 {x['median_px']:.0f} px)  n={x['n']}")
     print(f"\n  -> {out}/knee_by_unit*.csv, knee_by_cell_3x3.csv, knee_trends.csv")
 
 

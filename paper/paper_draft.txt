@@ -59,15 +59,18 @@ between hardness or thickness and estimator plateau resolution survives
 false-discovery correction. This does not establish independence: nine
 specimens per arm at three levels of each factor is a small design, the
 per-unit plateau resolutions are widely scattered, and with one specimen per
-condition we cannot separate build variation from the designed factors. At a
-10 % error tolerance, median plateau widths are 48 pixels for shear and 80
-pixels for normal force in the markerless arms. Tightening the tolerance to
-5 % raises the depth-referenced normal-force width to 320 and reverses the
+condition we cannot separate build variation from the designed factors. We
+report the requirement as pixel density, the pixel count at a given downscale
+divided by the area each calibrated field of view images, because one pixel
+width is a different physical sampling in each arm. At a 10 % error tolerance,
+median plateau densities are 5.9-6.3 px/mm^2 for shear and 13.3-17.3 for normal
+force in the markerless arms. Tightening the tolerance to 5 % raises the
+depth-referenced normal-force density to 218 px/mm^2 and reverses the
 normal/shear ordering in the photometric arm, so a plateau summary depends on
-the decision criterion as much as on the task. These results
-characterize the tested quasi-static pipelines rather than a universal camera
-specification, and argue for evaluating contact separability, task error and
-specimen repeatability separately.
+the decision criterion as much as on the task. These results characterize the
+tested quasi-static pipelines rather than a universal camera specification, and
+argue for evaluating contact separability, task error and specimen
+repeatability separately.
 
 ================================================================================
 I. INTRODUCTION
@@ -581,6 +584,15 @@ over the corresponding exposure window, and data are split by loading cycle.
 The quasi-static protocol spans approximately 0-2.1 N normal force and shear up
 to 0.5 N.
 
+We report the sampling requirement as pixel density R in px/mm^2 rather than
+pixel width, because the three arms image different physical areas: R is the
+pixel count at a given downscale divided by the field-of-view area measured in
+that unit's scale calibration, which reduces to (s*k)^2 for a native scale s in
+px/mm and a downscale factor k = width/1920. The height term cancels because
+the aspect ratio is preserved. Native scales come from the per-unit calibration
+for the two markerless arms and from the marker lattice pitch for the marker
+arm, whose regression-based scale is 20 % low.
+
 [V-A2]
 The model is an ImageNet-pretrained ResNet-18 with a six-output head. Training
 runs for 30 epochs with Adam (learning rate 5e-4, weight decay 1e-4), linear
@@ -660,16 +672,22 @@ and Fy noise have not been measured separately, and the estimate has not been
 matched to exposure-averaged labels. It cannot establish the cause of the shear
 plateau.
 
-[V-AT2]  TABLE IX -- PLATEAU RESOLUTION FOR FORCE (median of 9 units)
-  arm                | axis  | median     | across units
-  depth-referenced   | Fz    |  80 x  45  | 32x18 - 640x360
-  depth-referenced   | shear |  48 x  27  | 32x18 - 160x90
-  photometric        | Fz    |  80 x  45  | 32x18 - 320x180
-  photometric        | shear |  48 x  27  | 32x18 - 426x240
-  photometric+marker | Fz    |  80 x  45  | 32x18 - 320x180
-  photometric+marker | shear | 160 x  90  | 80x45 - 1280x720
-  Shear is the mean of Fx and Fy. One unit per condition, nine per arm,
-  10 % tolerance.
+[V-AT2]  TABLE IX -- PLATEAU PIXEL DENSITY FOR FORCE (median of 9 units)
+  arm                | axis  | median R  | across units   | width
+  depth-referenced   | Fz    |    17.3   |   1.7 -   880  |  80 x  45
+  depth-referenced   | shear |     5.9   |   1.9 -  44.7  |  48 x  27
+  photometric        | Fz    |    13.3   |   2.2 -   293  |  80 x  45
+  photometric        | shear |     6.3   |   2.4 -   590  |  48 x  27
+  photometric+marker | Fz    |    23.0   |   2.8 -   455  |  80 x  45
+  photometric+marker | shear |    71.7   |  16.5 - 5 898  | 160 x  90
+  R is pixel density in px/mm^2: the pixel count at that downscale divided by
+  the physical area the camera images, obtained from each unit's calibrated
+  field of view. Because R scales as the square of the width and each arm's
+  optics differ, one pixel width is not one density: 1920 px corresponds to
+  7 830, 10 389 and 12 905 px/mm^2 in the three arms respectively. The width
+  column gives the rung actually trained; the median of R is taken over units
+  and need not equal the density of the median width. Shear is the mean of Fx
+  and Fy. One unit per condition, nine per arm, 10 % tolerance.
 
 [V-A7]
 Twelve force comparisons test plateau-resolution associations with thickness
@@ -680,30 +698,32 @@ three levels do not adequately characterize interactions or arbitrary
 nonmonotonic effects, and the result does not establish independence.
 
 [V-A8]
-The per-unit plateau resolutions behind Table IX are widely spread within each
-arm -- 32x18 to 854x480 for depth-referenced Fz, and 32x18 to 1920x1080 for
-marker-bearing shear -- so the medians summarize a scattered quantity rather
-than a repeatable one. Because this paper analyses one specimen per condition,
+The per-unit plateau densities behind Table IX are widely spread within each
+arm -- 1.7 to 880 px/mm^2 for depth-referenced Fz (32x18 to 640x360), and 16.5
+to 5898 for marker-bearing shear (80x45 to 1280x720) -- so the medians
+summarize a scattered quantity rather than a repeatable one. Because this paper analyses one specimen per condition,
 we cannot say how much of that spread is build-to-build variation and how much
 is the designed factors, and we do not report a repeatability figure. That
 missing measurement is the main reason the negative result below is stated as a
 failure to detect.
 
-[V-AT3]  TABLE X -- TOLERANCE SENSITIVITY, MEDIAN FORCE PLATEAU WIDTH (pixels)
-  arm                 | Fz: 5 % / 10 % / 20 % | shear: 5 % / 10 % / 20 %
-  depth-referenced    |    320 /  80 /  80    |     80 /  48 /  32
-  photometric         |     80 /  80 /  32    |    160 /  48 /  32
-  photometric+marker  |     80 /  80 /  48    |    160 / 160 /  48
-  Nine selected specimens per arm; same all-frame axis errors and seed
-  aggregation as the plateau analysis. The 10 % results reproduce Table IX.
+[V-AT3]  TABLE X -- TOLERANCE SENSITIVITY, MEDIAN PLATEAU DENSITY (px/mm^2)
+  arm                 | Fz: 5 % / 10 % / 20 %  | shear: 5 % / 10 % / 20 %
+  depth-referenced    |  218.4 /  17.3 /  13.6 |   15.4 /   5.9 /   2.2
+  photometric         |   17.4 /  13.3 /   2.9 |   85.8 /   6.3 /   2.9
+  photometric+marker  |   27.0 /  23.0 /   8.3 |   90.3 /  71.7 /  10.2
+  Corresponding median widths in pixels are 320/80/80, 80/80/32, 80/80/48 for
+  Fz and 80/48/32, 160/48/32, 160/160/48 for shear. Nine selected specimens
+  per arm; same all-frame axis errors and seed aggregation as the plateau
+  analysis. The 10 % results reproduce Table IX.
 
 [V-A9]
-At 5 % tolerance, photometric shear has a higher median plateau width than Fz
-(160 against 80); at 10 % the two coincide at 80 and 48 respectively, and the
-depth-referenced arm moves from 320 to 80 across the same step. Thus neither
-the normal/shear ordering nor the absolute width is robust to tolerance choice.
-A fixed 48-pixel shear recommendation is not supported independently of an
-allowed-error criterion.
+At 5 % tolerance, photometric shear has a higher median plateau density than
+Fz (85.8 against 17.4 px/mm^2); at 10 % the ordering reverses (6.3 against
+13.3), and the depth-referenced arm falls from 218 to 17 px/mm^2 across the
+same step, a factor of thirteen. Thus neither the normal/shear ordering nor the
+absolute density is robust to tolerance choice. A fixed density recommendation
+for shear is not supported independently of an allowed-error criterion.
 
 [V-A10]
 The exported CSVs already contain constant training-mean baselines for Fz and
@@ -754,14 +774,15 @@ fitted contact zero over the contact region; neither held-out probe enters
 calibration. Absolute errors are not used to rank the arms, for the reason
 given in [V-B7].
 
-[V-BT1]  TABLE XI -- PLATEAU RESOLUTION FOR SHAPE (median of 9 units)
-  arm                | probe          | median    | across units
-  depth-referenced   | cylinder 4 mm  | 160 x 90  | 80x45 - 1920x1080
-  depth-referenced   | cube 4 mm      | 160 x 90  | 80x45 - 1920x1080
-  photometric        | cylinder 4 mm  |  80 x 45  | 16x9  - 160x90
-  photometric        | cube 4 mm      |  80 x 45  | 8x5   - 160x90
-  Both probes are held out of calibration. One unit per condition, 10 %
-  tolerance, uncorrected reconstruction.
+[V-BT1]  TABLE XI -- PLATEAU PIXEL DENSITY FOR SHAPE (median of 9 units)
+  arm                | probe          | median R | across units   | width
+  depth-referenced   | cylinder 4 mm  |    55.0  |  16.4 - 7 830  | 160 x 90
+  depth-referenced   | cube 4 mm      |    55.0  |  13.6 - 7 830  | 160 x 90
+  photometric        | cylinder 4 mm  |    14.9  |  0.84 -  83.2  |  80 x 45
+  photometric        | cube 4 mm      |    17.7  |  0.21 -  85.8  |  80 x 45
+  R is pixel density in px/mm^2, defined as in Table IX. Both probes are held
+  out of calibration. One unit per condition, 10 % tolerance, uncorrected
+  reconstruction.
 
 [V-B5]
 The eight shape comparisons detect no hardness or thickness association after
@@ -799,11 +820,11 @@ association with estimator plateau resolution survives false-discovery
 correction.
 
 [VI-2]
-At a 10 % tolerance, selected markerless specimens have median plateau widths
-of 48 pixels for shear and 80-320 pixels for normal force; shape summaries
-range from 80 to 160 pixels. The photometric normal/shear ordering reverses at
-a 5 % tolerance, and marker-arm summaries change when more specimens are
-included. These widths are criterion- and pipeline-specific observations.
+At a 10 % tolerance, markerless specimens have median plateau densities of
+5.9-6.3 px/mm^2 for shear and 13.3-17.3 for normal force; shape summaries range
+from 14.9 to 55.0. The photometric normal/shear ordering reverses at a 5 %
+tolerance, and marker-arm summaries change when more specimens are included.
+These densities are criterion- and pipeline-specific observations.
 A small design, scattered per-unit plateau
 estimates, unmeasured build-to-build repeatability and unquantified
 measurement uncertainty together prevent an independence claim or a universal

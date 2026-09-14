@@ -24,6 +24,7 @@ import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
 
+import pixel_density as PD
 import result_common as RC
 from palette import HARD3
 
@@ -75,7 +76,10 @@ def main():
             per = {}
             for u, g in d.groupby("sensor"):
                 k = g.groupby("width_px")[col].median()
-                per[u] = sat(k, 1.10)
+                w = sat(k, 1.10)
+                # 포화 **해상도**가 아니라 포화 **밀도**로 적는다 — 유닛마다 시야가
+                # 다르므로 같은 px 폭이 같은 물리 밀도가 아니다.
+                per[u] = PD.density(pr, u, w) if np.isfinite(w) else np.nan
             for h in HARD:
                 for t in (1, 2, 3):
                     us = sorted(u for u in per
@@ -96,11 +100,11 @@ def main():
                                 mew=1.4 if bad else .7, zorder=4)
                         rows_out.append(dict(principle=pr, measure=col, unit=u,
                                              hardness=h, thickness_mm=t,
-                                             saturation_px=y,
+                                             saturation_density=y,
                                              suspect_hardware=bad))
             ax.set_yscale("log")
-            ax.set_yticks([16, 32, 48, 80, 160, 320, 640])
-            ax.set_yticklabels(["16", "32", "48", "80", "160", "320", "640"],
+            ax.set_yticks([1, 3, 10, 30, 100, 300, 1000])
+            ax.set_yticklabels(["1", "3", "10", "30", "100", "300", "1000"],
                                fontsize=7)
             ax.yaxis.set_minor_locator(mticker.NullLocator())
             ax.set_xticks([1, 2, 3]); ax.set_xlim(.6, 3.4)
@@ -111,7 +115,7 @@ def main():
             if i == 0:
                 ax.set_title(clab, fontsize=9)
             if j == 0:
-                ax.set_ylabel(f"{nice}\nSaturation width [px]", fontsize=8.5)
+                ax.set_ylabel(f"{nice}\nSaturation $R$ [px/mm$^2$]", fontsize=8.5)
             if i == 1:
                 ax.set_xlabel("Gel thickness [mm]", fontsize=8.5)
             # 허용오차 민감도
@@ -121,13 +125,16 @@ def main():
             ds = load_single(pr)
             for tol in TOL:
                 kk = ds.groupby("width_px")[col].median()
-                each = [sat(g.groupby("width_px")[col].median(), tol)
-                        for _, g in ds.groupby("sensor")]
+                each_w = [sat(g.groupby("width_px")[col].median(), tol)
+                          for _, g in ds.groupby("sensor")]
+                each_R = [PD.density(pr, u, w) for (u, _), w
+                          in zip(ds.groupby("sensor"), each_w)]
                 tol_rows.append(dict(
                     principle=pr, measure=col,
                     tol_pct=int(round((tol - 1) * 100)),
                     sat_of_median_px=sat(kk, tol),
-                    median_of_sat_px=float(np.nanmedian(each))))
+                    median_of_sat_px=float(np.nanmedian(each_w)),
+                    median_of_sat_density=float(np.nanmedian(each_R))))
 
     hh = [plt.Line2D([], [], marker="o", ls="", mfc=HARD3[h], mec="white",
                      ms=5.5, label=h) for h in HARD]
@@ -148,7 +155,7 @@ def main():
     T.to_csv(OUT / "fig3_tolerance_sensitivity.csv", index=False)
     print("  -> paper/figures/fig3_gel_and_repeatability.{png,pdf}")
     print("  허용오차 민감도 (입력 폭 px):")
-    for v in ("sat_of_median_px", "median_of_sat_px"):
+    for v in ("median_of_sat_px", "median_of_sat_density"):
         print(f"   [{v}]")
         print(T.pivot_table(index=["principle", "measure"], columns="tol_pct",
                             values=v).to_string())

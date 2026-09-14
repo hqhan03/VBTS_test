@@ -29,6 +29,7 @@ import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
 
+import pixel_density as PD
 import result_common as RC
 from palette import THICK3
 
@@ -41,8 +42,10 @@ ROWS = [("9DTact", "Depth-referenced"), ("DIGIT", "Photometric")]
 COLS = [("fz_mae", "Normal force, $F_z$"), ("shear", "Shear, mean $F_x$/$F_y$")]
 SIZES_WH = [(1920, 1080), (1280, 720), (854, 480), (640, 360), (426, 240),
             (320, 180), (160, 90), (80, 45), (48, 27), (32, 18), (16, 9), (8, 5)]
-XT = [w for w, _ in SIZES_WH]
-XTL = [f"{w}" for w, _ in SIZES_WH]
+# x 축은 **화소 밀도** R (px/mm^2) 다. 카메라의 총 픽셀 수가 같아도 유닛마다 보는
+# 면적이 다르므로, 픽셀 폭을 쓰면 그 차이가 숨는다 (`pixel_density.py`).
+XT = [0.1, 1, 10, 100, 1000, 10000]
+XTL = ["0.1", "1", "10", "100", "1000", "10⁴"]
 
 
 def load(pr, single=True):
@@ -52,6 +55,7 @@ def load(pr, single=True):
     d = pd.read_csv(f)
     d["shear"] = (d.fx_mae + d.fy_mae) / 2
     d["thickness_mm"] = d.sensor.str.extract(r"_(\d)mm_")[0].astype(int)
+    d = PD.add(d, pr)          # 유닛마다 제 시야로 환산한 R
     if single:
         ch = RC.chosen(pr)
         d = d[d.sensor.isin(ch)]
@@ -76,32 +80,36 @@ def main():
             continue
         for j, (col, clab) in enumerate(COLS):
             ax = axes[i, j]
-            # 가는 선 — 시편 하나의 seed 중앙값
+            # 가는 선 — 시편 하나의 seed 중앙값. **x 는 그 유닛 자신의 밀도.**
             for u, g in d.groupby("sensor"):
-                k = g.groupby("width_px")[col].median()
+                k = g.groupby("density_px_per_mm2")[col].median().sort_index()
                 t = int(u.split("_")[1][0])
                 ax.plot(k.index, k.values, "-", c=THICK3[t], lw=.8, alpha=.45,
                         zorder=2)
-            # 굵은 선 — 두께별로 시편 곡선의 중앙값
+            # 굵은 선 — 두께별 시편 중앙값. 유닛마다 x 가 다르므로 **원 해상도 단으로
+            # 묶고 그 묶음의 중앙 밀도**에 찍는다.
             for t in (1, 2, 3):
                 g = d[d.thickness_mm == t]
                 if not len(g):
                     continue
                 per = g.groupby(["sensor", "width_px"])[col].median().unstack()
                 med = per.median(axis=0)
-                ax.plot(med.index, med.values, "-", c="white", lw=3.6,
+                xs = g.groupby("width_px").density_px_per_mm2.median()
+                xs = xs.reindex(med.index)
+                ax.plot(xs.values, med.values, "-", c="white", lw=3.6,
                         alpha=.9, zorder=3)
-                ax.plot(med.index, med.values, "-", c=THICK3[t], lw=2.0,
+                ax.plot(xs.values, med.values, "-", c=THICK3[t], lw=2.0,
                         label=f"{t} mm", zorder=4)
             # 평탄 구간의 시작 — 축 아래 작은 표식으로만
             allu = d.groupby("width_px")[col].median()
             pl = plateau(allu)
             if pl:
-                ax.plot([pl], [0], marker="^", ms=5, c="#1a1a1a",
+                xp = float(d[d.width_px == pl].density_px_per_mm2.median())
+                ax.plot([xp], [0], marker="^", ms=5, c="#1a1a1a",
                         clip_on=False, transform=ax.get_xaxis_transform(),
                         zorder=6)
             ax.set_xscale("log"); ax.set_yscale("log")
-            ax.set_xticks(XT); ax.set_xticklabels(XTL, fontsize=6, rotation=90)
+            ax.set_xticks(XT); ax.set_xticklabels(XTL, fontsize=6.5)
             ax.xaxis.set_minor_locator(mticker.NullLocator())
             ax.tick_params(labelsize=7)
             ax.grid(True, which="major", alpha=.3, lw=.4, color="#b8b8b8")
@@ -112,7 +120,7 @@ def main():
             if j == 0:
                 ax.set_ylabel(f"{nice}\nMAE [N]", fontsize=8.5)
             if i == 1:
-                ax.set_xlabel("Input width [px]", fontsize=8.5)
+                ax.set_xlabel("Pixel density $R$ [px/mm$^2$]", fontsize=8.5)
             ylim.setdefault(j, []).append(ax.get_ylim())
 
     # y 축은 **열끼리** 공유한다
@@ -149,7 +157,8 @@ def main():
         if d is None:
             continue
         for col, _ in COLS:
-            k = d.groupby(["sensor", "width_px"])[col].median().reset_index()
+            k = (d.groupby(["sensor", "width_px", "density_px_per_mm2"])[col]
+                   .median().reset_index())
             k["principle"] = pr; k["measure"] = col
             rows.append(k.rename(columns={col: "mae_N"}))
     pd.concat(rows).to_csv(OUT / "fig2_force_vs_resolution.csv", index=False)
