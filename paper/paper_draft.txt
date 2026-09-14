@@ -822,13 +822,13 @@ correction.
 [VI-2]
 At a 10 % tolerance, markerless specimens have median plateau densities of
 5.9-6.3 px/mm^2 for shear and 13.3-17.3 for normal force; shape summaries range
-from 14.9 to 55.0. The photometric normal/shear ordering reverses at a 5 %
-tolerance, and marker-arm summaries change when more specimens are included.
-These densities are criterion- and pipeline-specific observations.
-A small design, scattered per-unit plateau
-estimates, unmeasured build-to-build repeatability and unquantified
-measurement uncertainty together prevent an independence claim or a universal
-input-resolution recommendation.
+from 14.9 to 55.0. Tightening the tolerance to 5 % raises the depth-referenced
+normal-force density more than twelvefold and reverses the normal/shear
+ordering in the photometric arm, so these densities are observations about a
+criterion and a pipeline rather than sensor specifications. A small design,
+scattered per-unit plateau estimates, unmeasured build-to-build repeatability
+and unquantified measurement uncertainty together prevent an independence claim
+or a universal input-resolution recommendation.
 
 [VI-3]
 The practical implication is to evaluate input sampling against the intended
