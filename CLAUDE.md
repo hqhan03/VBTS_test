@@ -26,14 +26,17 @@
 
 ## 2. 논문 그림
 
-- 판형·색·저장은 `src/scripts/paper_style.py` 한 곳에서 건다.
+- **그림도 코드도 `paper/fin_figures/` 에 있다** (운전자 결정, 2026-09-14).
+  그 폴더만 건네면 누구든 다시 그린다. 돌리는 법은 그 폴더의 `README.md`.
+- 판형·색·저장은 `paper/fin_figures/paper_style.py` 한 곳에서 건다.
   새 그림에서 rcParams 를 다시 쓰지 않는다.
 - IEEE 두 단 판형: 한 단 3.50 in · 두 단 7.16 in. 다른 폭을 쓰지 않는다.
 - 색만으로 군을 가르지 않는다 — 표식 모양을 함께 건다(흑백 인쇄·색각 이상).
 - 글꼴은 Type 42 로 심는다. Type 3 은 IEEE PDF eXpress 가 되돌려 보낸다.
 - **csv 없이 그림을 저장하지 않는다.** `paper_style.save()` 가 pdf·png·csv 를 함께 낸다.
-- 저장 자리는 **`paper/fin_figures/`** 다 (운전자 결정, 2026-09-14).
-  `paper/figures/` 는 그 전에 만든 것이 들어 있는 곳이라 섞지 않는다.
+- `paper/figures/` 는 그 전에 만든 것이 들어 있는 곳이라 섞지 않는다.
+- 색은 `src/scripts/palette.py` 하나에서만 나온다 — `result/` 의 그림과 같은 색을
+  써야 하므로 값을 베껴 두지 않는다.
 - 무엇을 싣고 무엇을 빼는가는 `paper/figure_plan.md` 가 정본이다.
 
 ## 3. 자료

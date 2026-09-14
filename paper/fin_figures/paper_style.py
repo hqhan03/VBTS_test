@@ -5,27 +5,36 @@
 논문 그림은 다르다 — 영문이고, IEEE 두 단 판형에 맞아야 하고, 벡터로 나가야 하고,
 축소돼 인쇄돼도 읽혀야 한다. 그 차이를 이 파일 한 곳에 모은다.
 
-`paper_fig_*.py` 는 전부 이것을 import 한다. 새 그림을 만들 때 rcParams 를 다시
-쓰지 말 것 — 여기를 고치면 모든 그림이 함께 움직여야 한다.
+**그림과 그것을 그린 코드가 같은 폴더에 있다** (운전자 결정, 2026-09-14) — 이
+폴더만 통째로 건네면 누구든 다시 그릴 수 있다. `paper_fig_*.py` 는 전부 이것을
+import 한다. 새 그림을 만들 때 rcParams 를 다시 쓰지 말 것 — 여기를 고치면 모든
+그림이 함께 움직여야 한다.
+
+돌리는 법:  `cd paper/fin_figures && python3 paper_fig_<이름>.py`
 
 색은 `palette.py` 를 그대로 가져온다. 팔레트 검증기 전 항목 통과를 확인했다
 (인접 쌍 최악 ΔE 11.0 deutan, 보통 시야 25.8, 바탕 대비 전부 3:1 이상).
 **그래도 색만으로 군을 가르지 않는다** — 표식 모양(MARKER)을 함께 건다.
 흑백 인쇄와 색각 이상 양쪽에서 살아남아야 하기 때문이다.
 """
+import sys
 from pathlib import Path
 
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from palette import HARD3, PRINCIPLE, THICK3      # noqa: F401 — 재수출
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[1]
 
-ROOT = Path(__file__).resolve().parents[2]
+# 색은 `src/scripts/palette.py` 하나에서만 나온다 — `result/` 의 그림과 같은 색을
+# 써야 하므로 여기에 값을 베껴 두지 않는다.
+sys.path.insert(0, str(ROOT / "src" / "scripts"))
+from palette import HARD3, PRINCIPLE, THICK3      # noqa: E402,F401 — 재수출
 
-# 여기서 만드는 그림은 `paper/fin_figures/` 로 간다 (운전자 결정, 2026-09-14).
-# `paper/figures/` 는 그 전에 만든 것이 들어 있는 곳이라 섞지 않는다.
-FIGS = ROOT / "paper" / "fin_figures"
+# 그림도 코드도 이 폴더다. `paper/figures/` 는 그 전에 만든 것이 들어 있는 곳이라
+# 섞지 않는다.
+FIGS = HERE
 
 # IEEE 두 단 판형. 한 단 3.50 in, 두 단 걸침 7.16 in — 이 둘 말고 다른 폭을 쓰지 않는다.
 COL_W, FULL_W = 3.50, 7.16

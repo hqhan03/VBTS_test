@@ -63,8 +63,12 @@
 논문 그림은 영문이고, IEEE 두 단 판형(한 단 3.50 in · 두 단 7.16 in)에 맞아야 하고,
 벡터로 나가야 하고, 축소돼 인쇄돼도 읽혀야 한다.
 
-그래서 **`src/scripts/paper_style.py`** 에 판형·색·저장 규칙을 모았다. 모든
+그래서 **`paper/fin_figures/paper_style.py`** 에 판형·색·저장 규칙을 모았다. 모든
 `paper_fig_*.py` 가 이것을 import 한다 — 새 그림에서 rcParams 를 다시 쓰지 말 것.
+
+**그림과 그것을 그린 코드가 같은 폴더에 있다** — `paper/fin_figures/` 를 통째로
+건네면 누구든 다시 그린다 (`cd paper/fin_figures && python3 paper_fig_<이름>.py`).
+자료는 `result/single/` 의 csv 에서 읽으므로 `data/` 가 없는 기계에서도 돌아간다.
 
 - 색은 `palette.py` 의 Okabe-Ito 셋을 그대로 쓴다. 검증기 전 항목 통과
   (인접 쌍 최악 ΔE 11.0 deutan · 보통 시야 25.8 · 바탕 대비 전부 3:1 이상).
@@ -73,8 +77,7 @@
 - 글꼴은 Type 42 로 심는다. Type 3 은 IEEE PDF eXpress 가 되돌려 보낸다
   (`fig_ceiling.pdf` 확인: FontFile2 3 개, Type 3 0 개).
 - `save()` 가 **pdf · png · csv 셋을 함께** 낸다. csv 없이 그림을 저장하지 않는다.
-- 저장 자리는 **`paper/fin_figures/`** 다 (운전자 결정, 2026-09-14).
-  `paper/figures/` 에는 그 전에 만든 `fig1` ~ `fig4b` 가 그대로 있다 — 섞지 않는다.
+- `paper/figures/` 에는 그 전에 만든 `fig1` ~ `fig4b` 가 그대로 있다 — 섞지 않는다.
   그 여섯을 matplotlib 으로 옮길 때마다 `fin_figures/` 로 하나씩 옮겨 간다.
 
 ---
