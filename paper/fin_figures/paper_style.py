@@ -71,21 +71,22 @@ def use_paper_style():
         "savefig.dpi": 400,
         "savefig.bbox": "tight",
         "savefig.pad_inches": 0.01,
-        # 글자는 **인쇄에서 읽히는 것**이 기준이다. 7.5 pt 로 그렸더니 두 단에
-        # 앉혔을 때 작았다(2026-09-15) — 한 단 올렸다.
-        "font.size": 9.0,
-        "axes.titlesize": 9.5,
-        "axes.labelsize": 9.0,
-        "xtick.labelsize": 8.5,
-        "ytick.labelsize": 8.5,
-        "legend.fontsize": 8.5,
+        # 글자는 **인쇄에서 읽히는 것**이 기준이다. 7.5 → 9 → 10.5 로 두 번
+        # 올렸다(2026-09-15). 두 단 그림을 좁게 그려 크게 앉히므로 설계 글자가
+        # 커도 본문에서 과하지 않다.
+        "font.size": 10.5,
+        "axes.titlesize": 11.0,
+        "axes.labelsize": 10.5,
+        "xtick.labelsize": 10.0,
+        "ytick.labelsize": 10.0,
+        "legend.fontsize": 10.0,
         "axes.linewidth": 0.6,
         "xtick.major.width": 0.6,
         "ytick.major.width": 0.6,
         "xtick.major.size": 2.6,
         "ytick.major.size": 2.6,
-        "lines.linewidth": 1.6,
-        "lines.markersize": 4.6,
+        "lines.linewidth": 1.8,
+        "lines.markersize": 5.2,
         "grid.linewidth": 0.4,
         "grid.alpha": 0.30,
         "axes.edgecolor": "#444444",

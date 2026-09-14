@@ -92,7 +92,7 @@ def panel_gel(ax):
                 c=HARD3[h], lw=1.4, label=f"Shore OO-{SHORE['9DTact'][h]}",
                 zorder=3)
         ax.plot(g.thickness_mm + DODGE[h], g.finest_centre_mm, MARKER[h],
-                c=HARD3[h], ms=5.0, mec="white", mew=0.7, ls="none", zorder=4)
+                c=HARD3[h], ms=5.6, mec="white", mew=0.7, ls="none", zorder=4)
 
     rho, p = spearmanr(nine.thickness_mm, nine.finest_centre_mm)
 
@@ -125,13 +125,13 @@ def panel_pixels(ax):
     c = PS.PRINCIPLE["9DTact"]
     ax.axhline(RAYLEIGH, c=PS.MUTED, lw=0.7, ls=(0, (4, 2)), zorder=1)
     ax.plot(seen.density_px_per_mm2, seen.dip, "-", c=c, lw=1.4, zorder=3)
-    ax.plot(seen.density_px_per_mm2, seen.dip, "o", c=c, ms=5.0, mec="white",
+    ax.plot(seen.density_px_per_mm2, seen.dip, "o", c=c, ms=5.6, mec="white",
             mew=0.7, ls="none", zorder=4)
     # 접촉 덩어리 자체를 못 찾은 단 — 값이 없으므로 축 바닥에 따로 찍는다.
     # 글자는 넣지 않는다(운전자 결정) — 캡션이 말해야 한다.
     lost = u[u.dip.isna()]
-    ax.plot(lost.density_px_per_mm2, [LOST_Y] * len(lost), "x", c=c, ms=4.6,
-            mew=1.2, ls="none", zorder=4)
+    ax.plot(lost.density_px_per_mm2, [LOST_Y] * len(lost), "x", c=c, ms=5.2,
+            mew=1.3, ls="none", zorder=4)
 
     ax.set_xscale("log")
     ax.set_xlim(0.09, 1.4e4)
