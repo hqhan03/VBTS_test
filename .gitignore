@@ -6,6 +6,9 @@
 !docs/figures/*.png
 # 논문에 들어갈 그림은 버전 관리한다 (수백 KB). 측정 이미지와 달리 결과물이다.
 !result/**/figures/*.png
+# 논문 그림도 저장소에 올린다. PDF 만 올리고 PNG 를 빼 두었더니 results.md 의
+# 그림 링크가 깃헙에서 404 가 됐다 (2026-09-14).
+!paper/figures/*.png
 *.jpg
 *.jpeg
 *.mp4
