@@ -11,7 +11,7 @@ reproduce exactly.
 
 TITLE
 Separating Elastomer Design from Pixel Density in Vision-Based Tactile Sensors
-A Controlled Study Across 27 Fabricated Sensors
+A Controlled Study
 
   Retitled 2026-09-14. The previous title, "How Much Input Image Resolution
   Does a Vision-Based Tactile Sensor Need?", promised a number the paper
@@ -24,7 +24,7 @@ A Controlled Study Across 27 Fabricated Sensors
     The Gel Sets the Contact, the Task Sets the Pixels: Elastomer Design and
     Pixel Density in Vision-Based Tactile Sensors
     Elastomer Design and Pixel Density in Vision-Based Tactile Sensors:
-    A Controlled Study of 27 Fabricated Specimens
+    A Controlled Study
 
 
 CONTENTS
