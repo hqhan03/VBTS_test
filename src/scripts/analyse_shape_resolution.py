@@ -46,5 +46,8 @@ for s in sorted(units):
               f"size {o.get('cyl4_corrected_size_err', float('nan')):+.2f}  "
               f"sq {o.get('cube4_corrected_squareness', float('nan')):.2f}  {o.get('error','')}", flush=True)
 D = pd.DataFrame(rows)
-D.to_csv(ROOT / "data" / "20260911_VBTSresolution_dataset" / "9DTact" / "shape_vs_resolution.csv", index=False)
-print(f"-> {ROOT/'data'/'9DTact'/'shape_vs_resolution.csv'} ({len(D)} rows)")
+OUT = ROOT / "data" / "20260911_VBTSresolution_dataset" / "9DTact" / "shape_vs_resolution.csv"
+# 한 유닛만 인자로 줘도 이 파일을 통째로 덮어쓴다. 인쇄하던 경로가 실제
+# 기록 경로와 달라 2026-09-14 에 17 유닛 파일을 12 행으로 날릴 뻔했다.
+D.to_csv(OUT, index=False)
+print(f"-> {OUT} ({len(D)} rows)")

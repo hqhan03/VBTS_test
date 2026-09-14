@@ -134,15 +134,16 @@ def main():
     for w, c in zip(WIDTHS, ("#0072B2", "#D55E00", "#009E73")):
         ax.plot(*prof[w], "-", c=c, lw=1.6, label=f"{w} px")
     ax.axhline(true, c="#1a1a1a", lw=1.1, ls=":")
-    # 선 **아래**에 적는다 — 위에 두면 범례와 겹친다.
-    ax.annotate(f"true {true:.2f} mm", (-2.7, true), fontsize=6.5,
-                va="top", ha="left", color="#1a1a1a")
-    ax.set_xlim(-2.8, 2.8); ax.set_ylim(-.02, max(true, .5) * 1.25)
+    # 참깊이 라벨은 **오른쪽 끝 선 아래**, 범례는 아래쪽 왼쪽 — 곡선이 가운데에서
+    # 솟고 양끝이 낮으므로 이 둘이 서로도, 곡선과도 닿지 않는다.
+    ax.annotate(f"true {true:.2f} mm", (2.7, true), fontsize=6.5,
+                va="top", ha="right", color="#1a1a1a")
+    ax.set_xlim(-2.8, 2.8); ax.set_ylim(-.02, max(true, .5) * 1.32)
     ax.set_xlabel("across contact [mm]", fontsize=8)
     ax.set_ylabel("depth [mm]", fontsize=8)
     head(ax, "(a) depth vs. resolution", "photometric")
-    ax.legend(frameon=False, fontsize=6.2, ncol=1, loc="upper right",
-              handlelength=1.0, labelspacing=.25)
+    ax.legend(frameon=False, fontsize=6.2, ncol=1, loc="lower left",
+              handlelength=1.0, labelspacing=.2, borderaxespad=.3)
     ax.tick_params(labelsize=7); ax.spines[["top", "right"]].set_visible(False)
     ax.grid(alpha=.3, lw=.4)
 
@@ -227,7 +228,8 @@ def main():
             ax.plot(xm, med.values, "-", c=c, lw=2.0, label=lab)
             size_rows.append(g.assign(shape=sh).rename(columns={col: "size_mm"}))
     ax.axhline(TRUE_SIZE_MM, c="#1a1a1a", lw=1.1, ls=":")
-    ax.annotate("true 4 mm", (1.0, TRUE_SIZE_MM), fontsize=6.3, va="bottom",
+    # 곡선이 오른쪽에서 참값선 위를 지나므로 라벨은 **왼쪽 끝 선 아래**에 둔다.
+    ax.annotate("true 4 mm", (1.4, TRUE_SIZE_MM), fontsize=6.3, va="top",
                 ha="left", color="#1a1a1a")
     ax.set_xscale("log")
     ax.set_xticks([0.1, 1, 10, 100, 1000, 10000])

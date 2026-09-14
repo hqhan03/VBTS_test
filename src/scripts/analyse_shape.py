@@ -148,14 +148,35 @@ def build_lookup(greys, depths):
     return lut, n
 
 
+def _phys_k(base):
+    """A blur kernel is a PHYSICAL width, not a pixel count.
+
+    9DTact's 7x7 is ~0.085 mm at the native 82 px/mm -- a denoiser. Left fixed
+    in pixels it grows with every downscale step until it is wider than the
+    imprint: at 16x9 the 4 mm contact is three pixels across and THREE 7x7
+    Gaussians flatten it to nothing. That is what collapsed the depth below
+    48x27 and made the half-depth contour blow up to 481 mm at 16x9 (found
+    2026-09-14; the same class of fault as digit_shape's 3x3 opening). Scale
+    it with the downscale and drop it once it falls under 3 px. At
+    DOWNSCALE = 1 this returns `base`, so the full-resolution numbers are
+    unchanged.
+    """
+    k = int(round(base / max(DOWNSCALE, 1e-9)))
+    return (k | 1) if k >= 3 else None
+
+
 def reconstruct(ref_w, img_w, lut):
     diff = ref_w.astype(np.int32) - img_w.astype(np.int32) - LIGHTING_THRESHOLD
     diff = np.where(diff < 100, diff, 0) + LIGHTING_THRESHOLD
     diff = np.clip(diff, 0, len(lut) - 1)
-    diff = cv2.GaussianBlur(diff.astype(np.float32), (7, 7), 0)
+    kd = _phys_k(7)
+    if kd:
+        diff = cv2.GaussianBlur(diff.astype(np.float32), (kd, kd), 0)
     depth = lut[np.clip(diff.astype(int), 0, len(lut) - 1)] - lut[LIGHTING_THRESHOLD]
     for k in KERNELS:
-        depth = cv2.GaussianBlur(depth.astype(np.float32), (k, k), 0)
+        kk = _phys_k(k)
+        if kk:
+            depth = cv2.GaussianBlur(depth.astype(np.float32), (kk, kk), 0)
     return depth
 
 
