@@ -9,14 +9,7 @@
 
 **설계 원칙** (2026-09-13/14, 운전자 지시):
 
-* 가는 선 = 시편 하나의 seed 중앙값 곡선. 굵은 선 = **다른 인자를 가운데 수준에
-  고정한 시편 하나** — 두께로 나눌 때는 medium 경도, 경도로 나눌 때는 2 mm 다
-  (2026-09-14, 운전자 지시). 군 중앙값을 쓰면 군당 시편이 셋뿐이라 가운데 값을
-  집는 것에 지나지 않고, 굵은 선의 x 를 군 중앙 밀도로 잡아야 해서 세 굵은 선이
-  서로 어긋난 x 에 찍혔다. 가운데 수준을 쓰면 굵은 선이 **실제로 측정된 유닛**
-  이므로 제 밀도에 찍히고, 왼쪽은 "경도 고정, 두께만 바꿈", 오른쪽은 "두께 고정,
-  경도만 바꿈" 이라는 한 인자씩 자르기가 그대로 읽힌다. 대가는 굵은 선이 n=1 이
-  되어 그 유닛의 잡음을 그대로 지고 간다는 것이다.
+* 가는 선 = 시편 하나의 seed 중앙값 곡선. 굵은 선 = 그 시편 곡선들의 중앙값.
 * 왼쪽 두 열은 **두께**로, 오른쪽 두 열은 **경도**로 색을 나눈다. 같은 자료를 두 번
   자른 것이므로 가는 선은 양쪽이 똑같고 굵은 선만 달라진다 — 그것이 요점이다.
 * **불확실성 음영을 넣지 않는다.** seed 범위와 시편 간 범위를 같은 음영으로
@@ -57,8 +50,6 @@ MEAS = [("fz_mae", "Normal force, $F_z$"), ("shear", "Shear, mean $F_x$/$F_y$")]
 # (나누는 변수, 열 이름, 색표, 범례 제목, 범례에 적을 이름)
 GROUPS = [("thickness_mm", THICK3, "Gel thickness", lambda v: f"{v} mm"),
           ("hardness", HARD3, "Gel hardness", lambda v: v)]
-# 굵은 선이 될 시편을 고르는 규칙 — **다른 인자를 가운데 수준에 고정한다.**
-HOLD = [("hardness", "medium"), ("thickness_mm", 2)]
 # x 축은 **화소 밀도** R (px/mm^2) 다. 카메라의 총 픽셀 수가 같아도 유닛마다 보는
 # 면적이 다르므로, 픽셀 폭을 쓰면 그 차이가 숨는다 (`pixel_density.py`).
 XT = [0.1, 1, 10, 100, 1000, 10000]
@@ -100,28 +91,25 @@ def main():
             gcol, cmap, gtitle, glab = GROUPS[j // 2]
             col, clab = MEAS[j % 2]
             ax = axes[i, j]
-            hcol, hval = HOLD[j // 2]
-            heavy = set(d[d[hcol] == hval].sensor)
             # 가는 선 — 시편 하나의 seed 중앙값. **x 는 그 유닛 자신의 밀도.**
-            # 같은 유닛이 두 나눔에 모두 나오므로 색만 바뀌고 선은 같다. 굵게
-            # 그릴 유닛은 여기서 빼고 아래에서 한 번만 그린다 — 겹쳐 그리면
-            # 투명한 가는 선이 굵은 선의 색을 흐린다.
+            # 같은 유닛이 두 나눔에 모두 나오므로 색만 바뀌고 선은 같다.
             for u, g in d.groupby("sensor"):
-                if u in heavy:
-                    continue
                 k = g.groupby("density_px_per_mm2")[col].median().sort_index()
                 ax.plot(k.index, k.values, "-", c=cmap[g[gcol].iloc[0]],
                         lw=.8, alpha=.45, zorder=2)
-            # 굵은 선 — 다른 인자를 가운데 수준에 고정한 시편 하나. 실제 유닛
-            # 이므로 **그 유닛 자신의 밀도**에 찍는다.
+            # 굵은 선 — 군별 시편 중앙값. 유닛마다 x 가 다르므로 **원 해상도 단으로
+            # 묶고 그 묶음의 중앙 밀도**에 찍는다.
             for v in cmap:
-                g = d[(d[gcol] == v) & (d[hcol] == hval)]
+                g = d[d[gcol] == v]
                 if not len(g):
                     continue
-                k = g.groupby("density_px_per_mm2")[col].median().sort_index()
-                ax.plot(k.index, k.values, "-", c="white", lw=3.6,
+                per = g.groupby(["sensor", "width_px"])[col].median().unstack()
+                med = per.median(axis=0)
+                xs = g.groupby("width_px").density_px_per_mm2.median()
+                xs = xs.reindex(med.index)
+                ax.plot(xs.values, med.values, "-", c="white", lw=3.6,
                         alpha=.9, zorder=3)
-                ln, = ax.plot(k.index, k.values, "-", c=cmap[v], lw=2.0,
+                ln, = ax.plot(xs.values, med.values, "-", c=cmap[v], lw=2.0,
                               label=glab(v), zorder=4)
                 handles.setdefault(j // 2, {}).setdefault(glab(v), ln)
             # 평탄 구간의 시작 — 축 아래 작은 표식으로만
@@ -162,8 +150,8 @@ def main():
 
     # 두 나눔을 가르는 머리글 — 같은 색이 왼쪽에서는 두께, 오른쪽에서는 경도를
     # 뜻하므로 이 표시가 없으면 범례 둘이 충돌한다.
-    for (x, txt) in ((.295, "Split by gel thickness (heavy: medium hardness)"),
-                     (.775, "Split by gel hardness (heavy: 2 mm)")):
+    for (x, txt) in ((.295, "Split by gel thickness"),
+                     (.775, "Split by gel hardness")):
         fig.text(x, 1.005, txt, fontsize=8.5, weight="bold", ha="center")
         fig.text(x, .072, "Pixel density $R$ [px/mm$^2$]", fontsize=8,
                  ha="center")
