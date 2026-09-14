@@ -71,10 +71,8 @@ with indentation. Thickness is the main lever: in the depth-referenced arm
 paired-contact separation degrades with it on every measure we record while the
 photometric arm stays at the bound of our probe set, and the saturating force
 rises with thickness in the depth-referenced arm but falls in the photometric
-one. Hardness acts through the loading variable and through thickness: at equal
-indentation depth it does not order the imprint curves and at equal force it
-does, and the depth-referenced saturation force is flat across hardness at 1 mm
-but doubles from the softest gel to the hardest at 3 mm.
+one. Hardness acts through the loading variable: at equal indentation depth it
+does not order the imprint curves and at equal force it does.
 
 Pixel density is decided by the task instead. Across twenty tests of a
 thickness or hardness association with the density at which force and shape
