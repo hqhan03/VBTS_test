@@ -67,13 +67,14 @@ exchanged, and the same camera module is used in all three arms; one 1920x1080
 capture is then downsampled across twelve densities. The elastomer decides
 three things and we measure all three: paired-contact separation, the force at
 which the image response saturates, and how the imprint grows and brightens
-with indentation. In the depth-referenced arm paired-contact separation
-degrades with thickness on every measure we record, while the photometric arm
-stays at the bound of our probe set; and the saturating force rises with
-thickness in the depth-referenced arm but falls in the photometric one.
-Hardness is the weaker lever: it moves paired-contact separation in neither
-arm, and among the imprint measures only the depth-referenced diameter growth
-trends with it.
+with indentation. Thickness is the main lever: in the depth-referenced arm
+paired-contact separation degrades with it on every measure we record while the
+photometric arm stays at the bound of our probe set, and the saturating force
+rises with thickness in the depth-referenced arm but falls in the photometric
+one. Hardness acts through the loading variable and through thickness: at equal
+indentation depth it does not order the imprint curves and at equal force it
+does, and the depth-referenced saturation force is flat across hardness at 1 mm
+but doubles from the softest gel to the hardest at 3 mm.
 
 Pixel density is decided by the task instead. Across twenty tests of a
 thickness or hardness association with the density at which force and shape
