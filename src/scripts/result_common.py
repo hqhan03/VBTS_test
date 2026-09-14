@@ -132,6 +132,14 @@ _EVIDENCE = {
 }
 
 
+# **운전자가 직접 지정한 복제** (2026-09-14). 규칙이 동점으로 두고 번호순으로
+# `r1` 을 집던 칸을 손으로 뒤집은 것이다. 규칙보다 위에 둔다 — 규칙은 근거가
+# 없을 때의 기본값이고, 운전자의 지정은 근거다.
+_PICK = {
+    "DIGIT": {"hard_1mm": "r2", "hard_2mm": "r2"},
+}
+
+
 def chosen(pr):
     """그 원리에서 **남길** 유닛의 짧은 이름 집합.
 
@@ -140,7 +148,8 @@ def chosen(pr):
     1. 한쪽이 **확정 불량**(빛 누출)이면 다른 쪽을 남긴다.
     2. 한쪽에 **독립 증거**(자료량 부족)가 있으면 다른 쪽을 남긴다.
     3. 복제가 하나뿐이면(파괴) 그것을 남긴다.
-    4. 그 밖에는 **`r1` 을 남긴다.**
+    4. **운전자가 지정한 칸**은 그 지정을 따른다 (`_PICK`).
+    5. 그 밖에는 **`r1` 을 남긴다.**
 
     **4 번이 투표가 아닌 이유.** `replicate_audit.md` §4.1 이 정답 있는 두 셀로
     투표를 시험했더니 하나는 맞고 하나는 **거꾸로** 짚었다 — 가법 기댓값이 틀린
@@ -155,6 +164,11 @@ def chosen(pr):
         for t in (1, 2, 3):
             cell = sorted(u for u in units if u.startswith(f"{h}_{t}mm_r"))
             if not cell:
+                continue
+            pick = _PICK.get(pr, {}).get(f"{h}_{t}mm")
+            forced = f"{h}_{t}mm_{pick}" if pick else None
+            if forced and forced in cell and _rank(pr, forced) >= 0:
+                out.add(forced)        # 운전자 지정이 규칙을 이긴다
                 continue
             best = max(cell, key=lambda u: (_rank(pr, u), -int(u[-1])))
             out.add(best)
