@@ -32,15 +32,18 @@
     이 시편에서는 관문 셋 중 둘만 문다 — 골이 Rayleigh 를 넘긴 단은 밝기·잡음
     관문에 한 번도 걸리지 않는다(아래 `assert`). **Rayleigh 와 접촉 검출**만 남는다.
 
-캡션이 져야 할 것 — 그림 안의 글자·선을 줄였으므로(운전자 결정) 넷을 캡션이 진다
-    1. **가장 좁은 압자가 중심 간격 1.10 mm** 라는 것, 그리고 **광도 스테레오는
+캡션이 져야 할 것 — 그림 안의 글자를 걷어냈으므로(운전자 결정) 다섯을 캡션이 진다
+    1. **어느 패널이 무엇인가.** 제목이 `(a)` · `(b)` 뿐이다 —
+       (a) 깊이 참조형 아홉 시편, 전해상도.
+       (b) `soft_2mm_r1`, 압입 0.30 mm, 두 기둥 중심 간격 2.00 mm.
+    2. **가장 좁은 압자가 중심 간격 1.10 mm** 라는 것, 그리고 **광도 스테레오는
        여덟 시편 모두 그 바닥에 있어 한계를 못 봤다**는 것. (a) 에 그 바닥을
        가리키는 선이 없다.
-    2. **판정 문턱이 dip ≥ 0.265 (Rayleigh)** 라는 것. (b) 에 선이 없으므로 빈
-       동그라미가 왜 빈 것인지 캡션이 말해야 한다 — 그 문턱 아래라는 뜻이다.
-    3. (b) 왼쪽 끝의 `×` 는 **접촉 덩어리 자체를 못 찾은 단**이다 — 골이 얕아
-       못 가른 것(빈 동그라미)과 다른 실패다.
-    4. (a) 의 **두께 경향** — Spearman rho +0.75 (p 0.02, n 9). 경도는 −0.13
+    3. (b) 의 **파선이 Rayleigh 문턱 dip = 0.265** 라는 것. 선은 있고 글자는 없다.
+       판정은 **선 위/아래**로 읽는다 — 표식은 전부 같게 찍었다.
+    4. (b) 왼쪽 끝의 `×` 는 **접촉 덩어리 자체를 못 찾은 단**이다 — 골이 얕아
+       못 가른 것(파선 아래의 점)과 다른 실패다.
+    5. (a) 의 **두께 경향** — Spearman rho +0.75 (p 0.02, n 9). 경도는 −0.13
        (p 0.73). 스크립트가 표준출력으로 낸다.
 
 말하지 않는 것
@@ -100,8 +103,7 @@ def panel_gel(ax):
     ax.set_ylim(0.86, 2.98)
     ax.set_xlabel("gel thickness [mm]")
     ax.set_ylabel("finest resolved separation [mm]")
-    ax.set_title(f"(a)  gel  —  {DISPLAY['9DTact']}, full resolution",
-                 fontsize=8.0, loc="left")
+    ax.set_title("(a)", fontsize=8.0, loc="left")
     PS.style(ax)
     return nine.assign(rho_thickness=rho, p_thickness=p), rho, p
 
@@ -121,13 +123,10 @@ def panel_pixels(ax):
     assert (passed.verdict == "분해").all(), "Rayleigh 를 넘겼는데 분해가 아니다"
 
     c = PS.PRINCIPLE["9DTact"]
+    ax.axhline(RAYLEIGH, c=PS.MUTED, lw=0.7, ls=(0, (4, 2)), zorder=1)
     ax.plot(seen.density_px_per_mm2, seen.dip, "-", c=c, lw=1.4, zorder=3)
-    res = seen[seen.verdict == "분해"]
-    no = seen[seen.verdict != "분해"]
-    ax.plot(res.density_px_per_mm2, res.dip, "o", c=c, ms=4.2, mec="white",
+    ax.plot(seen.density_px_per_mm2, seen.dip, "o", c=c, ms=4.2, mec="white",
             mew=0.7, ls="none", zorder=4)
-    ax.plot(no.density_px_per_mm2, no.dip, "o", mfc="none", mec=c, mew=0.9,
-            ms=4.2, ls="none", zorder=4)
     # 접촉 덩어리 자체를 못 찾은 단 — 값이 없으므로 축 바닥에 따로 찍는다.
     # 글자는 넣지 않는다(운전자 결정) — 캡션이 말해야 한다.
     lost = u[u.dip.isna()]
@@ -139,13 +138,11 @@ def panel_pixels(ax):
     ax.set_ylim(-0.27, 0.62)
     ax.set_xlabel(r"pixel density $R$ [px/mm$^2$]")
     ax.set_ylabel("dip  $(P-T)/P$")
-    ax.set_title(f"(b)  pixels  —  {SWEEP_UNIT.replace('_', ' ')} at "
-                 f"{SWEEP_DEPTH_MM:.2f} mm, posts {SEP_MM:.2f} mm apart",
-                 fontsize=8.0, loc="left")
+    ax.set_title("(b)", fontsize=8.0, loc="left")
     PS.style(ax, grid=None)
     ax.grid(alpha=0.25, lw=0.4, color="#c8c8c8")
     ax.set_axisbelow(True)
-    return u, res.density_px_per_mm2.min()
+    return u, seen[seen.verdict == "분해"].density_px_per_mm2.min()
 
 
 def main():
