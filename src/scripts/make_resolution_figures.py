@@ -160,7 +160,7 @@ def sweep_figure():
     # 스윕의 원자료는 집합과 무관한 측정이라 **한 곳에만** 있다. 단일 센서
     # 문서는 그것을 읽어 자기 아홉 유닛만 남긴다 — 전에는 result/single 밑에서
     # 찾다 못 찾고 조용히 빠져나가 그림이 통째로 없었다(2026-09-14).
-    f = ROOT / "result" / "extra" / "data" / "resolution_sweep_pair100.csv"
+    f = ROOT / "result" / "extra" / "data" / "resolution_sweep_9DTact_pair100.csv"
     if not f.exists():
         return
     import analyse_resolution as AR

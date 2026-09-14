@@ -488,6 +488,44 @@ R ≈ 387 px/mm² (426 px 폭) 에서 최대(70 %)이고 그 아래로 무너진
 > 으로만 읽을 것. 골이 실제로 Rayleigh 아래로 떨어지는 것과 검출기가 포기하는
 > 것이 같은 구간에서 함께 일어난다.
 
+### 센서마다 — 어느 밀도에서 어느 간격까지
+
+위 그림은 간격 하나(2.00 mm)를 17 유닛 평균으로 본 것이다. **간격을 전부**
+(1.10 · 1.25 · 1.50 · 1.75 · 2.00 · 2.50 mm) 쓸어 센서마다 한 판으로 놓으면,
+"이 센서는 이 밀도에서 여기까지 가른다" 를 직접 읽을 수 있다.
+
+파란 점이 그 칸에서 갈린 깊이 단이 있다는 뜻이고 **크기가 몇 단인지**를
+나타낸다 — 작은 점은 한 단만 간신히 갈린 것이다. 회색 ×는 한 단도 못 갈린
+칸이다. 주황 계단이 그 밀도에서 **분해되는 가장 좁은 간격**이고, 아래로
+내려갈수록 좋다.
+
+![9DTact — 센서마다, 어느 화소 밀도에서 어느 중심 간격까지 분해되나 (여섯 간격 전부)](single/extra/figures/K_spatial_sweep_9DTact.png)
+
+*9DTact — 센서마다, 어느 화소 밀도에서 어느 중심 간격까지 분해되나 (여섯 간격 전부)*
+
+<sub>그림: `single/extra/figures/K_spatial_sweep_9DTact.png` · 자료: `single/extra/data/K_spatial_sweep_9DTact.csv`</sub>
+
+![DIGIT — 같은 그림. 간격은 1.10 과 1.25 mm 두 가지만 쟀다](single/extra/figures/K_spatial_sweep_DIGIT.png)
+
+*DIGIT — 같은 그림. 간격은 1.10 과 1.25 mm 두 가지만 쟀다*
+
+<sub>그림: `single/extra/figures/K_spatial_sweep_DIGIT.png` · 자료: `single/extra/data/K_spatial_sweep_DIGIT.csv`</sub>
+
+**여섯 간격이 모두 갈리는 것은 R ≳ 220 부터다.** 그 아래에서는 3 ~ 5 개만 갈린다. 9 절의 스윕이 분해 비율로 본 것과 같은 자리인데, 이 그림은 **어느 간격이** 살아남는지까지 보여 준다 — 넓은 간격부터 남고 좁은 쪽이 먼저 죽는다.
+
+**가장 좁게 갈린 간격은 유닛마다 다르다** — 두께별 중앙이 1 mm 겔 1.25 mm, 2 mm 겔 1.10 mm, 3 mm 겔 1.50 mm 다. 3 mm 겔이 가장 나쁘다.
+
+> 다만 **검정은 통과하지 못한다** — 두께와의 Spearman ρ +0.477 (p 0.19), 경도는 ρ +0.168 (p 0.67), n = 9. 방향은 4 절의 대비 이야기와 맞지만(두꺼운 겔이 두 자국을 뭉갠다) 이 아홉 유닛으로는 크기를 주장할 수 없다.
+
+> **한 단이라도 갈리면 분해로 센다.** 묻는 것이 "이 간격을 가를 수 있는가"
+> 이지 "모든 깊이에서 가르는가" 가 아니기 때문이다. 그래서 작은 점은
+> 약한 증거다 — 계단선이 작은 점 하나에 끌려 내려간 구간은 믿지 말 것.
+
+> **DIGIT_Marker 는 없다** — 공간 분해능을 재지 않았다(2026-09-11 결정).
+> DIGIT 은 `pair010`·`pair025` 만 있어 세로축이 두 칸뿐이다.
+
+<sub>만드는 것은 `scripts/spatial_sweep_units.py` · 자료 `extra/data/K_spatial_sweep_*.csv`, 원자료 `extra/data/resolution_sweep_<원리>_<간격>.csv`</sub>
+
 <sub>만드는 것은 `scripts/resolution_sweep.py` · 자료 `extra/data/resolution_sweep_pair100.csv`</sub>
 
 

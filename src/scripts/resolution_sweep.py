@@ -35,6 +35,7 @@ import pixel_density as PD
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "result" / "extra" / "data"
+PRINCIPLE = "9DTact"
 SIZES = [(1920, 1080), (1280, 720), (854, 480), (640, 360), (426, 240),
          (320, 180), (160, 90), (80, 45), (48, 27), (32, 18), (16, 9), (8, 5)]
 _RERUN = re.compile(r"__\d+$")
@@ -66,11 +67,17 @@ def main():
             if p["tip"] == "cylinder_pair"}
     sep = A.ELEMENT_MM + gaps[probe]
     droot = ROOT / "data" / dataset
+    global PRINCIPLE
+    PRINCIPLE = Path(dataset).parts[1]      # .../<원리>/<런 폴더>
     rows = []
+    # 세 번째 인자로 유닛을 좁힌다 — 분석이 선택한 아홉 개만 돌리면 된다.
+    only = set(sys.argv[3].split(",")) if len(sys.argv) > 3 else None
     for run in sorted(d for d in droot.iterdir() if d.is_dir()):
         if _RERUN.search(run.name) or not (run / f"shape_{probe}" / "ladder.csv").exists():
             continue
         unit = run.name.split("_", 1)[1] if "_" in run.name else run.name
+        if only is not None and unit not in only:
+            continue
         st = json.loads((run / "state.json").read_text())
         J0 = A.jacobian(st, run.name)
         if J0 is None:
@@ -125,8 +132,10 @@ def main():
     D = pd.DataFrame(rows)
     # 픽셀 폭은 이 카메라만의 숫자다. 유닛·원리를 가로질러 견주려면 시야 면적으로
     # 나눈 화소 밀도여야 한다 — 문서와 그림이 쓰는 x 축이 이 열이다.
-    D = PD.add(D, "9DTact", unit_col="unit")
-    f = OUT / f"resolution_sweep_{probe}.csv"
+    D = PD.add(D, PRINCIPLE, unit_col="unit")
+    # **파일 이름에 원리를 넣는다.** 전에는 probe 만 들어가 있어서 DIGIT 의
+    # pair010 이 9DTact 의 pair010 결과를 통째로 덮었다(2026-09-14).
+    f = OUT / f"resolution_sweep_{PRINCIPLE}_{probe}.csv"
     D.to_csv(f, index=False)
     print(f"\n  -> {f}  ({len(D)} 행)")
     piv = (D.assign(res=D.verdict.eq("분해"))
