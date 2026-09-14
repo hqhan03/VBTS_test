@@ -73,11 +73,11 @@ brightens with indentation.
 
 Pixel density is decided by the task instead. Across twenty tests of a
 thickness or hardness association with the density at which force and shape
-errors level off, none survives false-discovery correction, so within these
-nine gel designs there is no reason to revisit pixel density when the gel
-changes. What does move it is the task and the error tolerance: at a 10 %
-tolerance the markerless arms plateau at 6.4-13.6 px/mm^2 for the resultant
-force error, with shape between 2.9 and 6.3. Choose the gel from the contact
+errors level off, none survives false-discovery correction, so we find no
+reason to revisit pixel density when the gel changes. What does move it is the
+task and the error tolerance: at a 10 % tolerance the markerless arms plateau
+at 6.4-13.6 px/mm^2 for the resultant force error, with shape between 2.9 and
+6.3. Choose the gel from the contact
 and force requirements; choose the pixel density from the task and the error
 you will accept.
 
