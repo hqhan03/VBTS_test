@@ -58,6 +58,7 @@ FAIRINO FR5 로봇 팔과 ATI Mini45 6축 F/T 셀로, 세 가지 촉각 센서 �
 | 로봇이 실제로 무엇을 하나 — 동작 하나하나와 그 뒤의 실측값 | **`docs/measurement_protocol.md`** |
 | **세 원리가 어떻게 다른가, 그리고 이 캠페인이 무엇을 틀렸나** | **`docs/cross_principle.md`** ← 결과이고, §5 가 자기비판 |
 | **시험 1, 힘 추정** — 세 원리 전부, 해상도별 축별 MAE | **`docs/force_estimation.md`** (§7 이 DIGIT 계열의 입력 표현 비교) |
+| 같은 학습을 축별 · 블록별 · 합력 셋으로 묶어 견준다 | `docs/force_views.md` |
 | **시험 2, 형상 복원** — 9DTact 의 밝기→깊이 조회표와 DIGIT 의 광도 스테레오 | **`docs/shape_reconstruction.md`** (§5 가 DIGIT 파이프라인, `src/scripts/digit_shape.py`) |
 | **시험 3, 공간 분해능** — 방법과 전 유닛 결과 | **`docs/spatial_resolution.md`** |
 | **시험 4, 최대 측정 가능 힘** — 방법, 전 유닛, 그리고 왜 이것으로 센서를 비교할 수 없나 | **`docs/force_ceiling.md`** |
