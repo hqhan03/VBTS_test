@@ -379,7 +379,7 @@ def predict_depth(model, img, ref, px_per_mm, size=None, contact_mask=True):
     return z, px_per_mm
 
 
-def imprint_size_mm(depth, ppm, d_centre, min_px=20.0):
+def imprint_size_mm(depth, ppm, d_centre):
     """반깊이 윤곽의 등가 지름 (mm). `analyse_shape.imprint_geometry` 와 같은 정의.
 
     깊이만 채점하면 형상 센서의 절반만 보는 것이다 — 압자는 ⌀4 mm 와 한 변 4 mm
@@ -393,10 +393,14 @@ def imprint_size_mm(depth, ppm, d_centre, min_px=20.0):
     if not cnts:
         return np.nan
     c = max(cnts, key=cv2.contourArea)
-    floor = max(4.0, min_px * (ppm / 100.0) ** 2)   # 100 px/mm 를 기준으로
-    if cv2.contourArea(c) < floor:
+    # 면적은 **화소수**다 — contourArea 는 작은 자국에서 40 % 까지 낮게 잡아
+    # 저해상도를 잘라 낸다(`analyse_shape.imprint_geometry` 의 같은 주석).
+    mask = np.zeros_like(m)
+    cv2.drawContours(mask, [c], -1, 1, -1)
+    n_px = float(mask.sum())
+    if n_px < 3:
         return np.nan
-    return float(2.0 * np.sqrt(cv2.contourArea(c) / np.pi) / ppm)
+    return float(2.0 * np.sqrt(n_px / np.pi) / ppm)
 
 
 def eval_unit(run: Path, model, px_per_mm, shape="cyl4", sizes=SIZES):

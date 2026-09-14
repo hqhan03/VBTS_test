@@ -276,15 +276,20 @@ def imprint_geometry(depth, mm_per_px, d_centre):
     if not cnts:
         return np.nan, np.nan, np.nan, np.nan
     c = max(cnts, key=cv2.contourArea)
-    # 면적 문턱도 **물리 크기**다. 20 px 은 전해상도에서 0.003 mm² -- 티끌을
-    # 거르는 값인데, 픽셀로 고정해 두면 16x9 에서 4 mm 자국(약 9 px²)이 통째로
-    # 버려진다. 배율로 나누되 minAreaRect 가 뜻을 갖는 4 px 밑으로는 안 내린다.
-    # DOWNSCALE = 1 에서는 20 그대로다.
-    if cv2.contourArea(c) < max(4.0, 20.0 / max(DOWNSCALE, 1e-9) ** 2):
+    # **면적은 마스크의 화소수로 잰다, 윤곽 다각형이 아니라.** contourArea 는
+    # 경계를 반 화소 안쪽으로 잡아 큰 자국에서는 오차가 0.4 % 지만(반지름
+    # 200 px) 작은 자국에서는 화소수의 40 % 까지 내려간다(반지름 1 px). 저해상도
+    # 에서 자국이 통째로 버려지던 것이 이것이다 -- 16x9 에서 17 유닛 중 5 개만
+    # 남았다(2026-09-14). 전해상도(반지름 약 160 px)에서는 d_eq 가 0.25 % 밖에
+    # 안 움직인다.
+    mask = np.zeros_like(m)
+    cv2.drawContours(mask, [c], -1, 1, -1)
+    n_px = float(mask.sum())
+    if n_px < 3:                 # 화소 두 개로는 지름이라 할 것이 없다
         return np.nan, np.nan, np.nan, np.nan
     (_, _), (w, h), ang = cv2.minAreaRect(c)
     w, h = w * mm_per_px, h * mm_per_px
-    d_eq = 2.0 * np.sqrt(cv2.contourArea(c) / np.pi) * mm_per_px
+    d_eq = 2.0 * np.sqrt(n_px / np.pi) * mm_per_px
     return max(w, h), min(w, h), float(ang), d_eq
 
 
