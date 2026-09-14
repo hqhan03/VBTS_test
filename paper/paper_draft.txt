@@ -54,30 +54,27 @@ Vision-based tactile sensors provide dense contact information, but their image
 data impose bandwidth and processing demands that grow with sensor count;
 high-bandwidth instrumentation has been named a fundamental obstacle for
 compact tactile fingers [1]. The processed pixel density -- pixels per square
-millimetre of sensing surface -- must therefore be fixed early, since it
-constrains camera, electronics and network input size together. Choosing it
+mm^2 of sensing surface -- must therefore be fixed early, since it constrains
+camera, electronics and network input size together. Choosing it
 requires knowing what elastomer design and what task requirements each decide,
 and the two have never been varied in the same experiment.
 
 We separate the two decisions by sweeping three sensor types -- two sensing
-principles and a marker-bearing photometric variant -- against three gel
-hardness levels and three sensing-layer thicknesses. Within each arm the sensor
-body, camera module and illumination are identical and only the gel is
-exchanged, and the same camera module is used in all three arms; one 1920x1080
-capture is then downsampled across twelve densities. The elastomer decides
-three things and we measure all three: paired-contact separation, the force at
-which the image response saturates, and how the imprint grows and brightens
-with indentation. Thickness is the main lever: in the depth-referenced arm
-paired-contact separation degrades with it on every measure we record while the
-photometric arm stays at the bound of our probe set, and the saturating force
-rises with thickness in the depth-referenced arm but falls in the photometric
-one. Hardness acts through the loading variable: at equal indentation depth it
-does not order the imprint curves and at equal force it does.
+principles and a marker-bearing variant -- against three gel hardness levels
+and three sensing-layer thicknesses. Within each arm the body, camera and
+illumination are identical and only the gel changes; one 1920x1080 capture is
+downsampled across twelve densities. Thickness is the main lever: in the
+depth-referenced arm paired-contact separation degrades with it on every
+measure we record while the photometric arm stays at the bound of our probe
+set, and the force at which the image response saturates rises with thickness
+there but falls in the photometric arm. Hardness acts through the loading
+variable: at equal depth it does not order the imprint curves and at equal
+force it does.
 
 Pixel density is decided by the task instead. Across twenty tests of a
-thickness or hardness association with the density at which force and shape
-errors level off, none survives false-discovery correction, so we find no
-reason to revisit pixel density when the gel changes. What does move it is the
+thickness or hardness association with the plateau density of force and shape
+error, none survives false-discovery correction, so we find no reason to
+revisit pixel density when the gel changes. What does move it is the
 task and the error tolerance: at a 10 % tolerance the markerless arms plateau
 at 6.4-13.6 px/mm^2 for the resultant force error, with shape between 2.9 and
 6.3. Choose the gel from the contact and force requirements; choose the pixel
