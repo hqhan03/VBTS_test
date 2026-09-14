@@ -43,6 +43,21 @@ XT = [0.1, 1, 10, 100, 1000, 10000]
 XTL = ["0.1", "1", "10", "100", "1000", "10⁴"]
 
 
+def load_exact(pr):
+    """재학습이 낸 **실측** 합력 (`res_mae`). 없으면 None.
+
+    2026-09-15 에 선택 27 유닛을 다시 학습해 얻었다. 하한은 그대로 두고 이것을
+    덧그린다 — 어느 쪽도 지우지 않는다.
+    """
+    f = DS / pr / "force_vs_resolution_res.csv"
+    if not f.exists():
+        return None
+    d = RC.keep(pd.read_csv(f), pr, "sensor")
+    if "res_mae" not in d:
+        return None
+    return d.groupby(["sensor", "width_px"]).res_mae.median().reset_index()
+
+
 def load(pr):
     f = DS / pr / "force_vs_resolution_axes.csv"
     if not f.exists():
@@ -68,7 +83,7 @@ def main():
     plt.rcParams["axes.unicode_minus"] = False
     plt.rcParams["mathtext.fontset"] = "dejavusans"
     fig, axes = plt.subplots(1, 2, figsize=(9.6, 3.9))
-    rows, summ = [], []
+    rows, summ, summ_ex = [], [], {}
 
     for pr, nice in PRS:
         k = load(pr)
@@ -81,9 +96,17 @@ def main():
         c = PRINCIPLE[pr]
         ax = axes[0]
         ax.fill_between(R[m.index], m.lo, m.hi, color=c, alpha=.14, lw=0)
-        ax.plot(R[m.index], m.lo, "-o", c=c, lw=2.0, ms=4, mec="white",
-                mew=.6, label=nice)
+        ax.plot(R[m.index], m.lo, "--", c=c, lw=1.2, alpha=.8)
         ax.plot(R[m.index], m.hi, "-", c=c, lw=.8, alpha=.55)
+        ex = load_exact(pr)
+        if ex is not None and len(ex):
+            em = ex.groupby("width_px").res_mae.median()
+            ax.plot(R[em.index], em.values, "-o", c=c, lw=2.2, ms=4.5,
+                    mec="white", mew=.6, label=f"{nice} (실측)")
+            summ_ex[pr] = em
+        else:
+            ax.plot(R[m.index], m.lo, "-o", c=c, lw=2.0, ms=4, mec="white",
+                    mew=.6, label=f"{nice} (하한)")
         axes[1].plot(R[m.index], m.fz_share * 100, "-o", c=c, lw=1.8, ms=4,
                      mec="white", mew=.6, label=nice)
 
@@ -95,11 +118,18 @@ def main():
                          fz_sat_px=s_fz, fz_sat_R=round(float(R[s_fz]), 2),
                          fz_share_median=round(float(m.fz_share.median()), 3),
                          band_ratio=round(float((m.hi / m.lo).median()), 3)))
-        rows.append(m.assign(principle=pr,
-                             density_px_per_mm2=R[m.index].values).reset_index())
+        m2 = m.copy()
+        if pr in summ_ex:
+            m2["res_mae_exact"] = summ_ex[pr].reindex(m2.index)
+            x = m2.dropna(subset=["res_mae_exact"])
+            summ[-1]["exact_best_N"] = round(float(x.res_mae_exact.min()), 4)
+            summ[-1]["bound_over_exact"] = round(
+                float((x.lo / x.res_mae_exact).median()), 3)
+        rows.append(m2.assign(principle=pr,
+                              density_px_per_mm2=R[m2.index].values).reset_index())
 
     for ax, yl, ttl in ((axes[0], "합력 오차 ‖ΔF‖ (N)",
-                         "(a) 세 축을 합친 힘 오차 — 굵은 선이 하한, 띠가 부등식의 폭"),
+                         "(a) 세 축을 합친 힘 오차 — 굵은 선이 실측, 점선이 하한, 띠가 부등식의 폭"),
                         (axes[1], "Fz 가 차지하는 몫 (%)",
                          "(b) 합력은 무엇에 끌려가나 — 제곱합에서 Fz 의 비중")):
         ax.set_xscale("log")

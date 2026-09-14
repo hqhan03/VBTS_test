@@ -1,19 +1,29 @@
-unit,hardness,thickness_mm,rep,probe,ceiling_N,depth_mm,status,suspect_hardware
-soft_1mm_r1,soft,1,1,ball8,27.848915900572194,4.527912557169966,characterised,False
-soft_1mm_r2,soft,1,2,ball8,26.799817552457977,4.285544924573017,characterised,False
-soft_2mm_r1,soft,2,1,ball8,30.238843978677988,5.4744673004455215,characterised,False
-soft_2mm_r2,soft,2,2,ball8,24.610286158155468,5.076735382551469,characterised,False
-soft_3mm_r1,soft,3,1,ball8,30.97387494840487,6.053670937241272,characterised,False
-soft_3mm_r2,soft,3,2,ball8,30.639473352105313,6.293003450833041,characterised,False
-medium_1mm_r1,medium,1,1,ball8,31.00153968042581,4.711342525137244,characterised,False
-medium_1mm_r2,medium,1,2,ball8,38.596248951006785,5.224188125932638,characterised,True
-medium_2mm_r1,medium,2,1,—,,,damaged,False
-medium_2mm_r2,medium,2,2,ball8,30.207202253506903,5.246948058025978,characterised,False
-medium_3mm_r1,medium,3,1,ball8,38.477407292298594,6.6054929903992985,characterised,False
-medium_3mm_r2,medium,3,2,ball8,34.182887472624984,6.192190817531621,characterised,False
-hard_1mm_r1,hard,1,1,ball8,27.510294207386806,4.318176562097701,characterised,False
-hard_1mm_r2,hard,1,2,ball8,34.13547167662337,4.736293115039093,characterised,True
-hard_2mm_r1,hard,2,1,ball8,43.32170674399263,5.292425101276052,characterised,False
-hard_2mm_r2,hard,2,2,ball8,43.81170816849713,5.452331049836349,characterised,False
-hard_3mm_r1,hard,3,1,ball8,63.159778301454004,6.788935798770929,characterised,False
-hard_3mm_r2,hard,3,2,ball8,60.32792947150917,6.669807342949163,characterised,False
+새로 발견한 사실 토대로 제목 작성
+
+많은 센서들이 개발되고 있으나, 그러나 가이드라인이 없다.
+이러이러한 센서들 테스트해서
+이러한 유의미한 데이터가 나왔다.
+가이드라인을 만들었다 (X) 가이드라인이 될 경향성을 보였다, 해봤다 (완곡하게)
+논문 전체에서 톤을 일관되게 유지. 너무 과장x
+
+왜 이 파라미터들을 바꿨는지 - 기존에 논문에 언급된 바 인용
+왜 센서 원리 이 두개 골랐나
+
+각 문단의 첫 줄로 문단 이해 가능하게 적기
+
+result는 결과만 담백하게, discussion에는 해석
+
+intro + discussion = abstract
+연구자의 생각이 들어가는 부분은 intro와 discussion
+
+<discussion>
+첫 문단 - 연구 summary
+일반적인 예상과 다르게 ~~~ 한 경향성이 관찰되었다.
+아래 딱딱한 기재가 있을 때 누르면 눌렀을 때 stiffness가 증가한다. shore는 실제 센서 gel의 stiffness를 예측하지 못한다.
+9DTact는 translucent 밑의 transparent 때문에 DIGIT과 반대되는 경향성이 나온 것으로 생각됨.
+9DTact도 DIGIT처럼 아크릴로 받쳐주면 DIGIT과 같은 최대 힘 경향성 나올 것으로 예상.
+spatial resolution은 겔 두께와 경도에 dependent, 두께와 경도에 따른 force/shape 추정 정확도는 관계가 있다. 그러나 force나 shape 추정 정확도가 saturate 하는 픽셀 밀도는 두께와 경도에 관계가 없다.
+(예상과 같은 것, 자명한 것은 한 문단에 몰아넣기 / 예상과 다른 것 구분)
+마지막에서 두번째 문단 - limitation 적기
+마지막 문단 - future work 앞으로 이러이러한 파라미터를 추가로 하여 더 많은 센서 종류에, 리즈너블한 개수의 샘플을 만들어서 적용한 가이드라인을 제공할 계획이다. 
+당연히 고려해야 할 것이라고 생각한 파라미터 외에도 내가 발견한 사실을 앞으로 센서 만드는 연구자는 이러이러한 것을 고려하여 제작해야 한다.

@@ -26,15 +26,36 @@ import pandas as pd
 
 import paper_fig2 as F2
 import pixel_density as PD
+import pixel_density as PD
 from palette import HARD3, THICK3
 
-OUT = Path(__file__).resolve().parents[2] / "paper" / "figures"
+ROOT = Path(__file__).resolve().parents[2]
+OUT = ROOT / "paper" / "figures"
 AX = ["fx_mae", "fy_mae", "fz_mae"]
 GROUPS = [("thickness_mm", THICK3, "Gel thickness", lambda v: f"{v} mm"),
           ("hardness", HARD3, "Gel hardness", lambda v: v)]
 
 
 def load(pr):
+    """실측 `res_mae` 가 있으면 그것을, 없으면 옌센 하한을 쓴다.
+
+    2026-09-15 에 선택 27 유닛을 다시 학습해 실측값을 얻었다. 하한은 9DTact
+    0.881, DIGIT 0.863, 마커 0.900 배로 참값을 낮춰 잡고 있었다 — 평탄점의
+    위치는 같았지만 크기는 달랐다.
+    """
+    ex = ROOT / "data" / "20260911_VBTSresolution_dataset" / pr \
+        / "force_vs_resolution_res.csv"
+    if ex.exists():
+        import result_common as _RC
+        e = _RC.keep(pd.read_csv(ex), pr, "sensor")
+        if "res_mae" in e and len(e):
+            e = e[e.sensor.isin(_RC.chosen(pr))].copy()
+            e["thickness_mm"] = e.sensor.str.extract(r"_(\d)mm_")[0].astype(int)
+            e["hardness"] = e.sensor.str.extract(r"^(soft|medium|hard)_")[0]
+            e = PD.add(e, pr)
+            k = (e.groupby(["sensor", "hardness", "thickness_mm", "width_px",
+                            "density_px_per_mm2"]).res_mae.median().reset_index())
+            return k.rename(columns={"res_mae": "res"})
     d = F2.load(pr)
     if d is None:
         return None
@@ -92,7 +113,7 @@ def main():
                 ax.set_title("Resultant force error  $\\|\\Delta F\\|$",
                              fontsize=7.5)
             if j == 0:
-                ax.set_ylabel(f"{nice}\nlower bound [N]", fontsize=7.5)
+                ax.set_ylabel(f"{nice}\nMAE [N]", fontsize=7.5)
             ylim.append(ax.get_ylim())
 
     hi = max(b for _, b in ylim)
