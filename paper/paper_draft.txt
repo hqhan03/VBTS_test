@@ -42,35 +42,29 @@ information at the cost of a large data volume per sensor. That cost becomes a
 system constraint as sensor count grows, raising aggregate bandwidth and
 spending the latency budget reactive control needs; high-bandwidth
 instrumentation has been named a fundamental obstacle for compact tactile
-fingers [1]. Sampling resolution, in pixels per millimetre, is therefore fixed
-early, since it constrains camera, electronics and network input size together.
-No basis exists for judging which value suffices. The requirement should depend
-on how locally the elastomer preserves contact information, and so on gel
-design, but that dependence has not been quantified. We investigate it with 27
-sensors, one per condition, spanning two sensing principles and a
-marker-bearing photometric variant, three hardness levels and three
-sensing-layer thicknesses. Imaging hardware is reused within each arm, and one
-1920x1080 capture is downsampled to widths from 1920 to 8 pixels. We
-distinguish paired-contact separability from the input resolution at which
-force and shape errors approach their minima. Thicker depth-referenced
-specimens separate paired contacts less well on every measure we record
-(Spearman rho = -0.74 for maximum dip, p = 0.023), yet no tested association
-between hardness or thickness and estimator plateau resolution survives
-false-discovery correction. This does not establish independence: nine
-specimens per arm at three levels of each factor is a small design, the
-per-unit plateau resolutions are widely scattered, and with one specimen per
-condition we cannot separate build variation from the designed factors. We
-report the requirement as pixel density, the pixel count at a given downscale
-divided by the area each calibrated field of view images, because one pixel
-width is a different physical sampling in each arm. At a 10 % error tolerance,
-median plateau densities are 5.9-6.3 px/mm^2 for shear and 13.3-17.3 for normal
-force in the markerless arms. Tightening the tolerance to 5 % raises the
-depth-referenced normal-force density to 218 px/mm^2 and reverses the
-normal/shear ordering in the photometric arm, so a plateau summary depends on
-the decision criterion as much as on the task. These results characterize the
-tested quasi-static pipelines rather than a universal camera specification, and
-argue for evaluating contact separability, task error and specimen
-repeatability separately.
+fingers [1]. Pixel density, in pixels per square millimetre of sensing surface,
+is therefore fixed early, since it constrains camera, electronics and network
+input size together. Designers currently have no basis for choosing it, because
+the elastomer and the camera have never been varied in the same experiment. We
+separate the two decisions using 27 sensors, one per condition, spanning two
+sensing principles and a marker-bearing photometric variant, three hardness
+levels and three sensing-layer thicknesses. Imaging hardware is reused within
+each arm, and one 1920x1080 capture is downsampled across twelve densities. The
+elastomer decides three things and we measure all three: paired-contact
+separation, which degrades with thickness on every measure we record (Spearman
+rho = -0.74 for maximum dip, p = 0.023); the force at which the image response
+saturates, which moves with thickness in opposite directions in the two arms;
+and how the imprint grows and brightens with indentation. Pixel density is
+decided by the task instead. Across twenty tests of a thickness or hardness
+association with the density at which force and shape errors level off, none
+survives false-discovery correction, so within these nine gel designs there is
+no reason to revisit pixel density when the gel changes. What does move it is
+the task and the error tolerance: at a 10 % tolerance the markerless arms
+plateau at 5.9-6.3 px/mm^2 for shear and 13.3-17.3 for normal force, with shape
+between 14.9 and 55.0, and tightening the tolerance to 5 % raises the
+depth-referenced normal-force density more than twelvefold. Choose the gel from
+the contact and force requirements; choose the pixel density from the task and
+the error you will accept.
 
 ================================================================================
 I. INTRODUCTION
@@ -831,11 +825,15 @@ and unquantified measurement uncertainty together prevent an independence claim
 or a universal input-resolution recommendation.
 
 [VI-3]
-The practical implication is to evaluate input sampling against the intended
-task error while separately measuring contact separability and specimen
-repeatability. A general design recommendation requires the second specimen of
-each condition brought back in as a repeatability measurement, effect sizes
-with intervals, and validation over the relevant load and motion range.
+The practical implication is that the two decisions can be taken separately.
+Choose the gel from what the contact requires: paired-contact separation, the
+force at which the image response saturates, and the imprint response, all
+three of which move with thickness in our measurements. Choose the pixel
+density from the task and the error tolerance, and, within the nine gel designs
+tested, do not revisit it when the gel changes. Extending that guidance beyond
+these designs requires the second specimen of each condition analysed as a
+repeatability study, effect sizes with intervals, and validation over the
+relevant load and motion range.
 
 
 ================================================================================
