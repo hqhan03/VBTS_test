@@ -76,7 +76,7 @@ nine gel designs there is no reason to revisit pixel density when the gel
 changes. What does move it is
 the task and the error tolerance: at a 10 % tolerance the markerless arms
 plateau at 6.4-13.6 px/mm^2 for the resultant force error, with shape between
-14.9 and 55.0, and tightening the tolerance to 5 % leaves the depth-referenced
+2.9 and 55.0, and tightening the tolerance to 5 % leaves the depth-referenced
 arm almost unmoved (13.6 to 13.8) while the photometric arm rises 3.3-fold
 (6.4 to 20.8). Choose the gel from
 the contact and force requirements; choose the pixel density from the task and
@@ -786,9 +786,9 @@ indenter positioned above the gel. References taken before approach were
 avoids this offset without rescaling the images.
 
 [V-B4]
-Over the nine photometric specimens, the median best error is 0.048 mm for the
-cylinder and 0.055 mm for the cube, with eight of nine below 0.1 mm on each
-probe; the depth-referenced medians are 0.062 and 0.093 mm, with seven and five
+Over the nine photometric specimens, the median best error is 0.043 mm for the
+cylinder and 0.046 mm for the cube, with eight of nine and nine of nine below
+0.1 mm respectively; the depth-referenced medians are 0.062 and 0.093 mm, with seven and five
 of nine below 0.1 mm. Evaluation uses commanded penetration relative to a
 fitted contact zero over the contact region; neither held-out probe enters
 calibration. Absolute errors are not used to rank the arms, for the reason
@@ -798,11 +798,15 @@ given in [V-B7].
   arm                | probe          | median R | across units   | width
   depth-referenced   | cylinder 4 mm  |    55.0  |  16.4 - 7 830  | 160 x 90
   depth-referenced   | cube 4 mm      |    55.0  |  13.6 - 7 830  | 160 x 90
-  photometric        | cylinder 4 mm  |    14.9  |  0.84 -  83.2  |  80 x 45
-  photometric        | cube 4 mm      |    17.7  |  0.21 -  85.8  |  80 x 45
+  photometric        | cylinder 4 mm  |     2.9  |  0.60 -  1 136 |  32 x 18
+  photometric        | cube 4 mm      |     6.3  |  0.21 -  1 173 |  48 x 27
   R is pixel density in px/mm^2, defined as in Table IX. Both probes are held
   out of calibration. One unit per condition, 10 % tolerance, uncorrected
-  reconstruction.
+  reconstruction. The photometric rows changed on 2026-09-14: a contact mask in
+  the reconstruction applied a 3x3 opening in fixed pixel units, which at low
+  resolution was larger than the imprint and erased it -- at 16x9 the mask went
+  empty and the predicted depth was identically zero in 74 % of frames. The
+  kernel now scales with the width; the 1920-pixel values did not move.
 
 [V-B5]
 The eight shape comparisons detect no hardness or thickness association after
@@ -842,7 +846,7 @@ correction.
 [VI-2]
 At a 10 % tolerance, markerless specimens have median plateau densities of
 5.9-6.3 px/mm^2 for shear and 13.3-17.3 for normal force; shape summaries range
-from 14.9 to 55.0. Tightening the tolerance to 5 % raises the depth-referenced
+from 2.9 to 55.0. Tightening the tolerance to 5 % raises the depth-referenced
 normal-force density more than twelvefold and reverses the normal/shear
 ordering in the photometric arm, so these densities are observations about a
 criterion and a pipeline rather than sensor specifications. A small design,

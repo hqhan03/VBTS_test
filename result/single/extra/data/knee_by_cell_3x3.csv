@@ -23,9 +23,9 @@ DIGIT_Marker,shear,hard,455,"5,898",16.5
 9DTact,cube4,soft,69.3,13.6,"1,275"
 9DTact,cube4,medium,15.4,"7,830",188
 9DTact,cube4,hard,16.4,55.0,41.5
-DIGIT,cyl4,soft,83.2,18.3,14.9
-DIGIT,cyl4,medium,0.84,17.4,13.7
-DIGIT,cyl4,hard,3.43,17.7,13.3
-DIGIT,cube4,soft,83.2,18.3,14.9
-DIGIT,cube4,medium,0.21,17.4,54.7
-DIGIT,cube4,hard,85.8,17.7,13.3
+DIGIT,cyl4,soft,83.2,2.93,0.60
+DIGIT,cyl4,medium,0.84,"1,111",2.19
+DIGIT,cyl4,hard,0.86,"1,136",13.3
+DIGIT,cube4,soft,83.2,"1,173",2.38
+DIGIT,cube4,medium,0.21,6.25,875
+DIGIT,cube4,hard,0.86,2.84,212

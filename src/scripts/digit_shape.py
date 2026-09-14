@@ -355,9 +355,23 @@ def predict_depth(model, img, ref, px_per_mm, size=None, contact_mask=True):
         mag = np.abs(img.astype(np.float32) - ref.astype(np.float32)).sum(2)
         thr = max(float(np.percentile(mag, 99.0)) * 0.25, 6.0)
         m = (mag > thr).astype(np.uint8)
-        k = np.ones((3, 3), np.uint8)
-        m = cv2.morphologyEx(m, cv2.MORPH_OPEN, k)
-        m = cv2.dilate(m, k, iterations=2).astype(bool)
+        # **형태학 파라미터는 물리 크기다.** 3 px 열림과 2 px 팽창은 1920 px 에서
+        # 0.03 mm 이고 잡음 한두 화소를 털어내는 용도다. 그런데 픽셀 수로 고정해
+        # 두면 저해상도에서 그 커널이 자국보다 커진다 — 16x9 에서 자국은 18 px
+        # 인데 3x3 열림이 **0 으로 지웠고**, 그래서 깊이가 통째로 0 이 됐다
+        # (2026-09-14 발견). 32x18 도 49 -> 9 px 로 82 % 를 잃고 있었다.
+        # 그러므로 폭에 비례해 줄이고, 1 px 밑으로 내려가면 아예 걸지 않는다.
+        # 1920 px 에서는 ks=3, it=2 로 예전과 **완전히 같다.**
+        ks = int(round(3 * W / 1920.0))
+        it = int(round(2 * W / 1920.0))
+        if ks >= 2:
+            k = np.ones((ks | 1, ks | 1), np.uint8)
+            m = cv2.morphologyEx(m, cv2.MORPH_OPEN, k)
+        if it >= 1:
+            m = cv2.dilate(m, np.ones((3, 3), np.uint8), iterations=it)
+        m = m.astype(bool)
+        if not m.any():          # 그래도 비면 마스크를 걸지 않는다 — 0 을
+            m = np.ones_like(m)  # "깊이 0" 으로 보고하는 것보다 낫다
         gx = np.where(m, gx, 0.0)
         gy = np.where(m, gy, 0.0)
     # 기울기는 mm/mm 이고 적분은 픽셀 격자 위에서 하므로 픽셀당 mm 를 곱한다
@@ -371,7 +385,11 @@ def eval_unit(run: Path, model, px_per_mm, shape="cyl4", sizes=SIZES):
     if not lad.exists():
         return []
     L = pd.read_csv(lad)
-    ref = cv2.imread(str(run / "reference.png"))
+    # **`load_ref` 를 쓴다.** 바로 위 docstring 이 적어 둔 대로 `reference.png`
+    # 는 이후 프레임보다 8~14 % 밝아 배경에 가짜 경사로를 만든다. 여기서만
+    # 직접 읽고 있었다(2026-09-14 발견) — 이 함수로 낸 값은 고해상도에서도
+    # 오차가 0.085 mm 로, load_ref 를 쓴 0.050 mm 보다 1.7 배 나빴다.
+    ref = load_ref(run)
     if ref is None:
         return []
     rows = []
