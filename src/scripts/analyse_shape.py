@@ -276,7 +276,11 @@ def imprint_geometry(depth, mm_per_px, d_centre):
     if not cnts:
         return np.nan, np.nan, np.nan, np.nan
     c = max(cnts, key=cv2.contourArea)
-    if cv2.contourArea(c) < 20:
+    # 면적 문턱도 **물리 크기**다. 20 px 은 전해상도에서 0.003 mm² -- 티끌을
+    # 거르는 값인데, 픽셀로 고정해 두면 16x9 에서 4 mm 자국(약 9 px²)이 통째로
+    # 버려진다. 배율로 나누되 minAreaRect 가 뜻을 갖는 4 px 밑으로는 안 내린다.
+    # DOWNSCALE = 1 에서는 20 그대로다.
+    if cv2.contourArea(c) < max(4.0, 20.0 / max(DOWNSCALE, 1e-9) ** 2):
         return np.nan, np.nan, np.nan, np.nan
     (_, _), (w, h), ang = cv2.minAreaRect(c)
     w, h = w * mm_per_px, h * mm_per_px

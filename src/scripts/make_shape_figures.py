@@ -80,9 +80,10 @@ def auto_yt(d, cols):
     return t if len(t) >= 3 else [x for x in LADDER if lo * .5 <= x <= hi * 2]
 
 
-def panel(d, col_tmpl, stem, ylab, title, pr="9DTact", yt=None):
+def panel(d, col_tmpl, stem, ylab, title, pr="9DTact", yt=None,
+          logy=True, zero_line=False):
     """유닛 격자 — 행 = 경도, 열 = 두께(x 복제). `force` 쪽 8 절과 같은 배치다."""
-    if yt is None:
+    if yt is None and logy:
         yt = auto_yt(d, [col_tmpl.format(pb) for pb, _, _ in PROBE])
     units, ncol = RC.grid(pr)   # 단일 모드면 3x3 — 빈 칸을 만들지 않는다
     drawn = []          # 그린 숫자를 그대로 csv 로 남긴다
@@ -109,7 +110,16 @@ def panel(d, col_tmpl, stem, ylab, title, pr="9DTact", yt=None):
                                            density_px_per_mm2=k.index,
                                            mae_mm=k.values,
                                            suspect_hardware=RC.is_suspect(pr, u))))
-        ax.set_xscale("log"); ax.set_yscale("log"); res_axis(ax, list(yt), fs=6.2)
+        ax.set_xscale("log")
+        if logy:
+            ax.set_yscale("log"); res_axis(ax, list(yt), fs=6.2)
+        else:
+            # 지름 오차는 부호가 있다 — 로그로 그릴 수 없고, 0 선이 곧 참값이다.
+            res_axis(ax, None, fs=6.2)
+            if zero_line:
+                ax.axhline(0, c="#1a1a1a", ls=":", lw=.9, zorder=1)
+            if yt is not None:
+                ax.set_ylim(*yt)
         tt, tc = RC.title(pr, u)
         ax.set_title(tt, fontsize=8.5 if tc == "black" else 7.4, color=tc)
         ax.tick_params(labelsize=7)
@@ -181,6 +191,16 @@ def load_digit():
     w = (d.groupby(["unit", "width_px", "shape"]).err_mm.mean()
          .unstack("shape").reset_index())
     w = w.rename(columns={c: f"{c}_raw_mae" for c in ("cyl4", "cube4")})
+    # 가로 크기 오차 — 참값은 두 압자 모두 4 mm (2026-09-14 에 재기 시작했다)
+    if "size_mm" in d:
+        sz = (d.groupby(["unit", "width_px", "shape"]).size_mm.mean()
+                .unstack("shape").reset_index())
+        sz = sz.rename(columns={c: f"{c}_size_err" for c in ("cyl4", "cube4")})
+        for c in ("cyl4", "cube4"):
+            k = f"{c}_size_err"
+            if k in sz:
+                sz[k] = sz[k] - 4.0
+        w = w.merge(sz, on=["unit", "width_px"], how="left")
     return PD.add(RC.mark(w.rename(columns={"unit": "sensor"}), "DIGIT",
                           "sensor"), "DIGIT")
 
@@ -259,6 +279,13 @@ def main():
     panel(d, "{}_corrected_mae", RC.grid_stem("shape_mae_corrected"),
           "깊이 MAE (mm)",
           "9DTact — 형상 복원 오차 대 해상도 (회색조 손실 보정)")
+    # **깊이만 보면 형상 센서의 절반만 보는 것이다** (2026-09-14, 운전자 요청).
+    # 압자는 ⌀4 mm 와 한 변 4 mm 이므로 되찾아야 할 것은 깊이와 가로 크기 둘이다.
+    # 부호를 살린다 — 크게 나오는지 작게 나오는지가 원인을 가리킨다.
+    panel(d, "{}_raw_size_err", RC.grid_stem("shape_size_err_vs_resolution"),
+          "지름 오차 (mm, 참 4 mm 대비)",
+          "9DTact — 되찾은 가로 크기의 오차 대 해상도 (0 이 참값)",
+          logy=False, zero_line=True, yt=(-2.2, 2.2))
     summary(d)
     k = d.groupby("width_px")[["cyl4_raw_mae", "cube4_raw_mae"]].median()
     print(f"  9DTact  {len(d)} 행, {d.sensor.nunique()} 유닛  "
@@ -273,6 +300,11 @@ def main():
     pD = RES / FOLD["DIGIT"] / "data"; pD.mkdir(parents=True, exist_ok=True)
     dd.to_csv(pD / "shape_vs_resolution.csv", index=False)
     raw.to_csv(pD / "shape_predictions.csv", index=False)
+    if "cyl4_size_err" in dd:
+        panel(dd, "{}_size_err", RC.grid_stem("shape_size_err_vs_resolution"),
+              "지름 오차 (mm, 참 4 mm 대비)",
+              "DIGIT — 되찾은 가로 크기의 오차 대 해상도 (0 이 참값)",
+              pr="DIGIT", logy=False, zero_line=True, yt=(-2.2, 2.2))
     panel(dd, "{}_raw_mae", RC.grid_stem("shape_mae_vs_resolution"),
           "깊이 MAE (mm)",
           "DIGIT — 형상 복원 오차 대 해상도 (광도 스테레오)", pr="DIGIT")

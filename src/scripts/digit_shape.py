@@ -379,6 +379,26 @@ def predict_depth(model, img, ref, px_per_mm, size=None, contact_mask=True):
     return z, px_per_mm
 
 
+def imprint_size_mm(depth, ppm, d_centre, min_px=20.0):
+    """반깊이 윤곽의 등가 지름 (mm). `analyse_shape.imprint_geometry` 와 같은 정의.
+
+    깊이만 채점하면 형상 센서의 절반만 보는 것이다 — 압자는 ⌀4 mm 와 한 변 4 mm
+    이고, 되찾아야 할 것은 깊이**와** 가로 크기 둘이다(2026-09-14, 운전자 요청).
+    면적 문턱은 물리 크기이므로 해상도를 따라 줄인다.
+    """
+    if not np.isfinite(d_centre) or d_centre <= 0:
+        return np.nan
+    m = (depth >= d_centre / 2.0).astype(np.uint8)
+    cnts, _ = cv2.findContours(m, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if not cnts:
+        return np.nan
+    c = max(cnts, key=cv2.contourArea)
+    floor = max(4.0, min_px * (ppm / 100.0) ** 2)   # 100 px/mm 를 기준으로
+    if cv2.contourArea(c) < floor:
+        return np.nan
+    return float(2.0 * np.sqrt(cv2.contourArea(c) / np.pi) / ppm)
+
+
 def eval_unit(run: Path, model, px_per_mm, shape="cyl4", sizes=SIZES):
     """자국 깊이를 참값과 비교. 참값은 사다리가 기록한 `depth_mm` 다."""
     lad = run / f"shape_{shape}" / "ladder.csv"
@@ -401,11 +421,13 @@ def eval_unit(run: Path, model, px_per_mm, shape="cyl4", sizes=SIZES):
         if img is None:
             continue
         for size in sizes:
-            z, _ = predict_depth(model, img, ref, px_per_mm, size)
+            z, ppm_out = predict_depth(model, img, ref, px_per_mm, size)
+            dc = depth_of(z)
             rows.append(dict(shape=shape, width_px=size[0], depth_true_mm=float(r.depth_mm),
                              force_N=float(r.force_N),
-                             depth_pred_mm=depth_of(z),
+                             depth_pred_mm=dc,
                              depth_pred_min_mm=float(-z.min()),
+                             size_mm=imprint_size_mm(-z, ppm_out, dc),
                              rms_mm=float(np.sqrt((z ** 2).mean()))))
     return rows
 

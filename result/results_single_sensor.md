@@ -234,11 +234,7 @@ p 는 0.51 ~ 0.92 다. 대신 **두께는 세 원리 모두에서 ρ 0.92 ~ 0.94
 
 ### 9DTact
 
-![9DTact — 유닛별 깊이-지름(실선)과 깊이-밝기(점선)](single/1_9DTact/figures/optical_vs_depth_18units.png)
-
-*9DTact — 유닛별 깊이-지름(실선)과 깊이-밝기(점선)*
-
-<sub>그림: `single/1_9DTact/figures/optical_vs_depth_18units.png` · 자료: `single/1_9DTact/data/optical_vs_depth_18units.csv`</sub>
+> 아직 없음 — `1_9DTact/figures/optical_vs_depth_9units.png`
 
 **지름 기울기, ball4 (px/mm)**
 
@@ -262,11 +258,7 @@ p 는 0.51 ~ 0.92 다. 대신 **두께는 세 원리 모두에서 ρ 0.92 ~ 0.94
 
 ### DIGIT
 
-![DIGIT — 유닛별 깊이-지름(실선)과 깊이-밝기(점선)](single/2_DIGIT/figures/optical_vs_depth_18units.png)
-
-*DIGIT — 유닛별 깊이-지름(실선)과 깊이-밝기(점선)*
-
-<sub>그림: `single/2_DIGIT/figures/optical_vs_depth_18units.png` · 자료: `single/2_DIGIT/data/optical_vs_depth_18units.csv`</sub>
+> 아직 없음 — `2_DIGIT/figures/optical_vs_depth_9units.png`
 
 **지름 기울기, ball4 (px/mm)**
 
@@ -290,11 +282,7 @@ p 는 0.51 ~ 0.92 다. 대신 **두께는 세 원리 모두에서 ρ 0.92 ~ 0.94
 
 ### DIGIT_Marker
 
-![DIGIT_Marker — 유닛별 깊이-지름(실선)과 깊이-밝기(점선)](single/3_DIGIT_Marker/figures/optical_vs_depth_18units.png)
-
-*DIGIT_Marker — 유닛별 깊이-지름(실선)과 깊이-밝기(점선)*
-
-<sub>그림: `single/3_DIGIT_Marker/figures/optical_vs_depth_18units.png` · 자료: `single/3_DIGIT_Marker/data/optical_vs_depth_18units.csv`</sub>
+> 아직 없음 — `3_DIGIT_Marker/figures/optical_vs_depth_9units.png`
 
 **지름 기울기, ball4 (px/mm)**
 
@@ -508,23 +496,11 @@ ResNet-18 을 해상도 12 단(가로 1920 → 8 px, 화소 밀도로는 원리�
 | DIGIT | `raw` — 카메라 프레임 그대로 |
 | DIGIT_Marker | `inpaint` — 마커 점을 지우고 주변에서 메움 |
 
-![9DTact — 유닛별 축별 MAE 대 해상도](single/1_9DTact/figures/force_mae_vs_resolution_18units.png)
+> **9DTact: 학습 진행 중.** 끝나면 이 문서를 다시 생성한다.
 
-*9DTact — 유닛별 축별 MAE 대 해상도*
+> **DIGIT: 학습 진행 중.** 끝나면 이 문서를 다시 생성한다.
 
-<sub>그림: `single/1_9DTact/figures/force_mae_vs_resolution_18units.png` · 자료: `single/1_9DTact/data/force_mae_vs_resolution_18units.csv`</sub>
-
-![DIGIT — 유닛별 축별 MAE 대 해상도](single/2_DIGIT/figures/force_mae_vs_resolution_18units.png)
-
-*DIGIT — 유닛별 축별 MAE 대 해상도*
-
-<sub>그림: `single/2_DIGIT/figures/force_mae_vs_resolution_18units.png` · 자료: `single/2_DIGIT/data/force_mae_vs_resolution_18units.csv`</sub>
-
-![DIGIT_Marker — 유닛별 축별 MAE 대 해상도](single/3_DIGIT_Marker/figures/force_mae_vs_resolution_18units.png)
-
-*DIGIT_Marker — 유닛별 축별 MAE 대 해상도*
-
-<sub>그림: `single/3_DIGIT_Marker/figures/force_mae_vs_resolution_18units.png` · 자료: `single/3_DIGIT_Marker/data/force_mae_vs_resolution_18units.csv`</sub>
+> **DIGIT_Marker: 학습 진행 중.** 끝나면 이 문서를 다시 생성한다.
 
 ### 세 축을 합친 힘 오차
 
@@ -723,25 +699,74 @@ Benjamini-Hochberg 를 건 값이다 — 두 절을 따로 보정하면 "20 번 
 5 절의 힘 그림과 같은 배치다. 행이 경도, 열이 두께이고, 선 하나가 평가
 압자 하나다. 가로축은 화소 밀도 R (px/mm²) 이다.
 
-![9DTact — 유닛별 형상 복원 오차 대 해상도 (조회표 그대로)](single/1_9DTact/figures/shape_mae_vs_resolution_18units.png)
+![9DTact — 유닛별 형상 복원 오차 대 해상도 (조회표 그대로)](single/1_9DTact/figures/shape_mae_vs_resolution_9units.png)
 
 *9DTact — 유닛별 형상 복원 오차 대 해상도 (조회표 그대로)*
 
-<sub>그림: `single/1_9DTact/figures/shape_mae_vs_resolution_18units.png` · 자료: `single/1_9DTact/data/shape_mae_vs_resolution_18units.csv`</sub>
+<sub>그림: `single/1_9DTact/figures/shape_mae_vs_resolution_9units.png` · 자료: `single/1_9DTact/data/shape_mae_vs_resolution_9units.csv`</sub>
 
-![9DTact — 유닛별 형상 복원 오차 대 해상도 (회색조 손실 보정)](single/1_9DTact/figures/shape_mae_corrected_18units.png)
+![9DTact — 유닛별 형상 복원 오차 대 해상도 (회색조 손실 보정)](single/1_9DTact/figures/shape_mae_corrected_9units.png)
 
 *9DTact — 유닛별 형상 복원 오차 대 해상도 (회색조 손실 보정)*
 
-<sub>그림: `single/1_9DTact/figures/shape_mae_corrected_18units.png` · 자료: `single/1_9DTact/data/shape_mae_corrected_18units.csv`</sub>
+<sub>그림: `single/1_9DTact/figures/shape_mae_corrected_9units.png` · 자료: `single/1_9DTact/data/shape_mae_corrected_9units.csv`</sub>
 
-![DIGIT — 유닛별 형상 복원 오차 대 해상도 (광도 스테레오)](single/2_DIGIT/figures/shape_mae_vs_resolution_18units.png)
+![DIGIT — 유닛별 형상 복원 오차 대 해상도 (광도 스테레오)](single/2_DIGIT/figures/shape_mae_vs_resolution_9units.png)
 
 *DIGIT — 유닛별 형상 복원 오차 대 해상도 (광도 스테레오)*
 
-<sub>그림: `single/2_DIGIT/figures/shape_mae_vs_resolution_18units.png` · 자료: `single/2_DIGIT/data/shape_mae_vs_resolution_18units.csv`</sub>
+<sub>그림: `single/2_DIGIT/figures/shape_mae_vs_resolution_9units.png` · 자료: `single/2_DIGIT/data/shape_mae_vs_resolution_9units.csv`</sub>
 
 > **DIGIT_Marker 는 이 그림이 없다** — 형상 복원을 하지 않기 때문이다.
+
+### 유닛별 — 깊이가 아니라 **지름**
+
+위 격자는 전부 깊이 오차다. 압자는 ⌀4 mm 원기둥과 한 변 4 mm 정육면체이므로
+형상 센서가 되찾아야 할 것은 **깊이와 가로 크기 둘**이다. 같은 배치로 지름을
+따로 그린다. 반깊이 윤곽의 등가 지름을 재고 참값 4 mm 를 뺀 값이므로,
+**0 선이 참값이고 위가 크게, 아래가 작게 나온 것**이다.
+
+> 부호를 없애지 않은 이유: 크게 나오는 것과 작게 나오는 것은 원인이 다르다.
+> 평면 압자의 반깊이 윤곽은 참 모서리 **바깥**에 서서 크게 나오고, 화소가
+> 모자라면 윤곽이 안쪽으로 말려 작게 나온다. |오차| 로 접으면 둘이 섞인다.
+
+![9DTact — 유닛별 지름 오차 대 해상도 (0 이 참 4 mm)](single/1_9DTact/figures/shape_size_err_vs_resolution_9units.png)
+
+*9DTact — 유닛별 지름 오차 대 해상도 (0 이 참 4 mm)*
+
+<sub>그림: `single/1_9DTact/figures/shape_size_err_vs_resolution_9units.png` · 자료: `single/1_9DTact/data/shape_size_err_vs_resolution_9units.csv`</sub>
+
+![DIGIT — 유닛별 지름 오차 대 해상도 (0 이 참 4 mm)](single/2_DIGIT/figures/shape_size_err_vs_resolution_9units.png)
+
+*DIGIT — 유닛별 지름 오차 대 해상도 (0 이 참 4 mm)*
+
+<sub>그림: `single/2_DIGIT/figures/shape_size_err_vs_resolution_9units.png` · 자료: `single/2_DIGIT/data/shape_size_err_vs_resolution_9units.csv`</sub>
+
+**정육면체가 원기둥보다 크게 나온다 — 두 원리 모두.** R ≥ 13 (80 px 이상)
+에서 두 압자의 차이 중앙이 9DTact +0.56 mm, DIGIT +0.85 mm 이고, 방향이
+같은 것이 각각 **93 %, 81 %** 다. 평면과 모서리를 가진 압자의 반깊이 윤곽이
+참 모서리 바깥에 서기 때문이고, 곡면인 원기둥에서는 그 여유가 작다.
+
+**두께를 따라가는 것은 9DTact 뿐이다.** 지름 오차 중앙(R ≥ 13):
+
+| 두께 | 9DTact 원기둥 | 9DTact 정육면체 | DIGIT 원기둥 | DIGIT 정육면체 |
+|---|---:|---:|---:|---:|
+| 1 mm | +0.00 | +0.34 | −0.39 | +0.08 |
+| 2 mm | +0.11 | +0.54 | −1.07 | −0.15 |
+| 3 mm | +0.60 | +1.24 | −0.35 | +0.59 |
+
+9DTact 는 네 열 모두 두께를 따라 단조로 커진다 — 두꺼운 겔이 접촉을 옆으로
+더 퍼뜨리므로 자국 자체가 넓어지는 것이고 복원의 잘못이 아니다. **DIGIT 은
+단조가 아니다**(2 mm 가 가장 작게 나온다). 두 원리에서 같은 방향으로 나오지
+않으므로 이것을 겔의 성질로 읽지 말 것.
+
+**DIGIT 은 원기둥을 일관되게 작게 되찾는다**(−0.35 ~ −1.07 mm). 9DTact 가
+0 근처인 것과 대조되지만, 두 파이프라인은 서로 다른 깊이 구간을 평가하므로
+이 차이로 우열을 매기지 않는다 — 방향이 다르다는 것만 기록한다.
+
+> **가장 왼쪽 한두 점은 읽지 말 것.** R ≈ 0.2 (8×5) 에서는 반깊이 윤곽이
+> 화면을 덮거나 아예 잡히지 않는다. 축 밖으로 솟는 선이 그것이고, 값이
+> 아니라 검출 실패다.
 
 ![DIGIT — 형상 복원 오차 대 화소 밀도, 그리고 R ≈ 512 px/mm² 에서의 예측-참값.](single/2_DIGIT/figures/shape_mae_summary.png)
 
