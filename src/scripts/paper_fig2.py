@@ -119,7 +119,10 @@ def main():
                 ax.plot([xp], [0], marker="^", ms=4.5, c="#1a1a1a",
                         clip_on=False, transform=ax.get_xaxis_transform(),
                         zorder=6)
-            ax.set_xscale("log"); ax.set_yscale("log")
+            # y 는 선형이다(2026-09-14, 운전자 지시). 로그는 낮은 밀도의 붕괴와
+            # 평탄 구간을 한 화면에 담지만, 평탄 구간 안의 군 간 차이를 눌러
+            # "굵은 선 셋이 가는 선들의 산포 안에 있다" 를 읽기 어렵게 한다.
+            ax.set_xscale("log")
             ax.set_xticks(XT); ax.set_xticklabels(XTL, fontsize=5.8)
             ax.xaxis.set_minor_locator(mticker.NullLocator())
             ax.tick_params(labelsize=6.5)
@@ -135,22 +138,15 @@ def main():
 
     # y 축은 **같은 측정끼리** 공유한다 — Fz 넷, 전단 넷
     for m in (0, 1):
-        lo = min(a for a, _ in ylim.get(m, [(1, 1)]))
         hi = max(b for _, b in ylim.get(m, [(1, 1)]))
+        # 선형 축은 0 에서 시작한다. 바닥을 잘라 올리면 군 간 차이가 실제보다
+        # 커 보이는데, 이 그림의 요점이 바로 "그 차이가 작다" 는 것이다.
         for j in (m, m + 2):
             for i in range(len(ROWS)):
                 ax = axes[i, j]
-                ax.set_ylim(lo, hi)
-                # 로그 축이 한 자리 남짓이라 기본 눈금이 "0.1" 하나뿐이다.
-                yt = [v for v in (0.01, 0.02, 0.03, 0.05, 0.08,
-                                  0.1, 0.15, 0.2, 0.3) if lo <= v <= hi]
-                ax.set_yticks(yt)
-                # 두 묶음이 굵은 머리글로 갈려 있으므로 **각 묶음의 첫 열**에
-                # 눈금 숫자를 준다. 오른쪽 묶음만 숫자가 없으면 읽을 수 없다.
-                ax.set_yticklabels([f"{v:g}" for v in yt]
-                                   if j in (0, 2) else [], fontsize=6.5)
-                ax.yaxis.set_minor_formatter(mticker.NullFormatter())
-                ax.yaxis.set_minor_locator(mticker.NullLocator())
+                ax.set_ylim(0, hi)
+                ax.yaxis.set_major_locator(mticker.MaxNLocator(5))
+                ax.tick_params(axis="y", labelleft=(j in (0, 2)), labelsize=6.5)
 
     # 두 나눔을 가르는 머리글 — 같은 색이 왼쪽에서는 두께, 오른쪽에서는 경도를
     # 뜻하므로 이 표시가 없으면 범례 둘이 충돌한다.

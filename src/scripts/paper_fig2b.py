@@ -80,7 +80,8 @@ def main():
                 ax.plot([xp], [0], marker="^", ms=4.5, c="#1a1a1a",
                         clip_on=False, transform=ax.get_xaxis_transform(),
                         zorder=6)
-            ax.set_xscale("log"); ax.set_yscale("log")
+            # y 는 선형 — Figure 2 와 같아야 위아래로 견줄 수 있다.
+            ax.set_xscale("log")
             ax.set_xticks(F2.XT); ax.set_xticklabels(F2.XTL, fontsize=5.8)
             ax.xaxis.set_minor_locator(mticker.NullLocator())
             ax.tick_params(labelsize=6.5)
@@ -94,18 +95,13 @@ def main():
                 ax.set_ylabel(f"{nice}\nlower bound [N]", fontsize=7.5)
             ylim.append(ax.get_ylim())
 
-    lo = min(a for a, _ in ylim); hi = max(b for _, b in ylim)
+    hi = max(b for _, b in ylim)
     for i in range(len(F2.ROWS)):
         for j in (0, 1):
             ax = axes[i, j]
-            ax.set_ylim(lo, hi)
-            yt = [v for v in (.03, .05, .08, .1, .15, .2, .3, .5)
-                  if lo <= v <= hi]
-            ax.set_yticks(yt)
-            ax.set_yticklabels([f"{v:g}" for v in yt] if j == 0 else [],
-                               fontsize=6.5)
-            ax.yaxis.set_minor_formatter(mticker.NullFormatter())
-            ax.yaxis.set_minor_locator(mticker.NullLocator())
+            ax.set_ylim(0, hi)
+            ax.yaxis.set_major_locator(mticker.MaxNLocator(5))
+            ax.tick_params(axis="y", labelleft=(j == 0), labelsize=6.5)
 
     for (x, txt) in ((.295, "Split by gel thickness"),
                      (.775, "Split by gel hardness")):
