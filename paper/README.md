@@ -2,8 +2,9 @@
 
 | 파일 | 무엇 |
 |---|---|
-| `paper_draft.txt` | **정본.** 영문 본문. 논문에 실제로 들어가는 것. |
-| `paper_draft_ko.txt` | 작업용 한국어 대역본. 문단 태그로 영문판과 1:1 대응. |
+| `paper_draft.md` | **정본.** 영문 본문(2026-09-14 재작성). 논문에 실제로 들어가는 것. |
+| `paper_draft_kr.md` | 첨삭용 한국어 대역본. 문단 태그로 영문판과 1:1 대응. |
+| `paper_draft.txt`, `paper_draft_ko.txt` | 비어 있는 이전 파일. `.md` 두 파일이 대체한다. |
 | `template/ieeeconf_letter.doc` | IEEE 학회 Word 템플릿 (원본 파일명 `cssA4.doc`). |
 
 ## 규칙
@@ -15,8 +16,10 @@
 - 아직 확인되지 않은 자리는 `[AUTHOR CHECK: ...]` 로 표시하고, 파일 끝
   `OPEN QUESTIONS / TO RESOLVE` (한국어판 `미해결 항목`) 에 왜 열려 있는지 적는다.
   **숫자가 존재하기 전에 방향을 단정하지 않는다.**
-- 본문은 2026-09-13 에 외부 첨삭본으로 다시 썼다. 첨삭본에는 태그가 없었으므로
-  여기서 다시 붙였고, 표의 수치는 저장소 CSV 에서 재계산해 대조했다.
+- 본문은 2026-09-14 에 업로드된 `paper_outline.txt` 와 `outline.txt`(2 판), `docs/`,
+  `result/` 를 읽고 처음부터 다시 썼다. 표의 수치는 `result/single/` 과
+  `paper/figures/` 의 CSV 에서 재계산해 넣었고, 구성안과 어긋난 자리는 본문 끝
+  `OPEN ITEMS` 에 적었다.
 - 본문에 쓰는 모든 수치의 근거는 `docs/` 와 `result/` 에 있다.
   요약은 `docs/RESULTS_SUMMARY.md`, 그림·표는 `result/results.md`.
 
