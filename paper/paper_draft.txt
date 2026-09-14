@@ -65,11 +65,12 @@ hardness levels and three sensing-layer thicknesses. Within each arm the sensor
 body, camera module and illumination are identical and only the gel is
 exchanged, and the same camera module is used in all three arms; one 1920x1080
 capture is then downsampled across twelve densities. The elastomer decides
-three things and we measure all three: paired-contact separation, which
-degrades with thickness on every measure we record; the force at which the
-image response saturates, which moves with
-thickness in opposite directions in the two arms; and how the imprint grows and
-brightens with indentation.
+three things and we measure all three: paired-contact separation, the force at
+which the image response saturates, and how the imprint grows and brightens
+with indentation. In the depth-referenced arm paired-contact separation
+degrades with thickness on every measure we record, while the photometric arm
+stays at the bound of our probe set; and the saturating force rises with
+thickness in the depth-referenced arm but falls in the photometric one.
 
 Pixel density is decided by the task instead. Across twenty tests of a
 thickness or hardness association with the density at which force and shape
@@ -77,9 +78,8 @@ errors level off, none survives false-discovery correction, so we find no
 reason to revisit pixel density when the gel changes. What does move it is the
 task and the error tolerance: at a 10 % tolerance the markerless arms plateau
 at 6.4-13.6 px/mm^2 for the resultant force error, with shape between 2.9 and
-6.3. Choose the gel from the contact
-and force requirements; choose the pixel density from the task and the error
-you will accept.
+6.3. Choose the gel from the contact and force requirements; choose the pixel
+density from the task and the error you will accept.
 
 ================================================================================
 I. INTRODUCTION
