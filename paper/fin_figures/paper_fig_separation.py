@@ -10,8 +10,13 @@
 
 (a) 에서 광도 스테레오는 점으로 찍지 않는다
     여덟 시편 **모두** 가장 좁은 압자(중심 간격 1.10 mm)를 갈랐다. **값이 아니라
-    바닥이다** — 점을 찍으면 "1.10 mm 가 그 센서의 분해능" 으로 읽힌다. 띠와
-    한 줄로 적는다. 광도의 `hard_2mm` 는 두 기둥 램프가 없어 여덟이다.
+    바닥이다** — 점을 찍으면 "1.10 mm 가 그 센서의 분해능" 으로 읽힌다.
+    (광도의 `hard_2mm` 는 두 기둥 램프가 없어 여덟이다.)
+
+(a) 의 범례는 **실측 쇼어**다
+    soft / medium / hard 는 계열마다 다른 물건이라(9DTact OO-30 ~ 70 은 40 점,
+    광도 계열 OO-51 ~ 57 은 6 점) 이름만으로는 무엇을 얼마나 흔들었는지 보이지
+    않는다. 이 패널은 9DTact 뿐이므로 눈금을 그대로 적는다.
 
 (b) 는 시편 하나, 압입 하나다
     아홉을 묶어 분해 **비율**로 그렸다가 뺐다(2026-09-15) — **겔 한계와 화소
@@ -27,10 +32,16 @@
     이 시편에서는 관문 셋 중 둘만 문다 — 골이 Rayleigh 를 넘긴 단은 밝기·잡음
     관문에 한 번도 걸리지 않는다(아래 `assert`). **Rayleigh 와 접촉 검출**만 남는다.
 
-캡션이 져야 할 것
-    (b) 왼쪽 끝의 `×` 는 **접촉 덩어리 자체를 못 찾은 단**이다 — 골이 얕아
-    못 가른 것과 다른 실패다. 그림 안에 글자를 넣지 않았으므로(운전자 결정)
-    캡션이 이것을 말해야 한다.
+캡션이 져야 할 것 — 그림 안의 글자·선을 줄였으므로(운전자 결정) 넷을 캡션이 진다
+    1. **가장 좁은 압자가 중심 간격 1.10 mm** 라는 것, 그리고 **광도 스테레오는
+       여덟 시편 모두 그 바닥에 있어 한계를 못 봤다**는 것. (a) 에 그 바닥을
+       가리키는 선이 없다.
+    2. **판정 문턱이 dip ≥ 0.265 (Rayleigh)** 라는 것. (b) 에 선이 없으므로 빈
+       동그라미가 왜 빈 것인지 캡션이 말해야 한다 — 그 문턱 아래라는 뜻이다.
+    3. (b) 왼쪽 끝의 `×` 는 **접촉 덩어리 자체를 못 찾은 단**이다 — 골이 얕아
+       못 가른 것(빈 동그라미)과 다른 실패다.
+    4. (a) 의 **두께 경향** — Spearman rho +0.75 (p 0.02, n 9). 경도는 −0.13
+       (p 0.73). 스크립트가 표준출력으로 낸다.
 
 말하지 않는 것
     **"두 점을 가르는 데 R ≈ 387 px/mm² 가 든다" 를 쓰지 않는다.** 387 은 아홉을
@@ -49,7 +60,7 @@ import pandas as pd
 from scipy.stats import spearmanr
 
 import paper_style as PS
-from paper_style import HARD3, MARKER, DISPLAY
+from paper_style import HARD3, MARKER, DISPLAY, SHORE
 
 PS.use_paper_style()
 import matplotlib.pyplot as plt           # noqa: E402
@@ -72,24 +83,15 @@ def panel_gel(ax):
     nine, digit = d[d.principle == "9DTact"], d[d.principle == "DIGIT"]
     assert (digit.finest_centre_mm == NARROWEST_MM).all()
 
-    ax.axhspan(0.86, NARROWEST_MM, color="#eeeeee", lw=0, zorder=0)
-    ax.axhline(NARROWEST_MM, c=PS.MUTED, lw=0.7, ls=(0, (4, 2)), zorder=1)
-    ax.annotate(f"narrowest probe {NARROWEST_MM:.2f} mm  —  "
-                f"{DISPLAY['DIGIT']} {len(digit)}/{len(digit)}",
-                xy=(0.985, 0.012), xycoords="axes fraction", ha="right",
-                va="bottom", fontsize=6.0, color=PS.MUTED)
-
     for h in HARDNESS:
         g = nine[nine.hardness == h].sort_values("thickness_mm")
         ax.plot(g.thickness_mm + DODGE[h], g.finest_centre_mm, "-",
-                c=HARD3[h], lw=1.4, label=h, zorder=3)
+                c=HARD3[h], lw=1.4, label=f"Shore OO-{SHORE['9DTact'][h]}",
+                zorder=3)
         ax.plot(g.thickness_mm + DODGE[h], g.finest_centre_mm, MARKER[h],
                 c=HARD3[h], ms=4.4, mec="white", mew=0.7, ls="none", zorder=4)
 
     rho, p = spearmanr(nine.thickness_mm, nine.finest_centre_mm)
-    ax.annotate(rf"$\rho_{{\rm thickness}}$ = {rho:+.2f}  (p = {p:.2f}, n = {len(nine)})",
-                xy=(0.985, 0.955), xycoords="axes fraction", ha="right",
-                va="top", fontsize=6.5, color=PS.MUTED)
 
     ax.legend(loc="upper left", frameon=False, fontsize=6.8, handlelength=1.7,
               handletextpad=0.5, labelspacing=0.32, borderpad=0.1)
@@ -119,12 +121,6 @@ def panel_pixels(ax):
     assert (passed.verdict == "분해").all(), "Rayleigh 를 넘겼는데 분해가 아니다"
 
     c = PS.PRINCIPLE["9DTact"]
-    ax.axhspan(-0.27, RAYLEIGH, color="#f2f2f2", lw=0, zorder=0)
-    ax.axhline(RAYLEIGH, c=PS.MUTED, lw=0.7, ls=(0, (4, 2)), zorder=1)
-    ax.annotate(f"Rayleigh {RAYLEIGH}", xy=(0.985, RAYLEIGH), xytext=(0, -7),
-                textcoords="offset points", xycoords=("axes fraction", "data"),
-                ha="right", va="top", fontsize=6.0, color=PS.MUTED)
-
     ax.plot(seen.density_px_per_mm2, seen.dip, "-", c=c, lw=1.4, zorder=3)
     res = seen[seen.verdict == "분해"]
     no = seen[seen.verdict != "분해"]
