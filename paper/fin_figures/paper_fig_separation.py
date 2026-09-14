@@ -63,7 +63,7 @@ import pandas as pd
 from scipy.stats import spearmanr
 
 import paper_style as PS
-from paper_style import HARD3, MARKER, DISPLAY, SHORE
+from paper_style import HARD3, DISPLAY, SHORE
 
 PS.use_paper_style()
 import matplotlib.pyplot as plt           # noqa: E402
@@ -89,9 +89,9 @@ def panel_gel(ax):
     for h in HARDNESS:
         g = nine[nine.hardness == h].sort_values("thickness_mm")
         ax.plot(g.thickness_mm + DODGE[h], g.finest_centre_mm, "-",
-                c=HARD3[h], lw=1.4, label=f"Shore OO-{SHORE['9DTact'][h]}",
+                c=HARD3[h], lw=1.8, label=f"Shore OO-{SHORE['9DTact'][h]}",
                 zorder=3)
-        ax.plot(g.thickness_mm + DODGE[h], g.finest_centre_mm, MARKER[h],
+        ax.plot(g.thickness_mm + DODGE[h], g.finest_centre_mm, "o",
                 c=HARD3[h], ms=5.6, mec="white", mew=0.7, ls="none", zorder=4)
 
     rho, p = spearmanr(nine.thickness_mm, nine.finest_centre_mm)
@@ -122,7 +122,7 @@ def panel_pixels(ax):
     assert (passed.dip > 3 * passed.dip_sd).all(), "잡음 관문이 물었다 — 그림에 넣어야 한다"
     assert (passed.verdict == "분해").all(), "Rayleigh 를 넘겼는데 분해가 아니다"
 
-    c = PS.PRINCIPLE["9DTact"]
+    c = PS.SERIES
     ax.axhline(RAYLEIGH, c=PS.MUTED, lw=0.7, ls=(0, (4, 2)), zorder=1)
     ax.plot(seen.density_px_per_mm2, seen.dip, "-", c=c, lw=1.4, zorder=3)
     ax.plot(seen.density_px_per_mm2, seen.dip, "o", c=c, ms=5.6, mec="white",
