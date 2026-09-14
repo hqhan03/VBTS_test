@@ -61,11 +61,13 @@ and the two have never been varied in the same experiment.
 
 We separate the two decisions by sweeping three sensor types -- two sensing
 principles and a marker-bearing photometric variant -- against three gel
-hardness levels and three sensing-layer thicknesses. Imaging hardware is reused
-within each arm, and one 1920x1080 capture is downsampled across twelve
-densities. The elastomer decides three things and we measure all three:
-paired-contact separation, which degrades with thickness on every measure we
-record; the force at which the image response saturates, which moves with
+hardness levels and three sensing-layer thicknesses. Within each arm the sensor
+body, camera module and illumination are identical and only the gel is
+exchanged, and the same camera module is used in all three arms; one 1920x1080
+capture is then downsampled across twelve densities. The elastomer decides
+three things and we measure all three: paired-contact separation, which
+degrades with thickness on every measure we record; the force at which the
+image response saturates, which moves with
 thickness in opposite directions in the two arms; and how the imprint grows and
 brightens with indentation.
 
