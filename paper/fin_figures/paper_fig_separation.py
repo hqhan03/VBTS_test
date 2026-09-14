@@ -92,18 +92,18 @@ def panel_gel(ax):
                 c=HARD3[h], lw=1.4, label=f"Shore OO-{SHORE['9DTact'][h]}",
                 zorder=3)
         ax.plot(g.thickness_mm + DODGE[h], g.finest_centre_mm, MARKER[h],
-                c=HARD3[h], ms=4.4, mec="white", mew=0.7, ls="none", zorder=4)
+                c=HARD3[h], ms=5.0, mec="white", mew=0.7, ls="none", zorder=4)
 
     rho, p = spearmanr(nine.thickness_mm, nine.finest_centre_mm)
 
-    ax.legend(loc="upper left", frameon=False, fontsize=6.8, handlelength=1.7,
-              handletextpad=0.5, labelspacing=0.32, borderpad=0.1)
+    ax.legend(loc="upper left", frameon=False, handlelength=1.6,
+              handletextpad=0.5, labelspacing=0.3, borderpad=0.1)
     ax.set_xticks([1, 2, 3])
     ax.set_xlim(0.72, 3.30)
     ax.set_ylim(0.86, 2.98)
     ax.set_xlabel("gel thickness [mm]")
     ax.set_ylabel("finest resolved separation [mm]")
-    ax.set_title("(a)", fontsize=8.0, loc="left")
+    ax.set_title("(a)", loc="left")
     PS.style(ax)
     return nine.assign(rho_thickness=rho, p_thickness=p), rho, p
 
@@ -125,20 +125,20 @@ def panel_pixels(ax):
     c = PS.PRINCIPLE["9DTact"]
     ax.axhline(RAYLEIGH, c=PS.MUTED, lw=0.7, ls=(0, (4, 2)), zorder=1)
     ax.plot(seen.density_px_per_mm2, seen.dip, "-", c=c, lw=1.4, zorder=3)
-    ax.plot(seen.density_px_per_mm2, seen.dip, "o", c=c, ms=4.2, mec="white",
+    ax.plot(seen.density_px_per_mm2, seen.dip, "o", c=c, ms=5.0, mec="white",
             mew=0.7, ls="none", zorder=4)
     # 접촉 덩어리 자체를 못 찾은 단 — 값이 없으므로 축 바닥에 따로 찍는다.
     # 글자는 넣지 않는다(운전자 결정) — 캡션이 말해야 한다.
     lost = u[u.dip.isna()]
-    ax.plot(lost.density_px_per_mm2, [LOST_Y] * len(lost), "x", c=c, ms=3.8,
-            mew=1.0, ls="none", zorder=4)
+    ax.plot(lost.density_px_per_mm2, [LOST_Y] * len(lost), "x", c=c, ms=4.6,
+            mew=1.2, ls="none", zorder=4)
 
     ax.set_xscale("log")
     ax.set_xlim(0.09, 1.4e4)
     ax.set_ylim(-0.27, 0.62)
     ax.set_xlabel(r"pixel density $R$ [px/mm$^2$]")
     ax.set_ylabel("dip  $(P-T)/P$")
-    ax.set_title("(b)", fontsize=8.0, loc="left")
+    ax.set_title("(b)", loc="left")
     PS.style(ax, grid=None)
     ax.grid(alpha=0.25, lw=0.4, color="#c8c8c8")
     ax.set_axisbelow(True)
@@ -146,7 +146,7 @@ def panel_pixels(ax):
 
 
 def main():
-    fig, axes = plt.subplots(1, 2, figsize=(PS.FULL_W, 2.55))
+    fig, axes = plt.subplots(1, 2, figsize=(PS.FULL_W_NARROW, 2.60))
     gel, rho, p = panel_gel(axes[0])
     sweep, first = panel_pixels(axes[1])
 

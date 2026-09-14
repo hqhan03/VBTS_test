@@ -36,8 +36,14 @@ from palette import HARD3, PRINCIPLE, THICK3      # noqa: E402,F401 — 재수�
 # 섞지 않는다.
 FIGS = HERE
 
-# IEEE 두 단 판형. 한 단 3.50 in, 두 단 걸침 7.16 in — 이 둘 말고 다른 폭을 쓰지 않는다.
+# IEEE 두 단 판형. 한 단 3.50 in, 두 단 걸침 7.16 in.
+#
+# **두 단 그림은 7.16 보다 좁게 그려도 된다** (운전자 결정, 2026-09-15). 본문에
+# `\textwidth` 로 앉히면 그만큼 **확대**되므로 글자도 함께 커진다 — 좁게 그리고
+# 크게 앉히는 것이 작은 글자를 키우는 가장 싼 방법이다. 대신 **패널 비율이
+# 뭉개지지 않는 선**에서만 줄인다.
 COL_W, FULL_W = 3.50, 7.16
+FULL_W_NARROW = 6.10        # 두 패널짜리 두 단 그림의 기본
 
 INK = "#1a1a1a"
 MUTED = "#707070"
@@ -65,20 +71,21 @@ def use_paper_style():
         "savefig.dpi": 400,
         "savefig.bbox": "tight",
         "savefig.pad_inches": 0.01,
-        # 본문에 들어가면 축소되므로 축소 전 기준으로 작게 잡지 않는다
-        "font.size": 7.5,
-        "axes.titlesize": 8.0,
-        "axes.labelsize": 7.5,
-        "xtick.labelsize": 7.0,
-        "ytick.labelsize": 7.0,
-        "legend.fontsize": 7.0,
+        # 글자는 **인쇄에서 읽히는 것**이 기준이다. 7.5 pt 로 그렸더니 두 단에
+        # 앉혔을 때 작았다(2026-09-15) — 한 단 올렸다.
+        "font.size": 9.0,
+        "axes.titlesize": 9.5,
+        "axes.labelsize": 9.0,
+        "xtick.labelsize": 8.5,
+        "ytick.labelsize": 8.5,
+        "legend.fontsize": 8.5,
         "axes.linewidth": 0.6,
         "xtick.major.width": 0.6,
         "ytick.major.width": 0.6,
         "xtick.major.size": 2.6,
         "ytick.major.size": 2.6,
-        "lines.linewidth": 1.4,
-        "lines.markersize": 4.0,
+        "lines.linewidth": 1.6,
+        "lines.markersize": 4.6,
         "grid.linewidth": 0.4,
         "grid.alpha": 0.30,
         "axes.edgecolor": "#444444",
