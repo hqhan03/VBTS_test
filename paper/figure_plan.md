@@ -73,6 +73,9 @@
 - 글꼴은 Type 42 로 심는다. Type 3 은 IEEE PDF eXpress 가 되돌려 보낸다
   (`fig_ceiling.pdf` 확인: FontFile2 3 개, Type 3 0 개).
 - `save()` 가 **pdf · png · csv 셋을 함께** 낸다. csv 없이 그림을 저장하지 않는다.
+- 저장 자리는 **`paper/fin_figures/`** 다 (운전자 결정, 2026-09-14).
+  `paper/figures/` 에는 그 전에 만든 `fig1` ~ `fig4b` 가 그대로 있다 — 섞지 않는다.
+  그 여섯을 matplotlib 으로 옮길 때마다 `fin_figures/` 로 하나씩 옮겨 간다.
 
 ---
 
@@ -80,7 +83,7 @@
 
 | # | 제목 | 단 | 절 | 상태 |
 |---|---|---|---|---|
-| F0 | 영상 응답 포화 힘 대 두께 | 2 | IV.C | **matplotlib 완료** — `paper_fig_ceiling.py` |
+| F0 | 영상 응답 포화 힘 대 두께 | 2 | IV.C | **완료** — `paper_fig_ceiling.py` → `fin_figures/fig_ceiling` |
 | F1 | 연구 질문과 비교 방법 | 1 | I | **있음**, 캡션·패널 수정 |
 | F2 | 센서 구성 · 시편 · 장치 | 2 | III | 폭발도·리그 사진 **도착**(2026-09-14), 라벨·단면 필요 |
 | F3 | 자국 성장 — 깊이 기준 대 힘 기준 | 2 | IV.A | 있음(9DTact 만), 확장 |

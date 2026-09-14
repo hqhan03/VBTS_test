@@ -32,6 +32,8 @@
 - 색만으로 군을 가르지 않는다 — 표식 모양을 함께 건다(흑백 인쇄·색각 이상).
 - 글꼴은 Type 42 로 심는다. Type 3 은 IEEE PDF eXpress 가 되돌려 보낸다.
 - **csv 없이 그림을 저장하지 않는다.** `paper_style.save()` 가 pdf·png·csv 를 함께 낸다.
+- 저장 자리는 **`paper/fin_figures/`** 다 (운전자 결정, 2026-09-14).
+  `paper/figures/` 는 그 전에 만든 것이 들어 있는 곳이라 섞지 않는다.
 - 무엇을 싣고 무엇을 빼는가는 `paper/figure_plan.md` 가 정본이다.
 
 ## 3. 자료

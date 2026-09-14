@@ -22,7 +22,10 @@ import matplotlib.pyplot as plt
 from palette import HARD3, PRINCIPLE, THICK3      # noqa: F401 — 재수출
 
 ROOT = Path(__file__).resolve().parents[2]
-FIGS = ROOT / "paper" / "figures"
+
+# 여기서 만드는 그림은 `paper/fin_figures/` 로 간다 (운전자 결정, 2026-09-14).
+# `paper/figures/` 는 그 전에 만든 것이 들어 있는 곳이라 섞지 않는다.
+FIGS = ROOT / "paper" / "fin_figures"
 
 # IEEE 두 단 판형. 한 단 3.50 in, 두 단 걸침 7.16 in — 이 둘 말고 다른 폭을 쓰지 않는다.
 COL_W, FULL_W = 3.50, 7.16
@@ -92,10 +95,11 @@ def save(fig, df, stem):
     """pdf(본문용) · png(문서 미리보기용) · csv(다시 그릴 수 있게) 셋을 함께 낸다.
 
     **csv 없이 그림을 저장하지 않는다** — `result/` 의 규칙과 같다.
+    셋 다 `paper/fin_figures/` 로 간다.
     """
     FIGS.mkdir(parents=True, exist_ok=True)
     fig.savefig(FIGS / f"{stem}.pdf")
     fig.savefig(FIGS / f"{stem}.png")
     plt.close(fig)
     df.to_csv(FIGS / f"{stem}.csv", index=False)
-    print(f"  -> paper/figures/{stem}.pdf · .png · .csv  ({len(df)} 행)")
+    print(f"  -> paper/fin_figures/{stem}.pdf · .png · .csv  ({len(df)} 행)")
