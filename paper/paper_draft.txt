@@ -57,20 +57,23 @@ compact tactile fingers [1]. The processed pixel density -- pixels per square
 millimetre of sensing surface -- must therefore be fixed early, since it
 constrains camera, electronics and network input size together. Choosing it
 requires knowing what elastomer design and what task requirements each decide,
-and the two have never been varied in the same experiment. We separate the two
-decisions using 27 sensors, one per condition, spanning two
-sensing principles and a marker-bearing photometric variant, three hardness
+and the two have never been varied in the same experiment.
+
+We separate the two decisions using 27 sensors, one per condition, spanning
+two sensing principles and a marker-bearing photometric variant, three hardness
 levels and three sensing-layer thicknesses. Imaging hardware is reused within
 each arm, and one 1920x1080 capture is downsampled across twelve densities. The
 elastomer decides three things and we measure all three: paired-contact
 separation, which degrades with thickness on every measure we record (Spearman
 rho = -0.74 for maximum dip, p = 0.023); the force at which the image response
 saturates, which moves with thickness in opposite directions in the two arms;
-and how the imprint grows and brightens with indentation. Pixel density is
-decided by the task instead. Across twenty tests of a thickness or hardness
-association with the density at which force and shape errors level off, none
-survives false-discovery correction, so within these nine gel designs there is
-no reason to revisit pixel density when the gel changes. What does move it is
+and how the imprint grows and brightens with indentation.
+
+Pixel density is decided by the task instead. Across twenty tests of a
+thickness or hardness association with the density at which force and shape
+errors level off, none survives false-discovery correction, so within these
+nine gel designs there is no reason to revisit pixel density when the gel
+changes. What does move it is
 the task and the error tolerance: at a 10 % tolerance the markerless arms
 plateau at 5.9-6.3 px/mm^2 for shear and 13.3-17.3 for normal force, with shape
 between 14.9 and 55.0, and tightening the tolerance to 5 % raises the
@@ -130,7 +133,8 @@ hardware, link bandwidth, or dynamic control performance.
 The selected specimens exhibit different median plateau resolutions across
 force components and reconstruction tasks. No tested hardness or thickness
 association survives false-discovery correction, but the small design and the
-scatter of the per-unit estimates prevent an independence claim. The contributions are:
+scatter of the per-unit estimates prevent an independence claim. The
+contributions are:
 
 [I-C1]
 1) A physical comparison of elastomer design and input sampling with shared
@@ -707,8 +711,9 @@ nonmonotonic effects, and the result does not establish independence.
 The per-unit plateau densities behind Table IX are widely spread within each
 arm -- 1.7 to 880 px/mm^2 for depth-referenced Fz (32x18 to 640x360), and 16.5
 to 5898 for marker-bearing shear (80x45 to 1280x720) -- so the medians
-summarize a scattered quantity rather than a repeatable one. Because this paper analyses one specimen per condition,
-we cannot say how much of that spread is build-to-build variation and how much
+summarize a scattered quantity rather than a repeatable one. Because this
+paper analyses one specimen per condition, we cannot say how much of that
+spread is build-to-build variation and how much
 is the designed factors, and we do not report a repeatability figure. That
 missing measurement is the main reason the negative result below is stated as a
 failure to detect.
