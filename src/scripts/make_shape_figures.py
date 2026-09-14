@@ -139,14 +139,23 @@ def summary(d):
             col = f"{probe}_{kind}_mae"
             if col not in d:
                 continue
-            k = d.groupby("density_px_per_mm2")[col].median().dropna().sort_index()
-            ax.plot(k.index, k.values, ls, c=c, lw=1.9, alpha=al, marker="o", ms=4.2,
-                    mec="white", mew=.6,
+            # **묶음은 사다리 단(width_px)이다.** 밀도로 묶으면 유닛마다 값이
+            # 달라 한 행씩 쪼개지고, 중앙값이 사라져 유닛 사이를 오가는 톱니가
+            # 된다. 단으로 묶어 중앙값을 낸 뒤 그 단의 중앙 밀도에 얹는다.
+            k = (d.groupby("width_px")
+                   .agg(mae=(col, "median"),
+                        R=("density_px_per_mm2", "median"))
+                   .dropna().sort_values("R"))
+            ax.plot(k.R.values, k.mae.values, ls, c=c, lw=1.9, alpha=al,
+                    marker="o", ms=4.2, mec="white", mew=.6,
                     label=f"{lab} · {kind}")
-            b = k.idxmin()
-            ax.plot(b, k[b], "*", c=c, ms=13, mec="white", mew=.7, zorder=5)
+            b = k.mae.idxmin()
+            ax.plot(k.R[b], k.mae[b], "*", c=c, ms=13, mec="white", mew=.7,
+                    zorder=5)
             rows.append(pd.DataFrame(dict(probe=probe, kind=kind,
-                                          width_px=k.index, mae_mm=k.values)))
+                                          width_px=k.index,
+                                          density_px_per_mm2=k.R.values,
+                                          mae_mm=k.mae.values)))
     ax.set_xscale("log"); ax.set_yscale("log"); res_axis(ax, [0.03, 0.05, 0.1, 0.2, 0.5])
     ax.set_xlabel("화소 밀도 R (px/mm²)", labelpad=6); ax.set_ylabel("깊이 MAE (mm)")
     ax.set_title("9DTact — 형상 복원 오차 대 해상도 (★ = 최소)",
@@ -184,13 +193,18 @@ def digit_summary(d, raw):
         col = f"{probe}_raw_mae"
         if col not in d:
             continue
-        k = d.groupby("width_px")[col].median().dropna()
-        ax.plot(k.index, k.values, "-o", c=c, lw=1.9, ms=5, mec="white",
+        # 사다리 단으로 묶고, 그 단의 중앙 밀도에 얹는다 — 축 이름이 밀도이므로
+        # x 값도 밀도여야 한다(폭을 그대로 쓰면 축과 숫자가 어긋난다).
+        k = (d.groupby("width_px")
+               .agg(mae=(col, "median"), R=("density_px_per_mm2", "median"))
+               .dropna().sort_values("R"))
+        ax.plot(k.R.values, k.mae.values, "-o", c=c, lw=1.9, ms=5, mec="white",
                 mew=.7, label=lab)
-        b = k.idxmin()
-        ax.plot(b, k[b], "*", c=c, ms=13, mec="white", mew=.7, zorder=5)
+        b = k.mae.idxmin()
+        ax.plot(k.R[b], k.mae[b], "*", c=c, ms=13, mec="white", mew=.7, zorder=5)
         rows.append(pd.DataFrame(dict(probe=probe, width_px=k.index,
-                                      mae_mm=k.values)))
+                                      density_px_per_mm2=k.R.values,
+                                      mae_mm=k.mae.values)))
     ax.set_xscale("log"); ax.set_yscale("log"); res_axis(ax, [0.03, 0.05, 0.1, 0.2, 0.5])
     ax.set_xlabel("화소 밀도 R (px/mm²)", labelpad=6); ax.set_ylabel("깊이 MAE (mm)")
     ax.set_title("DIGIT — 형상 복원 오차 대 해상도 (★ = 최소)",

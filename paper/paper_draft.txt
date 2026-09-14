@@ -935,16 +935,21 @@ P0 -- evidence and method to settle before submission
 12. Re-verify the TO VERIFY reference entries and the Table I classification
     against the primary sources. Bibliographic checking is not complete.
 
-FIGURE PLAN -- to be built from the real data; the draft currently has none
+FIGURES -- built from the exported data; PNG/PDF and the plotted CSV are in
+paper/figures/, and each is produced by src/scripts/paper_fig<N>.py
 
-  Fig. 1  Sensor stack, the 3x3 conditions, shared hardware, and the two kinds
-          of resolution measurement.
-  Fig. 2  Axis MAE against input width on log axes, with baseline and
-          seed/specimen spread.
+  Fig. 1  Elastomer design, the paired-contact question, and the task-input
+          question, deliberately not joined by an arrow.
+  Fig. 2  Axis MAE against pixel density on log axes, three arms by rows.
+          The same data is split twice: the left four panels colour by gel
+          thickness, the right four by gel hardness. Thin lines are per-
+          specimen seed medians and are identical in both halves; only the
+          heavy group medians move. Plateau onset is a small marker below the
+          axis, not a vertical line.
   Fig. 3  Per-specimen plateau with replicates joined, plus tolerance
-          sensitivity.
+          sensitivity. Built from the 54-specimen set, since joining
+          replicates needs the second specimen of each condition.
   Fig. 4  Paired-contact profiles and a shape error/reconstruction example.
-          Saturation ramps only if space allows and the criterion is settled.
 
 EDITORIAL DECISIONS CARRIED IN
 

@@ -121,12 +121,18 @@ def summary(pr, d):
     fig, ax = plt.subplots(figsize=(5.6, 3.8))
     rows = []
     for c, lab, col in AX:
-        k = d.groupby("density_px_per_mm2")[c].median().sort_index()
-        ax.plot(k.index, k.values, "-o", c=col, lw=1.8, ms=5, mec="white",
+        # **묶음은 사다리 단이다.** 밀도로 묶으면 유닛마다 값이 달라 한 행씩
+        # 쪼개지고, 중앙값이 사라져 유닛 사이를 오가는 톱니가 된다.
+        k = (d.groupby("width_px")
+               .agg(mae=(c, "median"), R=("density_px_per_mm2", "median"))
+               .dropna().sort_values("R"))
+        ax.plot(k.R.values, k.mae.values, "-o", c=col, lw=1.8, ms=5, mec="white",
                 mew=.7, label=lab)
-        b = k.idxmin()
-        ax.plot(b, k[b], "*", c=col, ms=14, mec="white", mew=.8, zorder=5)
-        rows.append(pd.DataFrame(dict(axis=lab, width_px=k.index, mae=k.values)))
+        b = k.mae.idxmin()
+        ax.plot(k.R[b], k.mae[b], "*", c=col, ms=14, mec="white", mew=.8, zorder=5)
+        rows.append(pd.DataFrame(dict(axis=lab, width_px=k.index,
+                                      density_px_per_mm2=k.R.values,
+                                      mae=k.mae.values)))
     ax.set_xscale("log"); ax.set_yscale("log")
     ax.set_xticks(XT); ax.set_xticklabels(XTL, fontsize=7)
     ax.xaxis.set_minor_locator(mticker.NullLocator())

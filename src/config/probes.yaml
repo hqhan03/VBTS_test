@@ -316,7 +316,7 @@ probes:
       cannot separate two posts 2.50 mm apart, where the imprints cannot
       overlap, then its failure is contrast and not spatial resolution.
       It also gives those five a measured bracket instead of "> 2.00 mm".
-      spatial_resolution.md 4.6, spatial_resolution_sensitivity.md.
+      spatial_resolution.md 4.6, spatial_resolution.md 5.
 
   - id: pair010
     tip: cylinder_pair

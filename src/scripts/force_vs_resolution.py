@@ -9,7 +9,7 @@ WHAT IS ASKED
 -------------
 Test 1 collected 1000 labelled frames per unit: an image and the wrench measured
 over that frame's own exposure window. This asks how much of the CAMERA is
-needed to read the force back out -- the same question `shape_vs_resolution.md`
+needed to read the force back out -- the same question `shape_reconstruction.md` §6
 asks of shape reconstruction, on the same twelve 16:9 sizes so the two curves
 can be laid side by side.
 

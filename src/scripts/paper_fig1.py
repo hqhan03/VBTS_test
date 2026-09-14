@@ -11,6 +11,12 @@
 (c) 는 "추정기가 픽셀을 몇 개 필요로 하나". 이 그림은 그 둘을 **잇지 않는다** —
 둘이 독립이라는 것은 이 자료로 입증되지 않았고, 화살표를 그리면 입증한 척이 된다.
 
+**배치** (2026-09-14 에 다시 짰다). 그림 수준의 2 x 3 격자 하나를 쓴다 — (a) 가
+왼쪽 열을 세로로 다 쓰고, (b) 와 (c) 는 **같은 격자의 같은 행**에 얹힌다. 그래야
+영상 줄과 그래프 줄이 패널 사이에서 나란해진다. 전에는 패널마다 자기 격자를 따로
+만들어 영상과 그래프의 높이가 어긋났고, 패널 이름 셋의 높이도 제각각이었다.
+패널 이름은 **그린 뒤 축의 실제 위치에서** x 를 구해 같은 높이에 놓는다.
+
 **(b) 의 두 장을 고른 규칙.** 시각 대비가 가장 큰 둘을 임의로 고르면 안 된다.
 같은 경도(hard), 같은 프로브(pair100, 중심 간격 2.0 mm), 같은 압입 단(0.3 mm)
 에서 두께만 1 mm 와 3 mm 로 다른 둘을 쓴다. **표시 범위와 대비 배율도 공유한다.**
@@ -53,33 +59,37 @@ def imprint(unit):
 def main():
     plt.rcParams["font.family"] = ["DejaVu Sans"]
     plt.rcParams["axes.unicode_minus"] = False
-    fig = plt.figure(figsize=(7.16, 3.6))
-    gs = fig.add_gridspec(1, 3, width_ratios=[1, 1.25, 1.3], wspace=.38)
+    fig = plt.figure(figsize=(7.16, 3.9))
+    gs = fig.add_gridspec(2, 3, width_ratios=[.95, 1.18, 1.36],
+                          height_ratios=[.88, 1.0], wspace=.40, hspace=.38,
+                          left=.065, right=.995, top=.80, bottom=.125)
 
     # ---------------------------------------------------------- (a) 설계 --
-    ax = fig.add_subplot(gs[0, 0])
-    ax.set_xlim(-.55, 3.0); ax.set_ylim(-.85, 3.5); ax.axis("off")
-    ax.text(1.35, 3.35, "(a) Elastomer design", fontsize=8.5, ha="center",
-            weight="bold")
+    # 왼쪽 열을 세로로 다 쓴다. 위쪽이 3x3 그림, 아래쪽이 설명 두 줄이다.
+    axa = ax = fig.add_subplot(gs[:, 0])
+    # 세로로 긴 칸을 쓰므로 **행 간격을 벌려** 그림이 칸을 채우게 한다. 전에는
+    # 블록이 위쪽에 몰리고 아래 절반이 비어 (b)·(c) 와 무게가 맞지 않았다.
+    ax.set_xlim(-.66, 3.04); ax.set_ylim(-1.30, 3.05); ax.axis("off")
     for i, h in enumerate(["soft", "medium", "hard"]):
         for j, t in enumerate([1, 2, 3]):
-            ax.add_patch(mp.Rectangle((j * 1.0, 2.3 - i * .78), .82,
+            ax.add_patch(mp.Rectangle((j * 1.0, 2.30 - i * 1.0), .82,
                                       .10 + t * .13, fc=HARD3[h], ec="none",
                                       alpha=.9))
-            ax.add_patch(mp.Rectangle((j * 1.0, 2.22 - i * .78), .82, .08,
+            ax.add_patch(mp.Rectangle((j * 1.0, 2.22 - i * 1.0), .82, .08,
                                       fc="#444", ec="none"))
-        ax.text(-.12, 2.4 - i * .78, h, fontsize=7, ha="right", va="bottom")
+        ax.text(-.16, 2.40 - i * 1.0, h, fontsize=7, ha="right", va="bottom")
     for j, t in enumerate([1, 2, 3]):
-        ax.text(j * 1.0 + .41, -.12, f"{t} mm", fontsize=7, ha="center")
-    ax.text(1.15, -.40, "3 hardness × 3 thickness × 2 replicates",
-            fontsize=6.5, ha="center")
-    ax.text(1.15, -.66, "same body reused: depth-referenced ·\n"
-                        "photometric (+ marker variant)", fontsize=6.0,
-            ha="center", color="#555")
+        ax.text(j * 1.0 + .41, -.16, f"{t} mm", fontsize=7, ha="center")
+    # 한 줄로 두면 칸보다 넓어 왼쪽으로 삐져나간다 — 두 줄로 끊는다.
+    ax.text(1.2, -.66, "3 hardness × 3 thickness\n× 2 replicates",
+            fontsize=6.8, ha="center", linespacing=1.45)
+    ax.text(1.2, -1.20, "same body reused: depth-referenced ·\n"
+                        "photometric (+ marker variant)", fontsize=6.2,
+            ha="center", color="#555", linespacing=1.45)
 
     # -------------------------------------- (b) 두 접촉을 가를 수 있는가 --
-    sub = gs[0, 1].subgridspec(2, 2, height_ratios=[1.15, 1], hspace=.32,
-                               wspace=.12)
+    sub = gs[0, 1].subgridspec(1, 2, wspace=.10)
+    bx, cx_ = [], []
     dat, vmax = {}, 0
     for u, lab in UNITS:
         r = imprint(u)
@@ -97,10 +107,11 @@ def main():
         sl = d[y0:y0 + 2 * half, x0:x0 + 2 * half]
         ax = fig.add_subplot(sub[0, k])
         ax.imshow(sl, cmap="magma", vmin=0, vmax=vmax)   # **같은 표시 범위**
-        ax.set_title(f"{lab} gel", fontsize=8)
+        ax.set_title(f"{lab} gel", fontsize=7.5, pad=3)
         ax.set_xticks([]); ax.set_yticks([])
+        bx.append(ax)
 
-    ax = fig.add_subplot(sub[1, :])
+    ax = fig.add_subplot(gs[1, 1]); bx.append(ax)
     for (u, lab), c in zip(UNITS, ("#0072B2", "#D55E00")):
         if lab not in dat:
             continue
@@ -119,22 +130,25 @@ def main():
     ax.spines[["top", "right"]].set_visible(False); ax.grid(alpha=.3, lw=.4)
 
     # ------------------------------------- (c) 과제가 요구하는 입력 해상도 --
-    sub = gs[0, 2].subgridspec(2, 3, height_ratios=[1.15, 1], hspace=.32,
-                               wspace=.12)
+    sub = gs[0, 2].subgridspec(1, 3, wspace=.10)
     run = DS / "20260907_passB_ball8" / "9DTact_hard_2mm_r1"
     cand = sorted((run / "stream").glob("*.png")) if (run / "stream").exists() else []
     base = cv2.imread(str(cand[len(cand) // 2]), cv2.IMREAD_GRAYSCALE) if cand else None
     for k, w in enumerate(SHOW):
-        ax = fig.add_subplot(sub[0, k])
+        ax = fig.add_subplot(sub[0, k]); cx_.append(ax)
         if base is not None:
             h = int(round(w * base.shape[0] / base.shape[1]))
             sm = cv2.resize(base, (w, h), interpolation=cv2.INTER_AREA)
             ax.imshow(sm, cmap="gray")
+        # **제목은 밀도가 먼저다.** 픽셀 폭은 그 단을 가리키는 이름일 뿐이고,
+        # 이 패널이 묻는 것은 "실제 면적당 화소가 몇 개냐" 다.
         R = PD.density("9DTact", "hard_2mm_r1", w)
-        ax.set_title(f"{w} px\n$R$={PD.fmt(R)}", fontsize=6.8, linespacing=1.2)
+        ax.set_title(f"$R$ = {PD.fmt(R)}\n{w} px wide", fontsize=6.6,
+                     linespacing=1.35, pad=3)
         ax.set_xticks([]); ax.set_yticks([])
+        ax.set_anchor("N")
 
-    ax = fig.add_subplot(sub[1, :])
+    ax = fig.add_subplot(gs[1, 2]); cx_.append(ax)
     f2 = OUT / "fig2_force_vs_resolution.csv"
     if f2.exists():
         g = pd.read_csv(f2)
@@ -156,12 +170,20 @@ def main():
     ax.tick_params(labelsize=6.5)
     ax.spines[["top", "right"]].set_visible(False); ax.grid(alpha=.3, lw=.4)
 
-    fig.text(.455, .985, "(b) Two distinct contacts", fontsize=8.5,
-             ha="center", weight="bold")
-    fig.text(.83, .985, "(c) Task input resolution", fontsize=8.5,
-             ha="center", weight="bold")
+    # 패널 이름 셋을 **같은 높이**에, 각 패널이 실제로 차지한 x 범위의 가운데에.
+    # 손으로 찍은 x 는 열 너비를 바꿀 때마다 어긋난다.
+    fig.canvas.draw()
+    groups = [([axa], "(a) Elastomer design"),
+              (bx, "(b) Two distinct contacts"),
+              (cx_, "(c) Task input resolution")]
+    for axs, lab in groups:
+        pos = [a.get_position() for a in axs if a is not None]
+        if not pos:
+            continue
+        xc = (min(p.x0 for p in pos) + max(p.x1 for p in pos)) / 2
+        fig.text(xc, .885, lab, fontsize=8.5, ha="center", weight="bold")
     fig.suptitle("Separating contact resolvability from task-specific input "
-                 "resolution", fontsize=9.5, y=1.09)
+                 "resolution", fontsize=9.5, y=.975)
     OUT.mkdir(parents=True, exist_ok=True)
     for ext in ("png", "pdf"):
         fig.savefig(OUT / f"fig1_question_and_design.{ext}", dpi=300,
