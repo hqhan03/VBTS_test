@@ -25,7 +25,7 @@ import pandas as pd
 from scipy import stats
 
 import result_common as RC
-from palette import CAT3
+from palette import HARD3, THICK3
 
 ROOT = Path(__file__).resolve().parents[2]
 DS = ROOT / "data" / "20260911_VBTSresolution_dataset"
@@ -118,12 +118,26 @@ def tests(d, metrics):
 
 
 def panel(ax, g, col, fac, ylab, title):
+    """x 는 한 인자, **선은 다른 인자**다 (2026-09-14, 운전자 지시).
+
+    중앙값 선 하나는 "평균이 어디로 가나" 만 보여 주고 같은 겔이 어떻게
+    움직이는지는 감춘다. 아홉 유닛이 3 x 3 이므로 칸마다 하나씩이고, 다른
+    인자를 고정하면 **정확히 세 점짜리 선 셋**이 나온다 — 예컨대 x 가 두께면
+    soft·medium·hard 각각의 두께 곡선이다. 선이 서로 나란하면 두 인자가
+    더해지는 것이고, 엇갈리면 상호작용이다.
+    """
     x = "thickness_mm" if fac == "두께" else "hard_n"
-    for i, (k, s) in enumerate(g.groupby(x)):
-        ax.scatter([k] * len(s), s[col], s=26, c=CAT3[i % 3], alpha=.75,
-                   ec="white", lw=.6, zorder=3)
-    med = g.groupby(x)[col].median()
-    ax.plot(med.index, med.values, "-", c="#1a1a1a", lw=1.6, zorder=2)
+    other, cmap, lab = (("hard_n", HARD3, {1: "soft", 2: "medium", 3: "hard"})
+                        if fac == "두께" else
+                        ("thickness_mm", THICK3, {1: "1 mm", 2: "2 mm", 3: "3 mm"}))
+    key = {1: "soft", 2: "medium", 3: "hard"} if fac == "두께" else {1: 1, 2: 2, 3: 3}
+    for k in (1, 2, 3):
+        sub = g[g[other] == k].sort_values(x)
+        if not len(sub):
+            continue
+        c = cmap[key[k]]
+        ax.plot(sub[x], sub[col], "-o", c=c, lw=1.6, ms=5, mec="white",
+                mew=.7, label=lab[k], zorder=3)
     ax.set_xticks([1, 2, 3])
     ax.set_xticklabels(["1 mm", "2 mm", "3 mm"] if fac == "두께"
                        else ["soft", "medium", "hard"], fontsize=7.5)
@@ -137,6 +151,7 @@ def panel(ax, g, col, fac, ylab, title):
 def figure(d, spec, stem, suptitle):
     """행 = 원리, 열 = (MAE 두께, MAE 경도, R² 두께, R² 경도)."""
     prs = [p for p in PRS if p in set(d.principle)]
+    leg = {}
     fig, axes = plt.subplots(len(prs), 4, figsize=(9.6, 2.5 * len(prs)),
                              squeeze=False)
     for i, pr in enumerate(prs):
@@ -145,10 +160,19 @@ def figure(d, spec, stem, suptitle):
         for j, (col, fac, ylab) in enumerate(
                 [(mcol, "두께", mlab), (mcol, "경도", mlab),
                  (rcol, "두께", rlab), (rcol, "경도", rlab)]):
-            t = f"{pr} — {ylab} 대 {fac}" if i == 0 or True else ""
+            t = f"{pr} — {ylab} 대 {fac}"
             panel(axes[i][j], g.dropna(subset=[col]), col, fac, ylab, t)
+            if i == 0:
+                h, l = axes[i][j].get_legend_handles_labels()
+                leg.setdefault("경도" if fac == "두께" else "두께",
+                               (h, l))
+    for k, (x, (h, l)) in enumerate(zip((.27, .76), leg.items())):
+        t, (hh, ll) = l if False else (x, leg[list(leg)[k]])
+        fig.legend(hh, ll, frameon=False, fontsize=8, ncol=3,
+                   title=list(leg)[k], title_fontsize=8,
+                   loc="lower center", bbox_to_anchor=(t, -.02))
     fig.suptitle(suptitle, fontsize=10.5, x=.01, ha="left")
-    fig.tight_layout(rect=[0, 0, 1, .96])
+    fig.tight_layout(rect=[0, .06, 1, .96])
     p = RES / "extra"
     (p / "figures").mkdir(parents=True, exist_ok=True)
     fig.savefig(p / "figures" / f"{stem}.png", dpi=200, bbox_inches="tight")
