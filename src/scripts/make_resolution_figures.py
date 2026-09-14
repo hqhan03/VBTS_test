@@ -206,6 +206,17 @@ def sweep_figure():
     fig.savefig(p / "figures" / "H_resolution_sweep.png", dpi=200,
                 bbox_inches="tight")
     plt.close(fig)
+    # 그림이 그린 숫자를 그대로 — 원자료는 resolution_sweep_pair100.csv 다
+    pd.DataFrame(dict(
+        width_px=frac.index, resolved_pct=frac.values,
+        contact_lost_pct=lost.reindex(frac.index).values,
+        median_dip=d.groupby("width_px").dip.median().reindex(frac.index).values,
+        median_imprint_lvl=d.groupby("width_px").imprint_lvl.median()
+                            .reindex(frac.index).values,
+        median_dip_sd=d.groupby("width_px").dip_sd.median()
+                       .reindex(frac.index).values,
+        rayleigh=AR.RAYLEIGH, imprint_floor=AR.MIN_PEAK,
+    )).to_csv(p / "data" / "H_resolution_sweep.csv", index=False)
     print("    -> extra/figures/H_resolution_sweep.png")
 
 
