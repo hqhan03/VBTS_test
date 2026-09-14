@@ -123,34 +123,18 @@ principle,unit,hardness,thickness_mm,rep,metric,value
 9DTact,hard_1mm_r1,hard,1,1,Fx MAE 중앙 (N),0.020607940852641997
 9DTact,hard_1mm_r1,hard,1,1,Fy MAE 중앙 (N),0.024276015348732402
 9DTact,hard_1mm_r1,hard,1,1,Fz 최솟값 (N),0.0242258328944444
-9DTact,hard_1mm_r2,hard,1,2,Fz MAE 중앙 (N),0.0428644102066755
-9DTact,hard_1mm_r2,hard,1,2,Fx MAE 중앙 (N),0.021814760752022197
-9DTact,hard_1mm_r2,hard,1,2,Fy MAE 중앙 (N),0.025923122651874998
-9DTact,hard_1mm_r2,hard,1,2,Fz 최솟값 (N),0.034729354083538
 9DTact,hard_2mm_r1,hard,2,1,Fz MAE 중앙 (N),0.041900122538208906
 9DTact,hard_2mm_r1,hard,2,1,Fx MAE 중앙 (N),0.031572610139846746
 9DTact,hard_2mm_r1,hard,2,1,Fy MAE 중앙 (N),0.028852987103164147
 9DTact,hard_2mm_r1,hard,2,1,Fz 최솟값 (N),0.0312153156846761
-9DTact,hard_2mm_r2,hard,2,2,Fz MAE 중앙 (N),0.037121117115020696
-9DTact,hard_2mm_r2,hard,2,2,Fx MAE 중앙 (N),0.024182255379855598
-9DTact,hard_2mm_r2,hard,2,2,Fy MAE 중앙 (N),0.024992484599351848
-9DTact,hard_2mm_r2,hard,2,2,Fz 최솟값 (N),0.0261730086058378
 9DTact,hard_3mm_r1,hard,3,1,Fz MAE 중앙 (N),0.05058903060853475
 9DTact,hard_3mm_r1,hard,3,1,Fx MAE 중앙 (N),0.03402043692767615
 9DTact,hard_3mm_r1,hard,3,1,Fy MAE 중앙 (N),0.0361562371253967
 9DTact,hard_3mm_r1,hard,3,1,Fz 최솟값 (N),0.0412977263331413
-9DTact,hard_3mm_r2,hard,3,2,Fz MAE 중앙 (N),0.055311543866991955
-9DTact,hard_3mm_r2,hard,3,2,Fx MAE 중앙 (N),0.0314176538959145
-9DTact,hard_3mm_r2,hard,3,2,Fy MAE 중앙 (N),0.037691893056035
-9DTact,hard_3mm_r2,hard,3,2,Fz 최솟값 (N),0.0430141352117061
 9DTact,medium_1mm_r1,medium,1,1,Fz MAE 중앙 (N),0.0542378984391689
 9DTact,medium_1mm_r1,medium,1,1,Fx MAE 중앙 (N),0.0239716842770576
 9DTact,medium_1mm_r1,medium,1,1,Fy MAE 중앙 (N),0.02589713409543035
 9DTact,medium_1mm_r1,medium,1,1,Fz 최솟값 (N),0.0478156991302967
-9DTact,medium_1mm_r2,medium,1,2,Fz MAE 중앙 (N),0.0566767323762178
-9DTact,medium_1mm_r2,medium,1,2,Fx MAE 중앙 (N),0.032670989632606506
-9DTact,medium_1mm_r2,medium,1,2,Fy MAE 중앙 (N),0.0356953870505094
-9DTact,medium_1mm_r2,medium,1,2,Fz 최솟값 (N),0.0453462414443492
 9DTact,medium_2mm_r2,medium,2,2,Fz MAE 중앙 (N),0.055620718747377354
 9DTact,medium_2mm_r2,medium,2,2,Fx MAE 중앙 (N),0.0258097844198346
 9DTact,medium_2mm_r2,medium,2,2,Fy MAE 중앙 (N),0.02774149551987645
@@ -159,68 +143,36 @@ principle,unit,hardness,thickness_mm,rep,metric,value
 9DTact,medium_3mm_r1,medium,3,1,Fx MAE 중앙 (N),0.03123032767325635
 9DTact,medium_3mm_r1,medium,3,1,Fy MAE 중앙 (N),0.03520426526665685
 9DTact,medium_3mm_r1,medium,3,1,Fz 최솟값 (N),0.0428206585347652
-9DTact,medium_3mm_r2,medium,3,2,Fz MAE 중앙 (N),0.0538079477846622
-9DTact,medium_3mm_r2,medium,3,2,Fx MAE 중앙 (N),0.03518140688538545
-9DTact,medium_3mm_r2,medium,3,2,Fy MAE 중앙 (N),0.03070663753896945
-9DTact,medium_3mm_r2,medium,3,2,Fz 최솟값 (N),0.0416482985019683
 9DTact,soft_1mm_r1,soft,1,1,Fz MAE 중앙 (N),0.05180347152054305
 9DTact,soft_1mm_r1,soft,1,1,Fx MAE 중앙 (N),0.0289314799010753
 9DTact,soft_1mm_r1,soft,1,1,Fy MAE 중앙 (N),0.02621948253363365
 9DTact,soft_1mm_r1,soft,1,1,Fz 최솟값 (N),0.0446228422224521
-9DTact,soft_1mm_r2,soft,1,2,Fz MAE 중앙 (N),0.06558683514595025
-9DTact,soft_1mm_r2,soft,1,2,Fx MAE 중앙 (N),0.0460932701826095
-9DTact,soft_1mm_r2,soft,1,2,Fy MAE 중앙 (N),0.0325737185776233
-9DTact,soft_1mm_r2,soft,1,2,Fz 최솟값 (N),0.0557767413556575
 9DTact,soft_2mm_r1,soft,2,1,Fz MAE 중앙 (N),0.044151263311505304
 9DTact,soft_2mm_r1,soft,2,1,Fx MAE 중앙 (N),0.02366733923554415
 9DTact,soft_2mm_r1,soft,2,1,Fy MAE 중앙 (N),0.0246629705652594
 9DTact,soft_2mm_r1,soft,2,1,Fz 최솟값 (N),0.0351876318454742
-9DTact,soft_2mm_r2,soft,2,2,Fz MAE 중앙 (N),0.0452593211084604
-9DTact,soft_2mm_r2,soft,2,2,Fx MAE 중앙 (N),0.02744274679571385
-9DTact,soft_2mm_r2,soft,2,2,Fy MAE 중앙 (N),0.023068848997354452
-9DTact,soft_2mm_r2,soft,2,2,Fz 최솟값 (N),0.0345242470502853
 9DTact,soft_3mm_r1,soft,3,1,Fz MAE 중앙 (N),0.06634087115526195
 9DTact,soft_3mm_r1,soft,3,1,Fx MAE 중앙 (N),0.04568812623620025
 9DTact,soft_3mm_r1,soft,3,1,Fy MAE 중앙 (N),0.0371392220258712
 9DTact,soft_3mm_r1,soft,3,1,Fz 최솟값 (N),0.0553495548665523
-9DTact,soft_3mm_r2,soft,3,2,Fz MAE 중앙 (N),0.0548606365919113
-9DTact,soft_3mm_r2,soft,3,2,Fx MAE 중앙 (N),0.036643745377659756
-9DTact,soft_3mm_r2,soft,3,2,Fy MAE 중앙 (N),0.0319003919139504
-9DTact,soft_3mm_r2,soft,3,2,Fz 최솟값 (N),0.0453799255192279
-9DTact,hard_1mm_r1,hard,1,1,형상 MAE cyl4 최솟값 (mm),0.0370964563209486
-9DTact,hard_1mm_r1,hard,1,1,형상 MAE cube4 최솟값 (mm),0.1159738221399451
-9DTact,hard_1mm_r2,hard,1,2,형상 MAE cyl4 최솟값 (mm),0.0619354422287767
-9DTact,hard_1mm_r2,hard,1,2,형상 MAE cube4 최솟값 (mm),0.058032918926127
-9DTact,hard_2mm_r1,hard,2,1,형상 MAE cyl4 최솟값 (mm),0.0975424545996847
-9DTact,hard_2mm_r1,hard,2,1,형상 MAE cube4 최솟값 (mm),0.0755695400549622
-9DTact,hard_2mm_r2,hard,2,2,형상 MAE cyl4 최솟값 (mm),0.0432631555928541
-9DTact,hard_2mm_r2,hard,2,2,형상 MAE cube4 최솟값 (mm),0.0716444830298723
-9DTact,hard_3mm_r1,hard,3,1,형상 MAE cyl4 최솟값 (mm),0.061925155030431
-9DTact,hard_3mm_r1,hard,3,1,형상 MAE cube4 최솟값 (mm),0.0723464289990811
-9DTact,hard_3mm_r2,hard,3,2,형상 MAE cyl4 최솟값 (mm),0.0913877317759624
-9DTact,hard_3mm_r2,hard,3,2,형상 MAE cube4 최솟값 (mm),0.0720877367890461
-9DTact,medium_1mm_r1,medium,1,1,형상 MAE cyl4 최솟값 (mm),0.1009916774517412
-9DTact,medium_1mm_r1,medium,1,1,형상 MAE cube4 최솟값 (mm),0.1831790823027302
-9DTact,medium_1mm_r2,medium,1,2,형상 MAE cyl4 최솟값 (mm),0.0644283033742624
-9DTact,medium_1mm_r2,medium,1,2,형상 MAE cube4 최솟값 (mm),0.0669177117320689
+9DTact,hard_1mm_r1,hard,1,1,형상 MAE cyl4 최솟값 (mm),0.0176871912809067
+9DTact,hard_1mm_r1,hard,1,1,형상 MAE cube4 최솟값 (mm),0.0959051090846099
+9DTact,hard_2mm_r1,hard,2,1,형상 MAE cyl4 최솟값 (mm),0.043172037641226
+9DTact,hard_2mm_r1,hard,2,1,형상 MAE cube4 최솟값 (mm),0.0559432722046491
+9DTact,hard_3mm_r1,hard,3,1,형상 MAE cyl4 최솟값 (mm),0.0619108522384856
+9DTact,hard_3mm_r1,hard,3,1,형상 MAE cube4 최솟값 (mm),0.055083227962312
+9DTact,medium_1mm_r1,medium,1,1,형상 MAE cyl4 최솟값 (mm),0.0826581618951118
+9DTact,medium_1mm_r1,medium,1,1,형상 MAE cube4 최솟값 (mm),0.130138445998554
 9DTact,medium_2mm_r2,medium,2,2,형상 MAE cyl4 최솟값 (mm),0.0474107292291973
 9DTact,medium_2mm_r2,medium,2,2,형상 MAE cube4 최솟값 (mm),0.0492800402931567
-9DTact,medium_3mm_r1,medium,3,1,형상 MAE cyl4 최솟값 (mm),0.1047841592014676
-9DTact,medium_3mm_r1,medium,3,1,형상 MAE cube4 최솟값 (mm),0.0932602158091443
-9DTact,medium_3mm_r2,medium,3,2,형상 MAE cyl4 최솟값 (mm),0.0484627937184541
-9DTact,medium_3mm_r2,medium,3,2,형상 MAE cube4 최솟값 (mm),0.0529098308472288
-9DTact,soft_1mm_r1,soft,1,1,형상 MAE cyl4 최솟값 (mm),0.0682699738021551
-9DTact,soft_1mm_r1,soft,1,1,형상 MAE cube4 최솟값 (mm),0.1193357370114025
-9DTact,soft_1mm_r2,soft,1,2,형상 MAE cyl4 최솟값 (mm),0.094695847746312
-9DTact,soft_1mm_r2,soft,1,2,형상 MAE cube4 최솟값 (mm),0.1982524058450264
-9DTact,soft_2mm_r1,soft,2,1,형상 MAE cyl4 최솟값 (mm),0.061921004861276
-9DTact,soft_2mm_r1,soft,2,1,형상 MAE cube4 최솟값 (mm),0.1310601267416568
-9DTact,soft_2mm_r2,soft,2,2,형상 MAE cyl4 최솟값 (mm),0.0477946986604281
-9DTact,soft_2mm_r2,soft,2,2,형상 MAE cube4 최솟값 (mm),0.052946142521024
-9DTact,soft_3mm_r1,soft,3,1,형상 MAE cyl4 최솟값 (mm),0.0460480061131948
-9DTact,soft_3mm_r1,soft,3,1,형상 MAE cube4 최솟값 (mm),0.0481800079247918
-9DTact,soft_3mm_r2,soft,3,2,형상 MAE cyl4 최솟값 (mm),0.0612016849092754
-9DTact,soft_3mm_r2,soft,3,2,형상 MAE cube4 최솟값 (mm),0.0584617793593883
+9DTact,medium_3mm_r1,medium,3,1,형상 MAE cyl4 최솟값 (mm),0.0737960689502112
+9DTact,medium_3mm_r1,medium,3,1,형상 MAE cube4 최솟값 (mm),0.0676092649411475
+9DTact,soft_1mm_r1,soft,1,1,형상 MAE cyl4 최솟값 (mm),0.0589091547286499
+9DTact,soft_1mm_r1,soft,1,1,형상 MAE cube4 최솟값 (mm),0.100109468350311
+9DTact,soft_2mm_r1,soft,2,1,형상 MAE cyl4 최솟값 (mm),0.0300330661818047
+9DTact,soft_2mm_r1,soft,2,1,형상 MAE cube4 최솟값 (mm),0.0854609919193575
+9DTact,soft_3mm_r1,soft,3,1,형상 MAE cyl4 최솟값 (mm),0.0386361875129104
+9DTact,soft_3mm_r1,soft,3,1,형상 MAE cube4 최솟값 (mm),0.0472806973905927
 DIGIT,soft_1mm_r1,soft,1,1,천장 (N),23.41254982668352
 DIGIT,soft_1mm_r1,soft,1,1,포화 깊이 (mm),0.9599031401923668
 DIGIT,soft_1mm_r2,soft,1,2,천장 (N),22.449198933907432
@@ -369,14 +321,6 @@ DIGIT,hard_1mm_r1,hard,1,1,Fz MAE 중앙 (N),0.08614218235015865
 DIGIT,hard_1mm_r1,hard,1,1,Fx MAE 중앙 (N),0.030729771591722903
 DIGIT,hard_1mm_r1,hard,1,1,Fy MAE 중앙 (N),0.0351750291883945
 DIGIT,hard_1mm_r1,hard,1,1,Fz 최솟값 (N),0.0695246458053588
-DIGIT,hard_1mm_r2,hard,1,2,Fz MAE 중앙 (N),0.10846161842346186
-DIGIT,hard_1mm_r2,hard,1,2,Fx MAE 중앙 (N),0.03182707540690895
-DIGIT,hard_1mm_r2,hard,1,2,Fy MAE 중앙 (N),0.04961214959621425
-DIGIT,hard_1mm_r2,hard,1,2,Fz 최솟값 (N),0.0948507860302925
-DIGIT,hard_2mm_r1,hard,2,1,Fz MAE 중앙 (N),0.0626063253730535
-DIGIT,hard_2mm_r1,hard,2,1,Fx MAE 중앙 (N),0.0243364972993731
-DIGIT,hard_2mm_r1,hard,2,1,Fy MAE 중앙 (N),0.02777199726551765
-DIGIT,hard_2mm_r1,hard,2,1,Fz 최솟값 (N),0.0546161495149135
 DIGIT,hard_2mm_r2,hard,2,2,Fz MAE 중앙 (N),0.0694794952869415
 DIGIT,hard_2mm_r2,hard,2,2,Fx MAE 중앙 (N),0.03235069848597045
 DIGIT,hard_2mm_r2,hard,2,2,Fy MAE 중앙 (N),0.041263218969106646
@@ -385,38 +329,18 @@ DIGIT,hard_3mm_r1,hard,3,1,Fz MAE 중앙 (N),0.0655310377478599
 DIGIT,hard_3mm_r1,hard,3,1,Fx MAE 중앙 (N),0.032954312860965645
 DIGIT,hard_3mm_r1,hard,3,1,Fy MAE 중앙 (N),0.040099013596773106
 DIGIT,hard_3mm_r1,hard,3,1,Fz 최솟값 (N),0.0568446181714534
-DIGIT,hard_3mm_r2,hard,3,2,Fz MAE 중앙 (N),0.056113945320248604
-DIGIT,hard_3mm_r2,hard,3,2,Fx MAE 중앙 (N),0.0256137456744909
-DIGIT,hard_3mm_r2,hard,3,2,Fy MAE 중앙 (N),0.03085765242576595
-DIGIT,hard_3mm_r2,hard,3,2,Fz 최솟값 (N),0.049094520509243
 DIGIT,medium_1mm_r1,medium,1,1,Fz MAE 중앙 (N),0.06314604356884951
 DIGIT,medium_1mm_r1,medium,1,1,Fx MAE 중앙 (N),0.024454667232930598
 DIGIT,medium_1mm_r1,medium,1,1,Fy MAE 중앙 (N),0.02214149571955195
 DIGIT,medium_1mm_r1,medium,1,1,Fz 최솟값 (N),0.0492114089429378
-DIGIT,medium_1mm_r2,medium,1,2,Fz MAE 중앙 (N),0.09763391315937034
-DIGIT,medium_1mm_r2,medium,1,2,Fx MAE 중앙 (N),0.0416563637554645
-DIGIT,medium_1mm_r2,medium,1,2,Fy MAE 중앙 (N),0.05137422122061245
-DIGIT,medium_1mm_r2,medium,1,2,Fz 최솟값 (N),0.089378722012043
 DIGIT,medium_2mm_r1,medium,2,1,Fz MAE 중앙 (N),0.06260083056986325
 DIGIT,medium_2mm_r1,medium,2,1,Fx MAE 중앙 (N),0.03379700519144535
 DIGIT,medium_2mm_r1,medium,2,1,Fy MAE 중앙 (N),0.037384547293186104
 DIGIT,medium_2mm_r1,medium,2,1,Fz 최솟값 (N),0.0471034236252307
-DIGIT,medium_2mm_r2,medium,2,2,Fz MAE 중앙 (N),0.0752273947000503
-DIGIT,medium_2mm_r2,medium,2,2,Fx MAE 중앙 (N),0.02591893821954725
-DIGIT,medium_2mm_r2,medium,2,2,Fy MAE 중앙 (N),0.026855891570448848
-DIGIT,medium_2mm_r2,medium,2,2,Fz 최솟값 (N),0.0548701360821723
 DIGIT,medium_3mm_r1,medium,3,1,Fz MAE 중앙 (N),0.05074582435190675
 DIGIT,medium_3mm_r1,medium,3,1,Fx MAE 중앙 (N),0.02536532096564765
 DIGIT,medium_3mm_r1,medium,3,1,Fy MAE 중앙 (N),0.03329795412719245
 DIGIT,medium_3mm_r1,medium,3,1,Fz 최솟값 (N),0.0460463054478168
-DIGIT,medium_3mm_r2,medium,3,2,Fz MAE 중앙 (N),0.06194532662630074
-DIGIT,medium_3mm_r2,medium,3,2,Fx MAE 중앙 (N),0.035270856693387004
-DIGIT,medium_3mm_r2,medium,3,2,Fy MAE 중앙 (N),0.0426577348262071
-DIGIT,medium_3mm_r2,medium,3,2,Fz 최솟값 (N),0.0515167079865932
-DIGIT,soft_1mm_r1,soft,1,1,Fz MAE 중앙 (N),0.0854643993079662
-DIGIT,soft_1mm_r1,soft,1,1,Fx MAE 중앙 (N),0.0291572324931621
-DIGIT,soft_1mm_r1,soft,1,1,Fy MAE 중앙 (N),0.02616461925208565
-DIGIT,soft_1mm_r1,soft,1,1,Fz 최솟값 (N),0.0717098638415336
 DIGIT,soft_1mm_r2,soft,1,2,Fz MAE 중앙 (N),0.09639412537217135
 DIGIT,soft_1mm_r2,soft,1,2,Fx MAE 중앙 (N),0.031418719328939845
 DIGIT,soft_1mm_r2,soft,1,2,Fy MAE 중앙 (N),0.0357195287942886
@@ -425,18 +349,10 @@ DIGIT,soft_2mm_r1,soft,2,1,Fz MAE 중앙 (N),0.05828155949711795
 DIGIT,soft_2mm_r1,soft,2,1,Fx MAE 중앙 (N),0.03327507525682445
 DIGIT,soft_2mm_r1,soft,2,1,Fy MAE 중앙 (N),0.0272838957607746
 DIGIT,soft_2mm_r1,soft,2,1,Fz 최솟값 (N),0.0487581752240657
-DIGIT,soft_2mm_r2,soft,2,2,Fz MAE 중앙 (N),0.06763960793614385
-DIGIT,soft_2mm_r2,soft,2,2,Fx MAE 중앙 (N),0.0251739602535963
-DIGIT,soft_2mm_r2,soft,2,2,Fy MAE 중앙 (N),0.02916828170418735
-DIGIT,soft_2mm_r2,soft,2,2,Fz 최솟값 (N),0.0550210326910018
 DIGIT,soft_3mm_r1,soft,3,1,Fz MAE 중앙 (N),0.0655676610767841
 DIGIT,soft_3mm_r1,soft,3,1,Fx MAE 중앙 (N),0.0353926233947277
 DIGIT,soft_3mm_r1,soft,3,1,Fy MAE 중앙 (N),0.055321043357253
 DIGIT,soft_3mm_r1,soft,3,1,Fz 최솟값 (N),0.057066049426794
-DIGIT,soft_3mm_r2,soft,3,2,Fz MAE 중앙 (N),0.0570454262197017
-DIGIT,soft_3mm_r2,soft,3,2,Fx MAE 중앙 (N),0.030411628074944
-DIGIT,soft_3mm_r2,soft,3,2,Fy MAE 중앙 (N),0.044928027316927854
-DIGIT,soft_3mm_r2,soft,3,2,Fz 최솟값 (N),0.0491091050207614
 DIGIT_Marker,soft_1mm_r1,soft,1,1,천장 (N),20.516453738273636
 DIGIT_Marker,soft_1mm_r1,soft,1,1,포화 깊이 (mm),1.2727021687009383
 DIGIT_Marker,soft_1mm_r2,soft,1,2,천장 (N),12.330521853015586
@@ -513,71 +429,35 @@ DIGIT_Marker,hard_1mm_r1,hard,1,1,Fz MAE 중앙 (N),0.11626349762082094
 DIGIT_Marker,hard_1mm_r1,hard,1,1,Fx MAE 중앙 (N),0.02264822460710995
 DIGIT_Marker,hard_1mm_r1,hard,1,1,Fy MAE 중앙 (N),0.0276163928210735
 DIGIT_Marker,hard_1mm_r1,hard,1,1,Fz 최솟값 (N),0.087947778403759
-DIGIT_Marker,hard_1mm_r2,hard,1,2,Fz MAE 중앙 (N),0.117049615830183
-DIGIT_Marker,hard_1mm_r2,hard,1,2,Fx MAE 중앙 (N),0.029054336249828297
-DIGIT_Marker,hard_1mm_r2,hard,1,2,Fy MAE 중앙 (N),0.0372951682657003
-DIGIT_Marker,hard_1mm_r2,hard,1,2,Fz 최솟값 (N),0.1088357791304588
 DIGIT_Marker,hard_2mm_r1,hard,2,1,Fz MAE 중앙 (N),0.08548047393560404
 DIGIT_Marker,hard_2mm_r1,hard,2,1,Fx MAE 중앙 (N),0.03673815168440335
 DIGIT_Marker,hard_2mm_r1,hard,2,1,Fy MAE 중앙 (N),0.0285394228994846
 DIGIT_Marker,hard_2mm_r1,hard,2,1,Fz 최솟값 (N),0.0707534551620483
-DIGIT_Marker,hard_2mm_r2,hard,2,2,Fz MAE 중앙 (N),0.0797640569508075
-DIGIT_Marker,hard_2mm_r2,hard,2,2,Fx MAE 중앙 (N),0.027401266619563047
-DIGIT_Marker,hard_2mm_r2,hard,2,2,Fy MAE 중앙 (N),0.03626832924783225
-DIGIT_Marker,hard_2mm_r2,hard,2,2,Fz 최솟값 (N),0.0690366774797439
 DIGIT_Marker,hard_3mm_r1,hard,3,1,Fz MAE 중앙 (N),0.07101025804877276
 DIGIT_Marker,hard_3mm_r1,hard,3,1,Fx MAE 중앙 (N),0.036684527993202154
 DIGIT_Marker,hard_3mm_r1,hard,3,1,Fy MAE 중앙 (N),0.036800980567932046
 DIGIT_Marker,hard_3mm_r1,hard,3,1,Fz 최솟값 (N),0.0633693858981132
-DIGIT_Marker,hard_3mm_r2,hard,3,2,Fz MAE 중앙 (N),0.06219099462032315
-DIGIT_Marker,hard_3mm_r2,hard,3,2,Fx MAE 중앙 (N),0.0259205196052789
-DIGIT_Marker,hard_3mm_r2,hard,3,2,Fy MAE 중앙 (N),0.03028820082545275
-DIGIT_Marker,hard_3mm_r2,hard,3,2,Fz 최솟값 (N),0.0574850998818874
 DIGIT_Marker,medium_1mm_r1,medium,1,1,Fz MAE 중앙 (N),0.13991314172744745
 DIGIT_Marker,medium_1mm_r1,medium,1,1,Fx MAE 중앙 (N),0.0386409796774387
 DIGIT_Marker,medium_1mm_r1,medium,1,1,Fy MAE 중앙 (N),0.06030375510454175
 DIGIT_Marker,medium_1mm_r1,medium,1,1,Fz 최솟값 (N),0.1114101260900497
-DIGIT_Marker,medium_1mm_r2,medium,1,2,Fz MAE 중앙 (N),0.16038434952497477
-DIGIT_Marker,medium_1mm_r2,medium,1,2,Fx MAE 중앙 (N),0.046428527683019596
-DIGIT_Marker,medium_1mm_r2,medium,1,2,Fy MAE 중앙 (N),0.04940201155841345
-DIGIT_Marker,medium_1mm_r2,medium,1,2,Fz 최솟값 (N),0.1336043328046798
 DIGIT_Marker,medium_2mm_r1,medium,2,1,Fz MAE 중앙 (N),0.07698787748813625
 DIGIT_Marker,medium_2mm_r1,medium,2,1,Fx MAE 중앙 (N),0.02579802274703975
 DIGIT_Marker,medium_2mm_r1,medium,2,1,Fy MAE 중앙 (N),0.033600559458136545
 DIGIT_Marker,medium_2mm_r1,medium,2,1,Fz 최솟값 (N),0.0642960518598556
-DIGIT_Marker,medium_2mm_r2,medium,2,2,Fz MAE 중앙 (N),0.08558141812682149
-DIGIT_Marker,medium_2mm_r2,medium,2,2,Fx MAE 중앙 (N),0.0356615465134382
-DIGIT_Marker,medium_2mm_r2,medium,2,2,Fy MAE 중앙 (N),0.03719706833362575
-DIGIT_Marker,medium_2mm_r2,medium,2,2,Fz 최솟값 (N),0.0652675107121467
 DIGIT_Marker,medium_3mm_r1,medium,3,1,Fz MAE 중앙 (N),0.07343881204724309
 DIGIT_Marker,medium_3mm_r1,medium,3,1,Fx MAE 중앙 (N),0.0208594370633363
 DIGIT_Marker,medium_3mm_r1,medium,3,1,Fy MAE 중앙 (N),0.0262958481907844
 DIGIT_Marker,medium_3mm_r1,medium,3,1,Fz 최솟값 (N),0.0641959533095359
-DIGIT_Marker,medium_3mm_r2,medium,3,2,Fz MAE 중앙 (N),0.08768298476934425
-DIGIT_Marker,medium_3mm_r2,medium,3,2,Fx MAE 중앙 (N),0.029453060589730698
-DIGIT_Marker,medium_3mm_r2,medium,3,2,Fy MAE 중앙 (N),0.0483835637569427
-DIGIT_Marker,medium_3mm_r2,medium,3,2,Fz 최솟값 (N),0.0705107674002647
 DIGIT_Marker,soft_1mm_r1,soft,1,1,Fz MAE 중앙 (N),0.13749384880065912
 DIGIT_Marker,soft_1mm_r1,soft,1,1,Fx MAE 중앙 (N),0.029818938113749
 DIGIT_Marker,soft_1mm_r1,soft,1,1,Fy MAE 중앙 (N),0.045371284708380644
 DIGIT_Marker,soft_1mm_r1,soft,1,1,Fz 최솟값 (N),0.1156897842884063
-DIGIT_Marker,soft_1mm_r2,soft,1,2,Fz MAE 중앙 (N),0.1345366984605789
-DIGIT_Marker,soft_1mm_r2,soft,1,2,Fx MAE 중앙 (N),0.034115202724933597
-DIGIT_Marker,soft_1mm_r2,soft,1,2,Fy MAE 중앙 (N),0.045530663803219754
-DIGIT_Marker,soft_1mm_r2,soft,1,2,Fz 최솟값 (N),0.1158408150076866
 DIGIT_Marker,soft_2mm_r1,soft,2,1,Fz MAE 중앙 (N),0.13615688681602472
 DIGIT_Marker,soft_2mm_r1,soft,2,1,Fx MAE 중앙 (N),0.04171970859169955
 DIGIT_Marker,soft_2mm_r1,soft,2,1,Fy MAE 중앙 (N),0.0637398213148117
 DIGIT_Marker,soft_2mm_r1,soft,2,1,Fz 최솟값 (N),0.1044399440288543
-DIGIT_Marker,soft_2mm_r2,soft,2,2,Fz MAE 중앙 (N),0.0871220231056213
-DIGIT_Marker,soft_2mm_r2,soft,2,2,Fx MAE 중앙 (N),0.025304373353719697
-DIGIT_Marker,soft_2mm_r2,soft,2,2,Fy MAE 중앙 (N),0.03216762840747825
-DIGIT_Marker,soft_2mm_r2,soft,2,2,Fz 최솟값 (N),0.0712184980511665
 DIGIT_Marker,soft_3mm_r1,soft,3,1,Fz MAE 중앙 (N),0.11014400422573084
 DIGIT_Marker,soft_3mm_r1,soft,3,1,Fx MAE 중앙 (N),0.03813321515917775
 DIGIT_Marker,soft_3mm_r1,soft,3,1,Fy MAE 중앙 (N),0.0485335867851972
 DIGIT_Marker,soft_3mm_r1,soft,3,1,Fz 최솟값 (N),0.0766184628009796
-DIGIT_Marker,soft_3mm_r2,soft,3,2,Fz MAE 중앙 (N),0.0742832757532596
-DIGIT_Marker,soft_3mm_r2,soft,3,2,Fx MAE 중앙 (N),0.0367905832827091
-DIGIT_Marker,soft_3mm_r2,soft,3,2,Fy MAE 중앙 (N),0.042270598933100645
-DIGIT_Marker,soft_3mm_r2,soft,3,2,Fz 최솟값 (N),0.0646827593445777
