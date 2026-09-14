@@ -8,6 +8,7 @@ principle,unit,hardness,thickness_mm,rep,finest_centre_mm,finest_edge_mm,depth_l
 9DTact,soft_1mm_r1,soft,1,1,1.5,0.5,0.2,0.6,0.838,4,6,False
 9DTact,soft_2mm_r1,soft,2,1,1.75,0.75,0.1,0.9,0.707,3,6,False
 9DTact,soft_3mm_r1,soft,3,1,2.0,1.0,0.3,0.3,0.289,1,4,False
+DIGIT,hard_1mm_r1,hard,1,1,1.1,0.1,0.1,0.6,0.997,2,2,False
 DIGIT,hard_3mm_r1,hard,3,1,1.1,0.1,0.2,0.9,0.967,2,2,False
 DIGIT,medium_1mm_r1,medium,1,1,1.1,0.1,0.1,0.6,0.977,2,2,False
 DIGIT,medium_2mm_r1,medium,2,1,1.1,0.1,0.1,0.9,1.0,2,2,False

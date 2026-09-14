@@ -420,6 +420,16 @@ def analyse(sensor, verbose=False):
                 e2 = deep["recon"] - deep["true"]
                 out[f"{k}_bias_deep"] = float(e2.mean())
                 out[f"{k}_mae_deep"] = float(e2.abs().mean())
+            # R^2 of the reconstruction against truth, with NO refit -- the
+            # same quantity digit_shape's evaluation reports, so the two arms
+            # can be read side by side. `rms_after_linear` below answers a
+            # different question (how much is left once a per-unit gain and
+            # offset are allowed); a high R^2 with a slope far from 1 means
+            # the shape is right and the scale is not.
+            if len(s) >= 3:
+                _sr = float(((s["recon"] - s["true"]) ** 2).sum())
+                _st = float(((s["true"] - s["true"].mean()) ** 2).sum())
+                out[f"{k}_r2"] = float(1.0 - _sr / _st) if _st > 0 else float("nan")
             # one linear correction, as in the pilot, then the residual
             if len(s) >= 3:
                 a, b = np.polyfit(s["true"], s["recon"], 1)

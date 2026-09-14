@@ -81,6 +81,107 @@ _KNEE_SHORT = {"fz": "Fz", "shear": "전단", "cyl4": "cyl4", "cube4": "cube4"}
 _R = PD.fmt   # 밀도 표기는 한 곳에서만 정한다
 
 
+
+_GEL_NAME = {"mae_fz": "Fz MAE (N)", "mae_shear": "전단 MAE (N)",
+             "r2_fz": "Fz R²", "r2_lat": "횡력 크기 R²",
+             "mae_cyl4": "원기둥 MAE (mm)", "mae_cube4": "정육면체 MAE (mm)",
+             "r2_cyl4": "원기둥 R²", "r2_cube4": "정육면체 R²"}
+
+
+def gel_block():
+    """겔 설계가 MAE 와 R² 를 어떻게 바꾸나 — 두 과제 모두 (운전자 요청)."""
+    dd = RES / "extra" / "data"
+    tf, ts = dd / "J_gel_effect_force_tests.csv", dd / "J_gel_effect_shape_tests.csv"
+    if not tf.exists():
+        return
+    w("### 겔 설계에 따른 MAE 와 R²")
+    w()
+    w("여기까지는 해상도가 가로축이었다. 이 절은 **해상도를 없애고** 겔만 본다 —")
+    w("유닛마다 평탄 구간(가로 80 px 이상)의 중앙값을 취해 수 하나로 만든 뒤,")
+    w("두께와 경도로 가른다.")
+    w()
+    w("**MAE 와 R² 를 함께 보는 이유**는 둘이 갈릴 수 있기 때문이다. MAE 는")
+    w("\"얼마나 틀리나\", R² 는 \"신호를 실제로 따라가나\" 다. 범위가 좁은 유닛은")
+    w("MAE 가 작아도 R² 가 낮고, 배율만 틀린 유닛은 R² 가 높아도 MAE 가 크다 —")
+    w("형상 쪽에서 이미 본 것이다(상관 0.99 인데 깊이가 참값의 0.61 배).")
+    w()
+    for f, cap in [("extra/figures/J_gel_effect_force.png",
+                    "힘 추정 — 겔 설계에 따른 Fz MAE 와 R². 점 하나가 유닛 "
+                    "하나, 검은 선이 중앙값."),
+                   ("extra/figures/J_gel_effect_shape.png",
+                    "형상 복원 — 겔 설계에 따른 원기둥 MAE 와 R². 점 하나가 "
+                    "유닛 하나, 검은 선이 중앙값.")]:
+        if (RES / f).exists():
+            fig(f, cap)
+    T = pd.concat([pd.read_csv(tf).assign(task="힘"),
+                   pd.read_csv(ts).assign(task="형상")], ignore_index=True)
+    hit = T[T.p < 0.05].sort_values("p")
+    _th = T[T.factor == "두께"]; _hd = T[T.factor == "경도"]
+    w(f"**검정 {len(T)} 개 중 p < 0.05 가 {len(hit)} 개**다. 유닛을 단위로 한")
+    w("Spearman ρ 이고, 두께·경도는 세 수준, 원리당 유닛은 아홉이다.")
+    w()
+    w(f"**전부 두께다.** 두께 {len(_th)} 개 중 {(_th.p < .05).sum()} 개가 "
+      f"p < 0.05 인데 경도는 {len(_hd)} 개 중 {(_hd.p < .05).sum()} 개다. "
+      f"|ρ| 의 중앙도 두께 {_th.rho.abs().median():.2f} 대 경도 "
+      f"{_hd.rho.abs().median():.2f} 로 갈린다. 보정을 하지 않은 표라 개별 칸은")
+    w("믿을 수 없지만, **두께 쪽에만 몰리는 이 치우침 자체**는 우연으로 보기")
+    w("어렵다 — 경도가 0/20 이면 경도 효과가 있다는 증거는 이 자료에 없다.")
+    w()
+    w("> 4 절이 겔 범위를 적어 둔 것과 맞는다 — 두께는 1·2·3 mm 로 세 배가")
+    w("> 벌어지는데 경도는 실측 쇼어 A 로 두 단계가 겹친다. **설계한 폭이 다르면")
+    w("> 검출력도 다르다.**")
+    w()
+    w("| 과제 | 원리 | 지표 | 인자 | ρ | p | 1/soft | 2/medium | 3/hard |")
+    w("|---|---|---|---|---:|---:|---:|---:|---:|")
+    for _, x in hit.iterrows():
+        w(f"| {x.task} | {x.principle} | {_GEL_NAME.get(x.metric, x.metric)} | "
+          f"{x.factor} | **{x.rho:+.3f}** | {x.p:.3f} | {x.med_1:g} | "
+          f"{x.med_2:g} | {x.med_3:g} |")
+    w()
+    w("> **이 표를 결과로 읽지 말 것.** 세 가지 이유다.")
+    w(">")
+    w(f"> 1. **다중검정 보정을 하지 않았다.** {len(T)} 번 검정하면 우연히")
+    w(f">    {len(T) * 0.05:.0f} 개쯤이 p < 0.05 로 나온다 — 지금 {len(hit)} 개다.")
+    w(">    5 절의 포화 해상도 검정(20 개 BH 보정)과는 **다른 집합**이고, 그")
+    w(">    보정에 합치지 않았다.")
+    w("> 2. **n = 9 에 수준이 셋**이다. Spearman ρ 가 ±0.738 이면 p ≈ 0.023 인데,")
+    w(">    유닛 하나가 순위를 바꾸면 그 값이 크게 움직인다.")
+    w("> 3. **같은 방향이 두 원리에서 나오지 않는다.** 아래에 적는다.")
+    w()
+    # 두 원리에서 방향이 갈리는 것을 자동으로 찾는다
+    both = (T[T.metric.isin(["mae_cyl4", "r2_cyl4"])]
+            .pivot_table(index=["metric", "factor"], columns="principle",
+                         values="rho"))
+    if {"9DTact", "DIGIT"} <= set(both.columns):
+        opp = both[(both["9DTact"] * both["DIGIT"] < 0)]
+        if len(opp):
+            w("**형상에서 두 원리의 부호가 갈린다:**")
+            w()
+            w("| 지표 | 인자 | 9DTact ρ | DIGIT ρ |")
+            w("|---|---|---:|---:|")
+            for (m, fa), r in opp.iterrows():
+                w(f"| {_GEL_NAME.get(m, m)} | {fa} | {r['9DTact']:+.3f} | "
+                  f"{r['DIGIT']:+.3f} |")
+            w()
+            w("두 파이프라인이 같은 겔을 반대로 읽는다면, 그것은 겔의 성질이")
+            w("아니라 파이프라인의 성질이다.")
+            w()
+    _neg = T[(T.metric.str.startswith("r2")) &
+             ((T.med_1 < 0) | (T.med_2 < 0) | (T.med_3 < 0))]
+    if len(_neg):
+        w("**R² 가 음수인 칸이 있다.** " +
+          ", ".join(sorted({f"{x.principle} {_GEL_NAME.get(x.metric, x.metric)}"
+                            for _, x in _neg.iterrows()})) +
+          " 가 1 mm 와 3 mm 겔에서 0 아래다 — 그 유닛들에서는 **참 깊이의 평균을")
+        w("그냥 내놓는 편이 복원보다 낫다**는 뜻이다. MAE 만 보면 0.07 ~ 0.10 mm 로")
+        w("나쁘지 않아 보이는데, 깊이가 변해도 예측이 따라가지 않는다. **MAE 와")
+        w("R² 를 함께 보라는 것이 바로 이런 경우다.**")
+        w()
+    w("<sub>만드는 것은 `scripts/gel_effect.py` · 자료 "
+      "`extra/data/J_gel_effect_{force,shape}.csv`, 검정 `..._tests.csv`</sub>")
+    w()
+
+
 def knee_block(family, metrics, what, tail=True):
     """포화 해상도를 경도·두께 칸별로 — 4 절(힘)과 5 절(형상)이 각각 부른다.
 
@@ -684,6 +785,9 @@ def main():
             w(f"> **{pr}: 학습 진행 중.** 끝나면 이 문서를 다시 생성한다.")
             w()
 
+
+    # ---- 겔 효과: MAE 와 R² ---------------------------------------------
+    gel_block()
 
     # ---- 합력 -----------------------------------------------------------
     w("### 세 축을 합친 힘 오차")

@@ -7,10 +7,10 @@ principle,metric,hardness,1mm,2mm,3mm
 9DTact,shear,hard,5.89,13.8,3.73
 DIGIT,fz,soft,7.49,293,5.36
 DIGIT,fz,medium,21.1,17.4,2.19
-DIGIT,fz,hard,23.0,6.74,13.3
+DIGIT,fz,hard,21.4,6.74,13.3
 DIGIT,shear,soft,590,6.60,2.38
 DIGIT,shear,medium,3.37,6.25,4.92
-DIGIT,shear,hard,3.68,6.74,4.77
+DIGIT,shear,hard,85.8,6.74,4.77
 DIGIT_Marker,fz,soft,27.0,22.6,287
 DIGIT_Marker,fz,medium,89.6,22.7,2.82
 DIGIT_Marker,fz,hard,455,23.0,16.5
@@ -25,7 +25,7 @@ DIGIT_Marker,shear,hard,455,"5,898",16.5
 9DTact,cube4,hard,2.62,2.20,3.73
 DIGIT,cyl4,soft,83.2,2.93,0.60
 DIGIT,cyl4,medium,0.84,"1,111",2.19
-DIGIT,cyl4,hard,0.92,0.19,13.3
+DIGIT,cyl4,hard,0.86,0.19,13.3
 DIGIT,cube4,soft,83.2,"1,173",2.38
 DIGIT,cube4,medium,0.21,6.25,875
-DIGIT,cube4,hard,0.23,"1,199",212
+DIGIT,cube4,hard,0.86,"1,199",212
