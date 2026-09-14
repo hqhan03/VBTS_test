@@ -46,22 +46,25 @@ fingers [1]. Sampling resolution, in pixels per millimetre, is therefore fixed
 early, since it constrains camera, electronics and network input size together.
 No basis exists for judging which value suffices. The requirement should depend
 on how locally the elastomer preserves contact information, and so on gel
-design, but that dependence has not been quantified. We investigate it with 54 specimens spanning two sensing
-principles and a marker-bearing photometric variant, three hardness levels,
-three sensing-layer thicknesses and two replicates per condition. Imaging
-hardware is reused within each arm, and one 1920x1080 capture is downsampled to
-widths from 1920 to 8 pixels. We distinguish paired-contact separability from the input resolution
-at which force and shape errors approach their minima. Thicker depth-referenced
-specimens separate paired contacts less well, yet no tested association between
-hardness or thickness and estimator plateau resolution survives
-false-discovery correction. This does not establish
-independence: the median replicate ratio for depth-referenced normal-force
-plateau resolution is 2.2, and two of eight pairs differ by at least
-eight-fold. At a 10 % error tolerance, selected-specimen median plateau widths
-are 48 pixels for shear and 80 pixels for normal force in the markerless arms.
-Tightening the tolerance to 5 % raises the depth-referenced normal-force width
-to 320 and reverses the normal/shear ordering in the photometric arm, so a plateau
-summary depends on the decision criterion as much as on the task. These results
+design, but that dependence has not been quantified. We investigate it with 27
+sensors, one per condition, spanning two sensing principles and a
+marker-bearing photometric variant, three hardness levels and three
+sensing-layer thicknesses. Imaging hardware is reused within each arm, and one
+1920x1080 capture is downsampled to widths from 1920 to 8 pixels. We
+distinguish paired-contact separability from the input resolution at which
+force and shape errors approach their minima. Thicker depth-referenced
+specimens separate paired contacts less well on every measure we record
+(Spearman rho = -0.74 for maximum dip, p = 0.023), yet no tested association
+between hardness or thickness and estimator plateau resolution survives
+false-discovery correction. This does not establish independence: nine
+specimens per arm at three levels of each factor is a small design, the
+per-unit plateau resolutions are widely scattered, and with one specimen per
+condition we cannot separate build variation from the designed factors. At a
+10 % error tolerance, median plateau widths are 48 pixels for shear and 80
+pixels for normal force in the markerless arms. Tightening the tolerance to
+5 % raises the depth-referenced normal-force width to 320 and reverses the
+normal/shear ordering in the photometric arm, so a plateau summary depends on
+the decision criterion as much as on the task. These results
 characterize the tested quasi-static pipelines rather than a universal camera
 specification, and argue for evaluating contact separability, task error and
 specimen repeatability separately.
@@ -98,7 +101,7 @@ the relationship between elastomer design and task-specific input sampling
 unresolved.
 
 [I-4]
-We examine this relationship using two replicates of 27 conditions. The main
+We examine this relationship using 27 sensors, one per condition. The main
 comparison includes depth-referenced and photometric sensors, each with three
 hardness levels and sensing-layer thicknesses of 1, 2, and 3 mm. A
 marker-bearing photometric variant is retained as a secondary arm. Within each
@@ -117,8 +120,8 @@ hardware, link bandwidth, or dynamic control performance.
 [I-6]
 The selected specimens exhibit different median plateau resolutions across
 force components and reconstruction tasks. No tested hardness or thickness
-association survives false-discovery correction, but substantial replicate
-variation prevents an independence claim. The contributions are:
+association survives false-discovery correction, but the small design and the
+scatter of the per-unit estimates prevent an independence claim. The contributions are:
 
 [I-C1]
 1) A physical comparison of elastomer design and input sampling with shared
@@ -231,19 +234,22 @@ thickness-dependent optical changes.
 B. Elastomer Specimens and Analysis Sets
 
 [III-B1]
-There are 27 conditions and 54 specimens, with two replicates per condition.
-Specimens were visually screened and checked for thickness before measurement.
-Replicate sets were acquired sequentially rather than immediately back-to-back,
-so replicate differences include session and mounting effects. One specimen was
-destroyed during an early force ramp, leaving 53 that completed that
-measurement.
+The analysed set is 27 specimens, one per condition and nine per arm. Two were
+cast for every condition, 54 in all, and were visually screened and checked for
+thickness before measurement; one was destroyed during an early force ramp. The
+second specimen of each condition exists but is not analysed in this paper, for
+the reason given in [III-B2]. Specimens were measured sequentially rather than
+in immediate pairs, so any two of them differ by session and mounting as well
+as by design.
 
 [III-B2]
-Most summaries use one selected specimen per condition. Exceptions are the
-absolute-threshold saturation analysis (17 depth-referenced and 18 photometric
-specimens), the 2.50 mm separation analysis (14 depth-referenced specimens),
-and the photometric reconstruction summary (18 specimens). These sets are
-identified where used and are not treated as a single balanced analysis.
+Every analysis in this paper uses the same 27 specimens, one per condition and
+nine per arm. Earlier versions of some analyses were computed over larger,
+unequal sets; those are not reported here, and where an analysis could not be
+recomputed on the 27 it has been removed rather than mixed in. One consequence
+is stated where it bites: quantities that compare two specimens built to the
+same condition are outside this set by construction, so this paper does not
+report build-to-build repeatability.
 
 [III-B3]
 Selection prioritized the specimen without a confirmed defect (two light-leak
@@ -384,12 +390,15 @@ specify the loading variable rather than treating the resulting slopes as
 interchangeable.
 
 [IV-A4]
-Nominally identical specimens can differ substantially. One pair has
-intensity-response slopes of 0.9 and 9.3 gray levels/mm. Assembly, optics,
+Specimens differ substantially within an arm, by roughly a factor of three in
+diameter slope across the nine depth-referenced units and 2.6 across the nine
+photometric ones, and that spread is not ordered by hardness. Assembly, optics,
 coating, realized thickness, curing, and adhesion were not varied
-independently, so their contributions cannot be separated. The observation
-demonstrates specimen variability, not its cause. Slopes are additionally
-affected by contact-detection failure at the end of each valid interval.
+independently, so the spread cannot be attributed. Because this paper analyses
+one specimen per condition, it also cannot separate specimen-to-specimen
+variation from the designed factors: a build effect and a gel effect enter the
+same numbers. Slopes are additionally affected by contact-detection failure at
+the end of each valid interval.
 
 
 B. Paired-Contact Separation
@@ -442,15 +451,18 @@ necessarily complete operating limits.
   range, not necessarily a physical limit.
 
 [IV-B5]
-A separate 14-specimen depth-referenced analysis at 2.50 mm center spacing uses
-a common 0.1-0.9 mm depth ladder. Dip is negatively associated with hardness
-(Spearman rho = -0.82, p = 0.0004). Thickness is negatively associated with the
-number of steps passing the stricter criterion (rho = -0.69, p = 0.0068) and
-maximum dip (rho = -0.54, p = 0.0449), and positively associated with the depth
-needed to clear the signal gate (rho = 0.65, p = 0.0127). All five 3 mm
-specimens in that set have no steps passing the stricter criterion. These
-associations concern paired-contact image contrast and do not isolate an
-elastomer transfer function.
+Over the nine depth-referenced specimens, thickness is associated with every
+separation measure we record and hardness with none. The finest resolved centre
+spacing rises with thickness (Spearman rho = +0.75, p = 0.021), while the
+maximum dip falls (rho = -0.74, p = 0.023) and so does the number of gaps
+resolved (rho = -0.71, p = 0.031); against hardness the same three give
+rho = -0.13, -0.32 and +0.22, none significant. In the photometric arm the
+finest resolved spacing and the gap count are constant at the bound of our
+probe set, so only the maximum dip varies, and it shows no thickness
+association (rho = +0.16, p = 0.688). These are three correlations on nine
+units each, reported outside the false-discovery family of Section V, and they
+concern paired-contact image contrast rather than an isolated elastomer
+transfer function.
 
 [IV-B6]
 The result depends on indentation and threshold: shallow contacts may be too
@@ -480,34 +492,35 @@ below the 10 N acquisition stopping force.
 
 [IV-C3]
 The relative criterion uses 15 % of a running robust peak response, implemented
-as the median of the three largest eligible slopes. We also evaluate fixed
-thresholds of 1.0 and 2.0 gray levels/N. Relative and absolute thresholds
-define different criteria; neither is a universal sensor limit, and the
-absolute criterion is not normalized by each arm's image noise.
+as the median of the three largest eligible slopes. Because the threshold is a
+fraction of each specimen's own peak, a specimen with a weak response reports a
+higher crossing force, so the criterion states an operating limit for one
+specimen and does not compare specimens on a common scale. A fixed gray
+levels/N threshold would avoid that, but it is not normalized by each arm's
+image noise and we have not computed it on this specimen set. Neither is a
+universal sensor limit.
 
-[IV-CT1]  TABLE VI -- THRESHOLD-CROSSING FORCE BY CRITERION (medians, 8 mm sphere)
+[IV-CT1]  TABLE VI -- THRESHOLD-CROSSING FORCE (medians, 8 mm sphere)
   criterion             | depth-ref. | photometric | ratio | p
   relative, 15 % peak   |  30.97 N   |   17.72 N   | 1.8x  | 4.1e-05
-  absolute, 1.0 lvl/N   |  30.42 N   |    7.02 N   | 4.3x  | 8.8e-07
-  absolute, 2.0 lvl/N   |  18.10 N   |    2.73 N   | 6.6x  | 2.4e-03
-  The relative row is the 27-unit set, 9 units per arm, exact Mann-Whitney. The
-  two absolute rows are computed over every ramp measured, including the second
-  replicate of each condition (17 depth-referenced and 18 photometric), and
-  have not been recomputed on the 27-unit subset. Truncation at the two
-  absolute thresholds is 6 % and 0 %.
+  Nine units per arm, exact Mann-Whitney. Fixed thresholds of 1.0 and 2.0 gray
+  levels/N were evaluated in an earlier analysis over a larger, unequal
+  specimen set and are not reported here, because they have not been recomputed
+  on these 27 units.
 
 [IV-C4]
-Thresholds of 0.2 and 0.5 gray levels/N were excluded because more than 10 % of
-ramps ended before crossing them; truncation reached 88 % in the
-depth-referenced arm. Truncation is 6 % and 0 % at the retained absolute
-thresholds. These exclusions limit interpretation of the distributions.
+Ramp truncation limits any fixed-threshold analysis here: at 0.2 and 0.5 gray
+levels/N, more than 10 % of ramps ended before crossing, reaching 88 % in the
+depth-referenced arm. Recomputing a fixed threshold on this set would have to
+report that truncation alongside it.
 
 [IV-C5]
-Median crossing force is higher in the depth-referenced arm for all reported
-criteria. Relative-criterion ranges are 27.5-63.2 N and 11.8-22.4 N in the
-selected sets. With both replicates they are 24.6-63.2 N and 11.1-23.4 N. At
-1.0 gray level/N, ranges overlap (11.4-51.9 N and 4.6-13.1 N). Criterion and
-analysis-set differences therefore affect the comparison.
+Median crossing force is higher in the depth-referenced arm, and the two groups
+do not overlap under this criterion (27.5-63.2 N against 11.8-22.4 N). We do
+not read that separation as a property of the principles. The criterion is the
+one [IV-C3] says cannot compare specimens, the absolute thresholds that would
+provide a fairer comparison have not been computed on this specimen set, and
+nine units per arm is a small basis for a distributional claim.
 
 [IV-CT2]  TABLE VII -- THRESHOLD-CROSSING FORCE AND DISPLACEMENT AGAINST GEL DESIGN
                      |  crossing force, N |  displacement, mm
@@ -547,10 +560,12 @@ not establish a design rule.
 
 [IV-C9]
 Marker specimens use a 4 mm sphere, so their 6.2-20.5 N range and 9.2 N median
-are not directly comparable to the markerless ramps. Across 18 specimens tested
-with both sphere sizes, the force ratio ranges from 1.50 to 3.26 and the median
-displacement ratio is 0.99. These observations do not establish probe
-invariance or exclude field-of-view effects.
+are not directly comparable to the markerless ramps. Across the nine specimens
+in this set tested with both sphere sizes, the force ratio ranges from 1.50 to
+3.04 with a median of 2.42, while the displacement ratio spans 0.83 to 1.12
+with a median of 0.99. Displacement transfers between the two probes and force
+does not, but nine pairs neither establish probe invariance nor exclude
+field-of-view effects.
 
 ================================================================================
 V. TASK PERFORMANCE AGAINST INPUT RESOLUTION
@@ -665,11 +680,14 @@ three levels do not adequately characterize interactions or arbitrary
 nonmonotonic effects, and the result does not establish independence.
 
 [V-A8]
-Across eight depth-referenced replicate pairs, the median ratio between larger
-and smaller Fz plateau resolutions is 2.2; two pairs differ by at least
-eight-fold. The shear ratio is 1.7, with one pair beyond eight-fold. These
-describe repeatability of the estimated plateau, not a detection threshold, and
-do not separate fabrication, acquisition, and training variability.
+The per-unit plateau resolutions behind Table IX are widely spread within each
+arm -- 32x18 to 854x480 for depth-referenced Fz, and 32x18 to 1920x1080 for
+marker-bearing shear -- so the medians summarize a scattered quantity rather
+than a repeatable one. Because this paper analyses one specimen per condition,
+we cannot say how much of that spread is build-to-build variation and how much
+is the designed factors, and we do not report a repeatability figure. That
+missing measurement is the main reason the negative result below is stated as a
+failure to detect.
 
 [V-AT3]  TABLE X -- TOLERANCE SENSITIVITY, MEDIAN FORCE PLATEAU WIDTH (pixels)
   arm                 | Fz: 5 % / 10 % / 20 % | shear: 5 % / 10 % / 20 %
@@ -695,15 +713,6 @@ substantially on these baselines, although the baseline for lateral magnitude
 is not directly comparable to the mean of Fx/Fy MAEs. Contact-only and
 load-stratified analyses remain necessary for stronger task claims.
 
-[V-A11]
-As an additional specimen-selection check, applying the 10 % rule to all
-exported force specimens except the two flagged light-leak units gives Fz/shear
-medians of 320/48 pixels (depth-referenced, n = 15), 64/48 (photometric,
-n = 18), and 80/160 (marker-bearing, n = 18). The 64-pixel value is an
-interpolated median between discrete tested widths, not an acquired resolution.
-This inclusion rule does not exclude the four coverage-flagged specimens. The
-check is descriptive and does not replace a renewed effect-size or significance
-analysis.
 
 
 B. Shape Reconstruction
@@ -737,12 +746,13 @@ indenter positioned above the gel. References taken before approach were
 avoids this offset without rescaling the images.
 
 [V-B4]
-In the larger 18-specimen photometric analysis, minimum error is 0.043 mm at
-80x45, 15 specimens have errors below 0.1 mm, and median within-specimen depth
-correlation is 0.980. These values are not summaries of the selected nine
-specimens in Table XI. Evaluation uses commanded penetration relative to a
+Over the nine photometric specimens, the median best error is 0.048 mm for the
+cylinder and 0.055 mm for the cube, with eight of nine below 0.1 mm on each
+probe; the depth-referenced medians are 0.062 and 0.093 mm, with seven and five
+of nine below 0.1 mm. Evaluation uses commanded penetration relative to a
 fitted contact zero over the contact region; neither held-out probe enters
-calibration.
+calibration. Absolute errors are not used to rank the arms, for the reason
+given in [V-B7].
 
 [V-BT1]  TABLE XI -- PLATEAU RESOLUTION FOR SHAPE (median of 9 units)
   arm                | probe          | median    | across units
@@ -782,8 +792,8 @@ VI. CONCLUSION
 ================================================================================
 
 [VI-1]
-We compared elastomer design and processed image resolution using 54 specimens
-across 27 conditions. Paired-contact contrast degrades with thickness in the
+We compared elastomer design and processed image resolution using 27 sensors,
+one per condition. Paired-contact contrast degrades with thickness in the
 tested depth-referenced configuration, while no tested hardness or thickness
 association with estimator plateau resolution survives false-discovery
 correction.
@@ -794,16 +804,17 @@ of 48 pixels for shear and 80-320 pixels for normal force; shape summaries
 range from 80 to 160 pixels. The photometric normal/shear ordering reverses at
 a 5 % tolerance, and marker-arm summaries change when more specimens are
 included. These widths are criterion- and pipeline-specific observations.
-Substantial replicate variability and unquantified measurement and
-plateau-estimation uncertainty prevent an independence claim or a universal
+A small design, scattered per-unit plateau
+estimates, unmeasured build-to-build repeatability and unquantified
+measurement uncertainty together prevent an independence claim or a universal
 input-resolution recommendation.
 
 [VI-3]
 The practical implication is to evaluate input sampling against the intended
 task error while separately measuring contact separability and specimen
-repeatability. A general design recommendation requires consistent analysis of
-valid replicates, uncertainty estimates, and validation over the relevant load
-and motion range.
+repeatability. A general design recommendation requires the second specimen of
+each condition brought back in as a repeatability measurement, effect sizes
+with intervals, and validation over the relevant load and motion range.
 
 
 ================================================================================
@@ -860,10 +871,14 @@ OPEN QUESTIONS / TO RESOLVE
 
 P0 -- evidence and method to settle before submission
 
-1. Analyse all valid replicates, or establish the sensitivity of the selected
-   27. Fix the exclusion reason and the n of each analysis. The 14- and
-   18-specimen sets are now named in the text but the analyses have not been
-   unified.
+1. The analysis set is now fixed at the 27 selected specimens and every
+   reported number comes from it. Two things were removed rather than
+   recomputed and should come back: the fixed-threshold (absolute) crossing
+   force, which needs absolute_ceiling.py re-run over the 27, and a
+   build-to-build repeatability figure, which needs the second specimen of
+   each condition analysed as a separate repeatability study rather than
+   folded into the main set. Until the second exists, the negative result of
+   Section V has no quantitative bound.
 2. Full error-resolution curves with seed range already exist under
    result/single/*/figures/ and the matching CSVs. Place them in the body and
    distinguish range from confidence interval. The 5/10/20 % tolerance
