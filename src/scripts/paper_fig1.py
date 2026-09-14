@@ -25,6 +25,7 @@ import numpy as np
 import pandas as pd
 import cv2
 
+import pixel_density as PD
 from palette import HARD3
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -129,7 +130,8 @@ def main():
             h = int(round(w * base.shape[0] / base.shape[1]))
             sm = cv2.resize(base, (w, h), interpolation=cv2.INTER_AREA)
             ax.imshow(sm, cmap="gray")
-        ax.set_title(f"{w} px", fontsize=7.5)
+        R = PD.density("9DTact", "hard_2mm_r1", w)
+        ax.set_title(f"{w} px\n$R$={PD.fmt(R)}", fontsize=6.8, linespacing=1.2)
         ax.set_xticks([]); ax.set_yticks([])
 
     ax = fig.add_subplot(sub[1, :])
@@ -137,13 +139,19 @@ def main():
     if f2.exists():
         g = pd.read_csv(f2)
         g = g[(g.principle == "9DTact") & (g.measure == "fz_mae")]
-        med = g.groupby("width_px").mae_N.median()
-        ax.plot(med.index, med.values, "-o", c="#1a1a1a", lw=1.5, ms=3)
+        # x 는 화소 밀도다 — 픽셀 폭은 유닛마다 다른 물리 샘플링이라 견줄 수 없다.
+        med = g.groupby("width_px").agg(
+            mae_N=("mae_N", "median"),
+            R=("density_px_per_mm2", "median"))
+        ax.plot(med.R.values, med.mae_N.values, "-o", c="#1a1a1a", lw=1.5, ms=3)
     ax.set_xscale("log"); ax.set_yscale("log")
-    ax.set_xticks([8, 80, 1920]); ax.set_xticklabels(["8", "80", "1920"],
-                                                     fontsize=6.5)
+    ax.set_xticks([0.1, 10, 1000])
+    ax.set_xticklabels(["0.1", "10", "1000"], fontsize=6.5)
     ax.minorticks_off()
-    ax.set_xlabel("input width [px]", fontsize=7.5)
+    ax.set_xlabel("pixel density $R$ [px/mm$^2$]", fontsize=7.5)
+    # 로그 y 축에서 minorticks_off 가 눈금을 전부 지워 버렸다 — 되살린다.
+    ax.set_yticks([0.05, 0.1])
+    ax.set_yticklabels(["0.05", "0.1"], fontsize=6.5)
     ax.set_ylabel("force MAE [N]", fontsize=7.5)
     ax.tick_params(labelsize=6.5)
     ax.spines[["top", "right"]].set_visible(False); ax.grid(alpha=.3, lw=.4)
