@@ -149,5 +149,66 @@ def main():
           f"extra/data/G_spatial_resolution.csv  ({len(D)} 행)")
 
 
+def sweep_figure():
+    """공간 분해능의 입력 해상도 스윕 — 힘·형상과 같은 x 축.
+
+    세 칸: 분해 비율, dip 과 Rayleigh 문턱, 자국 밝기와 판정 바닥. 판정이 어디서
+    무너지는지와 **왜** 무너지는지를 함께 보여야 한다 — 골이 얕아져서인지, 자국이
+    옅어져서인지, 검출기가 접촉을 놓쳐서인지가 다른 이야기다.
+    """
+    f = RES / "extra" / "data" / "resolution_sweep_pair100.csv"
+    if not f.exists():
+        return
+    import analyse_resolution as AR
+    d = pd.read_csv(f)
+    W = sorted(d.width_px.unique())
+    fig, axes = plt.subplots(1, 3, figsize=(7.16, 2.5))
+
+    ax = axes[0]
+    frac = d.assign(r=d.verdict.eq("분해")).groupby("width_px").r.mean() * 100
+    lost = d.assign(r=d.verdict.eq("접촉 없음")).groupby("width_px").r.mean() * 100
+    ax.plot(frac.index, frac.values, "-o", c="#0072B2", lw=1.8, ms=4,
+            label="resolved")
+    ax.plot(lost.index, lost.values, "--s", c="#1a1a1a", lw=1.2, ms=3,
+            alpha=.6, label="contact lost")
+    ax.set_ylabel("share of ladder steps [%]", fontsize=8)
+    ax.legend(frameon=False, fontsize=6.8)
+
+    ax = axes[1]
+    m = d.groupby("width_px").dip.median()
+    ax.plot(m.index, m.values, "-o", c="#D55E00", lw=1.8, ms=4)
+    ax.axhline(AR.RAYLEIGH, c="#1a1a1a", ls=":", lw=1.1)
+    ax.text(.97, .06, f"Rayleigh {AR.RAYLEIGH}", transform=ax.transAxes,
+            fontsize=6.2, ha="right")
+    ax.set_ylabel("median dip", fontsize=8)
+
+    ax = axes[2]
+    m = d.groupby("width_px").imprint_lvl.median()
+    ax.plot(m.index, m.values, "-o", c="#009E73", lw=1.8, ms=4)
+    ax.axhline(AR.MIN_PEAK, c="#1a1a1a", ls=":", lw=1.1)
+    ax.text(.97, .06, f"floor {AR.MIN_PEAK}", transform=ax.transAxes,
+            fontsize=6.2, ha="right")
+    ax.set_ylabel("median imprint [levels]", fontsize=8)
+
+    for ax in axes:
+        ax.set_xscale("log")
+        ax.set_xticks([8, 32, 80, 320, 1920])
+        ax.set_xticklabels(["8", "32", "80", "320", "1920"], fontsize=7,
+                           rotation=90)
+        ax.minorticks_off()
+        ax.set_xlabel("Input width [px]", fontsize=8)
+        ax.tick_params(labelsize=7); style(ax)
+    fig.suptitle("Two-point judgement against input resolution "
+                 "(9DTact, pair100, centre gap 2.0 mm)", fontsize=9, x=.02,
+                 ha="left")
+    fig.tight_layout(rect=[0, 0, 1, .92])
+    p = RES / "extra"
+    fig.savefig(p / "figures" / "H_resolution_sweep.png", dpi=200,
+                bbox_inches="tight")
+    plt.close(fig)
+    print("    -> extra/figures/H_resolution_sweep.png")
+
+
 if __name__ == "__main__":
     main()
+    sweep_figure()

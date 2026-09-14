@@ -212,21 +212,38 @@ def jacobian(state, sensor=None):
     return None
 
 
-def isotropic(img, J, centre, out=(700, 700)):
-    """Square, axis-aligned pixels, centred on the contact."""
+def isotropic(img, J, centre, out=(700, 700), ppm_out=None):
+    """Square, axis-aligned pixels, centred on the contact.
+
+    `ppm_out` 은 **출력 격자의** 픽셀/mm 다. 기본은 입력에서 가져오므로 원 해상도
+    분석은 전과 같다. 해상도 스윕은 여기에 **원 해상도의 ppm** 을 넘겨 격자를
+    고정한다 — 안 그러면 입력을 줄일 때 같은 700 px 캔버스가 더 넓은 mm 범위를
+    덮어, 0.02 mm 구간마다 픽셀이 모자라 프로파일이 통째로 사라진다. 측정 자를
+    입력과 함께 줄이면 "덜 본 것" 과 "덜 잰 것" 이 구별되지 않는다.
+    """
     ppm = float(np.sqrt(abs(np.linalg.det(J))))
-    A = ppm * np.linalg.inv(J)
+    out_ppm = ppm if ppm_out is None else float(ppm_out)
+    A = out_ppm * np.linalg.inv(J)
     h, w = out
     M = np.zeros((2, 3))
     M[:, :2] = A
     M[:, 2] = np.array([w / 2.0, h / 2.0]) - A @ np.asarray(centre, float)
     return cv2.warpAffine(img, M, (w, h), flags=cv2.INTER_LINEAR,
-                          borderMode=cv2.BORDER_REPLICATE), ppm
+                          borderMode=cv2.BORDER_REPLICATE), out_ppm
 
 
-def blob_centre(diff, level=4):
+def blob_centre(diff, level=4, ksize=11):
+    """접촉 덩어리의 중심.
+
+    **`ksize` 는 픽셀 단위라 해상도를 따라가야 한다.** 1920 px 폭에서 11 px 는
+    작은 청소지만 160 px 폭에서는 화면의 1/14 를 먹어 덩어리를 통째로 지운다.
+    해상도 스윕(`resolution_sweep.py`)이 그것에 걸려 426 px 아래를 전부 "접촉
+    없음" 으로 보고했다 — 겔이 못 가른 것이 아니라 검출기가 포기한 것이었다.
+    원 해상도 분석은 기본값 11 을 그대로 쓰므로 결과가 바뀌지 않는다.
+    """
+    k = max(3, int(ksize) | 1)
     m = (diff >= level).astype(np.uint8)
-    m = cv2.morphologyEx(m, cv2.MORPH_CLOSE, np.ones((11, 11), np.uint8))
+    m = cv2.morphologyEx(m, cv2.MORPH_CLOSE, np.ones((k, k), np.uint8))
     n, lab, st, cen = cv2.connectedComponentsWithStats(m, 8)
     if n < 2:
         return None
