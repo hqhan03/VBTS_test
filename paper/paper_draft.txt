@@ -10,8 +10,21 @@ were recomputed from result/single/*/data/force_mae_vs_resolution.csv and
 reproduce exactly.
 
 TITLE
-How Much Input Image Resolution Does a Vision-Based Tactile Sensor Need?
-A Controlled Study of Elastomer Design and Sampling Resolution
+Separating Elastomer Design from Pixel Density in Vision-Based Tactile Sensors
+A Controlled Study Across 27 Fabricated Sensors
+
+  Retitled 2026-09-14. The previous title, "How Much Input Image Resolution
+  Does a Vision-Based Tactile Sensor Need?", promised a number the paper
+  declines to give: the plateau density moves with the task and the error
+  tolerance, so a single figure would be a statement about one criterion. The
+  contribution is the separation of the two design variables, which is what
+  the title now names.
+
+  Alternatives kept for reference:
+    The Gel Sets the Contact, the Task Sets the Pixels: Elastomer Design and
+    Pixel Density in Vision-Based Tactile Sensors
+    Elastomer Design and Pixel Density in Vision-Based Tactile Sensors:
+    A Controlled Study of 27 Fabricated Specimens
 
 
 CONTENTS
