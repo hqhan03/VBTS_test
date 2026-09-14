@@ -37,29 +37,34 @@ ABSTRACT
 ================================================================================
 
 [ABS]
-Vision-based tactile sensors encode contact deformation as images, but the
-input resolution needed for tactile estimation may depend on both elastomer
-design and the estimation task. We investigate this relationship using 54
-specimens spanning two sensing principles and a marker-bearing photometric
-variant, three hardness levels, three sensing-layer thicknesses, and two
-replicates per condition. Camera and illumination hardware are reused within
-each arm, and a common 1920x1080 capture is downsampled to widths from 1920 to
-8 pixels. We distinguish paired-contact separability from the input resolution
+Vision-based tactile sensors encode contact as an image, buying dense spatial
+information at the cost of a large data volume per sensor. That cost becomes a
+system constraint as sensor count grows, raising aggregate bandwidth and
+spending the latency budget reactive control needs; high-bandwidth
+instrumentation has been named a fundamental obstacle for compact tactile
+fingers [1]. Sampling resolution, in pixels per millimetre, is therefore fixed
+early, since it constrains camera, electronics and network input size together.
+No basis exists for judging which value suffices. The requirement should depend
+on how locally the elastomer preserves contact information, and so on gel
+design, but that dependence has not been quantified. We investigate it with 54 specimens spanning two sensing
+principles and a marker-bearing photometric variant, three hardness levels,
+three sensing-layer thicknesses and two replicates per condition. Imaging
+hardware is reused within each arm, and one 1920x1080 capture is downsampled to
+widths from 1920 to 8 pixels. We distinguish paired-contact separability from the input resolution
 at which force and shape errors approach their minima. Thicker depth-referenced
-specimens exhibit poorer paired-contact separation under the tested protocol.
-In contrast, no tested association between hardness or thickness and estimator
-plateau resolution survives false-discovery correction. This does not establish
+specimens separate paired contacts less well, yet no tested association between
+hardness or thickness and estimator plateau resolution survives
+false-discovery correction. This does not establish
 independence: the median replicate ratio for depth-referenced normal-force
-plateau resolution is 2.2, and two of eight pairs differ by at least eight-fold.
-At a 10 % error tolerance, selected-specimen median plateau widths are 48 pixels
-for shear and 80 pixels for normal force in the markerless arms. Tightening the
-tolerance to 5 % raises the depth-referenced normal-force width to 320 and
-reverses the normal/shear ordering in the photometric arm. Plateau summaries therefore depend on the
-decision criterion as well as the task. These results characterize the tested
-quasi-static pipelines rather than a universal camera specification. They
-motivate separate evaluation of contact separability, task error, and specimen
-repeatability when selecting tactile input resolution.
-
+plateau resolution is 2.2, and two of eight pairs differ by at least
+eight-fold. At a 10 % error tolerance, selected-specimen median plateau widths
+are 48 pixels for shear and 80 pixels for normal force in the markerless arms.
+Tightening the tolerance to 5 % raises the depth-referenced normal-force width
+to 320 and reverses the normal/shear ordering in the photometric arm, so a plateau
+summary depends on the decision criterion as much as on the task. These results
+characterize the tested quasi-static pipelines rather than a universal camera
+specification, and argue for evaluating contact separability, task error and
+specimen repeatability separately.
 
 ================================================================================
 I. INTRODUCTION
