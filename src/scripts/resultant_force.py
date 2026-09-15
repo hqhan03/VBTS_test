@@ -47,9 +47,10 @@ def load_exact(pr):
     """재학습이 낸 **실측** 합력 (`res_mae`). 없으면 None.
 
     2026-09-15 에 선택 27 유닛을 다시 학습해 얻었다. 하한은 그대로 두고 이것을
-    덧그린다 — 어느 쪽도 지우지 않는다.
+    덧그린다 — 어느 쪽도 지우지 않는다. **`axes_source` 가 고른 같은 파일**을
+    읽으므로 파선(하한)과 실선(실측)이 같은 학습 판이다.
     """
-    f = DS / pr / "force_vs_resolution_res.csv"
+    f = axes_source(pr)
     if not f.exists():
         return None
     d = RC.keep(pd.read_csv(f), pr, "sensor")
@@ -58,8 +59,25 @@ def load_exact(pr):
     return d.groupby(["sensor", "width_px"]).res_mae.median().reset_index()
 
 
+def axes_source(pr):
+    """축별 MAE 를 어느 학습 판에서 읽을지.
+
+    **하한과 실측은 같은 판에서 와야 한다.** 옌센 부등식은 *그 프레임들의* 축별
+    오차와 *그 프레임들의* 합력 사이에 성립한다. 2026-09-15 까지 이 그림은
+    하한을 판 A(`_axes.csv`)에서, 실측을 판 B(`_res.csv`)에서 읽고 있었다 —
+    두 판은 학습 확률성만 다른 별개의 학습이라 파선이 실선의 하한이라는 보장이
+    없었다. 판 B 에 fx/fy/fz 가 다 있으므로 그쪽을 먼저 쓴다.
+    """
+    res = DS / pr / "force_vs_resolution_res.csv"
+    if res.exists():
+        d = pd.read_csv(res)
+        if {"fx_mae", "fy_mae", "fz_mae", "res_mae"} <= set(d.columns):
+            return res
+    return DS / pr / "force_vs_resolution_axes.csv"
+
+
 def load(pr):
-    f = DS / pr / "force_vs_resolution_axes.csv"
+    f = axes_source(pr)
     if not f.exists():
         return None
     d = RC.keep(pd.read_csv(f), pr, "sensor")
