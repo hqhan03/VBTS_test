@@ -14,8 +14,10 @@
 **세 번째 칸에서 겔은 더 눌리는데 영상은 그대로다.** 그림 전체가 그 한 문장을
 위한 것이다 — 그 자리의 힘이 `fig_ceiling` 이 세로축에 찍는 값이다.
 
-**글자가 하나도 없다** (운전자 결정, 2026-09-15). 축 이름도 눈금도 범례도 없다.
-방향은 축 끝의 화살촉이 지고, 나머지는 캡션이 진다.
+**글자는 오른쪽 곡선판의 축 이름 둘뿐이다** (운전자 결정, 2026-09-15).
+눈금도 눈금값도 범례도 없다 — 곡선판만은 무엇 대 무엇인지 모르면 못 읽어서
+이름 둘을 남겼고, 나머지는 캡션이 진다. 단위를 적지 않는 것은 **그린 값이지 잰
+값이 아니기** 때문이다.
 
 **이것은 개념도다 — 자료가 아니다.**
     곡선도 자국도 **그려 넣은 것**이고 잰 값이 아니다. 두 줄이 다른 자리에서
@@ -73,6 +75,9 @@ STRIP_W, STRIP_H = 14.0, 7.0     # 카메라 영상 띠 (16:9 에 가깝게)
 STRIP_Y, GEL_Y, ROW_H = 0.0, 10.0, 37.0
 ROW_Y = (37.0, 0.0)              # 얇은 줄이 위
 PLOT_X = (72.0, 106.0)           # 오른쪽 곡선 판
+# 축 이름. **단위를 적지 않는다** — 규격화한 그림용 값이라 [N] 을 적으면 잰 값으로
+# 읽힌다.
+X_NAME, Y_NAME = "force", "image response"
 GEL_FILL = "#ececec"
 BALL_FILL = "#ffffff"
 
@@ -164,6 +169,11 @@ def curve_panel(ax, y_lo, y_hi):
                 arrowprops=dict(arrowstyle="-|>", color=PS.INK, lw=1.1,
                                 shrinkA=0, shrinkB=0, mutation_scale=11))
 
+    ax.text((x0 + x1) / 2, y_lo - 2.8, X_NAME, ha="center", va="top",
+            color=PS.INK)
+    ax.text(x0 - 2.2, (y_lo + y_hi) / 2, Y_NAME, ha="center", va="bottom",
+            rotation=90, rotation_mode="anchor", color=PS.INK)
+
     span_x, span_y = (x1 - x0) * 0.84, (y_hi - y_lo) * 0.86
     rows = []
     for r in ROWS:
@@ -206,10 +216,11 @@ def main():
             strip(ax, xc, y0 + STRIP_Y, response(f, r))
             look(ax, xc, y0 + GEL_Y - 0.4, y0 + STRIP_Y + STRIP_H + 0.4)
 
-    stages = curve_panel(ax, 8.0, 2 * ROW_H - 8.0)
+    stages = curve_panel(ax, 11.0, 2 * ROW_H - 6.0)
     PS.save(fig, stages, "fig_ceiling_schematic")
-    print("  개념도 — 글자 없음. 멈추는 자리: " + " · ".join(
-        f"두께 {r['thickness']} mm → {r['ceiling']:.2f}" for r in ROWS))
+    print(f"  개념도 — 글자는 축 이름 둘({X_NAME} · {Y_NAME}). 멈추는 자리: "
+          + " · ".join(
+            f"두께 {r['thickness']} mm → {r['ceiling']:.2f}" for r in ROWS))
 
 
 if __name__ == "__main__":
