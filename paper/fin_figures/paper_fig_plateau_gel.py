@@ -7,13 +7,20 @@
 이 그림이 그 표를 눈으로 보여 준다.
 
 무엇을 보이나
-    한 줄이 한 과업·한 구성이다. 줄마다
+    **과업마다 한 줄, 인자마다 한 열이다** (운전자 요청, 2026-09-15) — 힘 ·
+    ⌀4 mm 원기둥 · 4 mm 정육면체를 따로 그려 여섯 칸 `(a)` ~ `(f)` 다. 왼쪽 열은
+    두께로, 오른쪽 열은 경도로 나눈 같은 자료다.
+
+    칸 안의 한 줄은 한 구성이고, 줄마다
       - 회색 가로 막대 = 그 구성 아홉 시편의 평탄 밀도 **최소 ~ 최대**
       - 회색 점 아홉 = 시편 하나씩
-      - 색 점 셋 = **군 중앙값** (왼쪽 칸은 두께 1 · 2 · 3 mm, 오른쪽 칸은
-        경도 soft · medium · hard)
+      - 색 점 셋 = **군 중앙값**
     읽는 법은 하나다 — **색 점 셋이 회색 막대의 어디쯤 모여 있나.** 겔이
     요구량을 정한다면 셋이 막대를 따라 벌어져야 한다. 벌어지지 않는다.
+
+    과업을 한 칸에 몰아 넣었다가 갈랐다 — 힘과 형상은 오차의 단위(N 과 mm)도,
+    파이프라인도, 구성 수(셋과 둘)도 다르다. 한 칸에서 줄만 갈라 놓으면 그 셋이
+    같은 자로 잰 것처럼 읽힌다.
 
 색만으로 군을 가르지 않는다 (`CLAUDE.md` §2)
     표식 모양은 쓰지 않기로 되어 있으므로(`paper_style` 의 운전자 결정) **자리**로
@@ -24,7 +31,7 @@
 말하지 않는 것 (`CLAUDE.md` §4)
     **"무관하다" 가 아니다.** 구성당 시편이 아홉이고 시편 사이 산포가 두세
     자릿수라, 그보다 작은 겔 효과는 이 설계로 **검출되지 않았다**. 캡션이 그렇게
-    적어야 한다. 경도 칸은 계열마다 흔든 폭이 다르다는 것도 함께 적는다 —
+    적어야 한다. 경도 칸은 계열마다 경도 span 이 다르다는 것도 함께 적는다 —
     9DTact 는 Shore OO 40 점, 광도 계열은 6 점이다.
 
 합력 평탄 밀도를 여기서 계산하는 이유
@@ -53,16 +60,16 @@ AX = ["Fx", "Fy", "Fz"]
 TOL = 0.10                                # 본문 기준 허용치
 HARDNESS = ("soft", "medium", "hard")
 THICKNESS = (1, 2, 3)
-DODGE = (0.20, 0.0, -0.20)                # 군 중앙값을 줄 안에서 어긋나게
+DODGE = (0.22, 0.0, -0.22)                # 군 중앙값을 줄 안에서 어긋나게
 
-# 줄의 차례 — 위에서 아래로. (과업 이름, 원리, 값이 든 열)
-ROWS = [("Force $\\|\\Delta F\\|$", "9DTact", "res"),
-        ("Force $\\|\\Delta F\\|$", "DIGIT", "res"),
-        ("Force $\\|\\Delta F\\|$", "DIGIT_Marker", "res"),
-        ("Depth, $\\varnothing$4 mm cyl.", "9DTact", "cyl4_knee_R"),
-        ("Depth, $\\varnothing$4 mm cyl.", "DIGIT", "cyl4_knee_R"),
-        ("Depth, 4 mm cube", "9DTact", "cube4_knee_R"),
-        ("Depth, 4 mm cube", "DIGIT", "cube4_knee_R")]
+# 과업 셋이 줄 셋이다. (제목에 쓸 이름, 값이 든 열, 그 과업을 잰 구성들)
+# 이름은 짧게 — (a) 의 제목이 범례와 한 줄을 나눠 쓴다. 힘이 합력이라는 것과
+# 깊이 오차가 mm 라는 것은 캡션이 진다.
+TASKS = [("force", "res",
+          ["9DTact", "DIGIT", "DIGIT_Marker"]),
+         ("depth, $\\varnothing$4 mm cylinder", "cyl4_knee_R",
+          ["9DTact", "DIGIT"]),
+         ("depth, 4 mm cube", "cube4_knee_R", ["9DTact", "DIGIT"])]
 
 
 def knee(v):
@@ -109,11 +116,12 @@ def shape():
     return pd.DataFrame(out)
 
 
-def panel(ax, dat, factor):
-    """한 칸 — 줄마다 산포 막대 + 시편 점 + 군 중앙값 셋."""
+def panel(ax, dat, task, factor):
+    """한 칸 — 한 과업. 구성마다 산포 막대 + 시편 점 + 군 중앙값 셋."""
+    _name, met, principles = task
     levels = THICKNESS if factor == "thickness_mm" else HARDNESS
     cmap = THICK3 if factor == "thickness_mm" else HARD3
-    for y, (_task, pr, met) in enumerate(ROWS):
+    for y, pr in enumerate(principles):
         g = dat[(dat.principle == pr) & (dat.metric == met)]
         assert len(g) == 9, f"{pr}/{met}: {len(g)} 행"
         ax.plot([g.knee_R.min(), g.knee_R.max()], [y, y], "-",
@@ -126,55 +134,53 @@ def panel(ax, dat, factor):
                     mec="white", mew=0.7, ls="none", zorder=4)
     ax.set_xscale("log")
     ax.set_xlim(0.12, 1.6e4)
-    ax.set_ylim(len(ROWS) - 0.45, -0.55)
-    ax.set_yticks(range(len(ROWS)))
+    ax.set_ylim(len(principles) - 0.42, -0.58)
+    ax.set_yticks(range(len(principles)))
     PS.style(ax, grid=None)
     ax.grid(axis="x", alpha=0.25, lw=0.4, color="#c8c8c8")
     ax.set_axisbelow(True)
-    # 과업이 바뀌는 자리에 옅은 가로줄 — 줄 이름만으로는 묶음이 읽히지 않는다.
-    for y in [i - 0.5 for i in range(1, len(ROWS))
-              if ROWS[i][0] != ROWS[i - 1][0]]:
-        ax.axhline(y, c="#dcdcdc", lw=0.6, zorder=0)
 
 
 def main():
     dat = pd.concat([resultant(p) for p in FOLD] + [shape()], ignore_index=True)
 
-    fig, axes = plt.subplots(1, 2, figsize=(PS.FULL_W_NARROW, 3.15),
-                             sharey=True)
-    fig.subplots_adjust(left=0.238, right=0.988, top=0.855, bottom=0.175,
-                        wspace=0.08)
-    panel(axes[0], dat, "thickness_mm")
-    panel(axes[1], dat, "hardness")
+    # 줄 높이는 그 과업이 잰 구성 수에 맞춘다 — 힘 셋, 형상 둘.
+    fig = plt.figure(figsize=(PS.FULL_W_NARROW, 4.35))
+    gs = fig.add_gridspec(len(TASKS), 2,
+                          height_ratios=[len(t[2]) for t in TASKS],
+                          hspace=0.46, wspace=0.08,
+                          left=0.135, right=0.988, top=0.905, bottom=0.115)
+    axes = [[fig.add_subplot(gs[r, c]) for c in (0, 1)] for r in range(len(TASKS))]
 
-    # 줄 이름은 왼쪽 칸에만. 같은 과업이 두세 줄이면 첫 줄에만 적고 나머지는
-    # 원리 이름만 적어 세로 공간을 아낀다.
-    labels, seen = [], None
-    for task, pr, _met in ROWS:
-        labels.append(f"{task}\n{PS.DISPLAY[pr]}" if task != seen
-                      else PS.DISPLAY[pr])
-        seen = task
-    axes[0].set_yticklabels(labels, fontsize=8.6, linespacing=1.15)
-    axes[1].tick_params(labelleft=False)
+    # 과업 이름은 왼쪽 칸의 제목이 진다. 세로 y 이름으로 달면 칸이 낮아
+    # 윗줄과 아랫줄의 글자가 서로 겹친다.
+    tags = iter("abcdef")
+    for row, task in zip(axes, TASKS):
+        name, _met, principles = task
+        for k, (ax, factor) in enumerate(zip(row, ("thickness_mm", "hardness"))):
+            panel(ax, dat, task, factor)
+            tag = f"({next(tags)})"
+            ax.set_title(tag if k else f"{tag}  {name}",
+                         fontsize=11.0, loc="left", pad=5)
+        row[0].set_yticklabels([PS.DISPLAY[p] for p in principles], fontsize=8.6)
+        row[1].tick_params(labelleft=False)
+        # x 눈금 글자는 맨 아랫줄에만 — 여섯 칸에 다 달면 글자가 그림을 덮는다.
+        if task is not TASKS[-1]:
+            for ax in row:
+                ax.tick_params(labelbottom=False)
 
-    for ax, ttl, levels, cmap, names in (
-            (axes[0], "(a)", THICKNESS, THICK3,
-             [f"{t} mm" for t in THICKNESS]),
-            (axes[1], "(b)", HARDNESS, HARD3,
-             list(HARDNESS))):
-        # 제목은 패널 이름뿐이다 — 어느 칸이 두께이고 어느 칸이 경도인지는
-        # 범례와 캡션이 진다(`fig_separation` 과 같은 규칙).
-        ax.set_title(ttl, fontsize=11.0, loc="left", pad=7)
+    # 범례는 맨 윗줄에만. 왼쪽 열이 두께, 오른쪽 열이 경도이고 아래로 같다.
+    for ax, levels, cmap, names in (
+            (axes[0][0], THICKNESS, THICK3, [f"{t} mm" for t in THICKNESS]),
+            (axes[0][1], HARDNESS, HARD3, list(HARDNESS))):
         for lev, nm in zip(levels, names):
             ax.plot([], [], "o", c=cmap[lev], ms=5.6, mec="white", mew=0.7,
                     ls="none", label=nm)
-        # 범례는 칸 **밖**, 제목과 같은 줄 오른쪽에 — 안에 두면 마지막 줄을 덮는다.
         ax.legend(loc="lower right", bbox_to_anchor=(1.005, 0.995), frameon=False,
                   ncol=3, columnspacing=0.55, handletextpad=0.15, borderpad=0.0,
                   fontsize=8.0)
-    # x 이름은 두 칸이 함께 쓴다 — 칸마다 달면 가운데에서 겹친다.
     fig.supxlabel(r"plateau density $R$ at $\tau=10\,\%$ [px/mm$^2$]",
-                  fontsize=10.5, y=0.015)
+                  fontsize=10.5, y=0.012)
 
     PS.save(fig, dat[["principle", "unit", "hardness", "thickness_mm",
                       "metric", "knee_R", "best"]], "fig_plateau_gel")
@@ -182,14 +188,15 @@ def main():
     # 표 V 가 이 수치를 쓴다 — 표준출력으로 내서 맞춰 볼 수 있게 한다.
     print(f"  tau = {TOL:.0%},  Shore OO  "
           + " · ".join(f"{p} {SHORE[p]['soft']}-{SHORE[p]['hard']}" for p in FOLD))
-    for task, pr, met in ROWS:
-        g = dat[(dat.principle == pr) & (dat.metric == met)]
-        rt, pt = spearmanr(g.thickness_mm, g.knee_R)
-        rh, ph = spearmanr([HARDNESS.index(h) for h in g.hardness], g.knee_R)
-        print(f"  {task[:22]:<24s} {PS.DISPLAY[pr]:<14s} "
-              f"median R {g.knee_R.median():8.1f}  "
-              f"range {g.knee_R.min():6.1f}-{g.knee_R.max():8.1f}  "
-              f"rho_thick {rt:+.2f} (p {pt:.2f})  rho_hard {rh:+.2f} (p {ph:.2f})")
+    for name, met, principles in TASKS:
+        for pr in principles:
+            g = dat[(dat.principle == pr) & (dat.metric == met)]
+            rt, pt = spearmanr(g.thickness_mm, g.knee_R)
+            rh, ph = spearmanr([HARDNESS.index(h) for h in g.hardness], g.knee_R)
+            print(f"  {met:<14s} {PS.DISPLAY[pr]:<14s} "
+                  f"median R {g.knee_R.median():8.1f}  "
+                  f"range {g.knee_R.min():6.1f}-{g.knee_R.max():8.1f}  "
+                  f"rho_thick {rt:+.2f} (p {pt:.2f})  rho_hard {rh:+.2f} (p {ph:.2f})")
 
 
 if __name__ == "__main__":
