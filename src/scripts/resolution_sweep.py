@@ -41,7 +41,7 @@ SIZES = [(1920, 1080), (1280, 720), (854, 480), (640, 360), (426, 240),
 _RERUN = re.compile(r"__\d+$")
 
 
-def judge(raw, J, sep, ksize, ppm0):
+def judge(raw, J, sep, ksize, ppm0, scale=1.0):
     """한 프레임의 dip·자국·잡음. `analyse_resolution` 의 절차 그대로.
 
     **형태학 커널만 해상도를 따라 줄인다.** 그것은 판정 기준이 아니라 검출기의
@@ -55,6 +55,12 @@ def judge(raw, J, sep, ksize, ppm0):
     if got is None:
         return None
     x, prof, _ = got
+    # **`bin_px` 를 넘기지 않는다.** 넘기면 잡음 추정이 입력 화소 간격으로
+    # 표본을 집는데, 저해상도에서는 그 간격이 0.26 ~ 0.68 mm 라 잡음이 아니라
+    # 골의 기울기를 잰다(2026-09-15 측정: 32 px 에서 sd/|dip| = 3.71). 원래
+    # 추정은 반대로 낮게 잡는다. **둘 다 160 px 아래에서는 못 쓴다** —
+    # `spatial_resolution.md` §5.1a. 공표한 수치를 조용히 바꾸지 않도록
+    # 기본값을 유지하고, 진단이 필요하면 bin_px 를 넘기면 된다.
     f, peak, sd, mtf, sym = A.dip_fraction(x, prof, sep)
     return None if not np.isfinite(f) else (f, peak, sd, mtf, sym)
 
@@ -102,7 +108,7 @@ def main():
                     img = cv2.resize(img0, (w, h), interpolation=cv2.INTER_AREA)
                     raw = np.clip(ref.astype(np.int32) - img.astype(np.int32),
                                   0, 255).astype(np.uint8)
-                    q = judge(raw, J, sep, ksize, ppm0)
+                    q = judge(raw, J, sep, ksize, ppm0, scale=k)
                     if q:
                         got.append(q)
                 if not got:

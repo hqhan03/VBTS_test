@@ -280,21 +280,35 @@ def axis_and_profile(d, ppm):
     return 0.5 * (edges[:-1] + edges[1:]), prof, np.degrees(np.arctan2(u[1], u[0]))
 
 
-def profile_noise(ps):
+def profile_noise(ps, stride=1):
     """Per-sample noise of the profile, from its own high-frequency content.
 
     The successive-difference estimator: for a signal that is smooth on the
     scale of one sample, diff() is almost pure noise, and the median absolute
     difference is robust to the peaks and the trough themselves. The sqrt(2)
     undoes differencing two noisy samples; 0.6745 converts a MAD to a sigma.
+
+    **The estimator assumes adjacent samples are independent, and below about
+    854 px they are not.** The profile is binned at a fixed 0.02 mm, which is
+    1.78 px at 1920 px but 0.074 px at 80 px -- fourteen neighbouring bins then
+    draw from the same camera pixel, so diff() reads the interpolation, not the
+    noise, and the estimate collapses. Measured 2026-09-14: the median dip_sd
+    falls 0.051 -> 0.0034 from 1920 px to 8 px, a factor of fifteen that real
+    imaging noise cannot supply. Since the noise gate is `dip > 3*sd`, the gate
+    is lenient exactly where the profile is most oversampled.
+
+    `stride` takes every n-th sample so the pair being differenced is at least
+    one camera pixel apart. stride=1 is the old behaviour and is what full
+    resolution gets anyway.
     """
-    d = np.diff(ps)
+    st = max(1, int(stride))
+    d = np.diff(ps[::st])
     if d.size < 8:
         return np.nan
     return float(np.median(np.abs(d)) / 0.6745 / np.sqrt(2.0))
 
 
-def dip_fraction(x, prof, sep_mm):
+def dip_fraction(x, prof, sep_mm, bin_px=None):
     """1 - trough/mean(peaks), with the peaks sought near the known centres.
 
     Also returns the noise this particular profile can support, because with
@@ -337,7 +351,9 @@ def dip_fraction(x, prof, sep_mm):
     mtf = float((peak - trough) / (peak + trough)) if (peak + trough) > 0 else np.nan
     # Propagate the profile noise into the dip. peak is the mean of two
     # maxima, so its noise is sigma/sqrt(2); the trough is a single minimum.
-    sig = profile_noise(ps)
+    # 한 화소 간격이 되도록 건너뛴다. bin_px 를 안 주면 예전 그대로다.
+    stride = 1 if not bin_px else max(1, int(round(1.0 / max(bin_px, 1e-9))))
+    sig = profile_noise(ps, stride)
     if np.isfinite(sig):
         sd = float(np.hypot(sig / peak,
                             trough * sig / (np.sqrt(2.0) * peak ** 2)))
