@@ -1,4 +1,4 @@
-# 그림 캡션 — 본문에 붙일 것                                   rev. 2026-09-15
+# 그림 캡션 — 본문에 붙일 것                                   rev. 2026-09-15b
 
 `Hyeokgyu_Han_shortened.docx` 의 그림 여섯 칸에 맞춘 캡션 초안이다. 영문 본문이므로
 캡션도 영문이고, **각 캡션이 왜 그 문장을 져야 하는지**는 해당 `paper_fig_*.py` 의
@@ -7,6 +7,10 @@
 > **본문의 그림 번호가 지금 어긋나 있다.** 본문이 부르는 것은 `Fig. 1a` · `Fig. 2`
 > (둘) · `Fig. 3b` `3c` `3d` `3e` 뿐인데, 문서에는 그림 칸이 여섯이다. 아래 §7 이
 > 무엇을 무엇으로 고쳐야 하는지 적는다.
+>
+> **2026-09-15b — 그릴 수 있는 것을 다 그렸다.** 경도 눈금(`fig_hardness`) ·
+> 광도 기울기(`fig_slope`) · 합력(`fig_resultant`) 셋이 늘었다. 캡션은 §9 에
+> 있고, **열한 장이 본문에 다 들어가지는 않는다** — §10 이 지면을 셈한다.
 
 ---
 
@@ -209,3 +213,105 @@
   csv 는 축별 중앙값만 담는다.
 - **프로브 5 종 접사** — 사진이 없다. IV.B 전체가 두 기둥 압자에 걸려 있는데 지금
   어느 그림에도 그 형상이 없다.
+
+---
+
+## 9. 새로 그린 셋 — 캡션
+
+### `fig_hardness` — 두 계열이 흔든 경도 폭 (III.B)
+
+> **Fig. N.** Measured Shore OO hardness of the three grades in each family. Each
+> point is measured on the cured material, not a manufacturer's nominal value; the
+> bar spans the range the family covers. The depth-referenced family spans 40
+> points (OO-30 to OO-70) and crosses two product lines (Ecoflex to Dragon Skin),
+> whereas the photometric family spans 6 points (OO-51 to OO-57) obtained by
+> changing only the plasticiser ratio of one formulation — a 6.7-fold difference in
+> the range varied. Every hardness result in this paper must therefore be read
+> within a family, and for the photometric family within that narrow range. Marker
+> gels are cast from the photometric formulations and are not plotted separately,
+> though they measured stiffer under a sphere (Section III-B).
+
+이 그림 하나가 V 장의 "경도 효과 미검출" 을 정직하게 만든다. 1 단이고 높이가
+1.6 in 이라 **지면당 정직함의 값이 가장 싸다.**
+
+### `fig_slope` — 광도 계열의 복원 깊이 기울기 (V.B)
+
+> **Fig. N.** Reconstructed against commanded indentation depth for the nine
+> photometric specimens, full resolution, ⌀4 mm cylinder; the dotted line is 1:1
+> and colour gives gel thickness. Within a specimen the reconstruction is linear
+> (r = 0.93 to 1.00), but the slope differs between specimens (0.23 to 0.78) and no
+> specimen reaches unity: the visible contact cap is shallower than the probe
+> travel, by an amount that differs from unit to unit. Absolute photometric depths
+> are therefore specific to a unit, and only the shape of the error-versus-density
+> curve is compared across units (Fig. N+1). The slope also tracks thickness
+> (ρ = +0.69, p = 0.042, n = 9, uncorrected), which this study reports as an
+> observation and does not use as a claim.
+
+**[AUTHOR CHECK] 본문의 "0.16 to 0.92" 를 고쳐야 한다.** 분석 집합 아홉 시편의
+전해상도 자유적합은 **0.23 ~ 0.78** (원기둥) · 0.17 ~ 0.73 (정육면체)이다. 원점을
+지나게 맞추면 0.49 ~ 1.02, 54 유닛 집합이면 0.05 ~ 0.88 — 어느 쪽도 0.16 ~ 0.92 가
+아니다. 저장소 밖에서 온 값이므로 그림을 실으려면 문장을 그림의 값으로 바꾼다.
+
+### `fig_resultant` — 합력 오차와 옌센 하한 (V.A)
+
+> **Fig. N.** Resultant force error against pixel density R. (a) Depth-referenced,
+> (b) photometric, (c) photometric with markers. The solid line is the measured
+> resultant MAE from a retrained run; the dashed line is the Jensen lower bound
+> L = (MAE_x² + MAE_y² + MAE_z²)^½ computed from the per-axis errors, and the band
+> runs from that bound to the triangle-inequality upper bound, so the true value
+> can lie anywhere inside it. The bound ran at 0.86 to 0.90 of the measured value
+> and held at 35 of 36 rungs; at the one exception (c, 160 px) the two come from
+> different training runs. The triangle is the τ = 10 % plateau **of this pooled
+> curve**, which is a different statistic from the per-unit median marked in
+> Fig. N(force) and the two must not be mixed. Normal force contributes 51 to 82 %
+> of the sum of squares at every density, so the resultant curve inherits the shape
+> of the Fz curve. Vertical scales differ between panels and must not be compared.
+
+**[AUTHOR CHECK] 계획서 §3.1 의 "평탄점의 위치는 하한과 실측이 같았다" 는 정정이
+필요하다.** 같은 110 % 규칙으로 다시 내면 깊이 참조형만 맞는다 — 실측 13.65 대
+하한 13.65 ✓, DIGIT **2.93 대 18.33**, Marker **22.57 대 361.15**. 광도 두 계열
+에서는 실측 곡선이 바닥 근처에서 더 평평해 평탄점이 하한보다 **낮은** 밀도에서
+잡힌다. 하한은 크기뿐 아니라 요구 밀도도 보수적으로 잡는다.
+
+### `fig_growth` — 기준점을 본문과 맞출 것 (IV.A)
+
+그림은 이미 있다. 넣기 전에 **기준점 하나**를 정해야 한다. 그림은 세 군이 함께
+있는 x 의 중앙(깊이 1.03 mm · 힘 1.80 N)을 쓰고 본문 Table III 는 다른 점을 썼다:
+
+| | 본문 | 그림 | 기준점을 옮기면 |
+|---|---:|---:|---|
+| 지름 · 깊이 × 두께 | 1.33 | 1.33 ✓ | 1.53 → 1.31 |
+| 지름 · 깊이 × 경도 | 1.10 | 1.16 | 1.29 → 1.21 |
+| 지름 · 힘 × 두께 | 1.01 | 1.04 | 1.60 → 1.03 |
+| 밝기 · 힘 × 경도 | 1.91 | 2.00 | 1.78 → 1.98 |
+
+**자료가 다른 것이 아니라 기준점이 다르다** — `paper_fig_growth.py` 의 실행 출력이
+민감도를 함께 찍는다. 본문 값은 대체로 더 깊은·더 큰 하중 쪽이지만 저장소 csv 에서
+그 점을 정확히 되찾지는 못했다(Table III 는 실험 기계에서 나왔다). **Table III 를
+이 csv 에서 다시 내거나, 기준점을 둘 다에 적고 그림 값을 쓰거나** 둘 중 하나.
+
+---
+
+## 10. 지면 — 열한 장이 다 들어가지 않는다
+
+`figure_plan.md` §0.2 의 예산은 그림 여섯에 ≈ 1.8 쪽이었다. 지금 그릴 수 있는 것이
+열하나다(흐름도 · 폭발도 · 리그 · 경도 · 자국 성장 · 분리 · 천장 · 힘 · 합력 ·
+형상 · 기울기). 어림 3.4 쪽이라 본문·표와 합치면 **8 쪽을 1 쪽 넘게 넘어간다.**
+
+| 그림 | 단 | 어림 | 판단 |
+|---|---|---:|---|
+| 흐름도 (설계 결정) | 2 | 0.35 | **본문** — 이 논문이 왜 이 세 변수인지를 세운다 |
+| 폭발도 | 2 | 0.35 | **본문** — 적층 단면 없이는 IV.C 가 글로만 남는다 |
+| `fig_hardness` | 1 | 0.15 | **본문** — 가장 싸고 가장 정직하다 |
+| `fig_growth` | 2 | 0.35 | **본문** — IV.A 가 지금 표 하나로 서 있다 |
+| `fig_separation` | 2 | 0.30 | **본문** |
+| `fig_ceiling` | 2 | 0.30 | **본문** |
+| `fig_force` | 2 | 0.50 | **본문** — 중심 음성 결과 |
+| `fig_shape` | 2 | 0.45 | **본문** — 중심 양성 결과 |
+| 리그 사진 | 1 | 0.20 | **보충** — Table II 와 III.C 본문이 덮는다 |
+| `fig_resultant` | 2 | 0.30 | **보충** — Fig. 힘과 같은 이야기를 두 번 한다 |
+| `fig_slope` | 1 | 0.25 | **보충** 또는 본문 — V-B2 한 문장을 받친다. 보충으로 내리면 그 문장에서 그림 참조를 빼야 한다 |
+
+여덟을 본문에 두면 ≈ 2.75 쪽이다. 셋을 보충으로 내리는 것이 §0.2 예산에 가장
+가깝다. **리그 사진과 합력을 먼저 내리는 것을 권한다** — 전자는 표가 덮고 후자는
+중복이다.

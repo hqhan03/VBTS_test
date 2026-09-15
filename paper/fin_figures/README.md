@@ -18,9 +18,14 @@ python3 paper_fig_force.py
 | `paper_fig_ceiling.py` | 영상 응답 포화 힘 대 두께 | IV.C |
 | `paper_fig_force.py` | 힘 추정 오차 대 화소 밀도 | V.A |
 | `paper_fig_shape.py` | 형상 복원 — 깊이와 가로 크기 | V.B |
+| `paper_fig_hardness.py` | 두 계열이 흔든 경도 폭 | III.B |
+| `paper_fig_slope.py` | 광도 계열의 복원 깊이 기울기 | V.B |
+| `paper_fig_resultant.py` | 합력 오차와 옌센 하한 | V.A |
+| `captions.md` | 그림마다 붙일 캡션과 지면 셈 | — |
 
-아직 안 옮긴 것: F1(연구 질문) · F2(센서 구성·시편·장치). 둘 다 작도와 사진이
-필요하고 `../figures/` 에 옛 판이 있다. `../figure_plan.md` 가 무엇이 남았는지 적는다.
+아직 안 옮긴 것: 설계 결정 흐름도 · 폭발도 · 리그 사진. 셋 다 작도와 사진이라
+matplotlib 으로 낼 것이 아니다. **그릴 수 있는 것은 여기 여덟이 전부다** —
+`captions.md` §10 이 그중 무엇을 본문에 두고 무엇을 보충으로 내릴지 셈한다.
 
 ## 그림마다 나오는 것
 
