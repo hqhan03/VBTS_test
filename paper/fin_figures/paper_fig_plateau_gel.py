@@ -62,14 +62,14 @@ HARDNESS = ("soft", "medium", "hard")
 THICKNESS = (1, 2, 3)
 DODGE = (0.22, 0.0, -0.22)                # 군 중앙값을 줄 안에서 어긋나게
 
-# 과업 셋이 줄 셋이다. (제목에 쓸 이름, 값이 든 열, 그 과업을 잰 구성들)
-# 이름은 짧게 — (a) 의 제목이 범례와 한 줄을 나눠 쓴다. 힘이 합력이라는 것과
-# 깊이 오차가 mm 라는 것은 캡션이 진다.
-TASKS = [("force", "res",
-          ["9DTact", "DIGIT", "DIGIT_Marker"]),
-         ("depth, $\\varnothing$4 mm cylinder", "cyl4_knee_R",
+# 과업 셋이 줄 셋이다. (줄 이름, 값이 든 열, 그 과업을 잰 구성들)
+# 이름은 줄마다 **맨 왼쪽 위**에 따로 적는다 (운전자 요청, 2026-09-15) —
+# 굵은 검정이라 회색 세로축 라벨(구성 이름)과 섞이지 않는다. 힘이 합력이라는
+# 것과 깊이 오차가 mm 라는 것은 캡션이 진다.
+TASKS = [("Force", "res", ["9DTact", "DIGIT", "DIGIT_Marker"]),
+         ("Depth, $\\varnothing$4 mm cylinder", "cyl4_knee_R",
           ["9DTact", "DIGIT"]),
-         ("depth, 4 mm cube", "cube4_knee_R", ["9DTact", "DIGIT"])]
+         ("Depth, 4 mm cube", "cube4_knee_R", ["9DTact", "DIGIT"])]
 
 
 def knee(v):
@@ -145,23 +145,19 @@ def main():
     dat = pd.concat([resultant(p) for p in FOLD] + [shape()], ignore_index=True)
 
     # 줄 높이는 그 과업이 잰 구성 수에 맞춘다 — 힘 셋, 형상 둘.
-    fig = plt.figure(figsize=(PS.FULL_W_NARROW, 4.35))
+    fig = plt.figure(figsize=(PS.FULL_W_NARROW, 4.80))
     gs = fig.add_gridspec(len(TASKS), 2,
                           height_ratios=[len(t[2]) for t in TASKS],
-                          hspace=0.46, wspace=0.08,
-                          left=0.135, right=0.988, top=0.905, bottom=0.115)
+                          hspace=0.62, wspace=0.08,
+                          left=0.135, right=0.988, top=0.885, bottom=0.105)
     axes = [[fig.add_subplot(gs[r, c]) for c in (0, 1)] for r in range(len(TASKS))]
 
-    # 과업 이름은 왼쪽 칸의 제목이 진다. 세로 y 이름으로 달면 칸이 낮아
-    # 윗줄과 아랫줄의 글자가 서로 겹친다.
     tags = iter("abcdef")
     for row, task in zip(axes, TASKS):
-        name, _met, principles = task
-        for k, (ax, factor) in enumerate(zip(row, ("thickness_mm", "hardness"))):
+        _name, _met, principles = task
+        for ax, factor in zip(row, ("thickness_mm", "hardness")):
             panel(ax, dat, task, factor)
-            tag = f"({next(tags)})"
-            ax.set_title(tag if k else f"{tag}  {name}",
-                         fontsize=11.0, loc="left", pad=5)
+            ax.set_title(f"({next(tags)})", fontsize=11.0, loc="left", pad=4)
         row[0].set_yticklabels([PS.DISPLAY[p] for p in principles], fontsize=8.6)
         row[1].tick_params(labelleft=False)
         # x 눈금 글자는 맨 아랫줄에만 — 여섯 칸에 다 달면 글자가 그림을 덮는다.
@@ -180,7 +176,16 @@ def main():
                   ncol=3, columnspacing=0.55, handletextpad=0.15, borderpad=0.0,
                   fontsize=8.0)
     fig.supxlabel(r"plateau density $R$ at $\tau=10\,\%$ [px/mm$^2$]",
-                  fontsize=10.5, y=0.012)
+                  fontsize=10.5, y=0.010)
+
+    # 줄 이름 — 그 줄 두 칸의 **맨 왼쪽 위**, 패널 이름과 세로축 라벨보다 한 줄 위.
+    # 굵은 검정이라 회색 세로축 라벨과 섞이지 않는다. 자리는 그려진 뒤에야 알 수
+    # 있으므로 한 번 그리고 잡는다(`fig_separation` 의 `letters` 와 같은 수).
+    fig.canvas.draw()
+    for row, (name, _met, _prs) in zip(axes, TASKS):
+        y = max(a.get_position().y1 for a in row)
+        fig.text(0.004, y + 0.042, name, fontsize=10.5, fontweight="bold",
+                 ha="left", va="bottom", color=PS.INK)
 
     PS.save(fig, dat[["principle", "unit", "hardness", "thickness_mm",
                       "metric", "knee_R", "best"]], "fig_plateau_gel")
