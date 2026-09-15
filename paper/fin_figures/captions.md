@@ -117,7 +117,11 @@
 > divide the same nine specimens. Normal force only; shear is in Table VI. **The
 > vertical scale differs between rows and values must not be compared across them**
 > — the three configurations were trained on different input representations
-> (three-channel, raw colour, inpainted). Hardness is labelled by measured Shore
+> (three-channel, raw colour, and colour with the marker dots removed by
+> inpainting). Row (e, f) is therefore the marked sensor *processed by inpainting*,
+> not a test of the information the dots carry; a run that keeps the dots exists
+> and behaves differently at the highest densities (Section V-A). Hardness is
+> labelled by measured Shore
 > OO: a 40-point range in (b) against a 6-point range in (d) and (f). One specimen
 > per cell, no error bars; the null result is a limit of detection, not a
 > demonstration of independence (Section VI-A).
@@ -266,8 +270,20 @@
 > Fig. N(force) and the two must not be mixed. Normal force contributes 51 to 82 %
 > of the sum of squares at every density, so the resultant curve inherits the shape
 > of the Fz curve. Vertical scales differ between panels and must not be compared.
+> **The two curves come from different training runs** of the same nine specimens:
+> the per-axis errors behind the bound were logged in the earlier run and the
+> measured resultant in the later one, so the dashed line is not strictly a bound
+> on the solid one and is shown as a comparison between the two runs.
 
-**[AUTHOR CHECK] 계획서 §3.1 의 "평탄점의 위치는 하한과 실측이 같았다" 는 정정이
+**[AUTHOR CHECK-1] 하한과 실측이 다른 학습 판에서 온다** (2026-09-15 확인).
+`resultant_force.py` 가 lo·hi 를 `force_vs_resolution_axes.csv`(판 A)에서,
+`res_mae` 를 `force_vs_resolution_res.csv`(판 B)에서 읽는다. 부등식은 **같은 예측
+위에서만** 성립하므로 "0.86 ~ 0.90 배" 와 "36 중 35 성립" 은 부등식 검사가 아니라
+두 학습의 비교다. 판 B 의 csv 도 축별 MAE 를 담으므로 고칠 수 있고
+(`axes_source()` 를 넣어 뒀다), **실험 기계에서 다시 돌려야** 한다. 그전에는
+캡션의 단서를 떼지 말 것.
+
+**[AUTHOR CHECK-2] 계획서 §3.1 의 "평탄점의 위치는 하한과 실측이 같았다" 는 정정이
 필요하다.** 같은 110 % 규칙으로 다시 내면 깊이 참조형만 맞는다 — 실측 13.65 대
 하한 13.65 ✓, DIGIT **2.93 대 18.33**, Marker **22.57 대 361.15**. 광도 두 계열
 에서는 실측 곡선이 바닥 근처에서 더 평평해 평탄점이 하한보다 **낮은** 밀도에서
@@ -315,3 +331,38 @@
 여덟을 본문에 두면 ≈ 2.75 쪽이다. 셋을 보충으로 내리는 것이 §0.2 예산에 가장
 가깝다. **리그 사진과 합력을 먼저 내리는 것을 권한다** — 전자는 표가 덮고 후자는
 중복이다.
+
+---
+
+## 11. 마커를 남긴 학습 (2026-09-15, main `48b460e`) — 그림으로는 못 낸다
+
+운전자가 마커를 남긴 `colour`·`grey` 로 선택 아홉 유닛을 축분리 재학습했다.
+`docs/cross_principle.md` §3.5a · `docs/force_estimation.md` §7.3b 에 결과가 있다.
+**축분리 전단, 1920 px 대 80 px:**
+
+| 팔 | 1920 이 80 보다 나은 유닛 | p | 전단 비 (1920÷80) |
+|---|---:|---:|---:|
+| 9DTact (grey) | 2/9 | 0.074 | 1.34 |
+| DIGIT (raw) | 0/9 | 0.004 | 1.36 |
+| **Marker (inpaint, 지움)** | 7/9 | **0.039** | **0.85** |
+| Marker (colour, 남김) | 7/9 | 0.359 | 0.95 |
+| Marker (grey, 남김) | 6/9 | 0.301 | 0.94 |
+
+**방향은 살아남고 세기는 살아남지 않는다.** 마커 없는 두 팔은 전해상도에서
+34 ~ 36 % 나빠지는데 마커 팔은 어느 전처리에서도 나빠지지 않는다(0.85 ~ 0.95).
+다만 지운 판만 15 % **좋아지고**(0.85, p 0.039) 남긴 판은 사실상 평평하다
+(0.94 ~ 0.95, p 0.30 ~ 0.36).
+
+**그림에 미치는 것 둘**
+
+1. **`fig_force` 의 (e)(f) 는 `inpaint` 팔이다.** 캡션이 그것을 명시해야 하고,
+   "마커가 고해상도에서 좋아지게 한다" 로 읽히면 안 된다 — 정확한 진술은
+   **"마커는 전단이 고해상도에서 나빠지는 것을 막는다"** 이고, 좋아진다는 쪽은
+   inpaint 에서만 성립한다. 위 캡션에 반영했다.
+2. **`colour` 팔을 그림으로 낼 수 없다.** 커밋 `48b460e` 는 문서 셋만 고쳤고
+   `force_vs_resolution_{colour,grey}_axes.csv` 는 `data/` 에만 있다. 저장소의
+   `force_mae_vs_resolution_9units.csv` 도 inpaint 판 그대로다. 세 전처리를 한
+   칸에 겹쳐 그리려면 그 csv 두 개를 `result/single/3_DIGIT_Marker/data/` 로
+   내보내야 한다 — **실험 기계에서 한 번 복사하면 이 기계에서 그릴 수 있다.**
+
+`figure_plan.md` §4 불일치 9("지금 다시 돌리고 있다")는 이것으로 닫힌다.

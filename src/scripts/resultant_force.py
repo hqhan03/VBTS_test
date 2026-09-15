@@ -18,6 +18,12 @@
 
 정확한 값을 원하면 `force_vs_resolution.py` 가 이제 내보내는 `res_mae` 열을
 쓰면 된다. 단 전 사다리 재학습이 필요하다(약 21 GPU·시간).
+
+**2026-09-15 — 판을 섞고 있었다.** 재학습(판 B)이 끝난 뒤에도 하한·상한은 판 A
+에서 만들고 실측만 판 B 에서 읽었다. 부등식은 같은 예측 위에서만 성립하므로 그
+비교는 검사가 아니었다. `axes_source()` 가 이제 실측과 같은 판에서 축별 MAE 를
+찾는다 — **실험 기계에서 다시 돌려야** `I_resultant_force.csv` 와 그것으로 그린
+`paper/fin_figures/fig_resultant` 의 하한이 제대로 된 하한이 된다.
 """
 from pathlib import Path
 
@@ -58,10 +64,30 @@ def load_exact(pr):
     return d.groupby(["sensor", "width_px"]).res_mae.median().reset_index()
 
 
+def axes_source(pr):
+    """하한을 낼 축별 MAE 를 **실측 합력과 같은 학습 판에서** 찾는다.
+
+    2026-09-15 까지 이 스크립트는 하한·상한을 판 A(`..._axes.csv`)에서 만들고
+    실측 합력만 판 B(`..._res.csv`)에서 읽었다 — **다른 판을 견주고 있었다.**
+    두 판은 학습의 확률성만 다르지만 그 차이가 작지 않다(5 % 평탄점이 최대 세 배
+    어긋난다, `results_single_sensor.md` 의 A·B 표). 부등식은 **같은 예측 위에서**
+    만 성립하므로, 판을 섞으면 "하한이 성립했다 / 실측의 0.86 ~ 0.90 배였다" 는
+    부등식 검사가 아니라 그냥 두 학습의 비교가 된다.
+
+    판 B 의 csv 도 `fx_mae`·`fy_mae`·`fz_mae` 를 함께 담으므로
+    (`force_vs_resolution.py` 의 열 목록), 있으면 그쪽에서 하한을 만든다.
+    """
+    res = DS / pr / "force_vs_resolution_res.csv"
+    if res.exists() and {"res_mae", *AX} <= set(pd.read_csv(res, nrows=1).columns):
+        return res, "res (실측 합력과 같은 판)"
+    return DS / pr / "force_vs_resolution_axes.csv", "axes (실측과 다른 판 — 주의)"
+
+
 def load(pr):
-    f = DS / pr / "force_vs_resolution_axes.csv"
+    f, which = axes_source(pr)
     if not f.exists():
         return None
+    print(f"  {pr}: 하한을 {which} 에서 낸다")
     d = RC.keep(pd.read_csv(f), pr, "sensor")
     # seed 중앙값을 먼저, 그다음 유닛을 가로질러 — 5 절과 같은 집계 순서다.
     k = d.groupby(["sensor", "width_px"])[AX].median()
