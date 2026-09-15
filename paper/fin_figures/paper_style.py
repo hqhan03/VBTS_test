@@ -36,8 +36,9 @@ import matplotlib.pyplot as plt
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 
-# 색은 `src/scripts/palette.py` 하나에서만 나온다 — `result/` 의 그림과 같은 색을
-# 써야 하므로 여기에 값을 베껴 두지 않는다.
+# 저장소의 공용 모듈(`pixel_density` 등)을 가져다 쓸 수 있게 해 둔다.
+sys.path.insert(0, str(ROOT / "src" / "scripts"))
+
 # 투박한 넷 (운전자 결정, 2026-09-15). 순서가 있는 변수는 **차가운 쪽에서
 # 뜨거운 쪽으로** 간다 — 무를수록 파랑, 단단할수록 빨강. 두께도 같은 차례다.
 #
