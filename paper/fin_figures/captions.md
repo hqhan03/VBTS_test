@@ -71,8 +71,14 @@
 > cannot do. The dashed line is the Rayleigh threshold, Dip = 0.265; the pair
 > separates from R ≈ 4.9 px/mm² upward. The × at the left marks a rung where the
 > contact was not detected at all, which is a different failure from a trough too
-> shallow to pass. One specimen per cell, so there are no error bars; between-build
-> scatter is quoted in Section VI-A.
+> shallow to pass. The shaded region marks R below about 55 px/mm² (160 px width),
+> where the 0.02 mm profile bins fall below one camera pixel and the
+> nearest-neighbour noise estimate measures the slope of the trough rather than
+> noise, so the noise gate cannot be evaluated there; the points and the verdicts
+> are those of the published estimator, and the two resolving rungs at R ≈ 4.9 and
+> 13.6 lie inside that region. The reversal at the high-density end is unaffected.
+> One specimen per cell, so there are no error bars; between-build scatter is
+> quoted in Section VI-A.
 
 **왜 이 문장들인가** — 그림 안의 글자와 보조선을 걷어냈으므로(운전자 결정,
 2026-09-15) 패널 이름 · 1.10 mm 바닥 · 파선의 뜻 · `×` 의 뜻 넷을 캡션이 진다.

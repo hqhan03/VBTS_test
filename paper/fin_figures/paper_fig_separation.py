@@ -32,12 +32,33 @@
     이 시편에서는 관문 셋 중 둘만 문다 — 골이 Rayleigh 를 넘긴 단은 밝기·잡음
     관문에 한 번도 걸리지 않는다(아래 `assert`). **Rayleigh 와 접촉 검출**만 남는다.
 
+(b) 의 음영 — 잡음 관문을 **잴 수 없는** 구간 (2026-09-15, `spatial_resolution.md` §5.1a)
+    160 px(R ≈ 55) 아래에서는 단면의 0.02 mm 칸이 카메라 화소보다 잘아, 이웃 칸
+    여럿이 같은 화소에서 값을 길어 온다. `profile_noise` 의 이웃 차분은 그래서
+    잡음이 아니라 **골의 기울기**를 잰다 — 옛 추정은 낮게(dip_sd 중앙이 1920 px
+    0.0514 에서 8 px 0.0034 로 15 배 하락), 한 화소 간격으로 고친 추정은 높게
+    (32 px 에서 sd 가 골의 3.7 배) 잡는다. **둘 다 틀리다.**
+
+    **이 시편의 분해 판정 둘이 그 안에 있다** — R 4.9 (48 px) 와 R 13.6 (80 px).
+    공표된(옛) 추정으로는 잡음 관문에 여유가 3.8 ~ 11.9 배라 물지 않지만, 문서가
+    고친 추정의 폭별 중앙(48 px sd 0.214 · 80 px 0.130)을 그대로 대면 둘 다
+    탈락하고 분해 시작이 **R 55** 로 올라간다. 그 중앙값은 아홉 유닛·세 깊이를
+    묶은 것이지 이 시편의 값이 아니므로 **그렇게 된다고 적으면 안 된다** — 이
+    시편의 고친 sd 는 원영상이 있어야 나온다(실험 기계).
+
+    **기본값을 바꾸지 않았다**(운전자 결정)는 것을 따라, 점과 판정은 공표된
+    추정 그대로 두고 **음영으로 구간만 표시**한다. 캡션이 그것을 말한다.
+
+    고해상도 쪽 역전(854 → 1920 px 에서 분해 비율이 떨어지는 것)은 이것과
+    **무관하다** — 그 구간은 건너뛰기가 1 이라 두 추정의 계산이 같다.
+
 캡션이 져야 할 것 — 그림 안의 글자를 걷어냈으므로(운전자 결정) 다섯을 캡션이 진다
     1. **어느 패널이 무엇인가.** 제목이 `(a)` · `(b)` 뿐이다 —
        (a) 깊이 참조형 아홉 시편, 전해상도.
        (b) `soft_2mm_r1`, 압입 0.30 mm, 두 기둥 중심 간격 2.00 mm.
     2. **가장 좁은 압자가 중심 간격 1.10 mm** 라는 것, 그리고 **광도 스테레오는
-       여덟 시편 모두 그 바닥에 있어 한계를 못 봤다**는 것. (a) 에 그 바닥을
+       아홉 시편 모두 그 바닥에 있어 한계를 못 봤다**는 것 (본문 [IV-B2] 가
+       "every specimen" 이라고 적는다 — 한때 여덟로 적혀 있었다). (a) 에 그 바닥을
        가리키는 선이 없다.
     3. (b) 의 **파선이 Rayleigh 문턱 dip = 0.265** 라는 것. 선은 있고 글자는 없다.
        판정은 **선 위/아래**로 읽는다 — 표식은 전부 같게 찍었다.
@@ -108,6 +129,11 @@ def panel_gel(ax):
     return nine.assign(rho_thickness=rho, p_thickness=p), rho, p
 
 
+# 잡음 추정이 서는 가장 낮은 폭 (`spatial_resolution.md` §5.1a). 이 아래는
+# 음영으로만 표시하고 값은 공표된 추정 그대로 둔다.
+NOISE_FLOOR_PX = 160
+
+
 def panel_pixels(ax):
     """한 시편·한 압입의 골 대 화소 밀도."""
     d = pd.read_csv(PS.ROOT / "result/extra/data/resolution_sweep_9DTact_pair100.csv")
@@ -121,6 +147,14 @@ def panel_pixels(ax):
     assert (passed.imprint_lvl >= 2.5).all(), "밝기 관문이 물었다 — 그림에 넣어야 한다"
     assert (passed.dip > 3 * passed.dip_sd).all(), "잡음 관문이 물었다 — 그림에 넣어야 한다"
     assert (passed.verdict == "분해").all(), "Rayleigh 를 넘겼는데 분해가 아니다"
+
+    # **잡음 관문을 잴 수 없는 구간** (`spatial_resolution.md` §5.1a, 2026-09-15).
+    # 160 px 아래에서는 단면의 0.02 mm 칸이 카메라 화소보다 잘아 이웃 차분이
+    # 잡음이 아니라 골의 기울기를 잰다 — 옛 추정은 낮게, 고친 추정은 높게 잡고
+    # **둘 다 틀리다.** 이 시편의 판정은 공표된(옛) 추정으로 낸 것이므로 값은
+    # 그대로 두되, 어디부터 그 추정이 서지 않는지는 보여야 한다.
+    floor_R = float(u[u.width_px == NOISE_FLOOR_PX].density_px_per_mm2.iloc[0])
+    ax.axvspan(0.09, floor_R, color=PS.MUTED, alpha=0.07, lw=0, zorder=0)
 
     c = PS.SERIES
     ax.axhline(RAYLEIGH, c=PS.MUTED, lw=0.7, ls=(0, (4, 2)), zorder=1)
@@ -142,13 +176,13 @@ def panel_pixels(ax):
     PS.style(ax, grid=None)
     ax.grid(alpha=0.25, lw=0.4, color="#c8c8c8")
     ax.set_axisbelow(True)
-    return u, seen[seen.verdict == "분해"].density_px_per_mm2.min()
+    return u, seen[seen.verdict == "분해"].density_px_per_mm2.min(), floor_R
 
 
 def main():
     fig, axes = plt.subplots(1, 2, figsize=(PS.FULL_W_NARROW, 2.60))
     gel, rho, p = panel_gel(axes[0])
-    sweep, first = panel_pixels(axes[1])
+    sweep, first, floor_R = panel_pixels(axes[1])
 
     fig.tight_layout(w_pad=2.0)
     PS.save(fig, gel[["principle", "unit", "hardness", "thickness_mm",
@@ -161,6 +195,14 @@ def main():
     print(f"  (b) {SWEEP_UNIT} @ {SWEEP_DEPTH_MM} mm — "
           f"분해되는 가장 낮은 밀도 R {first:.2f}"
           f"   (접촉 못 찾은 단 {int(sweep.dip.isna().sum())})")
+    # 잡음 관문이 실제로 얼마나 여유 있었나 — 공표된 추정으로
+    ok = sweep.dropna(subset=["dip"])
+    ok = ok[ok.dip >= RAYLEIGH]          # 관문은 Rayleigh 를 넘긴 단에만 건다
+    ratio = ok.dip / (3 * ok.dip_sd)
+    print(f"      잡음 관문 여유 dip/(3 sd) {ratio.min():.1f} ~ {ratio.max():.1f} 배 "
+          "— 공표된 추정으로는 한 단도 물지 않는다")
+    print(f"      음영 = R < {floor_R:.1f} (§5.1a: 이 아래에서는 잡음 추정이 서지 "
+          f"않는다). **분해되는 두 단(R {first:.1f} · 13.6)이 그 안에 있다**")
 
 
 if __name__ == "__main__":
