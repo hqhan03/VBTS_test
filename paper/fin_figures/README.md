@@ -19,7 +19,7 @@ for f in paper_fig_*.py; do python3 "$f"; done   # 전부
 | `paper_fig_growth.py` | 자국 성장 — 깊이 기준 대 힘 기준 | F3, IV.A |
 | `paper_fig_separation.py` | 두 접촉 분리 — 자국 (a)(b), 단면 (c), 겔 (d), 화소 (e) | F4, IV.B |
 | `paper_fig_ceiling.py` | 영상 응답 포화 힘 대 두께 | F0, IV.C |
-| `paper_fig_ceiling_schematic.py` | 그 포화를 **글자 없이** 푸는 개념도 (흰 바탕) | F0s, IV.C |
+| `paper_fig_ceiling_schematic.py` | 시편 판 — 두께 1·2·3 mm 와 경도 OO-30/50/70, 같은 힘 (흰 바탕) | F0s, III |
 | `paper_fig_plateau_gel.py` | 평탄 밀도와 겔 — 표 V 를 받친다 | F7, V.A · V.B |
 
 ## 그림마다 나오는 것
