@@ -129,6 +129,28 @@ def style(ax, grid="y"):
     ax.set_axisbelow(True)
 
 
+def letters(fig, rows):
+    """패널 이름 `(a)` `(b)` … 를 **줄마다 같은 높이**에 단다.
+
+    축 제목(`set_title(loc="left")`)으로 달지 않는 까닭이 둘이다. 좁은 영상
+    칸에서는 가운데 제목과 부딪히고, 영상 칸은 **비율이 고정돼 제 칸 안에서 다시
+    줄어들기** 때문에 자리값(`get_position()`)을 쓰면 글자가 영상에서 한참
+    왼쪽에 떨어진다. 그래서 한 번 그린 뒤 **그려진 칸**에서 자리를 잡는다.
+
+    `rows` 는 줄마다의 축 목록이다 — `[[ax_a, ax_b, ax_c], [ax_d, ax_e]]`.
+    한 줄짜리 그림이면 `[axes]` 하나로 넘긴다.
+    """
+    fig.canvas.draw()
+    inv = fig.transFigure.inverted()
+    tags = iter("abcdefghijkl")
+    for axs in rows:
+        box = [inv.transform_bbox(a.get_window_extent()) for a in axs]
+        y = max(b.y1 for b in box) + 0.014
+        for b in box:
+            fig.text(b.x0 - 0.010, y, f"({next(tags)})", fontsize=11.0,
+                     ha="right", va="bottom", color=INK)
+
+
 def save(fig, df, stem):
     """pdf(본문용) · png(문서 미리보기용) · csv(다시 그릴 수 있게) 셋을 함께 낸다.
 

@@ -15,7 +15,7 @@ for f in paper_fig_*.py; do python3 "$f"; done   # 전부
 | 파일 | 무엇 | 자리 |
 |---|---|---|
 | `paper_style.py` | 판형 · 색 · 저장. **모든 그림이 이것을 import 한다** | — |
-| `paper_fig_input_resolution.py` | 요구 입력 해상도 — 줄인 영상 셋과 힘 MAE | F1, I 장 |
+| `paper_fig_input_resolution.py` | **Figure 1** — 줄인 영상 셋 (a)(b)(c), 힘 (d), 형상 (e) | F1, I 장 |
 | `paper_fig_growth.py` | 자국 성장 — 깊이 기준 대 힘 기준 | F3, IV.A |
 | `paper_fig_separation.py` | 두 접촉 분리 — 자국 (a)(b), 단면 (c), 겔 (d), 화소 (e) | F4, IV.B |
 | `paper_fig_ceiling.py` | 영상 응답 포화 힘 대 두께 | F0, IV.C |

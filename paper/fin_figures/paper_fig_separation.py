@@ -81,7 +81,7 @@ import pandas as pd
 from scipy.stats import spearmanr
 
 import paper_style as PS
-from paper_style import HARD3, THICK3, DISPLAY, SHORE
+from paper_style import HARD3, THICK3, DISPLAY, SHORE, letters
 
 PS.use_paper_style()
 import matplotlib.pyplot as plt           # noqa: E402
@@ -216,23 +216,6 @@ def panel_pixels(ax):
     ax.grid(alpha=0.25, lw=0.4, color="#c8c8c8")
     ax.set_axisbelow(True)
     return u, seen[seen.verdict == "분해"].density_px_per_mm2.min()
-
-
-def letters(fig, rows):
-    """패널 이름을 줄마다 **같은 높이**에. 영상 칸은 비율이 고정돼 그려진 높이가
-    그래프 칸과 다르므로, 각자의 y1 을 쓰면 글자가 어긋난다."""
-    fig.canvas.draw()
-    inv = fig.transFigure.inverted()
-    tags = iter("abcdefgh")
-    for axs in rows:
-        # `get_position()` 이 아니라 **그려진 칸**을 쓴다. 영상 칸은 비율이
-        # 고정돼 제 칸 안에서 다시 줄어들므로, 자리값을 쓰면 글자가 영상에서
-        # 한참 왼쪽에 떨어진다 — 실제로 그렇게 나왔다.
-        pos = [inv.transform_bbox(a.get_window_extent()) for a in axs]
-        y = max(b.y1 for b in pos) + 0.014
-        for b in pos:
-            fig.text(b.x0 - 0.010, y, f"({next(tags)})", fontsize=11.0,
-                     ha="right", va="bottom", color=PS.INK)
 
 
 def main():
