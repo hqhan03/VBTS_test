@@ -4,23 +4,31 @@
 **핵심 한 장이다** (운전자 결정, 2026-09-15). 같은 접촉 프레임을 면적 평균으로
 줄여 넣고, **두 과제**의 오차가 어디서 평평해지는지 본다.
 
-    (a)(b)(c)  같은 프레임, R = 220 / 13.8 / 0.55 px/mm² — 눈으로 보는 축
-    (d)        힘 추정 — 수직력 MAE 대 화소 밀도
-    (e)        형상 복원 — 깊이 MAE 대 화소 밀도, 압자 둘
+    위 줄   같은 프레임, R = 220 / 13.8 / 0.55 px/mm² — 눈으로 보는 축
+    아래 왼  힘 추정 — 수직력 MAE 대 화소 밀도
+    아래 오  형상 복원 — 깊이 MAE 대 화소 밀도, 압자 둘
+
+**패널 이름을 달지 않는다** (운전자 결정, 2026-09-15). 다섯 칸이 한 문장이라
+따로 가리킬 일이 없다 — 캡션도 순서대로 읽는다.
 
 **이 그림이 지는 주장은 하나다.** 같은 센서·같은 접촉인데 **평평해지는 자리가
 과제마다 다르다** — 힘은 R ≈ 5, 원기둥은 ≈ 47, 정육면체는 ≈ 188 이다. 40 배다.
 "해상도가 높을수록 좋다"도 "해상도는 상관없다"도 아니라는 것이 논문의 출발점이고,
 Figure 1 이 그것을 먼저 보여 준다.
 
-(e) 의 오른쪽 끝이 다시 오른다
-    화소를 더 주면 오차가 **커진다**. 잡음이 함께 들어오기 때문이고, 힘 (d) 에서도
+형상 곡선의 오른쪽 끝이 다시 오른다
+    화소를 더 주면 오차가 **커진다**. 잡음이 함께 들어오기 때문이고, 힘 쪽에서도
     같은 모양이 약하게 보인다. 이 그림은 **관찰만 적는다** — 까닭은 본문이 진다.
 
-▲ 가 가리키는 것 = **그 과제의 요구 밀도**
+요구 밀도는 **그리지 않고 세어 둔다** (운전자 결정, 2026-09-15)
     제 바닥의 110 % 안에 드는 **가장 낮은 밀도**다. 셋을 같은 자로 잰다.
     임의의 절대 문턱(예: "0.1 mm 이하")을 쓰지 않는다 — 과제마다 단위가 달라
     (N 과 mm) 견줄 수 없고, 잰 것은 **평평해지는 자리**이지 합격선이 아니다.
+
+    **그림에는 표식을 얹지 않는다.** 곡선이 평평해지는 자리는 눈으로 보이고,
+    표식을 찍으면 그 한 점이 자료처럼 읽힌다 — 단이 ×4 씩 뛰는데도. 값은
+    스크립트가 표준출력으로 내고 csv 의 `required_R` 열에 남으니 **본문과 캡션이
+    숫자로** 인용한다.
 
     | 과제 | 요구 밀도 R | 그 자리의 오차 | 바닥 |
     |---|---:|---:|---:|
@@ -31,7 +39,7 @@ Figure 1 이 그것을 먼저 보여 준다.
     **배수를 본문에 쓸 때는 단이 성긴 것을 함께 적을 것** — 밀도 단이 대략 ×4 씩
     뛰므로 47 대 188 은 **한 단 차이**다. "4 배" 가 아니라 "한 단 높다" 가 정직하다.
 
-(e) 의 압자 둘은 색과 **선 모양**으로 함께 가른다
+형상 곡선의 압자 둘은 색과 **선 모양**으로 함께 가른다
     팔레트 넷 가운데 파랑·빨강이고, 실선·파선을 겹쳐 건다 — 흑백 인쇄와 색각
     이상에서 둘 다 살아남는 값싼 길이다(`paper_style` 머리글).
 
@@ -39,13 +47,15 @@ Figure 1 이 그것을 먼저 보여 준다.
     원본이 `paper/figures/sources/` 에 있고, 밀도는 csv 가 들고 있다 —
     `pixel_density.density()` 는 `data/analysis/` 를 봐야 해서 쓰지 않는다.
 
-캡션이 져야 할 것 — 그림 안에 설명 글자를 넣지 않으므로 다섯을 캡션이 진다
-    1. **어느 패널이 무엇인가.** (a)(b)(c) 는 같은 프레임(`hard_2mm_r1`, ball ⌀8)
-       을 R = 220 / 13.8 / 0.55 로 줄인 것, (d) 힘, (e) 형상.
-    2. **곡선은 9DTact 선택 아홉 시편의 중앙값**이고 띠는 사분범위다.
-    3. **▲ 는 요구 밀도** — 제 바닥의 110 % 안에 드는 가장 낮은 밀도.
-       힘 4.9 · 원기둥 47 · 정육면체 188.
-    4. (e) 의 **파랑 실선이 원기둥 ⌀4, 빨강 파선이 정육면체 4 mm** 라는 것.
+캡션이 져야 할 것 — 그림 안에 설명 글자도 표식도 없으므로 다섯을 캡션이 진다
+    1. **어느 칸이 무엇인가.** 위 줄은 같은 프레임(`hard_2mm_r1`, ball ⌀8)을
+       R = 220 / 13.8 / 0.55 로 줄인 것, 아래 왼쪽이 힘, 오른쪽이 형상.
+    2. **곡선은 9DTact 선택 아홉 시편의 중앙값**이라는 것. 산포는 그리지 않는다 —
+       사분범위는 `fig_input_resolution.csv` 의 `lo` · `hi` 열에 있다.
+    3. **요구 밀도를 숫자로** — 힘 4.9 · 원기둥 47 · 정육면체 188. 제 바닥의
+       110 % 안에 드는 가장 낮은 밀도이고, 밀도 단이 ×4 씩 뛰므로 **한 단 · 두 단**
+       으로 읽어야 한다.
+    4. 형상 쪽 **파랑 실선이 원기둥 ⌀4, 빨강 파선이 정육면체 4 mm** 라는 것.
     5. **`fig_separation` 과 잇지 않는다** — 그것은 "두 접촉을 가를 수 있나" 로
        다른 질문이고, 같은 x 축을 쓴다고 이어지는 것이 아니다.
 
@@ -60,7 +70,7 @@ import cv2
 import pandas as pd
 
 import paper_style as PS
-from paper_style import BLUE, RED, letters
+from paper_style import BLUE, RED
 
 PS.use_paper_style()
 import matplotlib.pyplot as plt           # noqa: E402
@@ -80,12 +90,6 @@ PROBES = [("cyl4", r"cylinder $\varnothing$4", BLUE, "-"),
 def plateau_R(t):
     """제 바닥의 110 % 안에 드는 **가장 낮은 밀도**. 셋을 같은 자로 잰다."""
     return float(t[t.med <= PLATEAU * t.med.min()].R.iloc[0])
-
-
-def mark(ax, R, c, m="^"):
-    """요구 밀도를 축 **아래**에 찍는다. 곡선 위에 얹으면 자료처럼 읽힌다."""
-    ax.plot([R], [0], m, c=c, ms=6.0, mec="white", mew=0.6,
-            transform=ax.get_xaxis_transform(), clip_on=False, zorder=6)
 
 
 def force_curve():
@@ -155,18 +159,17 @@ def panel_frames(axes):
 
 
 def panel_force(ax):
-    """(d) 힘 — 로그·로그. 값이 좁은 띠 안에서 움직여 선형 축이면 눌린다."""
+    """힘 — x 만 로그다. 산포를 뺀 뒤로는 값이 0.047 ~ 0.083 N 안에서만 놀아
+    로그 y 축이 할 일이 없다(두 배도 안 되는 폭이다). 형상 칸과 자를 맞춘다."""
     t = force_curve()
-    ax.fill_between(t.R, t.lo, t.hi, color=PS.SERIES, alpha=0.13, lw=0)
     ax.plot(t.R, t.med, "-o", c=PS.SERIES, lw=1.8, ms=4.4, mec="white", mew=0.7)
     R = plateau_R(t)
-    mark(ax, R, PS.SERIES)
-    ax.set_xscale("log"); ax.set_yscale("log")
+    ax.set_xscale("log")
     ax.set_xlim(0.09, 1.4e4)
-    ax.set_ylim(0.033, 0.118)
+    ax.set_ylim(0.038, 0.090)
     ax.set_xticks([0.1, 10, 1000]); ax.set_xticklabels(["0.1", "10", "1000"])
-    ax.set_yticks([0.05, 0.1]); ax.set_yticklabels(["0.05", "0.1"])
     ax.minorticks_off()
+    ax.set_yticks([0.04, 0.06, 0.08])
     ax.set_xlabel(r"pixel density $R$ [px/mm$^2$]")
     ax.set_ylabel("force MAE [N]")
     PS.style(ax, grid=None)
@@ -176,23 +179,21 @@ def panel_force(ax):
 
 
 def panel_shape(ax):
-    """(e) 형상 — y 는 선형이다. 0 이 뜻을 갖는 값이라 밑동을 보여야 한다."""
+    """형상 — y 는 선형이다. 0 이 뜻을 갖는 값이라 밑동을 보여야 한다."""
     cur = shape_curves()
     rows, req = [], {}
     for probe, label, c, ls in PROBES:
         t = cur[probe]
-        ax.fill_between(t.R, t.lo, t.hi, color=c, alpha=0.13, lw=0)
         ax.plot(t.R, t.med, ls=ls, c=c, lw=1.8, label=label)
         req[probe] = plateau_R(t)
-        mark(ax, req[probe], c)
         rows.append(t.assign(task="shape_depth", probe=probe,
                              required_R=req[probe]))
     ax.set_xscale("log")
     ax.set_xlim(0.09, 1.4e4)
-    ax.set_ylim(0.0, 0.365)
+    ax.set_ylim(0.0, 0.232)
     ax.set_xticks([0.1, 10, 1000]); ax.set_xticklabels(["0.1", "10", "1000"])
     ax.minorticks_off()
-    ax.set_yticks([0.0, 0.1, 0.2, 0.3])
+    ax.set_yticks([0.0, 0.1, 0.2])
     ax.set_xlabel(r"pixel density $R$ [px/mm$^2$]")
     ax.set_ylabel("depth MAE [mm]")
     ax.legend(loc="upper right", frameon=False, handlelength=1.9,
@@ -212,16 +213,15 @@ def main():
     # 윗줄 높이는 **영상이 제 비율로 다 들어가는 높이**다. 원본이 16:9 라
     # 칸 너비의 0.5625 배면 된다.
     g_top = fig.add_gridspec(1, 3, wspace=0.26,
-                             left=L, right=R, top=0.945, bottom=0.703)
+                             left=L, right=R, top=0.962, bottom=0.720)
     g_bot = fig.add_gridspec(1, 2, wspace=0.40,
-                             left=L, right=R, top=0.600, bottom=0.135)
+                             left=L, right=R, top=0.645, bottom=0.135)
     top = [fig.add_subplot(g_top[0, i]) for i in range(3)]
     bot = [fig.add_subplot(g_bot[0, i]) for i in range(2)]
 
     frames = panel_frames(top)
     force, force_R = panel_force(bot[0])
     shape, shape_R = panel_shape(bot[1])
-    letters(fig, [top, bot])
 
     tidy = pd.concat([
         force.reset_index().rename(columns={"width_px": "rung"})
@@ -231,11 +231,11 @@ def main():
         "required_R", "unit_measure"]]
     PS.save(fig, tidy, "fig_input_resolution")
     frames.to_csv(PS.FIGS / "fig_input_resolution_frames.csv", index=False)
-    print("  (a)(b)(c) " + " · ".join(
+    print("  위 줄  " + " · ".join(
         f"{r.width_px} px (R {r.density_px_per_mm2:.3g})"
         for r in frames.itertuples()) + f"  —  {SWEEP_UNIT}")
-    print(f"  (d) 힘   요구 밀도 R {force_R:.3g}")
-    print("  (e) 형상 요구 밀도 " + " · ".join(
+    print(f"  힘    요구 밀도 R {force_R:.3g}")
+    print("  형상  요구 밀도 " + " · ".join(
         f"{p} R {shape_R[p]:.3g}" for p, *_ in PROBES) + "   (9 시편 중앙값)")
 
 
