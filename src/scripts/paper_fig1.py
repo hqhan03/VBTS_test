@@ -59,11 +59,30 @@ def pair_geometry(pid=PAIR.split("_")[-1]):
     return None, None
 
 
+SRC = ROOT / "paper" / "figures" / "sources"
+
+
+def _pick(*cands):
+    """저장소 안의 사본을 **먼저** 본다.
+
+    `data/` 는 깃헙에 올리지 않으므로, 그림에 들어가는 다섯 장만 `sources/` 에
+    복사해 두었다(2026-09-15 운전자 요청). 그 덕에 저장소만 있으면 그림이 다시
+    나온다. 실험 기계에서는 원본이 그대로 있으므로 어느 쪽이든 같은 결과다.
+    """
+    for c in cands:
+        if c is not None and Path(c).exists():
+            return str(c)
+    return str(cands[-1])
+
+
 def imprint(unit):
     """기준영상 대비 밝기 변화. 두 장이 같은 자로 그려져야 한다."""
     run = DS / PAIR / unit
-    img = cv2.imread(str(run / "shape_pair100" / STEP), cv2.IMREAD_GRAYSCALE)
-    ref = cv2.imread(str(run / "reference.png"), cv2.IMREAD_GRAYSCALE)
+    short = unit.replace("9DTact_", "")
+    img = cv2.imread(_pick(SRC / f"fig1b_{short}_pair100_d0.30.png",
+                           run / "shape_pair100" / STEP), cv2.IMREAD_GRAYSCALE)
+    ref = cv2.imread(_pick(SRC / f"fig1b_{short}_reference.png",
+                           run / "reference.png"), cv2.IMREAD_GRAYSCALE)
     if img is None or ref is None:
         return None
     d = np.abs(img.astype(np.float32) - ref.astype(np.float32))
@@ -149,7 +168,11 @@ def main():
     sub = gs[0, 2].subgridspec(1, 3, wspace=.10)
     run = DS / "20260907_passB_ball8" / "9DTact_hard_2mm_r1"
     cand = sorted((run / "stream").glob("*.png")) if (run / "stream").exists() else []
-    base = cv2.imread(str(cand[len(cand) // 2]), cv2.IMREAD_GRAYSCALE) if cand else None
+    # 저장소 사본이 있으면 그것. 없으면 stream 의 가운데 프레임 — 사본이 바로
+    # 그 장이므로 둘은 같은 그림을 낸다.
+    mid = cand[len(cand) // 2] if cand else None
+    base = cv2.imread(_pick(SRC / "fig1c_hard_2mm_r1_ball8_000501.png", mid),
+                      cv2.IMREAD_GRAYSCALE)
     for k, w in enumerate(SHOW):
         ax = fig.add_subplot(sub[0, k]); cx_.append(ax)
         if base is not None:
