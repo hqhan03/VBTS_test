@@ -30,9 +30,10 @@
     막는 주장(경도가 영상 응답을 가른다)과는 다른 이야기다. 자국 크기는 그
     깊이를 따라간다 — **기하학이지 잰 값이 아니다.**
 
-글자
-    아랫줄 겔 안의 `OO-30` · `OO-50` · `OO-70` 셋뿐이다. 다른 데는 없다.
-    윗줄의 두께는 **모양이 지므로** 적지 않는다.
+**글자가 하나도 없다** (운전자 결정, 2026-09-15)
+    아랫줄 겔에 쇼어를 적어 봤다가 뺐다. 두 줄 다 **흔든 것을 그림이 진다** —
+    윗줄은 높이가, 아랫줄은 색이 짊어진다. 어느 색이 어느 쇼어인지는 캡션이
+    말해야 한다(무를수록 파랑 · 단단할수록 빨강, OO-30 · 50 · 70).
 
 **이것은 개념도다 — 자료가 아니다.** 자국도 깊이도 그려 넣은 것이다. 캡션이
 그렇게 적어야 한다.
@@ -70,7 +71,6 @@ STRIP_Y, GEL_Y = 0.0, 11.5
 ROW_Y = (33.0, 0.0)              # 두께 줄이 위
 ARROW_LEN = 4.5                  # **여섯이 다 같다** — 힘은 통제된 쪽이다
 DEPTH_REF = 2.3                  # 자국 크기를 깊이에 맞추는 기준
-LABEL_PT = 9.0                   # 겔 안의 쇼어 표기 (본문 글자보다 작게)
 GEL_FILL = "#ececec"
 BALL_FILL = "#ffffff"
 
@@ -142,18 +142,13 @@ def look(ax, xc, y_from, y_to):
                                 shrinkA=0, shrinkB=0, mutation_scale=13))
 
 
-def cell(ax, xc, y0, spec, colour, label=None):
-    """한 칸 — 힘 · 겔 · 공 · 영상, 그리고 아랫줄이면 쇼어 표기."""
+def cell(ax, xc, y0, spec, colour):
+    """한 칸 — 힘 · 겔 · 공 · 영상."""
     top = gel(ax, xc, y0 + GEL_Y, spec["gel_h"], spec["depth"], colour)
     push(ax, xc, top)
     s = imprint_level(spec["depth"])
     strip(ax, xc, y0 + STRIP_Y, s)
     look(ax, xc, y0 + GEL_Y - 0.4, y0 + STRIP_Y + STRIP_H + 0.4)
-    if label:
-        # **겔 안, 아래쪽**에 적는다. 겔 밖에 두면 어느 겔의 것인지 한 번 더
-        # 따져야 하고, 영상 띠로 가는 화살표와도 자리를 다툰다.
-        ax.text(xc, y0 + GEL_Y + 0.7, label, ha="center", va="bottom",
-                fontsize=LABEL_PT, color=PS.INK, zorder=5)
     return s
 
 
@@ -175,13 +170,14 @@ def main():
 
     for xc, spec in zip(XC, BOT):                    # 아랫줄 — 경도, 세 색
         c = HARD3[spec["hardness"]]
-        s = cell(ax, xc, ROW_Y[1], spec, c, f"OO-{spec['shore']}")
+        s = cell(ax, xc, ROW_Y[1], spec, c)
         rows.append(dict(row="hardness", thickness_mm=2, shore_oo=spec["shore"],
                          colour=c, depth_units=spec["depth"],
                          gel_h_units=spec["gel_h"], imprint_level=s))
 
     PS.save(fig, pd.DataFrame(rows), "fig_ceiling_schematic")
-    print("  시편 판 — 윗줄 두께 1·2·3 mm (한 색) · 아랫줄 OO-30/50/70 (2 mm)")
+    print("  시편 판 — 글자 없음. "
+          "윗줄 두께 1·2·3 mm (한 색) · 아랫줄 OO-30/50/70 (2 mm, 세 색)")
     print(f"  화살표는 여섯 다 같은 크기 ({ARROW_LEN:.1f}) — 흔든 것은 겔이다")
 
 
