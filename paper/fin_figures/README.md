@@ -14,6 +14,7 @@ python3 paper_fig_ceiling.py
 |---|---|
 | `paper_style.py` | 판형 · 색 · 저장. **모든 그림이 이것을 import 한다** |
 | `paper_fig_ceiling.py` | 영상 응답 포화 힘 대 두께 (IV.C) |
+| `paper_fig_plateau_gel.py` | 평탄 밀도와 겔 — 표 V 를 받친다 (V.A · V.B) |
 
 색은 `src/scripts/palette.py` 하나에서 나온다 — `result/` 의 그림과 같은 색을 써야
 하므로 여기에 값을 베껴 두지 않는다.
