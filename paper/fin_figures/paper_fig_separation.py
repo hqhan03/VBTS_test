@@ -5,13 +5,13 @@
 
 (a)(b) 자국을 눈으로 — 같은 경도·같은 프로브·같은 압입에서 **두께만** 1 mm 와
        3 mm 로 다른 실제 영상. 1 mm 는 두 덩어리가 보이고 3 mm 는 뭉개진다.
-(c)    겔이 정하는 것 — 전해상도에서 분해된 가장 좁은 간격 대 두께.
-(d)    화소가 정하는 것 — 판정을 그대로 두고 입력만 줄인다.
+(c)    같은 자국을 **숫자로** — 두 기둥을 가로지른 단면. 골이 있고 없고가 보인다.
+(d)    겔이 정하는 것 — 전해상도에서 분해된 가장 좁은 간격 대 두께.
+(e)    화소가 정하는 것 — 판정을 그대로 두고 입력만 줄인다.
 
-위 줄이 아래 줄의 **눈으로 보는 판**이다. (a)(b) 는 따로 있던 `fig_two_contacts`
-였고 2026-09-15 에 여기로 합쳤다(운전자 결정) — 같은 질문을 재는 그림이라
-한 판에 있는 것이 맞다. 그때 단면 패널은 뺐다. 그 자료는
-`fig_two_contacts.csv` 에 남아 있다.
+윗줄 셋이 아랫줄 둘의 **눈으로 보는 판**이다. 따로 있던 `fig_two_contacts` 를
+2026-09-15 에 여기로 합쳤다(운전자 결정) — 같은 질문을 재는 그림이라 한 판에
+있는 것이 맞다.
 
 (a)(b) 의 두 장을 고른 규칙
     시각 대비가 가장 큰 둘을 임의로 고르면 안 된다. 같은 경도(hard), 같은
@@ -20,17 +20,17 @@
     `|접촉 − 기준|` 이고 (σ = 3 평활), **두 장이 같은 표시 범위**를 쓴다.
     영상은 회색조다 — 색 지도는 넷뿐인 팔레트 밖이다.
 
-(c) 에서 광도 스테레오는 점으로 찍지 않는다
+(d) 에서 광도 스테레오는 점으로 찍지 않는다
     여덟 시편 **모두** 가장 좁은 압자(중심 간격 1.10 mm)를 갈랐다. **값이 아니라
     바닥이다** — 점을 찍으면 "1.10 mm 가 그 센서의 분해능" 으로 읽힌다.
     (광도의 `hard_2mm` 는 두 기둥 램프가 없어 여덟이다.)
 
-(c) 의 범례는 **실측 쇼어**다
+(d) 의 범례는 **실측 쇼어**다
     soft / medium / hard 는 계열마다 다른 물건이라(9DTact OO-30 ~ 70 은 40 점,
     광도 계열 OO-51 ~ 57 은 6 점) 이름만으로는 무엇을 얼마나 흔들었는지 보이지
     않는다. 이 패널은 9DTact 뿐이므로 눈금을 그대로 적는다.
 
-(d) 는 시편 하나, 압입 하나다
+(e) 는 시편 하나, 압입 하나다
     아홉을 묶어 분해 **비율**로 그렸다가 뺐다(2026-09-15) — **겔 한계와 화소
     한계가 섞이기 때문**이다. `hard_3mm_r1` 은 전해상도 한계가 2.50 mm 라 어느
     밀도에서도 2.00 mm 를 가르지 못하는데(36 단 중 0), 그 실패가 모든 막대에
@@ -101,6 +101,7 @@ SWEEP_DEPTH_MM = 0.3
 SEP_MM = 2.00                             # pair100 — 기둥 ⌀1.0 mm, 중심 간격
 RAYLEIGH = 0.265
 LOST_Y = -0.20                            # 접촉을 못 찾은 단을 찍는 자리
+DECISION_FLOOR = 2.5                      # 자국 밝기 판정 바닥 (lvl)
 
 
 def imprint(unit):
@@ -116,11 +117,16 @@ def imprint(unit):
     return d, int(cy), int(cx)
 
 
-def panel_imprints(axes):
-    """(a)(b) 자국을 눈으로. 두 장이 **같은 표시 범위**를 쓴다."""
+def panel_imprints(img_axes, prof_ax):
+    """(a)(b) 자국을 눈으로, (c) 같은 자국을 숫자로.
+
+    두 장이 **같은 표시 범위**를 쓴다 — 밝기를 견줄 수 있어야 한다. 단면은
+    자국 중심을 지나는 가로 한 줄이고, (a)(b) 가 잘라 보인 구간과 같다.
+    """
     dat = {t: imprint(u) for u, t in IMPRINTS}
     vmax = max(float(np.percentile(d, 99.9)) for d, _, _ in dat.values())
-    for ax, (_u, t) in zip(axes, IMPRINTS):
+    rows = []
+    for ax, (_u, t) in zip(img_axes, IMPRINTS):
         d, cy, cx = dat[t]
         y0 = int(np.clip(cy - HALF, 0, d.shape[0] - 2 * HALF))
         x0 = int(np.clip(cx - HALF, 0, d.shape[1] - 2 * HALF))
@@ -129,9 +135,28 @@ def panel_imprints(axes):
         ax.set_title(f"{t} mm", pad=3, color=THICK3[t])
         ax.set_xticks([]); ax.set_yticks([])
 
+        prof = d[int(np.clip(cy, 0, d.shape[0] - 1)), x0:x0 + 2 * HALF]
+        px = np.arange(len(prof)) - len(prof) / 2
+        prof_ax.plot(px, prof, "-", c=THICK3[t], lw=1.8, label=f"{t} mm")
+        rows.append(pd.DataFrame(dict(thickness_mm=t, px=px,
+                                      delta_intensity=prof,
+                                      decision_floor=DECISION_FLOOR)))
+
+    # 판정 바닥 — 선은 두고 글자는 넣지 않는다(캡션이 진다)
+    prof_ax.axhline(DECISION_FLOOR, c=PS.MUTED, lw=0.7, ls=(0, (2, 2)), zorder=1)
+    prof_ax.set_xlabel("across posts [px]")
+    prof_ax.set_ylabel(r"$\Delta$ intensity [lvl]")
+    prof_ax.legend(loc="upper left", frameon=False, handlelength=1.4,
+                   handletextpad=0.45, labelspacing=0.22, borderpad=0.1,
+                   fontsize=9.0)
+    PS.style(prof_ax, grid=None)
+    prof_ax.grid(alpha=0.25, lw=0.4, color="#c8c8c8")
+    prof_ax.set_axisbelow(True)
+    return pd.concat(rows)
+
 
 def panel_gel(ax):
-    """(c) 분해된 가장 좁은 간격 대 두께."""
+    """(d) 분해된 가장 좁은 간격 대 두께."""
     d = pd.read_csv(PS.ROOT / "result/single/extra/data/G_spatial_resolution.csv")
     assert not d.suspect_hardware.any(), "선택 규칙이 거른 유닛이 남아 있다"
     nine, digit = d[d.principle == "9DTact"], d[d.principle == "DIGIT"]
@@ -158,7 +183,7 @@ def panel_gel(ax):
 
 
 def panel_pixels(ax):
-    """(d) 한 시편·한 압입의 골 대 화소 밀도."""
+    """(e) 한 시편·한 압입의 골 대 화소 밀도."""
     d = pd.read_csv(PS.ROOT / "result/extra/data/resolution_sweep_9DTact_pair100.csv")
     u = d[(d.unit == SWEEP_UNIT) & (d.depth_mm == SWEEP_DEPTH_MM)] \
         .sort_values("width_px")
@@ -197,24 +222,39 @@ def letters(fig, rows):
     """패널 이름을 줄마다 **같은 높이**에. 영상 칸은 비율이 고정돼 그려진 높이가
     그래프 칸과 다르므로, 각자의 y1 을 쓰면 글자가 어긋난다."""
     fig.canvas.draw()
+    inv = fig.transFigure.inverted()
     tags = iter("abcdefgh")
     for axs in rows:
-        pos = [a.get_position() for a in axs]
-        y = max(p.y1 for p in pos) + 0.012
-        for p in pos:
-            fig.text(p.x0 - 0.008, y, f"({next(tags)})", fontsize=11.0,
+        # `get_position()` 이 아니라 **그려진 칸**을 쓴다. 영상 칸은 비율이
+        # 고정돼 제 칸 안에서 다시 줄어들므로, 자리값을 쓰면 글자가 영상에서
+        # 한참 왼쪽에 떨어진다 — 실제로 그렇게 나왔다.
+        pos = [inv.transform_bbox(a.get_window_extent()) for a in axs]
+        y = max(b.y1 for b in pos) + 0.014
+        for b in pos:
+            fig.text(b.x0 - 0.010, y, f"({next(tags)})", fontsize=11.0,
                      ha="right", va="bottom", color=PS.INK)
 
 
 def main():
-    fig = plt.figure(figsize=(PS.FULL_W_NARROW, 4.25))
-    gs = fig.add_gridspec(2, 2, height_ratios=[1.30, 1.25],
-                          wspace=0.42, hspace=0.42,
-                          left=0.115, right=0.988, top=0.950, bottom=0.105)
-    top = [fig.add_subplot(gs[0, k]) for k in (0, 1)]
-    bot = [fig.add_subplot(gs[1, k]) for k in (0, 1)]
+    # **줄마다 격자를 따로** 건다. 한 격자에 묶으면 칸 너비가 두 줄에 함께
+    # 걸려서, 영상 둘을 좁히면 아랫줄 그래프도 같이 좁아진다. 왼쪽·오른쪽
+    # 끝만 같은 값으로 맞추면 두 줄은 그대로 줄이 선다.
+    L, R = 0.118, 0.988
+    fig = plt.figure(figsize=(PS.FULL_W_NARROW, 4.00))
+    # 윗줄 높이는 **영상이 정사각이 되는 높이**다 — 그보다 높으면 영상 위아래로
+    # 빈 띠가 남고, 패널 이름이 영상에서 멀어진다.
+    # 셋째 칸은 **빈 칸**이다. `wspace` 는 칸마다 따로 줄 수 없는데 (b) 의 영상과
+    # (c) 의 축 이름 사이만 더 벌어져야 한다 — 빈 칸 하나가 그 값을 만든다.
+    g_top = fig.add_gridspec(1, 4, width_ratios=[1.0, 1.0, 0.16, 1.30],
+                             wspace=0.30,
+                             left=L, right=R, top=0.945, bottom=0.632)
+    g_bot = fig.add_gridspec(1, 2, wspace=0.40,
+                             left=L, right=R, top=0.512, bottom=0.105)
+    imgs = [fig.add_subplot(g_top[0, 0]), fig.add_subplot(g_top[0, 1])]
+    top = [*imgs, fig.add_subplot(g_top[0, 3])]
+    bot = [fig.add_subplot(g_bot[0, 0]), fig.add_subplot(g_bot[0, 1])]
 
-    panel_imprints(top)
+    prof = panel_imprints(imgs, top[2])
     gel, rho, p = panel_gel(bot[0])
     sweep, first = panel_pixels(bot[1])
     letters(fig, [top, bot])
@@ -225,10 +265,11 @@ def main():
     sweep[["unit", "probe", "depth_mm", "width_px", "density_px_per_mm2",
            "dip", "dip_sd", "imprint_lvl", "verdict"]].to_csv(
         PS.FIGS / "fig_separation_sweep.csv", index=False)
-    print(f"  (a)(b) hard, {SWEEP_DEPTH_MM:.2f} mm 압입, 중심 간격 "
+    prof.to_csv(PS.FIGS / "fig_separation_profile.csv", index=False)
+    print(f"  (a)(b)(c) hard, {SWEEP_DEPTH_MM:.2f} mm 압입, 중심 간격 "
           f"{SEP_MM:.2f} mm — 두께 1 대 3 mm")
-    print(f"  (c) 두께 rho {rho:+.3f}  p {p:.3f}  n {len(gel)}")
-    print(f"  (d) {SWEEP_UNIT} @ {SWEEP_DEPTH_MM} mm — "
+    print(f"  (d) 두께 rho {rho:+.3f}  p {p:.3f}  n {len(gel)}")
+    print(f"  (e) {SWEEP_UNIT} @ {SWEEP_DEPTH_MM} mm — "
           f"분해되는 가장 낮은 밀도 R {first:.2f}"
           f"   (접촉 못 찾은 단 {int(sweep.dip.isna().sum())})")
 
