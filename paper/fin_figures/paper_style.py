@@ -92,15 +92,15 @@ def use_paper_style():
         "savefig.dpi": 400,
         "savefig.bbox": "tight",
         "savefig.pad_inches": 0.01,
-        # 글자는 **인쇄에서 읽히는 것**이 기준이다. 7.5 → 9 → 10.5 로 두 번
-        # 올렸다(2026-09-15). 두 단 그림을 좁게 그려 크게 앉히므로 설계 글자가
-        # 커도 본문에서 과하지 않다.
-        "font.size": 10.5,
-        "axes.titlesize": 11.0,
-        "axes.labelsize": 10.5,
-        "xtick.labelsize": 10.0,
-        "ytick.labelsize": 10.0,
-        "legend.fontsize": 10.0,
+        # 글자는 **인쇄에서 읽히는 것**이 기준이다. 7.5 → 9 → 10.5 → 12.5 로 세 번
+        # 올렸다(2026-09-15). 두 단 그림을 좁게 그려 `\textwidth` 로 크게 앉히므로
+        # 설계 글자가 커도 본문에서 과하지 않다 — 오히려 그것이 값싸게 키우는 길이다.
+        "font.size": 12.5,
+        "axes.titlesize": 13.0,
+        "axes.labelsize": 12.5,
+        "xtick.labelsize": 12.0,
+        "ytick.labelsize": 12.0,
+        "legend.fontsize": 12.0,
         "axes.linewidth": 0.6,
         "xtick.major.width": 0.6,
         "ytick.major.width": 0.6,

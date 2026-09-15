@@ -100,7 +100,7 @@ def main():
     assert not single.suspect_hardware.any(), "선택 규칙이 거른 유닛이 남아 있다"
 
     fig, axes = plt.subplots(1, len(PRINCIPLES),
-                             figsize=(PS.FULL_W_NARROW, 2.70))
+                             figsize=(PS.FULL_W_NARROW, 3.15))
     stats = []
 
     for tag, ax, pr in zip("abc", axes, PRINCIPLES):

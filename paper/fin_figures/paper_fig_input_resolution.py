@@ -198,7 +198,7 @@ def panel_shape(ax):
     ax.set_ylabel("depth MAE [mm]")
     ax.legend(loc="upper right", frameon=False, handlelength=1.9,
               handletextpad=0.45, labelspacing=0.22, borderpad=0.1,
-              borderaxespad=0.1, fontsize=9.0)
+              borderaxespad=0.1, fontsize=11.0)
     PS.style(ax, grid=None)
     ax.grid(alpha=0.25, lw=0.4, color="#c8c8c8")
     ax.set_axisbelow(True)
@@ -208,14 +208,14 @@ def panel_shape(ax):
 def main():
     # 줄마다 격자를 따로 건다 — 윗줄 셋과 아랫줄 둘은 칸 너비가 다르다.
     # 왼쪽·오른쪽 끝만 맞추면 두 줄이 그대로 줄이 선다.
-    L, R = 0.108, 0.988
-    fig = plt.figure(figsize=(PS.FULL_W_NARROW, 3.55))
+    L, R = 0.128, 0.990
+    fig = plt.figure(figsize=(PS.FULL_W_NARROW, 3.00))
     # 윗줄 높이는 **영상이 제 비율로 다 들어가는 높이**다. 원본이 16:9 라
     # 칸 너비의 0.5625 배면 된다.
     g_top = fig.add_gridspec(1, 3, wspace=0.26,
-                             left=L, right=R, top=0.962, bottom=0.720)
+                             left=L, right=R, top=0.930, bottom=0.650)
     g_bot = fig.add_gridspec(1, 2, wspace=0.40,
-                             left=L, right=R, top=0.645, bottom=0.135)
+                             left=L, right=R, top=0.575, bottom=0.215)
     top = [fig.add_subplot(g_top[0, i]) for i in range(3)]
     bot = [fig.add_subplot(g_bot[0, i]) for i in range(2)]
 

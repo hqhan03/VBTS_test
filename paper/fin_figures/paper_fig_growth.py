@@ -89,7 +89,7 @@ def main():
 
     tags = iter("abcdefgh")
     fig, axes = plt.subplots(len(MEASURES), len(PANELS),
-                             figsize=(PS.FULL_W, 4.05), sharex="col")
+                             figsize=(PS.FULL_W, 4.75), sharex="col")
     for row, (meas, ylab) in enumerate(MEASURES):
         dm = d[d.measure == meas]
         for col_i, (xcol, key, xlab) in enumerate(PANELS):
@@ -110,9 +110,9 @@ def main():
             if col_i == 0:
                 ax.set_ylabel(ylab)
             if row == 0:
-                ax.legend(loc="upper left", frameon=False, handlelength=1.4,
+                ax.legend(loc="lower right", frameon=False, handlelength=1.4,
                           handletextpad=0.45, labelspacing=0.22, borderpad=0.1,
-                          fontsize=8.0)
+                          borderaxespad=0.25, fontsize=10.5)
             PS.style(ax)
         # **행 안에서 세로 축을 맞춘다** — 열을 가로질러 읽어야 하기 때문이다
         lo = min(a.get_ylim()[0] for a in axes[row])

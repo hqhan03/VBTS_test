@@ -148,7 +148,7 @@ def panel_imprints(img_axes, prof_ax):
     prof_ax.set_ylabel(r"$\Delta$ intensity [lvl]")
     prof_ax.legend(loc="upper left", frameon=False, handlelength=1.4,
                    handletextpad=0.45, labelspacing=0.22, borderpad=0.1,
-                   fontsize=9.0)
+                   fontsize=11.0)
     PS.style(prof_ax, grid=None)
     prof_ax.grid(alpha=0.25, lw=0.4, color="#c8c8c8")
     prof_ax.set_axisbelow(True)
@@ -172,10 +172,11 @@ def panel_gel(ax):
 
     rho, p = spearmanr(nine.thickness_mm, nine.finest_centre_mm)
     ax.legend(loc="upper left", frameon=False, handlelength=1.5,
-              handletextpad=0.45, labelspacing=0.25, borderpad=0.1, fontsize=9.0)
+              handletextpad=0.45, labelspacing=0.25, borderpad=0.1, fontsize=11.0)
     ax.set_xticks([1, 2, 3])
     ax.set_xlim(0.72, 3.30)
     ax.set_ylim(0.86, 2.98)
+    ax.set_yticks([1.0, 1.5, 2.0, 2.5])
     ax.set_xlabel("gel thickness [mm]")
     ax.set_ylabel("finest resolved\nseparation [mm]")
     PS.style(ax)
