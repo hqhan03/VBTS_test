@@ -4,19 +4,23 @@
 
 ```
 cd paper/fin_figures
-python3 paper_fig_ceiling.py
+python3 paper_fig_force.py
 ```
 
 필요한 것: `matplotlib` · `pandas` · `numpy` · `scipy`.
 자료는 `result/single/` 의 csv 에서 읽는다 — `data/` 가 없는 기계에서도 돌아간다.
 
-| 파일 | 무엇 |
-|---|---|
-| `paper_style.py` | 판형 · 색 · 저장. **모든 그림이 이것을 import 한다** |
-| `paper_fig_ceiling.py` | 영상 응답 포화 힘 대 두께 (IV.C) |
+| 파일 | 무엇 | 절 |
+|---|---|---|
+| `paper_style.py` | 판형 · 색 · 저장. **모든 그림이 이것을 import 한다** | — |
+| `paper_fig_growth.py` | 자국 성장 — 깊이 기준 대 힘 기준 (9DTact) | IV.A |
+| `paper_fig_separation.py` | 두 접촉 분리 — 겔과 화소 | IV.B |
+| `paper_fig_ceiling.py` | 영상 응답 포화 힘 대 두께 | IV.C |
+| `paper_fig_force.py` | 힘 추정 오차 대 화소 밀도 | V.A |
+| `paper_fig_shape.py` | 형상 복원 — 깊이와 가로 크기 | V.B |
 
-색은 `src/scripts/palette.py` 하나에서 나온다 — `result/` 의 그림과 같은 색을 써야
-하므로 여기에 값을 베껴 두지 않는다.
+아직 안 옮긴 것: F1(연구 질문) · F2(센서 구성·시편·장치). 둘 다 작도와 사진이
+필요하고 `../figures/` 에 옛 판이 있다. `../figure_plan.md` 가 무엇이 남았는지 적는다.
 
 ## 그림마다 나오는 것
 
@@ -28,7 +32,7 @@ python3 paper_fig_ceiling.py
 | `.png` | 문서·메신저 미리보기용 |
 | `.csv` | 그 그림을 그린 자료 그대로 — 직접 다시 그릴 수 있게 |
 
-검정을 낸 그림은 `<이름>_stats.csv` 를 따로 낸다.
+검정·요약값을 낸 그림은 `<이름>_stats.csv` 를 따로 낸다.
 
 ## 규칙
 
@@ -36,9 +40,26 @@ python3 paper_fig_ceiling.py
 
 - **칸마다 정해진 센서 하나만 쓴다** — 원리당 9, 합 27 (`result/single/`).
   고르지 않은 복제를 산포 목적으로도 겹쳐 찍지 않는다.
-- IEEE 두 단 판형 — 한 단 3.50 in · 두 단 7.16 in. 다른 폭을 쓰지 않는다.
-- 색만으로 군을 가르지 않는다. 경도마다 표식 모양(`o` / `s` / `^`)을 함께 건다.
+- **색은 `paper_style.py` 가 정한다** (운전자 결정, 2026-09-15) — 파랑 `#0047B3` ·
+  초록 `#007A29` · 빨강 `#D40000` · 검정 `#000000` 넷뿐이다. `result/` 의 그림은
+  `src/scripts/palette.py` 의 Okabe-Ito 셋을 쓴다 — **두 곳이 갈린다.** 값을 옮겨
+  적지 말고 각자의 파일에서 가져올 것.
+- **표식 모양을 쓰지 않는다** (운전자 결정, 2026-09-15). 군은 색으로만 가른다.
+  그래서 빨강·초록의 ΔE 7.4 (deutan) 에 보조 표시가 없다 — 살려야 할 그림에서는
+  선 끝 직접 라벨이나 선 모양(실선·파선)을 쓴다. `paper_fig_shape.py` 가
+  그 예다(프로브를 색과 선 모양 둘로 건다 — 흑백 인쇄까지 함께 푼다).
+- 폭은 한 단 3.50 in · 두 단 7.16 in 이 기준이되, **두 단 그림은 더 좁게 그려도
+  된다** (운전자 결정, 2026-09-15). `\textwidth` 로 앉히면 그만큼 확대되어 글자가
+  함께 커진다. 기본값은 `paper_style.FULL_W_NARROW` = 6.10 in.
+- 글꼴은 Type 42. Type 3 은 IEEE PDF eXpress 가 되돌려 보낸다.
 - 무엇을 싣고 무엇을 빼는가는 `../figure_plan.md` 가 정한다.
+
+## 이 기계에서 안 되는 것
+
+`data/` 는 저장소에 없다. 원영상이나 seed 단위 자료가 필요한 것은 실험 기계에서
+돌려야 한다 — F3 의 DIGIT 판, F6 의 높이맵과 전처리 스케일 패널, F5 의 전단 열
+(정본 전단은 seed 단위 `(Fx+Fy)/2` 의 중앙값인데 저장소 csv 는 축별 중앙값만 담는다).
+각 스크립트의 머리글이 무엇이 왜 빠졌는지 적는다.
 
 `../figures/` 는 그 전에 만든 `fig1` ~ `fig4b` 가 있는 곳이다. **섞지 않는다** —
 matplotlib 으로 옮길 때마다 하나씩 이리로 넘어온다.
