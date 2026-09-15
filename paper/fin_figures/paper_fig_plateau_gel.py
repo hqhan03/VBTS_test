@@ -7,9 +7,14 @@
 이 그림이 그 표를 눈으로 보여 준다.
 
 무엇을 보이나
-    **과업마다 한 줄, 인자마다 한 열이다** (운전자 요청, 2026-09-15) — 힘 ·
-    ⌀4 mm 원기둥 · 4 mm 정육면체를 따로 그려 여섯 칸 `(a)` ~ `(f)` 다. 왼쪽 열은
-    두께로, 오른쪽 열은 경도로 나눈 같은 자료다.
+    **과업마다 한 줄, 인자마다 한 열이다** (운전자 요청, 2026-09-15) — 힘과
+    ⌀4 mm 원기둥을 따로 그려 네 칸 `(a)` ~ `(d)` 다. 왼쪽 열은 두께로, 오른쪽
+    열은 경도로 나눈 같은 자료다.
+
+    **4 mm 정육면체는 그리지 않는다** (운전자 결정, 2026-09-15) — 여섯 칸이면
+    `\textwidth` 에서 키가 5.6 in 이라 논문에서 가장 큰 그림이 됐다. 정육면체
+    결과(83.2 px/mm², 한 센서의 두 프로브 사이 38 배)는 이미 V-B3 의 대표
+    수치로 본문에 있고 표 V 에도 남는다. 검정만 표준출력으로 계속 낸다.
 
     칸 안의 한 줄은 한 구성이고, 줄마다
       - 회색 가로 막대 = 그 구성 아홉 시편의 평탄 밀도 **최소 ~ 최대**
@@ -68,8 +73,10 @@ DODGE = (0.22, 0.0, -0.22)                # 군 중앙값을 줄 안에서 어�
 # 것과 깊이 오차가 mm 라는 것은 캡션이 진다.
 TASKS = [("Force", "res", ["9DTact", "DIGIT", "DIGIT_Marker"]),
          ("Depth, $\\varnothing$4 mm cylinder", "cyl4_knee_R",
-          ["9DTact", "DIGIT"]),
-         ("Depth, 4 mm cube", "cube4_knee_R", ["9DTact", "DIGIT"])]
+          ["9DTact", "DIGIT"])]
+
+# 그리지는 않지만 표 V 가 싣는 줄 — 검정만 표준출력으로 낸다.
+UNDRAWN = [("Depth, 4 mm cube", "cube4_knee_R", ["9DTact", "DIGIT"])]
 
 
 def knee(v):
@@ -145,14 +152,14 @@ def main():
     dat = pd.concat([resultant(p) for p in FOLD] + [shape()], ignore_index=True)
 
     # 줄 높이는 그 과업이 잰 구성 수에 맞춘다 — 힘 셋, 형상 둘.
-    fig = plt.figure(figsize=(PS.FULL_W_NARROW, 4.80))
+    fig = plt.figure(figsize=(PS.FULL_W_NARROW, 3.55))
     gs = fig.add_gridspec(len(TASKS), 2,
                           height_ratios=[len(t[2]) for t in TASKS],
-                          hspace=0.62, wspace=0.08,
-                          left=0.135, right=0.988, top=0.885, bottom=0.105)
+                          hspace=0.58, wspace=0.08,
+                          left=0.135, right=0.988, top=0.865, bottom=0.145)
     axes = [[fig.add_subplot(gs[r, c]) for c in (0, 1)] for r in range(len(TASKS))]
 
-    tags = iter("abcdef")
+    tags = iter("abcd")
     for row, task in zip(axes, TASKS):
         _name, _met, principles = task
         for ax, factor in zip(row, ("thickness_mm", "hardness")):
@@ -176,7 +183,7 @@ def main():
                   ncol=3, columnspacing=0.55, handletextpad=0.15, borderpad=0.0,
                   fontsize=8.0)
     fig.supxlabel(r"plateau density $R$ at $\tau=10\,\%$ [px/mm$^2$]",
-                  fontsize=10.5, y=0.010)
+                  fontsize=10.5, y=0.014)
 
     # 줄 이름 — 그 줄 두 칸의 **맨 왼쪽 위**, 패널 이름과 세로축 라벨보다 한 줄 위.
     # 굵은 검정이라 회색 세로축 라벨과 섞이지 않는다. 자리는 그려진 뒤에야 알 수
@@ -187,13 +194,16 @@ def main():
         fig.text(0.004, y + 0.042, name, fontsize=10.5, fontweight="bold",
                  ha="left", va="bottom", color=PS.INK)
 
-    PS.save(fig, dat[["principle", "unit", "hardness", "thickness_mm",
-                      "metric", "knee_R", "best"]], "fig_plateau_gel")
+    # csv 는 **그린 것**만 담는다 — 정육면체 줄은 표 V 에 있고 여기 없다.
+    drawn = dat[dat.metric.isin([t[1] for t in TASKS])]
+    PS.save(fig, drawn[["principle", "unit", "hardness", "thickness_mm",
+                        "metric", "knee_R", "best"]], "fig_plateau_gel")
 
     # 표 V 가 이 수치를 쓴다 — 표준출력으로 내서 맞춰 볼 수 있게 한다.
     print(f"  tau = {TOL:.0%},  Shore OO  "
           + " · ".join(f"{p} {SHORE[p]['soft']}-{SHORE[p]['hard']}" for p in FOLD))
-    for name, met, principles in TASKS:
+    for name, met, principles in TASKS + UNDRAWN:
+        mark = "" if (name, met, principles) in TASKS else "  (not drawn)"
         for pr in principles:
             g = dat[(dat.principle == pr) & (dat.metric == met)]
             rt, pt = spearmanr(g.thickness_mm, g.knee_R)
@@ -201,7 +211,8 @@ def main():
             print(f"  {met:<14s} {PS.DISPLAY[pr]:<14s} "
                   f"median R {g.knee_R.median():8.1f}  "
                   f"range {g.knee_R.min():6.1f}-{g.knee_R.max():8.1f}  "
-                  f"rho_thick {rt:+.2f} (p {pt:.2f})  rho_hard {rh:+.2f} (p {ph:.2f})")
+                  f"rho_thick {rt:+.2f} (p {pt:.2f})  "
+                  f"rho_hard {rh:+.2f} (p {ph:.2f}){mark}")
 
 
 if __name__ == "__main__":
