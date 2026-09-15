@@ -2,8 +2,13 @@
 """논문 그림 — 영상 응답 포화 힘(천장) 대 겔 두께, 경도별. (IV.C)
 
 이 그림이 말하는 것은 **부호가 뒤집힌다**는 것이다. 9DTact 는 두께를 따라 오르고
-DIGIT 계열은 내려간다. 9DTact 만 그리면 그 관찰이 그림에서 사라지므로 세 원리를
-나란히 놓는다.
+DIGIT 은 내려간다. 한쪽만 그리면 그 관찰이 사라지므로 둘을 나란히 놓는다.
+
+**DIGIT_Marker 는 뺐다** (운전자 결정, 2026-09-15). 마커 유닛에는 `ball8` 램프가
+없어 `ball4` 로 잰 값이고, 힘은 프로브 사이에서 환산되지 않으므로(비 1.50 ~ 3.26,
+CV 21 % — 부록 C) 애초에 나머지 둘과 세로로 견줄 수 없는 패널이었다. 값은
+`fig_ceiling_stats.csv` 와 `B_ceiling_vs_thickness.csv` 에 그대로 있다
+(두께 ρ −0.53, p 0.145).
 
 세로 축을 묶지 않는다
     9DTact 가 63 N 까지 가는데 DIGIT 계열은 6 ~ 23 N 이다. 축을 묶으면 DIGIT 과
@@ -30,6 +35,21 @@ DIGIT 계열은 내려간다. 9DTact 만 그리면 그 관찰이 그림에서 �
     선택 규칙이 빛 누출 유닛을 이미 걸렀으므로 이 집합에는 의심 유닛이 없다
     (`suspect_hardware` 전부 False). 표식을 따로 두지 않는다.
 
+표식은 전부 동그라미다 (운전자 결정, 2026-09-15)
+    경도는 **색만으로** 갈린다. 팔레트가 색각 검증을 통과하므로(인접 쌍 최악
+    ΔE 11.0 deutan) 색각 이상에서는 읽히고, 남는 위험은 **흑백 인쇄**다.
+
+캡션이 져야 할 것
+    0. **프로브가 `ball8`** 이라는 것. 부제를 뺐으므로 그림에 안 적혀 있다.
+    1. **어느 패널이 무엇인가** — 제목의 `(a)` `(b)` 와 원리 이름.
+    2. **세로 축이 패널마다 다르고 값을 가로로 견주면 안 된다**는 것
+       (상대 기준 + Marker 는 프로브가 다름).
+    3. **두께 경향** — 9DTact ρ +0.63 (p 0.068) 대 DIGIT −0.90 (p 0.001).
+       그림에서 뺐고 `fig_ceiling_stats.csv` 에 있다. 경도는 둘 다 비유의
+       (+0.37 / +0.05).
+    4. **쇼어 폭이 다르다** — 범례가 눈금을 적지만 9DTact 는 40 점, DIGIT 은
+       6 점을 흔들었다는 사실은 빼서 읽어야 한다.
+
 자료
     `result/single/extra/data/B_ceiling_vs_thickness.csv`  (분석 집합 27)
 """
@@ -39,16 +59,16 @@ import numpy as np
 import pandas as pd
 from scipy.stats import spearmanr
 
-from matplotlib.lines import Line2D
-
 import paper_style as PS
-from paper_style import HARD3, MARKER, SHORE, DISPLAY
+from paper_style import HARD3, SHORE, DISPLAY
 
 PS.use_paper_style()                      # rcParams 를 pyplot 을 쓰기 전에 건다
 import matplotlib.pyplot as plt           # noqa: E402
 
 HARDNESS = ("soft", "medium", "hard")
-PRINCIPLES = ("9DTact", "DIGIT", "DIGIT_Marker")
+# DIGIT_Marker 는 뺀다 (운전자 결정, 2026-09-15). 애초에 `ball8` 램프가 없어
+# `ball4` 로 잰 값이라 나머지 둘과 세로로 견줄 수 없는 패널이었다.
+PRINCIPLES = ("9DTact", "DIGIT")
 DODGE = dict(zip(HARDNESS, (-0.055, 0.0, 0.055)))   # 정해진 어긋냄 — 난수 흔들기가 아니다
 
 
@@ -79,18 +99,20 @@ def main():
     single = pd.read_csv(PS.ROOT / "result/single/extra/data/B_ceiling_vs_thickness.csv")
     assert not single.suspect_hardware.any(), "선택 규칙이 거른 유닛이 남아 있다"
 
-    fig, axes = plt.subplots(1, 3, figsize=(PS.FULL_W, 2.45))
+    fig, axes = plt.subplots(1, len(PRINCIPLES),
+                             figsize=(PS.FULL_W_NARROW, 2.70))
     stats = []
 
-    for ax, pr in zip(axes, PRINCIPLES):
+    for tag, ax, pr in zip("abc", axes, PRINCIPLES):
         one = single[single.principle == pr]
 
         for h in HARDNESS:
             col, dx = HARD3[h], DODGE[h]
             g = one[one.hardness == h].sort_values("thickness_mm")
-            ax.plot(g.thickness_mm + dx, g.ceiling_N, "-", c=col, lw=1.4, zorder=3)
-            ax.plot(g.thickness_mm + dx, g.ceiling_N, MARKER[h], c=col,
-                    ms=4.4, mec="white", mew=0.7, ls="none", zorder=4)
+            ax.plot(g.thickness_mm + dx, g.ceiling_N, "-", c=col, lw=1.8,
+                    label=f"Shore OO-{SHORE[pr][h]}", zorder=3)
+            ax.plot(g.thickness_mm + dx, g.ceiling_N, "o", c=col,
+                    ms=5.6, mec="white", mew=0.7, ls="none", zorder=4)
 
 
         rho, p_ex = exact_p(one.thickness_mm.values, one.ceiling_N.values)
@@ -101,19 +123,9 @@ def main():
                           p_asymptotic=p_as, rho_hardness=rho_h, p_hardness=p_h,
                           n_units=len(one)))
 
-        sh = SHORE[pr]
-        span = max(sh.values()) - min(sh.values())
-        probe = one.probe.iloc[0]
-        ax.set_title(f"{DISPLAY[pr]}", fontsize=8.0, loc="left",
-                     color=PS.PRINCIPLE[pr], pad=11)
-        ax.annotate(f"{probe}  ·  Shore OO {sh['soft']}/{sh['medium']}/{sh['hard']} "
-                    f"(span {span})",
-                    xy=(0, 1.012), xycoords="axes fraction",
-                    fontsize=6.3, color=PS.MUTED)
-        ax.annotate(rf"$\rho_{{\rm thickness}}$ = {rho:+.2f}   (p = {p_as:.3f})",
-                    xy=(0.5, 0.03), xycoords="axes fraction", ha="center",
-                    fontsize=6.5, color=PS.MUTED)
-
+        ax.set_title(f"({tag})  {DISPLAY[pr]}", loc="left")
+        ax.legend(loc="lower left", frameon=False, handlelength=1.6,
+                  handletextpad=0.5, labelspacing=0.28, borderpad=0.1)
         ax.set_xticks([1, 2, 3])
         ax.set_xlim(0.72, 3.46)
         ax.set_ylim(0, None)
@@ -121,14 +133,9 @@ def main():
         ax.set_ylabel("image saturation force [N]")
         PS.style(ax)
 
-    fig.tight_layout(w_pad=1.3, rect=[0, 0.075, 1, 1])
-    hs = [Line2D([], [], color=HARD3[h], marker=MARKER[h], ms=4.4, lw=1.4,
-                 mec="white", mew=0.7, label=h) for h in HARDNESS]
-    fig.legend(handles=hs, loc="lower center", ncol=3, frameon=False,
-               fontsize=7.0, handlelength=1.8, columnspacing=2.0,
-               handletextpad=0.5, bbox_to_anchor=(0.5, -0.008))
-    out = single[["principle", "probe", "unit", "hardness", "thickness_mm",
-                  "ceiling_N"]]
+    fig.tight_layout(w_pad=1.3)
+    out = single[single.principle.isin(PRINCIPLES)][
+        ["principle", "probe", "unit", "hardness", "thickness_mm", "ceiling_N"]]
     PS.save(fig, out, "fig_ceiling")
 
     st = pd.DataFrame(stats)

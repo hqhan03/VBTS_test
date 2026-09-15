@@ -12,10 +12,19 @@ import 한다. 새 그림을 만들 때 rcParams 를 다시 쓰지 말 것 — �
 
 돌리는 법:  `cd paper/fin_figures && python3 paper_fig_<이름>.py`
 
-색은 `palette.py` 를 그대로 가져온다. 팔레트 검증기 전 항목 통과를 확인했다
-(인접 쌍 최악 ΔE 11.0 deutan, 보통 시야 25.8, 바탕 대비 전부 3:1 이상).
-**그래도 색만으로 군을 가르지 않는다** — 표식 모양(MARKER)을 함께 건다.
-흑백 인쇄와 색각 이상 양쪽에서 살아남아야 하기 때문이다.
+색은 **논문 그림만의 것**이다 (운전자 결정, 2026-09-15). `result/` 의 그림은
+`src/scripts/palette.py` 의 Okabe-Ito 셋을 그대로 쓰고, 논문 그림은 투박한
+파랑·초록·빨강·검정만 쓴다. 두 곳이 갈리므로 여기에 값을 적어 둔다.
+
+> **색각 이상에서 빨강과 초록이 가깝다.** 팔레트 검증기로 재면 인접 쌍 최악이
+> **ΔE 7.4 (deutan)** 다 — 검증기가 "보조 표시(직접 라벨·모양·질감)가 있을 때만
+> 쓸 수 있다" 고 적는 6 ~ 8 구간이다. 보통 시야 28.8, 바탕 대비 셋 다 3:1 이상은
+> 통과한다. 지금 그림들은 **표식 모양을 쓰지 않으므로**(운전자 결정) 그 보조
+> 표시가 없다.
+>
+> **되살리는 값싼 길 둘** — 선 끝에 직접 라벨을 달거나, 선 모양을(실선·파선·
+> 점선) 갈라 주는 것. **흑백 인쇄에서 세 선이 구분되지 않는 문제**도 그 둘이
+> 함께 푼다.
 """
 import sys
 from pathlib import Path
@@ -27,23 +36,41 @@ import matplotlib.pyplot as plt
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 
-# 색은 `src/scripts/palette.py` 하나에서만 나온다 — `result/` 의 그림과 같은 색을
-# 써야 하므로 여기에 값을 베껴 두지 않는다.
+# 저장소의 공용 모듈(`pixel_density` 등)을 가져다 쓸 수 있게 해 둔다.
 sys.path.insert(0, str(ROOT / "src" / "scripts"))
-from palette import HARD3, PRINCIPLE, THICK3      # noqa: E402,F401 — 재수출
+
+# 투박한 넷 (운전자 결정, 2026-09-15). 순서가 있는 변수는 **차가운 쪽에서
+# 뜨거운 쪽으로** 간다 — 무를수록 파랑, 단단할수록 빨강. 두께도 같은 차례다.
+#
+# 순수 원색(#0000FF/#00FF00/#FF0000)도 한 번 써 봤다가 되돌렸다 — 순수 초록이
+# 눈에 거슬리고 흰 바탕 대비가 1.34:1 이라 종이에서 사라진다.
+BLUE, GREEN, RED, BLACK = "#0047B3", "#007A29", "#D40000", "#000000"
+CAT3 = [BLUE, GREEN, RED]
+
+HARD3 = dict(zip(["soft", "medium", "hard"], CAT3))
+THICK3 = dict(zip([1, 2, 3], CAT3))
+# 계열이 하나뿐인 칸은 검정. 원리마다 색을 주던 것을 접었다.
+SERIES = BLACK
 
 # 그림도 코드도 이 폴더다. `paper/figures/` 는 그 전에 만든 것이 들어 있는 곳이라
 # 섞지 않는다.
 FIGS = HERE
 
-# IEEE 두 단 판형. 한 단 3.50 in, 두 단 걸침 7.16 in — 이 둘 말고 다른 폭을 쓰지 않는다.
+# IEEE 두 단 판형. 한 단 3.50 in, 두 단 걸침 7.16 in.
+#
+# **두 단 그림은 7.16 보다 좁게 그려도 된다** (운전자 결정, 2026-09-15). 본문에
+# `\textwidth` 로 앉히면 그만큼 **확대**되므로 글자도 함께 커진다 — 좁게 그리고
+# 크게 앉히는 것이 작은 글자를 키우는 가장 싼 방법이다. 대신 **패널 비율이
+# 뭉개지지 않는 선**에서만 줄인다.
 COL_W, FULL_W = 3.50, 7.16
+FULL_W_NARROW = 6.10        # 두 패널짜리 두 단 그림의 기본
 
 INK = "#1a1a1a"
 MUTED = "#707070"
 SUSPECT_MARK = "!"          # 빛 누출 의심 유닛
 
-# 순서가 있는 변수라 색만으로는 부족하다. 모양을 함께 건다.
+# 표식 모양은 쓰지 않는다(운전자 결정, 2026-09-15) — 전부 동그라미다. 남겨 둔
+# 것은 되살릴 때를 위해서다. 되살리면 빨강·초록의 ΔE 7.4 에 보조 표시가 생긴다.
 MARKER = {"soft": "o", "medium": "s", "hard": "^"}
 
 # 원리별 표시 이름과 실측 쇼어. **두 계열이 같은 눈금이 아니다** — 9DTact 는 40 점을
@@ -65,20 +92,22 @@ def use_paper_style():
         "savefig.dpi": 400,
         "savefig.bbox": "tight",
         "savefig.pad_inches": 0.01,
-        # 본문에 들어가면 축소되므로 축소 전 기준으로 작게 잡지 않는다
-        "font.size": 7.5,
-        "axes.titlesize": 8.0,
-        "axes.labelsize": 7.5,
-        "xtick.labelsize": 7.0,
-        "ytick.labelsize": 7.0,
-        "legend.fontsize": 7.0,
+        # 글자는 **인쇄에서 읽히는 것**이 기준이다. 7.5 → 9 → 10.5 로 두 번
+        # 올렸다(2026-09-15). 두 단 그림을 좁게 그려 크게 앉히므로 설계 글자가
+        # 커도 본문에서 과하지 않다.
+        "font.size": 10.5,
+        "axes.titlesize": 11.0,
+        "axes.labelsize": 10.5,
+        "xtick.labelsize": 10.0,
+        "ytick.labelsize": 10.0,
+        "legend.fontsize": 10.0,
         "axes.linewidth": 0.6,
         "xtick.major.width": 0.6,
         "ytick.major.width": 0.6,
         "xtick.major.size": 2.6,
         "ytick.major.size": 2.6,
-        "lines.linewidth": 1.4,
-        "lines.markersize": 4.0,
+        "lines.linewidth": 1.8,
+        "lines.markersize": 5.2,
         "grid.linewidth": 0.4,
         "grid.alpha": 0.30,
         "axes.edgecolor": "#444444",
